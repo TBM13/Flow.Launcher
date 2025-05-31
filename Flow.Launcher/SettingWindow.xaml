@@ -251,8 +251,5 @@
                 </ui:NavigationView>
             </Grid>
         </Border>
-
-
-
     </Grid>
 </Window>
