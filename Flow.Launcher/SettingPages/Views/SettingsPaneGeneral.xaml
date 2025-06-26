@@ -278,34 +278,6 @@
                     Content="{Binding Settings.CustomBrowser.Name}" />
             </cc:Card>
 
-            <cc:Card Title="{DynamicResource pythonFilePath}" Margin="0 14 0 0">
-                <StackPanel Orientation="Horizontal">
-                    <TextBox
-                        Width="300"
-                        Height="34"
-                        Text="{Binding Settings.PluginSettings.PythonExecutablePath, TargetNullValue='None'}" />
-                    <Button
-                        Height="34"
-                        Margin="10 0 0 0"
-                        Command="{Binding SelectPythonCommand}"
-                        Content="{DynamicResource select}" />
-                </StackPanel>
-            </cc:Card>
-
-            <cc:Card Title="{DynamicResource nodeFilePath}">
-                <StackPanel Orientation="Horizontal">
-                    <TextBox
-                        Width="300"
-                        Height="34"
-                        Text="{Binding Settings.PluginSettings.NodeExecutablePath, TargetNullValue='None'}" />
-                    <Button
-                        Height="34"
-                        Margin="10 0 0 0"
-                        Command="{Binding SelectNodeCommand}"
-                        Content="{DynamicResource select}" />
-                </StackPanel>
-            </cc:Card>
-
             <cc:Card
                 Title="{DynamicResource typingStartEn}"
                 Margin="0 14 0 0"

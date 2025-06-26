@@ -55,14 +55,4 @@ public static class ErrorReporting
              """;
         return info;
     }
-
-    public static string DependenciesInfo()
-    {
-        var info = $"""
-
-                    Python Path: {Constant.PythonPath}
-                    Node Path: {Constant.NodePath}
-                    """;
-        return info;
-    }
 }

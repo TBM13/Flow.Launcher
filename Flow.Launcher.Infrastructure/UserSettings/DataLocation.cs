@@ -36,8 +36,6 @@ namespace Flow.Launcher.Infrastructure.UserSettings
         public static readonly string PluginSettingsDirectory = Path.Combine(SettingsDirectory, Constant.Plugins);
         public static readonly string PluginCacheDirectory = Path.Combine(DataDirectory(), Constant.Cache, Constant.Plugins);
 
-        public const string PythonEnvironmentName = "Python";
-        public const string NodeEnvironmentName = "Node.js";
         public const string PluginEnvironments = "Environments";
         public static readonly string PluginEnvironmentsPath = Path.Combine(DataDirectory(), PluginEnvironments);
     }

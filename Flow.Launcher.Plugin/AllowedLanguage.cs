@@ -8,16 +8,6 @@ namespace Flow.Launcher.Plugin
     public static class AllowedLanguage
     {
         /// <summary>
-        /// Python
-        /// </summary>
-        public const string Python = "Python";
-
-        /// <summary>
-        /// Python V2
-        /// </summary>
-        public const string PythonV2 = "Python_v2";
-
-        /// <summary>
         /// C#
         /// </summary>
         public const string CSharp = "CSharp";
@@ -38,26 +28,6 @@ namespace Flow.Launcher.Plugin
         public const string ExecutableV2 = "Executable_V2";
 
         /// <summary>
-        /// TypeScript
-        /// </summary>
-        public const string TypeScript = "TypeScript";
-
-        /// <summary>
-        /// TypeScript
-        /// </summary>
-        public const string TypeScriptV2 = "TypeScript_V2";
-
-        /// <summary>
-        /// JavaScript
-        /// </summary>
-        public const string JavaScript = "JavaScript";
-
-        /// <summary>
-        /// JavaScript
-        /// </summary>
-        public const string JavaScriptV2 = "JavaScript_V2";
-
-        /// <summary>
         /// Determines if this language is a .NET language
         /// </summary>
         /// <param name="language"></param>
@@ -66,30 +36,6 @@ namespace Flow.Launcher.Plugin
         {
             return language.Equals(CSharp, StringComparison.OrdinalIgnoreCase)
                 || language.Equals(FSharp, StringComparison.OrdinalIgnoreCase);
-        }
-
-        /// <summary>
-        /// Determines if this language is a Python language
-        /// </summary>
-        /// <param name="language"></param>
-        /// <returns></returns>
-        public static bool IsPython(string language)
-        {
-            return language.Equals(Python, StringComparison.OrdinalIgnoreCase)
-                || language.Equals(PythonV2, StringComparison.OrdinalIgnoreCase);
-        }
-
-        /// <summary>
-        /// Determines if this language is a Node.js language
-        /// </summary>
-        /// <param name="language"></param>
-        /// <returns></returns>
-        public static bool IsNodeJs(string language)
-        {
-            return language.Equals(TypeScript, StringComparison.OrdinalIgnoreCase)
-                || language.Equals(TypeScriptV2, StringComparison.OrdinalIgnoreCase)
-                || language.Equals(JavaScript, StringComparison.OrdinalIgnoreCase)
-                || language.Equals(JavaScriptV2, StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -111,8 +57,6 @@ namespace Flow.Launcher.Plugin
         public static bool IsAllowed(string language)
         {
             return IsDotNet(language)
-                || IsPython(language)
-                || IsNodeJs(language)
                 || IsExecutable(language);
         }
     }

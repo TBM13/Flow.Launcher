@@ -65,8 +65,6 @@ namespace Flow.Launcher.Infrastructure.Exception
             sb.AppendLine($"* OS Version: {GetWindowsFullVersionFromRegistry()}");
             sb.AppendLine($"* IntPtr Length: {IntPtr.Size}");
             sb.AppendLine($"* x64: {Environment.Is64BitOperatingSystem}");
-            sb.AppendLine($"* Python Path: {Constant.PythonPath}");
-            sb.AppendLine($"* Node Path: {Constant.NodePath}");
             sb.AppendLine($"* CLR Version: {Environment.Version}");
             sb.AppendLine($"* Installed .NET Framework: ");
             foreach (var result in GetFrameworkVersionFromRegistry())
@@ -91,12 +89,12 @@ namespace Flow.Launcher.Infrastructure.Exception
                 else if (string.IsNullOrEmpty(ass.Location))
                 {
                     sb.Append("location is null or empty");
-                    
+
                 }
                 else
                 {
-                sb.Append(ass.Location);
-                    
+                    sb.Append(ass.Location);
+
                 }
                 sb.AppendLine(")");
             }

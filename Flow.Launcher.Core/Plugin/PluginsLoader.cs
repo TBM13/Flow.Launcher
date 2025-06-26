@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using CommunityToolkit.Mvvm.DependencyInjection;
-using Flow.Launcher.Core.ExternalPlugins.Environments;
 #pragma warning disable IDE0005
 using Flow.Launcher.Infrastructure.Logger;
 #pragma warning restore IDE0005
@@ -26,29 +25,10 @@ namespace Flow.Launcher.Core.Plugin
         {
             var dotnetPlugins = DotNetPlugins(metadatas);
 
-            var pythonEnv = new PythonEnvironment(metadatas, settings);
-            var pythonV2Env = new PythonV2Environment(metadatas, settings);
-            var tsEnv = new TypeScriptEnvironment(metadatas, settings);
-            var jsEnv = new JavaScriptEnvironment(metadatas, settings);
-            var tsV2Env = new TypeScriptV2Environment(metadatas, settings);
-            var jsV2Env = new JavaScriptV2Environment(metadatas, settings);
-            var pythonPlugins = pythonEnv.Setup();
-            var pythonV2Plugins = pythonV2Env.Setup();
-            var tsPlugins = tsEnv.Setup();
-            var jsPlugins = jsEnv.Setup();
-            var tsV2Plugins = tsV2Env.Setup();
-            var jsV2Plugins = jsV2Env.Setup();
-
             var executablePlugins = ExecutablePlugins(metadatas);
             var executableV2Plugins = ExecutableV2Plugins(metadatas);
 
             var plugins = dotnetPlugins
-                .Concat(pythonPlugins)
-                .Concat(pythonV2Plugins)
-                .Concat(tsPlugins)
-                .Concat(jsPlugins)
-                .Concat(tsV2Plugins)
-                .Concat(jsV2Plugins)
                 .Concat(executablePlugins)
                 .Concat(executableV2Plugins)
                 .ToList();

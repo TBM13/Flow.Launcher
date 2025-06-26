@@ -18,7 +18,7 @@ namespace Flow.Launcher.Infrastructure
         public static readonly string ExecutablePath = Path.Combine(ProgramDirectory, FlowLauncher + ".exe");
         public static readonly string ApplicationDirectory = Directory.GetParent(ProgramDirectory).ToString();
         public static readonly string RootDirectory = Directory.GetParent(ApplicationDirectory).ToString();
-        
+
         public static readonly string PreinstalledDirectory = Path.Combine(ProgramDirectory, Plugins);
         public const string IssuesUrl = "https://github.com/Flow-Launcher/Flow.Launcher/issues";
         public static readonly string Version = FileVersionInfo.GetVersionInfo(Assembly.Location.NonNull()).ProductVersion;
@@ -33,9 +33,6 @@ namespace Flow.Launcher.Infrastructure
         public static readonly string LoadingImgIcon = Path.Combine(ImagesDirectory, "loading.png");
         public static readonly string ImageIcon = Path.Combine(ImagesDirectory, "image.png");
         public static readonly string HistoryIcon = Path.Combine(ImagesDirectory, "history.png");
-
-        public static string PythonPath;
-        public static string NodePath;
 
         public static readonly string QueryTextBoxIconImagePath = $"{ProgramDirectory}\\Images\\mainsearch.svg";
 

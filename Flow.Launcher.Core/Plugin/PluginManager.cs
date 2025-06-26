@@ -47,15 +47,6 @@ namespace Flow.Launcher.Core.Plugin
             Constant.PreinstalledDirectory, DataLocation.PluginsDirectory
         };
 
-        private static void DeletePythonBinding()
-        {
-            const string binding = "flowlauncher.py";
-            foreach (var subDirectory in Directory.GetDirectories(DataLocation.PluginsDirectory))
-            {
-                File.Delete(Path.Combine(subDirectory, binding));
-            }
-        }
-
         /// <summary>
         /// Save json and ISavable
         /// </summary>
@@ -162,8 +153,6 @@ namespace Flow.Launcher.Core.Plugin
         {
             // validate user directory
             Directory.CreateDirectory(DataLocation.PluginsDirectory);
-            // force old plugins use new python binding
-            DeletePythonBinding();
         }
 
         /// <summary>
@@ -339,7 +328,7 @@ namespace Flow.Launcher.Core.Plugin
                     ActionKeywordAssigned = query.ActionKeyword,
                     PluginID = metadata.ID,
                     OriginQuery = query,
-                    Action = _ => { throw new FlowPluginException(metadata, e);},
+                    Action = _ => { throw new FlowPluginException(metadata, e); },
                     Score = -100
                 };
                 results.Add(r);
@@ -428,7 +417,7 @@ namespace Flow.Launcher.Core.Plugin
                 }
                 catch (Exception e)
                 {
-                    API.LogException(ClassName, 
+                    API.LogException(ClassName,
                         $"Can't load context menus for plugin <{pluginPair.Metadata.Name}>",
                         e);
                 }
@@ -446,7 +435,7 @@ namespace Flow.Launcher.Core.Plugin
         {
             // this method is only checking for action keywords (defined as not '*') registration
             // hence the actionKeyword != Query.GlobalPluginWildcardSign logic
-            return actionKeyword != Query.GlobalPluginWildcardSign 
+            return actionKeyword != Query.GlobalPluginWildcardSign
                 && NonGlobalPlugins.ContainsKey(actionKeyword);
         }
 
@@ -542,8 +531,8 @@ namespace Flow.Launcher.Core.Plugin
 
         public static async Task UpdatePluginAsync(PluginMetadata existingVersion, UserPlugin newVersion, string zipFilePath)
         {
-            InstallPlugin(newVersion, zipFilePath, checkModified:false);
-            await UninstallPluginAsync(existingVersion, removePluginFromSettings:false, removePluginSettings:false, checkModified: false);
+            InstallPlugin(newVersion, zipFilePath, checkModified: false);
+            await UninstallPluginAsync(existingVersion, removePluginFromSettings: false, removePluginSettings: false, checkModified: false);
             _modifiedPlugins.Add(existingVersion.ID);
         }
 
@@ -573,7 +562,7 @@ namespace Flow.Launcher.Core.Plugin
             var tempFolderPluginPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             System.IO.Compression.ZipFile.ExtractToDirectory(zipFilePath, tempFolderPluginPath);
 
-            if(!plugin.IsFromLocalInstallPath)
+            if (!plugin.IsFromLocalInstallPath)
                 File.Delete(zipFilePath);
 
             var pluginFolderPath = GetContainingFolderPathAfterUnzip(tempFolderPluginPath);

@@ -1,15 +1,15 @@
-﻿using Flow.Launcher.Core.ExternalPlugins;
-using System;
+﻿using System;
 using System.Globalization;
 using System.IO;
-using System.Text;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Documents;
+using Flow.Launcher.Core.ExternalPlugins;
 using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Plugin.SharedCommands;
 using Flow.Launcher.Infrastructure.UserSettings;
+using Flow.Launcher.Plugin.SharedCommands;
 
 namespace Flow.Launcher
 {
@@ -28,7 +28,7 @@ namespace Flow.Launcher
             {
                 return website;
             }
-            if(website.Contains("Flow-Launcher/Flow.Launcher"))
+            if (website.Contains("Flow-Launcher/Flow.Launcher"))
             {
                 return Constant.IssuesUrl;
             }
@@ -44,7 +44,7 @@ namespace Flow.Launcher
 
             var websiteUrl = exception switch
             {
-                FlowPluginException pluginException =>GetIssuesUrl(pluginException.Metadata.Website),
+                FlowPluginException pluginException => GetIssuesUrl(pluginException.Metadata.Website),
                 _ => Constant.IssuesUrl
             };
 
@@ -56,7 +56,6 @@ namespace Flow.Launcher
 
             StringBuilder content = new StringBuilder();
             content.AppendLine(ErrorReporting.RuntimeInfo());
-            content.AppendLine(ErrorReporting.DependenciesInfo());
             content.AppendLine();
             content.AppendLine($"Date: {DateTime.Now.ToString(CultureInfo.InvariantCulture)}");
             content.AppendLine("Exception:");

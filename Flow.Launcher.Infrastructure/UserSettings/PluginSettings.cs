@@ -6,28 +6,6 @@ namespace Flow.Launcher.Infrastructure.UserSettings
 {
     public class PluginsSettings : BaseModel
     {
-        private string pythonExecutablePath = string.Empty;
-        public string PythonExecutablePath
-        {
-            get => pythonExecutablePath;
-            set
-            {
-                pythonExecutablePath = value;
-                Constant.PythonPath = value;
-            }
-        }
-
-        private string nodeExecutablePath = string.Empty;
-        public string NodeExecutablePath
-        {
-            get => nodeExecutablePath;
-            set 
-            {
-                nodeExecutablePath = value;
-                Constant.NodePath = value;
-            }
-        }
-
         /// <summary>
         /// Only used for serialization
         /// </summary>

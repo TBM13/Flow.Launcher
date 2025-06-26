@@ -8,7 +8,6 @@ using System.Windows.Media;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Core;
 using Flow.Launcher.Core.Configuration;
-using Flow.Launcher.Core.ExternalPlugins.Environments;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Helper;
@@ -197,8 +196,6 @@ namespace Flow.Launcher
                 RegisterTaskSchedulerUnhandledException();
 
                 var imageLoadertask = ImageLoader.InitializeAsync();
-
-                AbstractPluginEnvironment.PreStartPluginExecutablePathUpdate(_settings);
 
                 PluginManager.LoadPlugins(_settings.PluginSettings);
 

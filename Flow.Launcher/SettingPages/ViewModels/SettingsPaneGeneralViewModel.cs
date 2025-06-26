@@ -250,30 +250,6 @@ public partial class SettingsPaneGeneralViewModel : BaseModel
     }
 
     [RelayCommand]
-    private void SelectPython()
-    {
-        var selectedFile = GetFileFromDialog(
-            App.API.GetTranslation("selectPythonExecutable"),
-            "Python|pythonw.exe"
-        );
-
-        if (!string.IsNullOrEmpty(selectedFile))
-            Settings.PluginSettings.PythonExecutablePath = selectedFile;
-    }
-
-    [RelayCommand]
-    private void SelectNode()
-    {
-        var selectedFile = GetFileFromDialog(
-            App.API.GetTranslation("selectNodeExecutable"),
-            "node|*.exe"
-        );
-
-        if (!string.IsNullOrEmpty(selectedFile))
-            Settings.PluginSettings.NodeExecutablePath = selectedFile;
-    }
-
-    [RelayCommand]
     private void SelectFileManager()
     {
         var fileManagerChangeWindow = new SelectFileManagerWindow();
