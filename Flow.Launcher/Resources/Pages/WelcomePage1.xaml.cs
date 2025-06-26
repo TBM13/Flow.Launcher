@@ -38,9 +38,6 @@ namespace Flow.Launcher.Resources.Pages
             set
             {
                 _translater.ChangeLanguage(value);
-
-                if (_translater.PromptShouldUsePinyin(value))
-                    Settings.ShouldUsePinyin = true;
             }
         }
     }

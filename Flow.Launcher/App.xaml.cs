@@ -61,7 +61,6 @@ namespace Flow.Launcher
                     .UseContentRoot(AppContext.BaseDirectory)
                     .ConfigureServices(services => services
                         .AddSingleton(_ => _settings)
-                        .AddSingleton<IAlphabet, PinyinAlphabet>()
                         .AddSingleton<StringMatcher>()
                         .AddSingleton<Internationalization>()
                         .AddSingleton<IPublicAPI, PublicAPIInstance>()

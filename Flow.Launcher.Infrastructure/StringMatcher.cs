@@ -1,9 +1,9 @@
-﻿using CommunityToolkit.Mvvm.DependencyInjection;
-using Flow.Launcher.Plugin.SharedModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Infrastructure.UserSettings;
+using Flow.Launcher.Plugin.SharedModels;
 
 namespace Flow.Launcher.Infrastructure
 {
@@ -13,18 +13,14 @@ namespace Flow.Launcher.Infrastructure
 
         public SearchPrecisionScore UserSettingSearchPrecision { get; set; }
 
-        private readonly IAlphabet _alphabet;
-
-        public StringMatcher(IAlphabet alphabet, Settings settings)
+        public StringMatcher(Settings settings)
         {
-            _alphabet = alphabet;
             UserSettingSearchPrecision = settings.QuerySearchPrecision;
         }
 
         // This is a workaround to allow unit tests to set the instance
-        public StringMatcher(IAlphabet alphabet)
+        public StringMatcher()
         {
-            _alphabet = alphabet;
         }
 
         public static MatchResult FuzzySearch(string query, string stringToCompare)
@@ -67,13 +63,6 @@ namespace Flow.Launcher.Infrastructure
                 return new MatchResult(false, UserSettingSearchPrecision);
 
             query = query.Trim();
-            TranslationMapping translationMapping = null;
-            if (_alphabet is not null && !_alphabet.CanBeTranslated(query))
-            {
-                // We assume that if a query can be translated (containing characters of a language, like Chinese)
-                // it actually means user doesn't want it to be translated to English letters.
-                (stringToCompare, translationMapping) = _alphabet.Translate(stringToCompare);
-            }
 
             var currentAcronymQueryIndex = 0;
             var acronymMatchData = new List<int>();
@@ -205,7 +194,7 @@ namespace Flow.Launcher.Infrastructure
 
                 if (acronymScore >= (int)UserSettingSearchPrecision)
                 {
-                    acronymMatchData = acronymMatchData.Select(x => translationMapping?.MapToOriginalIndex(x) ?? x).Distinct().ToList();
+                    acronymMatchData = acronymMatchData.Distinct().ToList();
                     return new MatchResult(true, UserSettingSearchPrecision, acronymMatchData, acronymScore);
                 }
             }
@@ -221,7 +210,7 @@ namespace Flow.Launcher.Infrastructure
                 var score = CalculateSearchScore(query, stringToCompare, firstMatchIndex - nearestSpaceIndex - 1, spaceIndices,
                     lastMatchIndex - firstMatchIndex, allSubstringsContainedInCompareString);
 
-                var resultList = indexList.Select(x => translationMapping?.MapToOriginalIndex(x) ?? x).Distinct().ToList();
+                var resultList = indexList.Distinct().ToList();
                 return new MatchResult(true, UserSettingSearchPrecision, resultList, score);
             }
 

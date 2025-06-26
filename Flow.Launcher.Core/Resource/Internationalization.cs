@@ -200,26 +200,6 @@ namespace Flow.Launcher.Core.Resource
             thread.CurrentUICulture = currentCulture;
         }
 
-        public bool PromptShouldUsePinyin(string languageCodeToSet)
-        {
-            var languageToSet = GetLanguageByLanguageCode(languageCodeToSet);
-
-            if (_settings.ShouldUsePinyin)
-                return false;
-
-            if (languageToSet != AvailableLanguages.Chinese && languageToSet != AvailableLanguages.Chinese_TW)
-                return false;
-
-            // No other languages should show the following text so just make it hard-coded
-            // "Do you want to search with pinyin?"
-            string text = languageToSet == AvailableLanguages.Chinese ? "是否启用拼音搜索？" : "是否啓用拼音搜索？" ;
-
-            if (Ioc.Default.GetRequiredService<IPublicAPI>().ShowMsgBox(text, string.Empty, MessageBoxButton.YesNo) == MessageBoxResult.No)
-                return false;
-
-            return true;
-        }
-
         private void RemoveOldLanguageFiles()
         {
             var dicts = Application.Current.Resources.MergedDictionaries;

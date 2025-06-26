@@ -270,17 +270,6 @@
             </cc:Card>
 
             <cc:Card
-                Title="{DynamicResource ShouldUsePinyin}"
-                Icon="&#xe98a;"
-                Sub="{DynamicResource ShouldUsePinyinToolTip}">
-                <ui:ToggleSwitch
-                    IsOn="{Binding Settings.ShouldUsePinyin}"
-                    OffContent="{DynamicResource disable}"
-                    OnContent="{DynamicResource enable}"
-                    ToolTip="{DynamicResource ShouldUsePinyinToolTip}" />
-            </cc:Card>
-
-            <cc:Card
                 Title="{DynamicResource language}"
                 Margin="0 14 0 0"
                 Icon="&#xf2b7;">

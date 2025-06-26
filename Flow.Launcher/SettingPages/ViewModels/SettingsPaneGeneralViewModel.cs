@@ -99,9 +99,6 @@ public partial class SettingsPaneGeneralViewModel : BaseModel
         {
             _translater.ChangeLanguage(value);
 
-            if (_translater.PromptShouldUsePinyin(value))
-                ShouldUsePinyin = true;
-
             UpdateEnumDropdownLocalizations();
         }
     }
@@ -169,12 +166,6 @@ public partial class SettingsPaneGeneralViewModel : BaseModel
     }
 
     #endregion
-
-    public bool ShouldUsePinyin
-    {
-        get => Settings.ShouldUsePinyin;
-        set => Settings.ShouldUsePinyin = value;
-    }
 
     public List<Language> Languages => _translater.LoadAvailableLanguages();
 
