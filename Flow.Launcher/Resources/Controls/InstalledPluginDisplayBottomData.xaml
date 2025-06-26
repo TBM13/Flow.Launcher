@@ -59,15 +59,6 @@
                 </TextBlock.InputBindings>
             </TextBlock>
             <TextBlock
-                Margin="10 0 0 0"
-                Style="{DynamicResource LinkBtnStyle}"
-                Text="&#xe74d;"
-                ToolTip="{DynamicResource plugin_uninstall}">
-                <TextBlock.InputBindings>
-                    <MouseBinding Command="{Binding OpenDeletePluginWindowCommand}" MouseAction="LeftClick" />
-                </TextBlock.InputBindings>
-            </TextBlock>
-            <TextBlock
                 Margin="10 0 5 0"
                 Style="{DynamicResource LinkBtnStyle}"
                 Text="&#xe8b7;"

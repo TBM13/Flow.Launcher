@@ -224,35 +224,6 @@ namespace Flow.Launcher.Plugin
         MatchResult FuzzySearch(string query, string stringToCompare);
 
         /// <summary>
-        /// Http download the spefic url and return as string
-        /// </summary>
-        /// <param name="url">URL to call Http Get</param>
-        /// <param name="token">Cancellation Token</param>
-        /// <returns>Task to get string result</returns>
-        Task<string> HttpGetStringAsync(string url, CancellationToken token = default);
-
-        /// <summary>
-        /// Http download the spefic url and return as stream
-        /// </summary>
-        /// <param name="url">URL to call Http Get</param>
-        /// <param name="token">Cancellation Token</param>
-        /// <returns>Task to get stream result</returns>
-        Task<Stream> HttpGetStreamAsync(string url, CancellationToken token = default);
-
-        /// <summary>
-        /// Download the specific url to a cretain file path
-        /// </summary>
-        /// <param name="url">URL to download file</param>
-        /// <param name="filePath">path to save downloaded file</param>
-        /// <param name="reportProgress">
-        /// Action to report progress. The input of the action is the progress value which is a double value between 0 and 100.
-        /// It will be called if url support range request and the reportProgress is not null.
-        /// </param>
-        /// <param name="token">place to store file</param>
-        /// <returns>Task showing the progress</returns>
-        Task HttpDownloadAsync([NotNull] string url, [NotNull] string filePath, Action<double> reportProgress = null, CancellationToken token = default);
-
-        /// <summary>
         /// Add ActionKeyword and update action keyword metadata for specific plugin.
         /// Before adding, please check if action keyword is already assigned by <see cref="ActionKeywordAssigned"/>
         /// </summary>
@@ -504,25 +475,6 @@ namespace Flow.Launcher.Plugin
         /// </param>
         /// <returns></returns>
         ValueTask<ImageSource> LoadImageAsync(string path, bool loadFullImage = false, bool cacheImage = true);
-
-        /// <summary>
-        /// Update the plugin manifest
-        /// </summary>
-        /// <param name="usePrimaryUrlOnly">
-        /// FL has multiple urls to download the plugin manifest. Set this to true to only use the primary url.
-        /// </param>
-        /// <param name="token"></param>
-        /// <returns>True if the manifest is updated successfully, false otherwise</returns>
-        public Task<bool> UpdatePluginManifestAsync(bool usePrimaryUrlOnly = false, CancellationToken token = default);
-
-        /// <summary>
-        /// Get the plugin manifest.
-        /// </summary>
-        /// <remarks>
-        /// If Flow cannot get manifest data, this could be null
-        /// </remarks>
-        /// <returns></returns>
-        public IReadOnlyList<UserPlugin> GetPluginManifest();
 
         /// <summary>
         /// Check if the plugin has been modified.

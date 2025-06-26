@@ -21,7 +21,6 @@ using Flow.Launcher.Core.Storage;
 using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Hotkey;
-using Flow.Launcher.Infrastructure.Http;
 using Flow.Launcher.Infrastructure.Image;
 using Flow.Launcher.Infrastructure.Logger;
 using Flow.Launcher.Infrastructure.Storage;
@@ -242,15 +241,6 @@ namespace Flow.Launcher
 
         public MatchResult FuzzySearch(string query, string stringToCompare) =>
             StringMatcher.FuzzySearch(query, stringToCompare);
-
-        public Task<string> HttpGetStringAsync(string url, CancellationToken token = default) =>
-            Http.GetAsync(url, token);
-
-        public Task<Stream> HttpGetStreamAsync(string url, CancellationToken token = default) =>
-            Http.GetStreamAsync(url, token);
-
-        public Task HttpDownloadAsync([NotNull] string url, [NotNull] string filePath, Action<double> reportProgress = null,
-            CancellationToken token = default) => Http.DownloadAsync(url, filePath, reportProgress, token);
 
         public void AddActionKeyword(string pluginId, string newActionKeyword) =>
             PluginManager.AddActionKeyword(pluginId, newActionKeyword);
@@ -546,11 +536,6 @@ namespace Flow.Launcher
 
         public ValueTask<ImageSource> LoadImageAsync(string path, bool loadFullImage = false, bool cacheImage = true) =>
             ImageLoader.LoadAsync(path, loadFullImage, cacheImage);
-
-        public Task<bool> UpdatePluginManifestAsync(bool usePrimaryUrlOnly = false, CancellationToken token = default) =>
-            PluginsManifest.UpdateManifestAsync(usePrimaryUrlOnly, token);
-
-        public IReadOnlyList<UserPlugin> GetPluginManifest() => PluginsManifest.UserPlugins;
 
         public bool PluginModified(string id) => PluginManager.PluginModified(id);
 

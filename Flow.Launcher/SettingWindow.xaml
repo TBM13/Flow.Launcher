@@ -238,12 +238,6 @@
                             </ui:NavigationViewItem.Icon>
                         </ui:NavigationViewItem>
 
-                        <ui:NavigationViewItem x:Name="Proxy" Content="{DynamicResource proxy}">
-                            <ui:NavigationViewItem.Icon>
-                                <ui:BitmapIcon ShowAsMonochrome="False" UriSource="/Images/proxy.png" />
-                            </ui:NavigationViewItem.Icon>
-                        </ui:NavigationViewItem>
-
                         <ui:NavigationViewItem x:Name="About" Content="{DynamicResource about}">
                             <ui:NavigationViewItem.Icon>
                                 <ui:BitmapIcon ShowAsMonochrome="False" UriSource="/Images/info.png" />

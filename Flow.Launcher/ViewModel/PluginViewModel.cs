@@ -32,21 +32,6 @@ namespace Flow.Launcher.ViewModel
             }
         }
 
-        private static string PluginManagerActionKeyword
-        {
-            get
-            {
-                var keyword = PluginManager
-                    .GetPluginForId("9f8f9b14-2518-4907-b211-35ab6290dee7")
-                    .Metadata.ActionKeywords.FirstOrDefault();
-                return keyword switch
-                {
-                    null or "*" => string.Empty,
-                    _ => keyword
-                };
-            }
-        }
-
         private async Task LoadIconAsync()
         {
             Image = await App.API.LoadImageAsync(PluginPair.Metadata.IcoPath);
@@ -161,7 +146,7 @@ namespace Flow.Launcher.ViewModel
         public string SearchDelayTimeText => PluginPair.Metadata.SearchDelayTime == null ?
             App.API.GetTranslation("default") :
             App.API.GetTranslation($"SearchDelayTime{PluginPair.Metadata.SearchDelayTime}");
-        public Infrastructure.UserSettings.Plugin PluginSettingsObject{ get; init; }
+        public Infrastructure.UserSettings.Plugin PluginSettingsObject { get; init; }
         public bool SearchDelayEnabled => Settings.SearchQueryResultsWithDelay;
         public string DefaultSearchDelay => Settings.SearchDelayTime.ToString();
         public bool HomeEnabled => Settings.ShowHomePage && PluginManager.IsHomePlugin(PluginPair.Metadata.ID);
@@ -183,13 +168,6 @@ namespace Flow.Launcher.ViewModel
         private void OpenSourceCodeLink()
         {
             App.API.OpenUrl(PluginPair.Metadata.Website);
-        }
-
-        [RelayCommand]
-        private void OpenDeletePluginWindow()
-        {
-            App.API.ChangeQuery($"{PluginManagerActionKeyword} uninstall {PluginPair.Metadata.Name}".Trim(), true);
-            App.API.ShowMainWindow();
         }
 
         [RelayCommand]

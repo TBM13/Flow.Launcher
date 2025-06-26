@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows;
-using System.Windows.Controls;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core.Resource;
@@ -26,7 +26,7 @@ public partial class SettingsPaneThemeViewModel : BaseModel
     private readonly Theme _theme;
 
     private readonly string DefaultFont = Win32Helper.GetSystemDefaultFont();
-    public string BackdropSubText => !Win32Helper.IsBackdropSupported() ? App.API.GetTranslation("BackdropTypeDisabledToolTip") : ""; 
+    public string BackdropSubText => !Win32Helper.IsBackdropSupported() ? App.API.GetTranslation("BackdropTypeDisabledToolTip") : "";
 
     public static string LinkHowToCreateTheme => @"https://www.flowlauncher.com/theme-builder/";
     public static string LinkThemeGallery => "https://github.com/Flow-Launcher/Flow.Launcher/discussions/1438";
@@ -217,7 +217,7 @@ public partial class SettingsPaneThemeViewModel : BaseModel
 
     public List<BackdropTypeData> BackdropTypesList { get; } =
         DropdownDataGeneric<BackdropTypes>.GetValues<BackdropTypeData>("BackdropTypes");
-    
+
     public BackdropTypes BackdropType
     {
         get => Enum.IsDefined(typeof(BackdropTypes), Settings.BackdropType)
@@ -454,15 +454,6 @@ public partial class SettingsPaneThemeViewModel : BaseModel
                 },
                 new()
                 {
-                    Title = App.API.GetTranslation("SampleTitleWebSearch"),
-                    SubTitle = App.API.GetTranslation("SampleSubTitleWebSearch"),
-                    IcoPath = Path.Combine(
-                        Constant.ProgramDirectory,
-                        @"Plugins\Flow.Launcher.Plugin.WebSearch\Images\web_search.png"
-                    )
-                },
-                new()
-                {
                     Title = App.API.GetTranslation("SampleTitleProgram"),
                     SubTitle = App.API.GetTranslation("SampleSubTitleProgram"),
                     IcoPath = Path.Combine(
@@ -510,12 +501,12 @@ public partial class SettingsPaneThemeViewModel : BaseModel
         WindowHeightSize = 42;
         ItemHeightSize = 58;
     }
-    
+
     [RelayCommand]
     private void Import()
     {
         var resourceDictionary = _theme.GetCurrentResourceDictionary();
-        
+
         if (resourceDictionary["QueryBoxStyle"] is Style queryBoxStyle)
         {
             var fontSizeSetter = queryBoxStyle.Setters
@@ -525,7 +516,7 @@ public partial class SettingsPaneThemeViewModel : BaseModel
             {
                 QueryBoxFontSize = fontSize;
             }
-            
+
             var heightSetter = queryBoxStyle.Setters
                 .OfType<Setter>()
                 .FirstOrDefault(setter => setter.Property == FrameworkElement.HeightProperty);
@@ -534,12 +525,12 @@ public partial class SettingsPaneThemeViewModel : BaseModel
                 WindowHeightSize = height;
             }
         }
-        
+
         if (resourceDictionary["ResultItemHeight"] is double resultItemHeight)
         {
             ItemHeightSize = resultItemHeight;
         }
-        
+
         if (resourceDictionary["ItemTitleStyle"] is Style itemTitleStyle)
         {
             var fontSizeSetter = itemTitleStyle.Setters
@@ -550,7 +541,7 @@ public partial class SettingsPaneThemeViewModel : BaseModel
                 ResultItemFontSize = fontSize;
             }
         }
-        
+
         if (resourceDictionary["ItemSubTitleStyle"] is Style itemSubTitleStyle)
         {
             var fontSizeSetter = itemSubTitleStyle.Setters

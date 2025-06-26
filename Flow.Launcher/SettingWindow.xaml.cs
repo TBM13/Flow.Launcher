@@ -67,8 +67,7 @@ public partial class SettingWindow
                     nameof(SettingsPanePlugins) => 1,
                     nameof(SettingsPaneTheme) => 2,
                     nameof(SettingsPaneHotkey) => 3,
-                    nameof(SettingsPaneProxy) => 4,
-                    nameof(SettingsPaneAbout) => 5,
+                    nameof(SettingsPaneAbout) => 4,
                     _ => 0
                 };
                 NavView.SelectedItem = NavView.MenuItems[selectedIndex];
@@ -258,7 +257,6 @@ public partial class SettingWindow
                 nameof(Plugins) => typeof(SettingsPanePlugins),
                 nameof(Theme) => typeof(SettingsPaneTheme),
                 nameof(Hotkey) => typeof(SettingsPaneHotkey),
-                nameof(Proxy) => typeof(SettingsPaneProxy),
                 nameof(About) => typeof(SettingsPaneAbout),
                 _ => typeof(SettingsPaneGeneral)
             };

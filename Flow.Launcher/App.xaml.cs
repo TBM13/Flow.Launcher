@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -10,7 +9,6 @@ using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Infrastructure.Http;
 using Flow.Launcher.Infrastructure.Image;
 using Flow.Launcher.Infrastructure.Logger;
 using Flow.Launcher.Infrastructure.Storage;
@@ -78,7 +76,6 @@ namespace Flow.Launcher
                         .AddTransient<SettingsPaneGeneralViewModel>()
                         .AddTransient<SettingsPaneHotkeyViewModel>()
                         .AddTransient<SettingsPanePluginsViewModel>()
-                        .AddTransient<SettingsPaneProxyViewModel>()
                         .AddTransient<SettingsPaneThemeViewModel>()
                         // Use transient instance for dialog view models because
                         // settings will change and we need to recreate them
@@ -194,8 +191,6 @@ namespace Flow.Launcher
 
                 // Register ResultsUpdated event after all plugins are loaded
                 Ioc.Default.GetRequiredService<MainViewModel>().RegisterResultsUpdatedEvent();
-
-                Http.Proxy = _settings.Proxy;
 
                 await PluginManager.InitializePluginsAsync();
 

@@ -104,22 +104,6 @@ namespace Flow.Launcher.Core.Plugin.JsonRPCV2Models
             return _api.FuzzySearch(query, stringToCompare);
         }
 
-        public Task<string> HttpGetStringAsync(string url, CancellationToken token = default)
-        {
-            return _api.HttpGetStringAsync(url, token);
-        }
-
-        public Task<Stream> HttpGetStreamAsync(string url, CancellationToken token = default)
-        {
-            return _api.HttpGetStreamAsync(url, token);
-        }
-
-        public Task HttpDownloadAsync([NotNull] string url, [NotNull] string filePath, Action<double> reportProgress = null,
-            CancellationToken token = default)
-        {
-            return _api.HttpDownloadAsync(url, filePath, reportProgress, token);
-        }
-
         public void AddActionKeyword(string pluginId, string newActionKeyword)
         {
             _api.AddActionKeyword(pluginId, newActionKeyword);
