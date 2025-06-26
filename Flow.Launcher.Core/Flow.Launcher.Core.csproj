@@ -55,8 +55,8 @@
   <ItemGroup>
     <PackageReference Include="Meziantou.Framework.Win32.Jobs" Version="3.4.0" />
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
-    <PackageReference Include="StreamJsonRpc" Version="2.21.10" />
-    <PackageReference Include="YamlDotNet" Version="9.1.4" />
+    <PackageReference Include="StreamJsonRpc" Version="2.22.11" />
+    <PackageReference Include="YamlDotNet" Version="16.3.0" />
   </ItemGroup>
   
   <ItemGroup>
