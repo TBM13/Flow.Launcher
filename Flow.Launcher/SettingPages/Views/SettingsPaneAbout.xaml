@@ -99,12 +99,6 @@
                         <ui:FontIcon FontSize="20" Glyph="&#xec7a;" />
                         <ui:FlyoutService.Flyout>
                             <ui:MenuFlyout>
-                                <MenuItem Command="{Binding OpenWelcomeWindowCommand}" Header="{DynamicResource welcomewindow}">
-                                    <MenuItem.Icon>
-                                        <ui:FontIcon Glyph="&#xe939;" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
-
                                 <MenuItem Command="{Binding OpenSettingsFolderCommand}" Header="{DynamicResource settingfolder}">
                                     <MenuItem.Icon>
                                         <ui:FontIcon Glyph="&#xe8b7;" />

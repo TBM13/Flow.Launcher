@@ -85,13 +85,6 @@ public partial class SettingsPaneAboutViewModel : BaseModel
     }
 
     [RelayCommand]
-    private void OpenWelcomeWindow()
-    {
-        var window = new WelcomeWindow();
-        window.ShowDialog();
-    }
-
-    [RelayCommand]
     private void AskClearLogFolderConfirmation()
     {
         var confirmResult = App.API.ShowMsgBox(

@@ -131,10 +131,6 @@ namespace Flow.Launcher
 
                 // Save settings
                 App.API.SaveAppAllSettings();
-
-                // Show Welcome Window
-                var welcomeWindow = new WelcomeWindow();
-                welcomeWindow.Show();
             }
 
             // Initialize place holder
