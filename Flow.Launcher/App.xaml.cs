@@ -65,10 +65,6 @@ namespace Flow.Launcher
                         .AddSingleton<Theme>()
                         // Use one instance for main window view model because we only have one main window
                         .AddSingleton<MainViewModel>()
-                        // Use one instance for welcome window view model & setting window view model because
-                        // pages in welcome window & setting window need to share the same instance and
-                        // these two view models do not need to be reset when creating new windows
-                        .AddSingleton<WelcomeViewModel>()
                         .AddSingleton<SettingWindowViewModel>()
                         // Use transient instance for setting window page view models because
                         // pages in setting window need to be recreated when setting window is closed
