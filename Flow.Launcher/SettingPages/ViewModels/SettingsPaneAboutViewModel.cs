@@ -18,7 +18,6 @@ public partial class SettingsPaneAboutViewModel : BaseModel
     private static readonly string ClassName = nameof(SettingsPaneAboutViewModel);
 
     private readonly Settings _settings;
-    private readonly Updater _updater;
 
     public string LogFolderSize
     {
@@ -40,7 +39,6 @@ public partial class SettingsPaneAboutViewModel : BaseModel
 
     public string Website => Constant.Website;
     public string SponsorPage => Constant.SponsorPage;
-    public string ReleaseNotes => _updater.GitHubRepository + "/releases/latest";
     public string Documentation => Constant.Documentation;
     public string Docs => Constant.Docs;
     public string Github => Constant.GitHub;
@@ -75,10 +73,9 @@ public partial class SettingsPaneAboutViewModel : BaseModel
         }
     }
 
-    public SettingsPaneAboutViewModel(Settings settings, Updater updater)
+    public SettingsPaneAboutViewModel(Settings settings)
     {
         _settings = settings;
-        _updater = updater;
         UpdateEnumDropdownLocalizations();
     }
 
@@ -155,9 +152,6 @@ public partial class SettingsPaneAboutViewModel : BaseModel
     {
         App.API.OpenDirectory(GetLogDir(Constant.Version).FullName);
     }
-
-    [RelayCommand]
-    private Task UpdateAppAsync() => _updater.UpdateAppAsync(false);
 
     private bool ClearLogFolder()
     {

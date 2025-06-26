@@ -73,11 +73,6 @@ namespace Flow.Launcher.Plugin
         Task ReloadAllPluginData();
 
         /// <summary>
-        /// Check for new Flow Launcher update
-        /// </summary>
-        void CheckForNewUpdate();
-
-        /// <summary>
         /// Show the error message using Flow's standard error icon.
         /// </summary>
         /// <param name="title">Message title</param>
@@ -97,7 +92,7 @@ namespace Flow.Launcher.Plugin
         /// Show the MainWindow when hiding
         /// </summary>
         void ShowMainWindow();
-        
+
         /// <summary>
         /// Focus the query text box in the main window
         /// </summary>

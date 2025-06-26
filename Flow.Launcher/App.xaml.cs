@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.DependencyInjection;
-using Flow.Launcher.Core;
-using Flow.Launcher.Core.Configuration;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Helper;
@@ -63,8 +61,6 @@ namespace Flow.Launcher
                     .UseContentRoot(AppContext.BaseDirectory)
                     .ConfigureServices(services => services
                         .AddSingleton(_ => _settings)
-                        .AddSingleton(sp => new Updater(sp.GetRequiredService<IPublicAPI>(), Launcher.Properties.Settings.Default.GithubRepo))
-                        .AddSingleton<Portable>()
                         .AddSingleton<IAlphabet, PinyinAlphabet>()
                         .AddSingleton<StringMatcher>()
                         .AddSingleton<Internationalization>()
@@ -186,8 +182,6 @@ namespace Flow.Launcher
 
                 Notification.Install();
 
-                Ioc.Default.GetRequiredService<Portable>().PreStartCleanUpAfterPortabilityUpdate();
-
                 API.LogInfo(ClassName, "Begin Flow Launcher startup ----------------------------------------------------");
                 API.LogInfo(ClassName, $"Runtime info:{ErrorReporting.RuntimeInfo()}");
 
@@ -227,31 +221,12 @@ namespace Flow.Launcher
 
                 RegisterExitEvents();
 
-                AutoUpdates();
-
                 API.SaveAppAllSettings();
                 API.LogInfo(ClassName, "End Flow Launcher startup ----------------------------------------------------");
             });
         }
 
 #pragma warning restore VSTHRD100 // Avoid async void methods
-        [Conditional("RELEASE")]
-        private void AutoUpdates()
-        {
-            _ = Task.Run(async () =>
-            {
-                if (_settings.AutoUpdates)
-                {
-                    // check update every 5 hours
-                    var timer = new PeriodicTimer(TimeSpan.FromHours(5));
-                    await Ioc.Default.GetRequiredService<Updater>().UpdateAppAsync();
-
-                    while (await timer.WaitForNextTickAsync())
-                        // check updates on startup
-                        await Ioc.Default.GetRequiredService<Updater>().UpdateAppAsync();
-                }
-            });
-        }
 
         #endregion
 

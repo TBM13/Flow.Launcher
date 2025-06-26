@@ -319,8 +319,6 @@ namespace Flow.Launcher.Infrastructure.UserSettings
             }
         }
 
-        public bool AutoUpdates { get; set; } = false;
-
         public double WindowLeft { get; set; }
         public double WindowTop { get; set; }
         public double PreviousScreenWidth { get; set; }

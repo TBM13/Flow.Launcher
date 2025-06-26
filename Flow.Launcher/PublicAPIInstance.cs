@@ -14,24 +14,23 @@ using System.Windows;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Core;
+using Flow.Launcher.Core.ExternalPlugins;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Resource;
-using Flow.Launcher.Core.ExternalPlugins;
 using Flow.Launcher.Core.Storage;
 using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Infrastructure.Http;
 using Flow.Launcher.Infrastructure.Hotkey;
+using Flow.Launcher.Infrastructure.Http;
 using Flow.Launcher.Infrastructure.Image;
 using Flow.Launcher.Infrastructure.Logger;
 using Flow.Launcher.Infrastructure.Storage;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Plugin;
-using Flow.Launcher.Plugin.SharedModels;
 using Flow.Launcher.Plugin.SharedCommands;
+using Flow.Launcher.Plugin.SharedModels;
 using Flow.Launcher.ViewModel;
 using JetBrains.Annotations;
-using Squirrel;
 using Stopwatch = Flow.Launcher.Infrastructure.Stopwatch;
 
 namespace Flow.Launcher
@@ -46,10 +45,6 @@ namespace Flow.Launcher
         // Must use getter to avoid accessing Application.Current.Resources.MergedDictionaries so earlier in theme constructor
         private Theme _theme;
         private Theme Theme => _theme ??= Ioc.Default.GetRequiredService<Theme>();
-
-        // Must use getter to avoid circular dependency
-        private Updater _updater;
-        private Updater Updater => _updater ??= Ioc.Default.GetRequiredService<Updater>();
 
         private readonly object _saveSettingsLock = new();
 
@@ -84,11 +79,6 @@ namespace Flow.Launcher
 
             // Wait for all image caches to be saved before restarting
             await ImageLoader.WaitSaveAsync();
-
-            // Restart requires Squirrel's Update.exe to be present in the parent folder, 
-            // it is only published from the project's release pipeline. When debugging without it,
-            // the project may not restart or just terminates. This is expected.
-            UpdateManager.RestartApp(Constant.ApplicationFileName);
         }
 
         public void ShowMainWindow() => _mainVM.Show();
@@ -104,8 +94,6 @@ namespace Flow.Launcher
             add => _mainVM.VisibilityChanged += value;
             remove => _mainVM.VisibilityChanged -= value;
         }
-
-        public void CheckForNewUpdate() => _ = Updater.UpdateAppAsync(false);
 
         public void SaveAppAllSettings()
         {
@@ -180,7 +168,7 @@ namespace Flow.Launcher
 
                     Clipboard.SetFileDropList(paths);
                 });
-                
+
                 if (exception == null)
                 {
                     if (showDefaultNotification)
@@ -219,7 +207,7 @@ namespace Flow.Launcher
                 {
                     LogException(nameof(PublicAPIInstance), "Failed to copy text to clipboard", exception);
                     ShowMsgError(GetTranslation("failedToCopy"));
-                }  
+                }
             }
         }
 
@@ -328,7 +316,7 @@ namespace Flow.Launcher
 
             ((PluginJsonStorage<T>)_pluginJsonStorages[type]).Save();
         }
-        
+
         public void OpenDirectory(string directoryPath, string fileNameOrFilePath = null)
         {
             try
@@ -473,7 +461,7 @@ namespace Flow.Launcher
             OpenUri(appUri);
         }
 
-        public void ToggleGameMode() 
+        public void ToggleGameMode()
         {
             _mainVM.ToggleGameMode();
         }

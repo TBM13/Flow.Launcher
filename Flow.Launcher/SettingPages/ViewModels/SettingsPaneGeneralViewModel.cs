@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using CommunityToolkit.Mvvm.Input;
-using Flow.Launcher.Core;
-using Flow.Launcher.Core.Configuration;
 using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.UserSettings;
@@ -17,15 +15,11 @@ public partial class SettingsPaneGeneralViewModel : BaseModel
 {
     public Settings Settings { get; }
 
-    private readonly Updater _updater;
-    private readonly Portable _portable;
     private readonly Internationalization _translater;
 
-    public SettingsPaneGeneralViewModel(Settings settings, Updater updater, Portable portable, Internationalization translater)
+    public SettingsPaneGeneralViewModel(Settings settings, Internationalization translater)
     {
         Settings = settings;
-        _updater = updater;
-        _portable = portable;
         _translater = translater;
         UpdateEnumDropdownLocalizations();
     }
@@ -56,28 +50,6 @@ public partial class SettingsPaneGeneralViewModel : BaseModel
             }
 
             return screenNumbers;
-        }
-    }
-
-    // This is only required to set at startup. When portable mode enabled/disabled a restart is always required
-    private static bool _portableMode = DataLocation.PortableDataLocationInUse();
-
-    public bool PortableMode
-    {
-        get => _portableMode;
-        set
-        {
-            if (!_portable.CanUpdatePortability())
-                return;
-
-            if (DataLocation.PortableDataLocationInUse())
-            {
-                _portable.DisablePortableMode();
-            }
-            else
-            {
-                _portable.EnablePortableMode();
-            }
         }
     }
 
@@ -210,44 +182,6 @@ public partial class SettingsPaneGeneralViewModel : BaseModel
         App.API.GetTranslation("AlwaysPreviewToolTip"),
         Settings.PreviewHotkey
     );
-
-    private static string GetFileFromDialog(string title, string filter = "")
-    {
-        var dlg = new OpenFileDialog
-        {
-            InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
-            Multiselect = false,
-            CheckFileExists = true,
-            CheckPathExists = true,
-            Title = title,
-            Filter = filter
-        };
-
-        return dlg.ShowDialog() switch
-        {
-            DialogResult.OK => dlg.FileName,
-            _ => string.Empty
-        };
-    }
-
-    private void UpdateApp()
-    {
-        _ = _updater.UpdateAppAsync(false);
-    }
-
-    public bool AutoUpdates
-    {
-        get => Settings.AutoUpdates;
-        set
-        {
-            Settings.AutoUpdates = value;
-
-            if (value)
-            {
-                UpdateApp();
-            }
-        }
-    }
 
     [RelayCommand]
     private void SelectFileManager()

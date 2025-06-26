@@ -54,11 +54,6 @@ namespace Flow.Launcher.Core.Plugin.JsonRPCV2Models
             return _api.ReloadAllPluginData();
         }
 
-        public void CheckForNewUpdate()
-        {
-            _api.CheckForNewUpdate();
-        }
-
         public void ShowMsgError(string title, string subTitle = "")
         {
             _api.ShowMsgError(title, subTitle);

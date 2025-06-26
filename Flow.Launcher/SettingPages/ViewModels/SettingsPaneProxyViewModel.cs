@@ -12,12 +12,10 @@ public partial class SettingsPaneProxyViewModel : BaseModel
 {
     public Settings Settings { get; }
 
-    private readonly Updater _updater;
 
-    public SettingsPaneProxyViewModel(Settings settings, Updater updater)
+    public SettingsPaneProxyViewModel(Settings settings)
     {
         Settings = settings;
-        _updater = updater;
     }
 
     [RelayCommand]
@@ -45,7 +43,7 @@ public partial class SettingsPaneProxyViewModel : BaseModel
         using var client = new HttpClient(handler);
         try
         {
-            var response = await client.GetAsync(_updater.GitHubRepository);
+            var response = await client.GetAsync("https://github.com");
             return response.IsSuccessStatusCode ? "proxyIsCorrect" : "proxyConnectFailed";
         }
         catch

@@ -65,7 +65,7 @@ namespace Flow.Launcher.Plugin.Sys
 
         public List<Result> Query(Query query)
         {
-            if(query.Search.StartsWith(ThemeSelector.Keyword))
+            if (query.Search.StartsWith(ThemeSelector.Keyword))
             {
                 return _themeSelector.Query(query);
             }
@@ -419,18 +419,6 @@ namespace Flow.Launcher.Plugin.Sys
                                     "flowlauncher_plugin_sys_dlgtext_all_applicableplugins_reloaded")),
                             System.Threading.Tasks.TaskScheduler.Current);
 
-                        return true;
-                    }
-                },
-                new Result
-                {
-                    Title = "Check For Update",
-                    Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xede4"),
-                    IcoPath = "Images\\checkupdate.png",
-                    Action = c =>
-                    {
-                        _context.API.HideMainWindow();
-                        _context.API.CheckForNewUpdate();
                         return true;
                     }
                 },
