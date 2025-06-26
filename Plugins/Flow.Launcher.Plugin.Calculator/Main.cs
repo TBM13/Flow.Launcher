@@ -20,7 +20,8 @@ namespace Flow.Launcher.Plugin.Calculator
                         @"bin2dec|hex2dec|oct2dec|" +
                         @"factorial|sign|isprime|isinfty|" +
                         @"==|~=|&&|\|\||(?:\<|\>)=?|" +
-                        @"[ei]|[0-9]|0x[\da-fA-F]+|[\+\%\-\*\/\^\., ""]|[\(\)\|\!\[\]]" +
+                        @"[ei]|[0-9]|0x[\da-fA-F]+|0b[01]+|0o[0-7]+|" +
+                        @"[\+\%\-\*\/\^\., ""]|[\(\)\|\!\[\]]" +
                         @")+$", RegexOptions.Compiled);
         private static readonly Regex RegBrackets = new Regex(@"[\(\)\[\]]", RegexOptions.Compiled);
         private static Engine MagesEngine;
