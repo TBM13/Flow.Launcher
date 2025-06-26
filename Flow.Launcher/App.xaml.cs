@@ -84,7 +84,6 @@ namespace Flow.Launcher
                         .AddTransient<SettingsPaneGeneralViewModel>()
                         .AddTransient<SettingsPaneHotkeyViewModel>()
                         .AddTransient<SettingsPanePluginsViewModel>()
-                        .AddTransient<SettingsPanePluginStoreViewModel>()
                         .AddTransient<SettingsPaneProxyViewModel>()
                         .AddTransient<SettingsPaneThemeViewModel>()
                         // Use transient instance for dialog view models because
