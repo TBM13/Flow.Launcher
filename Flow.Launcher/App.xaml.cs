@@ -230,7 +230,6 @@ namespace Flow.Launcher
 
                 RegisterExitEvents();
 
-                AutoStartup();
                 AutoUpdates();
 
                 API.SaveAppAllSettings();
@@ -239,31 +238,6 @@ namespace Flow.Launcher
         }
 
 #pragma warning restore VSTHRD100 // Avoid async void methods
-
-        /// <summary>
-        /// Check startup only for Release
-        /// </summary>
-        [Conditional("RELEASE")]
-        private void AutoStartup()
-        {
-            // we try to enable auto-startup on first launch, or reenable if it was removed
-            // but the user still has the setting set
-            if (_settings.StartFlowLauncherOnSystemStartup)
-            {
-                try
-                {
-                    Helper.AutoStartup.CheckIsEnabled(_settings.UseLogonTaskForStartup);
-                }
-                catch (Exception e)
-                {
-                    // but if it fails (permissions, etc) then don't keep retrying
-                    // this also gives the user a visual indication in the Settings widget
-                    _settings.StartFlowLauncherOnSystemStartup = false;
-                    API.ShowMsg(API.GetTranslation("setAutoStartFailed"), e.Message);
-                }
-            }
-        }
-
         [Conditional("RELEASE")]
         private void AutoUpdates()
         {

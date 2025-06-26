@@ -90,14 +90,6 @@
                         FontSize="14"
                         Text="{DynamicResource Welcome_Page5_Text01}"
                         TextWrapping="WrapWithOverflow" />
-                    <StackPanel Margin="0 20 0 0" Orientation="Horizontal">
-                        <CheckBox
-                            Checked="OnAutoStartupChecked"
-                            Content="{DynamicResource startFlowLauncherOnSystemStartup}"
-                            IsChecked="{Binding Settings.StartFlowLauncherOnSystemStartup}"
-                            Style="{DynamicResource DefaultCheckBoxStyle}"
-                            Unchecked="OnAutoStartupUncheck" />
-                    </StackPanel>
                     <StackPanel Margin="0 0 0 0" Orientation="Horizontal">
                         <CheckBox
                             Checked="OnHideOnStartupChecked"

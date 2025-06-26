@@ -1,8 +1,6 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Navigation;
 using CommunityToolkit.Mvvm.DependencyInjection;
-using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.ViewModel;
 
@@ -24,43 +22,6 @@ namespace Flow.Launcher.Resources.Pages
                 InitializeComponent();
             }
             base.OnNavigatedTo(e);
-        }
-
-        private void OnAutoStartupChecked(object sender, RoutedEventArgs e)
-        {
-            ChangeAutoStartup(true);
-        }
-
-        private void OnAutoStartupUncheck(object sender, RoutedEventArgs e)
-        {
-            ChangeAutoStartup(false);
-        }
-
-        private void ChangeAutoStartup(bool value)
-        {
-            Settings.StartFlowLauncherOnSystemStartup = value;
-            try
-            {
-                if (value)
-                {
-                    if (Settings.UseLogonTaskForStartup)
-                    {
-                        AutoStartup.ChangeToViaLogonTask();
-                    }
-                    else
-                    {
-                        AutoStartup.ChangeToViaRegistry();
-                    }
-                }
-                else
-                {
-                    AutoStartup.DisableViaLogonTaskAndRegistry();
-                }
-            }
-            catch (Exception e)
-            {
-                App.API.ShowMsg(App.API.GetTranslation("setAutoStartFailed"), e.Message);
-            }
         }
 
         private void OnHideOnStartupChecked(object sender, RoutedEventArgs e)

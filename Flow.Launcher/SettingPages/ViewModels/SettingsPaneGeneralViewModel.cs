@@ -6,7 +6,6 @@ using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core;
 using Flow.Launcher.Core.Configuration;
 using Flow.Launcher.Core.Resource;
-using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Plugin;
@@ -35,66 +34,6 @@ public partial class SettingsPaneGeneralViewModel : BaseModel
     public class SearchWindowAlignData : DropdownDataGeneric<SearchWindowAligns> { }
     public class SearchPrecisionData : DropdownDataGeneric<SearchPrecisionScore> { }
     public class LastQueryModeData : DropdownDataGeneric<LastQueryMode> { }
-
-    public bool StartFlowLauncherOnSystemStartup
-    {
-        get => Settings.StartFlowLauncherOnSystemStartup;
-        set
-        {
-            Settings.StartFlowLauncherOnSystemStartup = value;
-
-            try
-            {
-                if (value)
-                {
-                    if (UseLogonTaskForStartup)
-                    {
-                        AutoStartup.ChangeToViaLogonTask();
-                    }
-                    else
-                    {
-                        AutoStartup.ChangeToViaRegistry();
-                    }
-                }
-                else
-                {
-                    AutoStartup.DisableViaLogonTaskAndRegistry();
-                }  
-            }
-            catch (Exception e)
-            {
-                App.API.ShowMsg(App.API.GetTranslation("setAutoStartFailed"), e.Message);
-            }
-        }
-    }
-
-    public bool UseLogonTaskForStartup
-    {
-        get => Settings.UseLogonTaskForStartup;
-        set
-        {
-            Settings.UseLogonTaskForStartup = value;
-
-            if (StartFlowLauncherOnSystemStartup)
-            {
-                try
-                {
-                    if (value)
-                    {
-                        AutoStartup.ChangeToViaLogonTask();
-                    }
-                    else
-                    {
-                        AutoStartup.ChangeToViaRegistry();
-                    }
-                }
-                catch (Exception e)
-                {
-                    App.API.ShowMsg(App.API.GetTranslation("setAutoStartFailed"), e.Message);
-                }
-            } 
-        }
-    }
 
     public List<SearchWindowScreenData> SearchWindowScreens { get; } =
         DropdownDataGeneric<SearchWindowScreens>.GetValues<SearchWindowScreenData>("SearchWindowScreen");

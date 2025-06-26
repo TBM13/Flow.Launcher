@@ -107,7 +107,6 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="SemanticVersioning" Version="3.0.0" />
-    <PackageReference Include="TaskScheduler" Version="2.12.1" />
   </ItemGroup>
 
   <ItemGroup>
