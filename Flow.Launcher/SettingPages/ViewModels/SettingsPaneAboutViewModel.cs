@@ -295,7 +295,7 @@ public partial class SettingsPaneAboutViewModel : BaseModel
 
         return "0 B";
     }
-    
+
     public string SettingWindowFont
     {
         get => _settings.SettingWindowFont;
@@ -313,12 +313,5 @@ public partial class SettingsPaneAboutViewModel : BaseModel
     private void ResetSettingWindowFont()
     {
         SettingWindowFont = Win32Helper.GetSystemDefaultFont(false);
-    }
-
-    [RelayCommand]
-    private void OpenReleaseNotes()
-    {
-        var releaseNotesWindow = new ReleaseNotesWindow();
-        releaseNotesWindow.Show();
     }
 }

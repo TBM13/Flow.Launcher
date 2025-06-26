@@ -137,24 +137,6 @@ namespace Flow.Launcher
                 welcomeWindow.Show();
             }
 
-            if (Constant.Version != "1.0.0" && _settings.ReleaseNotesVersion != Constant.Version) // Skip release notes notification for developer builds (version 1.0.0)
-            {
-                // Update release notes version
-                _settings.ReleaseNotesVersion = Constant.Version;
-                // Show release note popup with button
-                App.API.ShowMsgWithButton(
-                    string.Format(App.API.GetTranslation("appUpdateTitle"), Constant.Version),
-                    App.API.GetTranslation("appUpdateButtonContent"),
-                    () =>
-                    {
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            var releaseNotesWindow = new ReleaseNotesWindow();
-                            releaseNotesWindow.Show();
-                        });
-                    });
-            }
-
             // Initialize place holder
             SetupPlaceholderText();
             _viewModel.PlaceholderText = _settings.PlaceholderText;
@@ -564,7 +546,7 @@ namespace Flow.Launcher
 
         #region Window WndProc
 
-        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled) 
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             switch (msg)
             {
@@ -1001,7 +983,8 @@ namespace Flow.Launcher
             const string progressBarAnimationName = "ProgressBarAnimation";
             var beginStoryboard = new BeginStoryboard
             {
-                Name = progressBarAnimationName, Storyboard = progressBarStoryBoard
+                Name = progressBarAnimationName,
+                Storyboard = progressBarStoryBoard
             };
 
             var stopStoryboard = new StopStoryboard()
@@ -1011,7 +994,8 @@ namespace Flow.Launcher
 
             var trigger = new Trigger
             {
-                Property = VisibilityProperty, Value = Visibility.Visible
+                Property = VisibilityProperty,
+                Value = Visibility.Visible
             };
             trigger.EnterActions.Add(beginStoryboard);
             trigger.ExitActions.Add(stopStoryboard);

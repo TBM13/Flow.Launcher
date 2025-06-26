@@ -54,10 +54,6 @@
                 </StackPanel>
             </cc:Card>
 
-            <cc:Card Title="{DynamicResource releaseNotes}" Icon="&#xe8fd;">
-                <Button Command="{Binding OpenReleaseNotesCommand}" Content="{DynamicResource releaseNotes}" />
-            </cc:Card>
-
 
             <cc:Card
                 Title="{DynamicResource userdatapath}"
