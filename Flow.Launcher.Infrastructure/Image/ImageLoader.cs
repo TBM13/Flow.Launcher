@@ -9,8 +9,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Flow.Launcher.Infrastructure.Logger;
 using Flow.Launcher.Infrastructure.Storage;
-using SharpVectors.Converters;
-using SharpVectors.Renderers.Wpf;
 
 namespace Flow.Launcher.Infrastructure.Image
 {
@@ -253,17 +251,9 @@ namespace Flow.Launcher.Infrastructure.Image
                 }
                 else if (extension == SvgExtension)
                 {
-                    try
-                    {
-                        image = LoadSvgImage(path, loadFullImage);
-                        type = ImageType.FullImageFile;
-                    }
-                    catch (System.Exception ex)
-                    {
-                        image = Image;
-                        type = ImageType.Error;
-                        Log.Exception(ClassName, $"Failed to load SVG image from path {path}: {ex.Message}", ex);
-                    }
+                    Log.Error(ClassName, $"Failed to load SVG image from path {path}: SVG images aren't supported.");
+                    image = Image;
+                    type = ImageType.Error;
                 }
                 else
                 {
@@ -373,51 +363,6 @@ namespace Flow.Launcher.Infrastructure.Image
             }
 
             return image;
-        }
-
-        private static ImageSource LoadSvgImage(string path, bool loadFullImage = false)
-        {
-            // Set up drawing settings
-            var desiredHeight = loadFullImage ? FullImageSize : SmallIconSize;
-            var drawingSettings = new WpfDrawingSettings
-            {
-                IncludeRuntime = true,
-                // Set IgnoreRootViewbox to false to respect the SVG's viewBox
-                IgnoreRootViewbox = false
-            };
-
-            // Load and render the SVG
-            var converter = new FileSvgReader(drawingSettings);
-            var drawing = converter.Read(new Uri(path));
-
-            // Calculate scale to achieve desired height
-            var drawingBounds = drawing.Bounds;
-            if (drawingBounds.Height <= 0)
-            {
-                throw new InvalidOperationException($"Invalid SVG dimensions: Height must be greater than zero in {path}");
-            }
-            var scale = desiredHeight / drawingBounds.Height;
-            var scaledWidth = drawingBounds.Width * scale;
-            var scaledHeight = drawingBounds.Height * scale;
-
-            // Convert the Drawing to a Bitmap
-            var drawingVisual = new DrawingVisual();
-            using (DrawingContext drawingContext = drawingVisual.RenderOpen())
-            {
-                drawingContext.PushTransform(new ScaleTransform(scale, scale));
-                drawingContext.DrawDrawing(drawing);
-            }
-
-            // Create a RenderTargetBitmap to hold the rendered image
-            var bitmap = new RenderTargetBitmap(
-                (int)Math.Ceiling(scaledWidth),
-                (int)Math.Ceiling(scaledHeight),
-                96, // DpiX
-                96, // DpiY
-                PixelFormats.Pbgra32);
-            bitmap.Render(drawingVisual);
-
-            return bitmap;
         }
     }
 }
