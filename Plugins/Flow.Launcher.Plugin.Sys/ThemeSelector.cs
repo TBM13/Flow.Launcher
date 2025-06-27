@@ -59,13 +59,6 @@ namespace Flow.Launcher.Plugin.Sys
                 description += _context.API.GetTranslation("TypeIsDarkToolTip");
             }
 
-            if (theme.HasBlur == true)
-            {
-                if (!string.IsNullOrEmpty(description))
-                    description += " ";
-                description += _context.API.GetTranslation("TypeHasBlurToolTip");
-            }
-
             return new Result
             {
                 Title = title,

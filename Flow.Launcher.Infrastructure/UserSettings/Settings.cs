@@ -87,7 +87,6 @@ namespace Flow.Launcher.Infrastructure.UserSettings
             }
         }
         public bool UseDropShadowEffect { get; set; } = true;
-        public BackdropTypes BackdropType { get; set; } = BackdropTypes.None;
         public string ReleaseNotesVersion { get; set; } = string.Empty;
 
         /* Appearance Settings. It should be separated from the setting later.*/
@@ -504,13 +503,5 @@ namespace Flow.Launcher.Infrastructure.UserSettings
         LeftTop,
         RightTop,
         Custom
-    }
-
-    public enum BackdropTypes
-    {
-        None,
-        Acrylic,
-        Mica,
-        MicaAlt
     }
 }

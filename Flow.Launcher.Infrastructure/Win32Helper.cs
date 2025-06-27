@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -12,12 +11,9 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Markup;
 using System.Windows.Media;
-using Flow.Launcher.Infrastructure.UserSettings;
-using Microsoft.Win32;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Dwm;
-using Windows.Win32.UI.Input.KeyboardAndMouse;
 using Windows.Win32.UI.Shell.Common;
 using Windows.Win32.UI.WindowsAndMessaging;
 using Point = System.Windows.Point;
@@ -29,13 +25,6 @@ namespace Flow.Launcher.Infrastructure
     {
         #region Blur Handling
 
-        public static bool IsBackdropSupported()
-        {
-            // Mica and Acrylic only supported Windows 11 22000+
-            return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
-                Environment.OSVersion.Version.Build >= 22000;
-        }
-
         public static unsafe bool DWMSetCloakForWindow(Window window, bool cloak)
         {
             var cloaked = cloak ? 1 : 0;
@@ -44,34 +33,6 @@ namespace Flow.Launcher.Infrastructure
                 GetWindowHandle(window),
                 DWMWINDOWATTRIBUTE.DWMWA_CLOAK,
                 &cloaked,
-                (uint)Marshal.SizeOf<int>()).Succeeded;
-        }
-
-        public static unsafe bool DWMSetBackdropForWindow(Window window, BackdropTypes backdrop)
-        {
-            var backdropType = backdrop switch
-            {
-                BackdropTypes.Acrylic => DWM_SYSTEMBACKDROP_TYPE.DWMSBT_TRANSIENTWINDOW,
-                BackdropTypes.Mica => DWM_SYSTEMBACKDROP_TYPE.DWMSBT_MAINWINDOW,
-                BackdropTypes.MicaAlt => DWM_SYSTEMBACKDROP_TYPE.DWMSBT_TABBEDWINDOW,
-                _ => DWM_SYSTEMBACKDROP_TYPE.DWMSBT_AUTO
-            };
-
-            return PInvoke.DwmSetWindowAttribute(
-                GetWindowHandle(window),
-                DWMWINDOWATTRIBUTE.DWMWA_SYSTEMBACKDROP_TYPE,
-                &backdropType,
-                (uint)Marshal.SizeOf<int>()).Succeeded;
-        }
-
-        public static unsafe bool DWMSetDarkModeForWindow(Window window, bool useDarkMode)
-        {
-            var darkMode = useDarkMode ? 1 : 0;
-
-            return PInvoke.DwmSetWindowAttribute(
-                GetWindowHandle(window),
-                DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE,
-                &darkMode,
                 (uint)Marshal.SizeOf<int>()).Succeeded;
         }
 

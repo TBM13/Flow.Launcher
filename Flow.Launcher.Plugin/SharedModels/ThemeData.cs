@@ -23,19 +23,13 @@ public class ThemeData
     public bool? IsDark { get; private init; }
 
     /// <summary>
-    /// Indicates whether the theme supports blur effects
-    /// </summary>
-    public bool? HasBlur { get; private init; }
-
-    /// <summary>
     /// Theme data constructor
     /// </summary>
-    public ThemeData(string fileNameWithoutExtension, string name, bool? isDark = null, bool? hasBlur = null)
+    public ThemeData(string fileNameWithoutExtension, string name, bool? isDark = null)
     {
         FileNameWithoutExtension = fileNameWithoutExtension;
         Name = name;
         IsDark = isDark;
-        HasBlur = hasBlur;
     }
 
     /// <inheritdoc />

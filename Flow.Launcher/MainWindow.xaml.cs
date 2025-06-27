@@ -116,9 +116,6 @@ namespace Flow.Launcher
                 // Update release notes version
                 _settings.ReleaseNotesVersion = Constant.Version;
 
-                // Set Backdrop Type to Acrylic for Windows 11 when First Launch. Default is None
-                if (Win32Helper.IsBackdropSupported()) _settings.BackdropType = BackdropTypes.Acrylic;
-
                 // Save settings
                 App.API.SaveAppAllSettings();
             }
@@ -506,7 +503,7 @@ namespace Flow.Launcher
                         {
                             // Get shadow margin
                             var shadowMargin = 0;
-                            var (_, useDropShadowEffect) = _theme.GetActualValue();
+                            var useDropShadowEffect = _settings.UseDropShadowEffect;
                             if (useDropShadowEffect)
                             {
                                 shadowMargin = 32;

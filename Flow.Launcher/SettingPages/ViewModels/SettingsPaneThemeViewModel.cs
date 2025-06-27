@@ -26,7 +26,6 @@ public partial class SettingsPaneThemeViewModel : BaseModel
     private readonly Theme _theme;
 
     private readonly string DefaultFont = Win32Helper.GetSystemDefaultFont();
-    public string BackdropSubText => !Win32Helper.IsBackdropSupported() ? App.API.GetTranslation("BackdropTypeDisabledToolTip") : "";
 
     public static string LinkHowToCreateTheme => @"https://www.flowlauncher.com/theme-builder/";
     public static string LinkThemeGallery => "https://github.com/Flow-Launcher/Flow.Launcher/discussions/1438";
@@ -44,37 +43,15 @@ public partial class SettingsPaneThemeViewModel : BaseModel
             App.API.SetCurrentTheme(value);
 
             // Update UI state
-            OnPropertyChanged(nameof(BackdropType));
-            OnPropertyChanged(nameof(IsBackdropEnabled));
-            OnPropertyChanged(nameof(IsDropShadowEnabled));
             OnPropertyChanged(nameof(DropShadowEffect));
         }
     }
-
-    public bool IsBackdropEnabled
-    {
-        get
-        {
-            if (!Win32Helper.IsBackdropSupported()) return false;
-            return SelectedTheme?.HasBlur ?? false;
-        }
-    }
-
-    public bool IsDropShadowEnabled => !_theme.BlurEnabled;
 
     public bool DropShadowEffect
     {
         get => Settings.UseDropShadowEffect;
         set
         {
-            if (_theme.BlurEnabled)
-            {
-                // Always DropShadowEffect = true with blur theme
-                Settings.UseDropShadowEffect = true;
-                return;
-            }
-
-            // User can change shadow with non-blur theme.
             if (value)
             {
                 _theme.AddDropShadowEffectToCurrentTheme();
@@ -173,33 +150,6 @@ public partial class SettingsPaneThemeViewModel : BaseModel
     {
         get => Settings.UseGlyphIcons;
         set => Settings.UseGlyphIcons = value;
-    }
-
-    public class BackdropTypeData : DropdownDataGeneric<BackdropTypes> { }
-
-    public List<BackdropTypeData> BackdropTypesList { get; } =
-        DropdownDataGeneric<BackdropTypes>.GetValues<BackdropTypeData>("BackdropTypes");
-
-    public BackdropTypes BackdropType
-    {
-        get => Enum.IsDefined(typeof(BackdropTypes), Settings.BackdropType)
-            ? Settings.BackdropType
-            : BackdropTypes.None;
-        set
-        {
-            if (!Enum.IsDefined(typeof(BackdropTypes), value))
-            {
-                value = BackdropTypes.None;
-            }
-
-            Settings.BackdropType = value;
-
-            // Can only apply blur because drop shadow effect is not supported with backdrop
-            // So drop shadow effect has been disabled
-            _ = _theme.SetBlurForWindowAsync();
-
-            OnPropertyChanged(nameof(IsDropShadowEnabled));
-        }
     }
 
     public bool UseClock
