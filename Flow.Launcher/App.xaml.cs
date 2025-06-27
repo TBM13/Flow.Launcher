@@ -49,9 +49,6 @@ namespace Flow.Launcher
 
         public App()
         {
-            // Initialize settings
-            _settings.WMPInstalled = WindowsMediaPlayerHelper.IsWindowsMediaPlayerInstalled();
-
             // Configure the dependency injection container
             try
             {
