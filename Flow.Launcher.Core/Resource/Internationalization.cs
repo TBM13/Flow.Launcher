@@ -46,29 +46,6 @@ namespace Flow.Launcher.Core.Resource
 
         public static void InitSystemLanguageCode()
         {
-            var availableLanguages = AvailableLanguages.GetAvailableLanguages();
-
-            // Retrieve the language identifiers for the current culture.
-            // ChangeLanguage method overrides the CultureInfo.CurrentCulture, so this needs to
-            // be called at startup in order to get the correct lang code of system. 
-            var currentCulture = CultureInfo.CurrentCulture;
-            var twoLetterCode = currentCulture.TwoLetterISOLanguageName;
-            var threeLetterCode = currentCulture.ThreeLetterISOLanguageName;
-            var fullName = currentCulture.Name;
-
-            // Try to find a match in the available languages list
-            foreach (var language in availableLanguages)
-            {
-                var languageCode = language.LanguageCode;
-
-                if (string.Equals(languageCode, twoLetterCode, StringComparison.OrdinalIgnoreCase) ||
-                    string.Equals(languageCode, threeLetterCode, StringComparison.OrdinalIgnoreCase) ||
-                    string.Equals(languageCode, fullName, StringComparison.OrdinalIgnoreCase))
-                {
-                    SystemLanguageCode = languageCode;
-                }
-            }
-
             SystemLanguageCode = DefaultLanguageCode;
         }
 
@@ -233,13 +210,6 @@ namespace Flow.Launcher.Core.Resource
                     _oldResources.Add(r);
                 }
             }
-        }
-
-        public List<Language> LoadAvailableLanguages()
-        {
-            var list = AvailableLanguages.GetAvailableLanguages();
-            list.Insert(0, new Language(Constant.SystemLanguageCode, AvailableLanguages.GetSystemTranslation(SystemLanguageCode)));
-            return list;
         }
 
         public static string GetTranslation(string key)

@@ -269,18 +269,6 @@
                     OnContent="{DynamicResource enable}" />
             </cc:Card>
 
-            <cc:Card
-                Title="{DynamicResource language}"
-                Margin="0 14 0 0"
-                Icon="&#xf2b7;">
-                <ComboBox
-                    MaxWidth="200"
-                    Margin="10 0 0 0"
-                    DisplayMemberPath="Display"
-                    ItemsSource="{Binding Languages}"
-                    SelectedValue="{Binding Language}"
-                    SelectedValuePath="LanguageCode" />
-            </cc:Card>
             <Border Visibility="{Binding KoreanIMERegistryKeyExists, Converter={StaticResource BoolToVisibilityConverter}}">
                 <cc:InfoBar
                     Title="{DynamicResource KoreanImeTitle}"

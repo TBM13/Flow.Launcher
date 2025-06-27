@@ -167,8 +167,6 @@ public partial class SettingsPaneGeneralViewModel : BaseModel
 
     #endregion
 
-    public List<Language> Languages => _translater.LoadAvailableLanguages();
-
     public string AlwaysPreviewToolTip => string.Format(
         App.API.GetTranslation("AlwaysPreviewToolTip"),
         Settings.PreviewHotkey
