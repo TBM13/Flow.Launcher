@@ -158,12 +158,6 @@
         <Setter Property="Foreground" Value="#b7babe" />
     </Style>
     <Style
-        x:Key="DateBox"
-        BasedOn="{StaticResource BaseDateBox}"
-        TargetType="{x:Type TextBlock}">
-        <Setter Property="Foreground" Value="#b7babe" />
-    </Style>
-    <Style
         x:Key="PreviewBorderStyle"
         BasedOn="{StaticResource BasePreviewBorderStyle}"
         TargetType="{x:Type Border}">

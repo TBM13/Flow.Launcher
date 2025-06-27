@@ -153,37 +153,10 @@ public partial class SettingsPaneThemeViewModel : BaseModel
         "HH:mm:ss"
     };
 
-    public List<string> DateFormatList { get; } = new()
-    {
-        "MM'/'dd dddd",
-        "MM'/'dd ddd",
-        "MM'/'dd",
-        "MM'-'dd",
-        "MMMM', 'dd",
-        "dd'/'MM",
-        "dd'-'MM",
-        "ddd MM'/'dd",
-        "dddd MM'/'dd",
-        "dddd",
-        "ddd dd'/'MM",
-        "dddd dd'/'MM",
-        "dddd dd', 'MMMM",
-        "dd', 'MMMM",
-        "dd.MM.yy",
-        "dd.MM.yyyy",
-        "dd MMMM yyyy"
-    };
-
     public string TimeFormat
     {
         get => Settings.TimeFormat;
         set => Settings.TimeFormat = value;
-    }
-
-    public string DateFormat
-    {
-        get => Settings.DateFormat;
-        set => Settings.DateFormat = value;
     }
 
     public IEnumerable<int> MaxResultsRange => Enumerable.Range(2, 16);
@@ -195,8 +168,6 @@ public partial class SettingsPaneThemeViewModel : BaseModel
     }
 
     public string ClockText => DateTime.Now.ToString(TimeFormat, CultureInfo.CurrentUICulture);
-
-    public string DateText => DateTime.Now.ToString(DateFormat, CultureInfo.CurrentUICulture);
 
     public bool UseGlyphIcons
     {
@@ -252,12 +223,6 @@ public partial class SettingsPaneThemeViewModel : BaseModel
     {
         get => Settings.UseClock;
         set => Settings.UseClock = value;
-    }
-
-    public bool UseDate
-    {
-        get => Settings.UseDate;
-        set => Settings.UseDate = value;
     }
 
     public FontFamily ClockPanelFont { get; }

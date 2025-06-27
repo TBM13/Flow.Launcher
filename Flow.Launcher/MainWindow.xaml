@@ -302,11 +302,6 @@
                         Style="{DynamicResource ClockBox}"
                         Text="{Binding ClockText}"
                         Visibility="{Binding Settings.UseClock, Converter={StaticResource BoolToVisibilityConverter}}" />
-                    <TextBlock
-                        x:Name="DateBox"
-                        Style="{DynamicResource DateBox}"
-                        Text="{Binding DateText}"
-                        Visibility="{Binding Settings.UseDate, Converter={StaticResource BoolToVisibilityConverter}}" />
                 </StackPanel>
                 <Border>
                     <Grid WindowChrome.IsHitTestVisibleInChrome="True">

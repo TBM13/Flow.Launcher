@@ -303,8 +303,6 @@ namespace Flow.Launcher.ViewModel
             {
                 if (Settings.UseClock)
                     ClockText = DateTime.Now.ToString(Settings.TimeFormat, CultureInfo.CurrentCulture);
-                if (Settings.UseDate)
-                    DateText = DateTime.Now.ToString(Settings.DateFormat, CultureInfo.CurrentCulture);
             }
         }
 
@@ -596,7 +594,6 @@ namespace Flow.Launcher.ViewModel
 
         public Settings Settings { get; }
         public string ClockText { get; private set; }
-        public string DateText { get; private set; }
 
         public ResultsViewModel Results { get; private set; }
 

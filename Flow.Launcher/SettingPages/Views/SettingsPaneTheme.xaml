@@ -336,19 +336,13 @@
                                             IsHitTestVisible="False"
                                             Style="{DynamicResource ClockPanel}"
                                             Visibility="Visible">
-                                            <!--  Because these two textblock follow SettingWindowFont, we need to revert their font family explictly  -->
+                                            <!--  Because this textblock follows SettingWindowFont, we need to revert its font family explictly  -->
                                             <TextBlock
                                                 x:Name="ClockBox"
                                                 FontFamily="{Binding ClockPanelFont, Mode=OneTime}"
                                                 Style="{DynamicResource ClockBox}"
                                                 Text="{Binding ClockText}"
                                                 Visibility="{Binding UseClock, Converter={StaticResource BoolToVisibilityConverter}}" />
-                                            <TextBlock
-                                                x:Name="DateBox"
-                                                FontFamily="{Binding ClockPanelFont, Mode=OneTime}"
-                                                Style="{DynamicResource DateBox}"
-                                                Text="{Binding DateText}"
-                                                Visibility="{Binding UseDate, Converter={StaticResource BoolToVisibilityConverter}}" />
                                         </StackPanel>
                                         <Canvas Style="{DynamicResource SearchIconPosition}">
                                             <Path
@@ -561,27 +555,6 @@
                             SelectedItem="{Binding TimeFormat}" />
                         <ui:ToggleSwitch
                             IsOn="{Binding UseClock}"
-                            OffContent="{DynamicResource disable}"
-                            OnContent="{DynamicResource enable}" />
-                    </StackPanel>
-                </cc:Card>
-
-                <cc:Card Title="{DynamicResource Date}" Icon="&#xe787;">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock
-                            VerticalAlignment="Center"
-                            FontSize="14"
-                            Foreground="{DynamicResource Color04B}"
-                            Text="{Binding DateText}" />
-                        <ComboBox
-                            MinWidth="180"
-                            Margin="10 0 18 0"
-                            VerticalAlignment="Center"
-                            FontSize="14"
-                            ItemsSource="{Binding DateFormatList}"
-                            SelectedItem="{Binding DateFormat}" />
-                        <ui:ToggleSwitch
-                            IsOn="{Binding UseDate}"
                             OffContent="{DynamicResource disable}"
                             OnContent="{DynamicResource enable}" />
                     </StackPanel>
