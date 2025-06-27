@@ -57,10 +57,6 @@ namespace Flow.Launcher
         // Window Event: Key Event
         private bool _isArrowKeyPressed = false;
 
-        // Window Sound Effects
-        private MediaPlayer animationSoundWMP;
-        private SoundPlayer animationSoundWPF;
-
         // Window WndProc
         private HwndSource _hwndSource;
         private int _initialWidth;
@@ -89,10 +85,8 @@ namespace Flow.Launcher
             InitializeComponent();
             UpdatePosition();
 
-            InitSoundEffects();
             DataObject.AddPastingHandler(QueryTextBox, QueryTextBox_OnPaste);
             ModernWpf.ThemeManager.Current.ActualApplicationThemeChanged += ThemeManager_ActualApplicationThemeChanged;
-            SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
         }
 
         #endregion
@@ -199,12 +193,6 @@ namespace Flow.Launcher
                             {
                                 if (_viewModel.MainWindowVisibilityStatus)
                                 {
-                                    // Play sound effect before activing the window
-                                    if (_settings.UseSound)
-                                    {
-                                        SoundPlay();
-                                    }
-
                                     // Update position & Activate
                                     UpdatePosition();
                                     Activate();
@@ -615,50 +603,6 @@ namespace Flow.Launcher
             }
 
             return IntPtr.Zero;
-        }
-
-        #endregion
-
-        #region Window Sound Effects
-
-        private void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
-        {
-            // Fix for sound not playing after sleep / hibernate
-            // https://stackoverflow.com/questions/64805186/mediaplayer-doesnt-play-after-computer-sleeps
-            if (e.Mode == PowerModes.Resume)
-            {
-                InitSoundEffects();
-            }
-        }
-
-        private void InitSoundEffects()
-        {
-            if (_settings.WMPInstalled)
-            {
-                animationSoundWMP?.Close();
-                animationSoundWMP = new MediaPlayer();
-                animationSoundWMP.Open(new Uri(AppContext.BaseDirectory + "Resources\\open.wav"));
-            }
-            else
-            {
-                animationSoundWPF?.Dispose();
-                animationSoundWPF = new SoundPlayer(AppContext.BaseDirectory + "Resources\\open.wav");
-                animationSoundWPF.Load();
-            }
-        }
-
-        private void SoundPlay()
-        {
-            if (_settings.WMPInstalled)
-            {
-                animationSoundWMP.Position = TimeSpan.Zero;
-                animationSoundWMP.Volume = _settings.SoundVolume / 100.0;
-                animationSoundWMP.Play();
-            }
-            else
-            {
-                animationSoundWPF.Play();
-            }
         }
 
         #endregion
@@ -1329,10 +1273,7 @@ namespace Flow.Launcher
                 {
                     _hwndSource?.Dispose();
                     _notifyIcon?.Dispose();
-                    animationSoundWMP?.Close();
-                    animationSoundWPF?.Dispose();
                     ModernWpf.ThemeManager.Current.ActualApplicationThemeChanged -= ThemeManager_ActualApplicationThemeChanged;
-                    SystemEvents.PowerModeChanged -= SystemEvents_PowerModeChanged;
                 }
 
                 _disposed = true;

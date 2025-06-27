@@ -240,28 +240,6 @@ public partial class SettingsPaneThemeViewModel : BaseModel
         }
     }
 
-    public bool UseSound
-    {
-        get => Settings.UseSound;
-        set => Settings.UseSound = value;
-    }
-
-    public bool ShowWMPWarning
-    {
-        get => !Settings.WMPInstalled && UseSound;
-    }
-
-    public bool EnableVolumeAdjustment
-    {
-        get => Settings.WMPInstalled;
-    }
-
-    public double SoundEffectVolume
-    {
-        get => Settings.SoundVolume;
-        set => Settings.SoundVolume = value;
-    }
-
     public bool ShowPlaceholder
     {
         get => Settings.ShowPlaceholder;
