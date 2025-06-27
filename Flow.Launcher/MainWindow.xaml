@@ -246,8 +246,6 @@
                             AllowDrop="True"
                             AutomationProperties.Name="{Binding Results.SelectedItem.Result.Title}"
                             FontSize="{Binding QueryBoxFontSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            InputMethod.PreferredImeConversionMode="{Binding StartWithEnglishMode, Converter={StaticResource BoolToIMEConversionModeConverter}}"
-                            InputMethod.PreferredImeState="{Binding StartWithEnglishMode, Converter={StaticResource BoolToIMEStateConverter}}"
                             PreviewDragOver="QueryTextBox_OnPreviewDragOver"
                             PreviewKeyUp="QueryTextBox_KeyUp"
                             Style="{DynamicResource QueryBoxStyle}"

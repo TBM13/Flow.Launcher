@@ -92,9 +92,6 @@ namespace Flow.Launcher.ViewModel
                     case nameof(Settings.ResultSubItemFontSize):
                         OnPropertyChanged(nameof(ResultSubItemFontSize));
                         break;
-                    case nameof(Settings.AlwaysStartEn):
-                        OnPropertyChanged(nameof(StartWithEnglishMode));
-                        break;
                     case nameof(Settings.OpenResultModifiers):
                         OnPropertyChanged(nameof(OpenResultCommandModifiers));
                         break;
@@ -913,8 +910,6 @@ namespace Flow.Launcher.ViewModel
         public string OpenHistoryHotkey => VerifyOrSetDefaultHotkey(Settings.OpenHistoryHotkey, "Ctrl+H");
         public string CycleHistoryUpHotkey => VerifyOrSetDefaultHotkey(Settings.CycleHistoryUpHotkey, "Alt+Up");
         public string CycleHistoryDownHotkey => VerifyOrSetDefaultHotkey(Settings.CycleHistoryDownHotkey, "Alt+Down");
-
-        public bool StartWithEnglishMode => Settings.AlwaysStartEn;
 
         #endregion
 
@@ -1777,12 +1772,6 @@ namespace Flow.Launcher.ViewModel
             MainWindowVisibility = Visibility.Visible;
             MainWindowVisibilityStatus = true;
             VisibilityChanged?.Invoke(this, new VisibilityChangedEventArgs { IsVisible = true });
-
-            // Switch keyboard layout
-            if (StartWithEnglishMode)
-            {
-                Win32Helper.SwitchToEnglishKeyboardLayout(true);
-            }
         }
 
         public async void Hide()
@@ -1841,12 +1830,6 @@ namespace Flow.Launcher.ViewModel
                     Win32Helper.DWMSetCloakForWindow(mainWindow, true);
                 }
             }, DispatcherPriority.Render);
-
-            // Switch keyboard layout
-            if (StartWithEnglishMode)
-            {
-                Win32Helper.RestorePreviousKeyboardLayout();
-            }
 
             // Delay for a while to make sure clock will not flicker
             await Task.Delay(50);
