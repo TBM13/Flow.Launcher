@@ -204,15 +204,6 @@ public partial class SettingsPaneThemeViewModel : BaseModel
         set => Settings.UseGlyphIcons = value;
     }
 
-    public bool UseAnimation
-    {
-        get => Settings.UseAnimation;
-        set => Settings.UseAnimation = value;
-    }
-
-    public class AnimationSpeedData : DropdownDataGeneric<AnimationSpeeds> { }
-    public List<AnimationSpeedData> AnimationSpeeds { get; } = DropdownDataGeneric<AnimationSpeeds>.GetValues<AnimationSpeedData>("AnimationSpeed");
-
     public class BackdropTypeData : DropdownDataGeneric<BackdropTypes> { }
 
     public List<BackdropTypeData> BackdropTypesList { get; } =

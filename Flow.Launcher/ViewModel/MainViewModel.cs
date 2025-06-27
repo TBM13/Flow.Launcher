@@ -1750,10 +1750,8 @@ namespace Flow.Launcher.ViewModel
                     // 📌 Remove DWM Cloak (Make the window visible normally)
                     Win32Helper.DWMSetCloakForWindow(mainWindow, false);
 
-                    // Set clock and search icon opacity
-                    var opacity = Settings.UseAnimation ? 0.0 : 1.0;
-                    ClockPanelOpacity = opacity;
-                    SearchIconOpacity = opacity;
+                    ClockPanelOpacity = 1.0;
+                    SearchIconOpacity = 1.0;
 
                     // Set clock and search icon visibility
                     ClockPanelVisibility = string.IsNullOrEmpty(QueryText) ? Visibility.Visible : Visibility.Collapsed;
@@ -1814,9 +1812,8 @@ namespace Flow.Launcher.ViewModel
                 if (Application.Current?.MainWindow is MainWindow mainWindow)
                 {
                     // Set clock and search icon opacity
-                    var opacity = Settings.UseAnimation ? 0.0 : 1.0;
-                    ClockPanelOpacity = opacity;
-                    SearchIconOpacity = opacity;
+                    ClockPanelOpacity = 1.0;
+                    SearchIconOpacity = 1.0;
 
                     // Set clock and search icon visibility
                     ClockPanelVisibility = Visibility.Hidden;

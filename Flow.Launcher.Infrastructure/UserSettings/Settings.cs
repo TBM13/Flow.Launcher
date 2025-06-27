@@ -109,7 +109,6 @@ namespace Flow.Launcher.Infrastructure.UserSettings
         public string ResultSubFontWeight { get; set; }
         public string ResultSubFontStretch { get; set; }
         public bool UseGlyphIcons { get; set; } = true;
-        public bool UseAnimation { get; set; } = true;
         public bool ShowBadges { get; set; } = false;
         public bool ShowBadgesGlobalOnly { get; set; } = false;
 
@@ -410,10 +409,6 @@ namespace Flow.Launcher.Infrastructure.UserSettings
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public LastQueryMode LastQueryMode { get; set; } = LastQueryMode.Selected;
 
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public AnimationSpeeds AnimationSpeed { get; set; } = AnimationSpeeds.Medium;
-        public int CustomAnimationLength { get; set; } = 360;
-
         // This needs to be loaded last by staying at the bottom
         public PluginsSettings PluginSettings { get; set; } = new PluginsSettings();
 
@@ -537,14 +532,6 @@ namespace Flow.Launcher.Infrastructure.UserSettings
         CenterTop,
         LeftTop,
         RightTop,
-        Custom
-    }
-
-    public enum AnimationSpeeds
-    {
-        Slow,
-        Medium,
-        Fast,
         Custom
     }
 

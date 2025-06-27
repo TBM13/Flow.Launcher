@@ -611,43 +611,6 @@
                 </cc:Card>
             </cc:ExCard>
 
-            <!--  Animation  -->
-            <cc:ExCard
-                Title="{DynamicResource Animation}"
-                Margin="0 18 0 0"
-                Icon="&#xedb5;"
-                Sub="{DynamicResource AnimationTip}">
-                <cc:ExCard.SideContent>
-                    <ui:ToggleSwitch
-                        IsOn="{Binding UseAnimation}"
-                        OffContent="{DynamicResource disable}"
-                        OnContent="{DynamicResource enable}" />
-                </cc:ExCard.SideContent>
-                <cc:Card
-                    Title="{DynamicResource AnimationSpeed}"
-                    Sub="{DynamicResource AnimationSpeedTip}"
-                    Type="InsideFit">
-                    <StackPanel Orientation="Horizontal">
-                        <ComboBox
-                            MinWidth="160"
-                            VerticalAlignment="Center"
-                            DisplayMemberPath="Display"
-                            FontSize="14"
-                            ItemsSource="{Binding AnimationSpeeds}"
-                            SelectedValue="{Binding Settings.AnimationSpeed}"
-                            SelectedValuePath="Value" />
-
-                        <TextBox
-                            MinWidth="80"
-                            Margin="18 0 0 0"
-                            Text="{Binding Settings.CustomAnimationLength}"
-                            TextWrapping="NoWrap"
-                            Visibility="{ext:VisibleWhen {Binding Settings.AnimationSpeed},
-                                                         IsEqualTo={x:Static userSettings:AnimationSpeeds.Custom}}" />
-                    </StackPanel>
-                </cc:Card>
-            </cc:ExCard>
-
             <!--  Fonts and icons  -->
             <cc:Card
                 Title="{DynamicResource useGlyphUI}"
