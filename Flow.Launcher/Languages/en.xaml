@@ -172,21 +172,6 @@
     <system:String x:Key="failedToRemovePluginCacheTitle">Fail to remove plugin cache</system:String>
     <system:String x:Key="failedToRemovePluginCacheMessage">Plugins: {0} - Fail to remove plugin cache files, please remove them manually</system:String>
 
-    <!--  Setting Plugin Store  -->
-    <system:String x:Key="pluginStore">Plugin Store</system:String>
-    <system:String x:Key="pluginStore_NewRelease">New Release</system:String>
-    <system:String x:Key="pluginStore_RecentlyUpdated">Recently Updated</system:String>
-    <system:String x:Key="pluginStore_None">Plugins</system:String>
-    <system:String x:Key="pluginStore_Installed">Installed</system:String>
-    <system:String x:Key="refresh">Refresh</system:String>
-    <system:String x:Key="installbtn">Install</system:String>
-    <system:String x:Key="uninstallbtn">Uninstall</system:String>
-    <system:String x:Key="updatebtn">Update</system:String>
-    <system:String x:Key="LabelInstalledToolTip">Plugin already installed</system:String>
-    <system:String x:Key="LabelNew">New Version</system:String>
-    <system:String x:Key="LabelNewToolTip">This plugin has been updated within the last 7 days</system:String>
-    <system:String x:Key="LabelUpdateToolTip">New Update is Available</system:String>
-
     <!--  Setting Theme  -->
     <system:String x:Key="theme">Theme</system:String>
     <system:String x:Key="appearance">Appearance</system:String>
@@ -221,11 +206,6 @@
     <system:String x:Key="ColorSchemeSystem">System Default</system:String>
     <system:String x:Key="ColorSchemeLight">Light</system:String>
     <system:String x:Key="ColorSchemeDark">Dark</system:String>
-    <system:String x:Key="SoundEffect">Sound Effect</system:String>
-    <system:String x:Key="SoundEffectTip">Play a small sound when the search window opens</system:String>
-    <system:String x:Key="SoundEffectVolume">Sound Effect Volume</system:String>
-    <system:String x:Key="SoundEffectVolumeTip">Adjust the volume of the sound effect</system:String>
-    <system:String x:Key="SoundEffectWarning">Windows Media Player is unavailable and is required for Flow's volume adjustment. Please check your installation if you need to adjust volume.</system:String>
     <system:String x:Key="Animation">Animation</system:String>
     <system:String x:Key="AnimationTip">Use Animation in UI</system:String>
     <system:String x:Key="AnimationSpeed">Animation Speed</system:String>
@@ -314,22 +294,6 @@
     <system:String x:Key="showBadgesToolTip">For supported plugins, badges are displayed to help distinguish them more easily.</system:String>
     <system:String x:Key="showBadgesGlobalOnly">Show Result Badges for Global Query Only</system:String>
 
-    <!--  Setting Proxy  -->
-    <system:String x:Key="proxy">HTTP Proxy</system:String>
-    <system:String x:Key="enableProxy">Enable HTTP Proxy</system:String>
-    <system:String x:Key="server">HTTP Server</system:String>
-    <system:String x:Key="port">Port</system:String>
-    <system:String x:Key="userName">User Name</system:String>
-    <system:String x:Key="password">Password</system:String>
-    <system:String x:Key="testProxy">Test Proxy</system:String>
-    <system:String x:Key="save">Save</system:String>
-    <system:String x:Key="serverCantBeEmpty">Server field can't be empty</system:String>
-    <system:String x:Key="portCantBeEmpty">Port field can't be empty</system:String>
-    <system:String x:Key="invalidPortFormat">Invalid port format</system:String>
-    <system:String x:Key="saveProxySuccessfully">Proxy configuration saved successfully</system:String>
-    <system:String x:Key="proxyIsCorrect">Proxy configured correctly</system:String>
-    <system:String x:Key="proxyConnectFailed">Proxy connection failed</system:String>
-
     <!--  Setting About  -->
     <system:String x:Key="about">About</system:String>
     <system:String x:Key="website">Website</system:String>
@@ -366,13 +330,6 @@
     <system:String x:Key="LogLevelDEBUG">Debug</system:String>
     <system:String x:Key="LogLevelINFO">Info</system:String>
     <system:String x:Key="settingWindowFontTitle">Setting Window Font</system:String>
-
-    <!--  Release Notes Window  -->
-    <system:String x:Key="seeMoreReleaseNotes">See more release notes on GitHub</system:String>
-    <system:String x:Key="checkNetworkConnectionTitle">Failed to fetch release notes</system:String>
-    <system:String x:Key="checkNetworkConnectionSubTitle">Please check your network connection or ensure GitHub is accessible</system:String>
-    <system:String x:Key="appUpdateTitle">Flow Launcher has been updated to {0}</system:String>
-    <system:String x:Key="appUpdateButtonContent">Click here to view the release notes</system:String>
 
     <!--  FileManager Setting Dialog  -->
     <system:String x:Key="fileManagerWindow">Select File Manager</system:String>
@@ -486,41 +443,6 @@
 
     <!--  General Notice  -->
     <system:String x:Key="pleaseWait">Please wait...</system:String>
-
-    <!--  Update  -->
-    <system:String x:Key="update_flowlauncher_update_check">Checking for new update</system:String>
-    <system:String x:Key="update_flowlauncher_already_on_latest">You already have the latest Flow Launcher version</system:String>
-    <system:String x:Key="update_flowlauncher_update_found">Update found</system:String>
-    <system:String x:Key="update_flowlauncher_updating">Updating...</system:String>
-    <system:String x:Key="update_flowlauncher_fail_moving_portable_user_profile_data">
-        Flow Launcher was not able to move your user profile data to the new update version.
-        Please manually move your profile data folder from {0} to {1}
-    </system:String>
-    <system:String x:Key="update_flowlauncher_new_update">New Update</system:String>
-    <system:String x:Key="update_flowlauncher_update_new_version_available">New Flow Launcher release {0} is now available</system:String>
-    <system:String x:Key="update_flowlauncher_update_error">An error occurred while trying to install software updates</system:String>
-    <system:String x:Key="update_flowlauncher_update">Update</system:String>
-    <system:String x:Key="update_flowlauncher_update_cancel">Cancel</system:String>
-    <system:String x:Key="update_flowlauncher_fail">Update Failed</system:String>
-    <system:String x:Key="update_flowlauncher_check_connection">Check your connection and try updating proxy settings to github-cloud.s3.amazonaws.com.</system:String>
-    <system:String x:Key="update_flowlauncher_update_restart_flowlauncher_tip">This upgrade will restart Flow Launcher</system:String>
-    <system:String x:Key="update_flowlauncher_update_update_files">Following files will be updated</system:String>
-    <system:String x:Key="update_flowlauncher_update_files">Update files</system:String>
-    <system:String x:Key="update_flowlauncher_update_update_description">Update description</system:String>
-
-    <!--  Welcome Window  -->
-    <system:String x:Key="Skip">Skip</system:String>
-    <system:String x:Key="Welcome_Page1_Title">Welcome to Flow Launcher</system:String>
-    <system:String x:Key="Welcome_Page1_Text01">Hello, this is the first time you are running Flow Launcher!</system:String>
-    <system:String x:Key="Welcome_Page1_Text02">Before starting, this wizard will assist in setting up Flow Launcher. You can skip this if you wish. Please choose a language</system:String>
-    <system:String x:Key="Welcome_Page2_Title">Search and run all files and applications on your PC</system:String>
-    <system:String x:Key="Welcome_Page2_Text01">Search everything from applications, files, bookmarks, YouTube, Twitter and more. All from the comfort of your keyboard without ever touching the mouse.</system:String>
-    <system:String x:Key="Welcome_Page2_Text02">Flow Launcher starts with the hotkey below, go ahead and try it out now. To change it, click on the input and press the desired hotkey on the keyboard.</system:String>
-    <system:String x:Key="Welcome_Page3_Title">Hotkeys</system:String>
-    <system:String x:Key="Welcome_Page4_Title">Action Keyword and Commands</system:String>
-    <system:String x:Key="Welcome_Page4_Text01">Search the web, launch applications or run various functions through Flow Launcher plugins. Certain functions start with an action keyword, and if necessary, they can be used without action keywords. Try the queries below in Flow Launcher.</system:String>
-    <system:String x:Key="Welcome_Page5_Title">Let's Start Flow Launcher</system:String>
-    <system:String x:Key="Welcome_Page5_Text01">Finished. Enjoy Flow Launcher. Don't forget the hotkey to start :)</system:String>
 
     <!--  General Guide & Hotkey  -->
 
