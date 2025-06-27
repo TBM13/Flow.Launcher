@@ -55,9 +55,6 @@ namespace Flow.Launcher.Infrastructure.UserSettings
         public string SelectPrevPageHotkey { get; set; } = $"PageDown";
         public string OpenContextMenuHotkey { get; set; } = $"Ctrl+O";
         public string SettingWindowHotkey { get; set; } = $"Ctrl+I";
-        public string OpenHistoryHotkey { get; set; } = $"Ctrl+H";
-        public string CycleHistoryUpHotkey { get; set; } = $"{KeyConstant.Alt} + Up";
-        public string CycleHistoryDownHotkey { get; set; } = $"{KeyConstant.Alt} + Down";
 
         private string _language = Constant.SystemLanguageCode;
         public string Language
@@ -153,22 +150,6 @@ namespace Flow.Launcher.Infrastructure.UserSettings
                 }
             }
         }
-
-        private bool _showHistoryResultsForHomePage = false;
-        public bool ShowHistoryResultsForHomePage
-        {
-            get => _showHistoryResultsForHomePage;
-            set
-            {
-                if (_showHistoryResultsForHomePage != value)
-                {
-                    _showHistoryResultsForHomePage = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public int MaxHistoryResultsToShowForHomePage { get; set; } = 5;
 
         public int CustomExplorerIndex { get; set; } = 0;
 
@@ -408,18 +389,12 @@ namespace Flow.Launcher.Infrastructure.UserSettings
                     list.Add(new(SelectPrevItemHotkey2, "SelectPrevItemHotkey", () => SelectPrevItemHotkey2 = ""));
                 if (!string.IsNullOrEmpty(SettingWindowHotkey))
                     list.Add(new(SettingWindowHotkey, "SettingWindowHotkey", () => SettingWindowHotkey = ""));
-                if (!string.IsNullOrEmpty(OpenHistoryHotkey))
-                    list.Add(new(OpenHistoryHotkey, "OpenHistoryHotkey", () => OpenHistoryHotkey = ""));
                 if (!string.IsNullOrEmpty(OpenContextMenuHotkey))
                     list.Add(new(OpenContextMenuHotkey, "OpenContextMenuHotkey", () => OpenContextMenuHotkey = ""));
                 if (!string.IsNullOrEmpty(SelectNextPageHotkey))
                     list.Add(new(SelectNextPageHotkey, "SelectNextPageHotkey", () => SelectNextPageHotkey = ""));
                 if (!string.IsNullOrEmpty(SelectPrevPageHotkey))
                     list.Add(new(SelectPrevPageHotkey, "SelectPrevPageHotkey", () => SelectPrevPageHotkey = ""));
-                if (!string.IsNullOrEmpty(CycleHistoryUpHotkey))
-                    list.Add(new(CycleHistoryUpHotkey, "CycleHistoryUpHotkey", () => CycleHistoryUpHotkey = ""));
-                if (!string.IsNullOrEmpty(CycleHistoryDownHotkey))
-                    list.Add(new(CycleHistoryDownHotkey, "CycleHistoryDownHotkey", () => CycleHistoryDownHotkey = ""));
 
                 // Custom Query Hotkeys
                 foreach (var customPluginHotkey in CustomPluginHotkeys)

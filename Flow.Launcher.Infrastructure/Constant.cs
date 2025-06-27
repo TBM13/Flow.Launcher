@@ -32,7 +32,6 @@ namespace Flow.Launcher.Infrastructure
         public static readonly string MissingImgIcon = Path.Combine(ImagesDirectory, "app_missing_img.png");
         public static readonly string LoadingImgIcon = Path.Combine(ImagesDirectory, "loading.png");
         public static readonly string ImageIcon = Path.Combine(ImagesDirectory, "image.png");
-        public static readonly string HistoryIcon = Path.Combine(ImagesDirectory, "history.png");
 
         public static readonly string QueryTextBoxIconImagePath = $"{ProgramDirectory}\\Images\\mainsearch.svg";
 

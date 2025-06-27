@@ -242,7 +242,6 @@ namespace Flow.Launcher
                         InitializeContextMenu();
                         break;
                     case nameof(Settings.ShowHomePage):
-                    case nameof(Settings.ShowHistoryResultsForHomePage):
                         if (_viewModel.QueryResultsSelected() && string.IsNullOrEmpty(_viewModel.QueryText))
                         {
                             _viewModel.QueryResults();
@@ -261,11 +260,6 @@ namespace Flow.Launcher
             DependencyPropertyDescriptor
                 .FromProperty(VisibilityProperty, typeof(ResultListBox))
                 .AddValueChanged(ResultContextMenu, (s, e) => UpdateClockPanelVisibility());
-
-            // Detect History.Visibility changes
-            DependencyPropertyDescriptor
-                .FromProperty(VisibilityProperty, typeof(ResultListBox))
-                .AddValueChanged(History, (s, e) => UpdateClockPanelVisibility());
 
             // Initialize query state
             if (_settings.ShowHomePage && string.IsNullOrEmpty(_viewModel.QueryText))
@@ -908,15 +902,14 @@ namespace Flow.Launcher
 
         private void UpdateClockPanelVisibility()
         {
-            if (QueryTextBox == null || ResultContextMenu == null || History == null || ClockPanel == null)
+            if (QueryTextBox == null || ResultContextMenu == null || ClockPanel == null)
             {
                 return;
             }
 
-            // ✅ Conditions for showing ClockPanel (No query input / ResultContextMenu & History are closed)
+            // ✅ Conditions for showing ClockPanel (No query input / ResultContextMenu is closed)
             var shouldShowClock = QueryTextBox.Text.Length == 0 &&
-                ResultContextMenu.Visibility != Visibility.Visible &&
-                History.Visibility != Visibility.Visible;
+                ResultContextMenu.Visibility != Visibility.Visible;
 
             // ✅ 1. When ResultContextMenu opens, immediately set Visibility.Hidden (force hide without animation)
             if (ResultContextMenu.Visibility == Visibility.Visible)

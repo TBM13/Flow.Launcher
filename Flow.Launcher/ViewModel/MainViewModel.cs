@@ -37,11 +37,8 @@ namespace Flow.Launcher.ViewModel
         private string _queryTextBeforeLeaveResults;
         private string _ignoredQueryText; // Used to ignore query text change when switching between context menu and query results
 
-        private readonly FlowLauncherJsonStorage<History> _historyItemsStorage;
         private readonly FlowLauncherJsonStorage<UserSelectedRecord> _userSelectedRecordStorage;
         private readonly FlowLauncherJsonStorageTopMostRecord _topMostRecord;
-        private readonly History _history;
-        private int lastHistoryIndex = 1;
         private readonly UserSelectedRecord _userSelectedRecord;
 
         private CancellationTokenSource _updateSource; // Used to cancel old query flows
@@ -51,12 +48,6 @@ namespace Flow.Launcher.ViewModel
         private Task _resultsViewUpdateTask;
 
         private readonly IReadOnlyList<Result> _emptyResult = new List<Result>();
-
-        private readonly PluginMetadata _historyMetadata = new()
-        {
-            ID = "298303A65D128A845D28A7B83B3968C2", // ID is for identifying the update plugin in UpdateActionAsync
-            Priority = 0 // Priority is for calculating scores in UpdateResultView
-        };
 
         #endregion
 
@@ -101,12 +92,6 @@ namespace Flow.Launcher.ViewModel
                     case nameof(Settings.AutoCompleteHotkey):
                         OnPropertyChanged(nameof(AutoCompleteHotkey));
                         break;
-                    case nameof(Settings.CycleHistoryUpHotkey):
-                        OnPropertyChanged(nameof(CycleHistoryUpHotkey));
-                        break;
-                    case nameof(Settings.CycleHistoryDownHotkey):
-                        OnPropertyChanged(nameof(CycleHistoryDownHotkey));
-                        break;
                     case nameof(Settings.AutoCompleteHotkey2):
                         OnPropertyChanged(nameof(AutoCompleteHotkey2));
                         break;
@@ -134,16 +119,11 @@ namespace Flow.Launcher.ViewModel
                     case nameof(Settings.SettingWindowHotkey):
                         OnPropertyChanged(nameof(SettingWindowHotkey));
                         break;
-                    case nameof(Settings.OpenHistoryHotkey):
-                        OnPropertyChanged(nameof(OpenHistoryHotkey));
-                        break;
                 }
             };
 
-            _historyItemsStorage = new FlowLauncherJsonStorage<History>();
             _userSelectedRecordStorage = new FlowLauncherJsonStorage<UserSelectedRecord>();
             _topMostRecord = new FlowLauncherJsonStorageTopMostRecord();
-            _history = _historyItemsStorage.Load();
             _userSelectedRecord = _userSelectedRecordStorage.Load();
 
             ContextMenu = new ResultsViewModel(Settings, this)
@@ -158,12 +138,6 @@ namespace Flow.Launcher.ViewModel
                 RightClickResultCommand = LoadContextMenuCommand,
                 IsPreviewOn = Settings.AlwaysPreview
             };
-            History = new ResultsViewModel(Settings, this)
-            {
-                LeftClickResultCommand = OpenResultCommand,
-                RightClickResultCommand = LoadContextMenuCommand,
-                IsPreviewOn = Settings.AlwaysPreview
-            };
             _selectedResults = Results;
 
             Results.PropertyChanged += (o, args) =>
@@ -173,18 +147,6 @@ namespace Flow.Launcher.ViewModel
                     case nameof(Results.SelectedItem):
                         _selectedItemFromQueryResults = true;
                         PreviewSelectedItem = Results.SelectedItem;
-                        _ = UpdatePreviewAsync();
-                        break;
-                }
-            };
-
-            History.PropertyChanged += (o, args) =>
-            {
-                switch (args.PropertyName)
-                {
-                    case nameof(History.SelectedItem):
-                        _selectedItemFromQueryResults = false;
-                        PreviewSelectedItem = History.SelectedItem;
                         _ = UpdatePreviewAsync();
                         break;
                 }
@@ -317,20 +279,6 @@ namespace Flow.Launcher.ViewModel
         }
 
         [RelayCommand]
-        private void LoadHistory()
-        {
-            if (QueryResultsSelected())
-            {
-                SelectedResults = History;
-                History.SelectedIndex = _history.Items.Count - 1;
-            }
-            else
-            {
-                SelectedResults = Results;
-            }
-        }
-
-        [RelayCommand]
         public void ReQuery()
         {
             if (QueryResultsSelected())
@@ -345,32 +293,6 @@ namespace Flow.Launcher.ViewModel
             BackToQueryResults();
             // When we are re-querying, we should not delay the query
             _ = QueryResultsAsync(false, isReQuery: true, reSelect: reselect);
-        }
-
-        [RelayCommand]
-        public void ReverseHistory()
-        {
-            if (_history.Items.Count > 0)
-            {
-                ChangeQueryText(_history.Items[^lastHistoryIndex].Query);
-                if (lastHistoryIndex < _history.Items.Count)
-                {
-                    lastHistoryIndex++;
-                }
-            }
-        }
-
-        [RelayCommand]
-        public void ForwardHistory()
-        {
-            if (_history.Items.Count > 0)
-            {
-                ChangeQueryText(_history.Items[^lastHistoryIndex].Query);
-                if (lastHistoryIndex > 1)
-                {
-                    lastHistoryIndex--;
-                }
-            }
         }
 
         [RelayCommand]
@@ -461,8 +383,6 @@ namespace Flow.Launcher.ViewModel
             if (QueryResultsSelected())
             {
                 _userSelectedRecord.Add(result);
-                _history.Add(result.OriginQuery.RawQuery);
-                lastHistoryIndex = 1;
             }
 
             if (hideWindow)
@@ -532,11 +452,9 @@ namespace Flow.Launcher.ViewModel
         {
             if (QueryResultsSelected() // Results selected
                 && string.IsNullOrEmpty(QueryText) // No input
-                && Results.Visibility != Visibility.Visible // No items in result list, e.g. when home page is off and no query text is entered, therefore the view is collapsed.
-                && _history.Items.Count > 0) // Have history items
+                && Results.Visibility != Visibility.Visible) // No items in result list, e.g. when home page is off and no query text is entered, therefore the view is collapsed.
             {
-                lastHistoryIndex = 1;
-                ReverseHistory();
+
             }
             else
             {
@@ -598,8 +516,6 @@ namespace Flow.Launcher.ViewModel
         public ResultsViewModel Results { get; private set; }
 
         public ResultsViewModel ContextMenu { get; private set; }
-
-        public ResultsViewModel History { get; private set; }
 
         public bool GameModeStatus { get; set; } = false;
 
@@ -737,13 +653,11 @@ namespace Flow.Launcher.ViewModel
             {
                 var isReturningFromQueryResults = QueryResultsSelected();
                 var isReturningFromContextMenu = ContextMenuSelected();
-                var isReturningFromHistory = HistorySelected();
                 _selectedResults = value;
                 if (QueryResultsSelected())
                 {
                     Results.Visibility = Visibility.Visible;
                     ContextMenu.Visibility = Visibility.Collapsed;
-                    History.Visibility = Visibility.Collapsed;
 
                     // QueryText setter (used in ChangeQueryText) runs the query again, resetting the selected
                     // result from the one that was selected before going into the context menu to the first result.
@@ -762,27 +676,11 @@ namespace Flow.Launcher.ViewModel
                     {
                         ChangeQueryText(_queryTextBeforeLeaveResults);
                     }
-
-                    // If we are returning from history and we have not set select item yet,
-                    // we need to clear the preview selected item
-                    if (isReturningFromHistory && _selectedItemFromQueryResults.HasValue && (!_selectedItemFromQueryResults.Value))
-                    {
-                        PreviewSelectedItem = null;
-                    }
                 }
                 else
                 {
                     Results.Visibility = Visibility.Collapsed;
-                    if (HistorySelected())
-                    {
-                        ContextMenu.Visibility = Visibility.Collapsed;
-                        History.Visibility = Visibility.Visible;
-                    }
-                    else
-                    {
-                        ContextMenu.Visibility = Visibility.Visible;
-                        History.Visibility = Visibility.Collapsed;
-                    }
+                    ContextMenu.Visibility = Visibility.Visible;
                     _queryTextBeforeLeaveResults = QueryText;
 
                     // Because of Fody's optimization
@@ -793,16 +691,6 @@ namespace Flow.Launcher.ViewModel
                     // When we are changing query because selected results are changed to history or context menu,
                     // we should not delay the query
                     Query(false);
-
-                    if (HistorySelected())
-                    {
-                        // If we are returning from query results and we have not set select item yet,
-                        // we need to clear the preview selected item
-                        if (isReturningFromQueryResults && _selectedItemFromQueryResults.HasValue && _selectedItemFromQueryResults.Value)
-                        {
-                            PreviewSelectedItem = null;
-                        }
-                    }
                 }
             }
         }
@@ -893,9 +781,6 @@ namespace Flow.Launcher.ViewModel
         public string SelectPrevPageHotkey => VerifyOrSetDefaultHotkey(Settings.SelectPrevPageHotkey, "");
         public string OpenContextMenuHotkey => VerifyOrSetDefaultHotkey(Settings.OpenContextMenuHotkey, "Ctrl+O");
         public string SettingWindowHotkey => VerifyOrSetDefaultHotkey(Settings.SettingWindowHotkey, "Ctrl+I");
-        public string OpenHistoryHotkey => VerifyOrSetDefaultHotkey(Settings.OpenHistoryHotkey, "Ctrl+H");
-        public string CycleHistoryUpHotkey => VerifyOrSetDefaultHotkey(Settings.CycleHistoryUpHotkey, "Alt+Up");
-        public string CycleHistoryDownHotkey => VerifyOrSetDefaultHotkey(Settings.CycleHistoryDownHotkey, "Alt+Down");
 
         #endregion
 
@@ -1114,10 +999,6 @@ namespace Flow.Launcher.ViewModel
             {
                 QueryContextMenu();
             }
-            else if (HistorySelected())
-            {
-                QueryHistory();
-            }
         }
 
         private async Task QueryAsync(bool searchDelay, bool isReQuery = false)
@@ -1129,10 +1010,6 @@ namespace Flow.Launcher.ViewModel
             else if (ContextMenuSelected())
             {
                 QueryContextMenu();
-            }
-            else if (HistorySelected())
-            {
-                QueryHistory();
             }
         }
 
@@ -1185,55 +1062,6 @@ namespace Flow.Launcher.ViewModel
                     ContextMenu.AddResults(results, id);
                 }
             }
-        }
-
-        private void QueryHistory()
-        {
-            const string id = "Query History ID";
-            var query = QueryText.ToLower().Trim();
-            History.Clear();
-
-            var results = GetHistoryItems(_history.Items);
-
-            if (!string.IsNullOrEmpty(query))
-            {
-                var filtered = results.Where
-                (
-                    r => App.API.FuzzySearch(query, r.Title).IsSearchPrecisionScoreMet() ||
-                         App.API.FuzzySearch(query, r.SubTitle).IsSearchPrecisionScoreMet()
-                ).ToList();
-                History.AddResults(filtered, id);
-            }
-            else
-            {
-                History.AddResults(results, id);
-            }
-        }
-
-        private static List<Result> GetHistoryItems(IEnumerable<HistoryItem> historyItems)
-        {
-            var results = new List<Result>();
-            foreach (var h in historyItems)
-            {
-                var title = App.API.GetTranslation("executeQuery");
-                var time = App.API.GetTranslation("lastExecuteTime");
-                var result = new Result
-                {
-                    Title = string.Format(title, h.Query),
-                    SubTitle = string.Format(time, h.ExecutedDateTime),
-                    IcoPath = Constant.HistoryIcon,
-                    OriginQuery = new Query { RawQuery = h.Query },
-                    Action = _ =>
-                    {
-                        App.API.BackToQueryResults();
-                        App.API.ChangeQuery(h.Query);
-                        return false;
-                    },
-                    Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\uE81C")
-                };
-                results.Add(result);
-            }
-            return results;
         }
 
         private async Task QueryResultsAsync(bool searchDelay, bool isReQuery = false, bool reSelect = true)
@@ -1353,12 +1181,6 @@ namespace Flow.Launcher.ViewModel
                     false => QueryTaskAsync(plugin, currentCancellationToken),
                     true => Task.CompletedTask
                 }).ToArray();
-
-                // Query history results for home page firstly so it will be put on top of the results
-                if (Settings.ShowHistoryResultsForHomePage)
-                {
-                    QueryHistoryTask(currentCancellationToken);
-                }
             }
             else
             {
@@ -1439,24 +1261,6 @@ namespace Flow.Launcher.ViewModel
                 App.API.LogDebug(ClassName, $"Update results for plugin <{plugin.Metadata.Name}>");
 
                 if (!_resultsUpdateChannelWriter.TryWrite(new ResultsForUpdate(resultsCopy, plugin.Metadata, query,
-                    token, reSelect)))
-                {
-                    App.API.LogError(ClassName, "Unable to add item to Result Update Queue");
-                }
-            }
-
-            void QueryHistoryTask(CancellationToken token)
-            {
-                // Select last history results and revert its order to make sure last history results are on top
-                var historyItems = _history.Items.TakeLast(Settings.MaxHistoryResultsToShowForHomePage).Reverse();
-
-                var results = GetHistoryItems(historyItems);
-
-                if (token.IsCancellationRequested) return;
-
-                App.API.LogDebug(ClassName, $"Update results for history");
-
-                if (!_resultsUpdateChannelWriter.TryWrite(new ResultsForUpdate(results, _historyMetadata, query,
                     token, reSelect)))
                 {
                     App.API.LogError(ClassName, "Unable to add item to Result Update Queue");
@@ -1543,8 +1347,7 @@ namespace Flow.Launcher.ViewModel
 
         /// <summary>
         /// Determines whether the existing search results should be cleared based on the current query and the previous query type.
-        /// This is used to indicate to QueryTaskAsync or QueryHistoryTask whether to clear results. If both QueryTaskAsync and QueryHistoryTask
-        /// are not called then use ShouldClearExistingResultsForNonQuery instead.
+        /// This is used to indicate to QueryTaskAsync whether to clear results. If QueryTaskAsync is not called then use ShouldClearExistingResultsForNonQuery instead.
         /// This method needed because of the design that treats plugins with action keywords and global action keywords separately. Results are gathered
         /// either from plugins with matching action keywords or global action keyword, but not both. So when the current results are from plugins
         /// with a matching action keyword and a new result set comes from a new query with the global action keyword, the existing results need to be cleared,
@@ -1577,8 +1380,8 @@ namespace Flow.Launcher.ViewModel
 
         /// <summary>
         /// Determines whether existing results should be cleared for non-query calls.
-        /// A non-query call is where QueryTaskAsync and QueryHistoryTask methods are both not called.
-        /// QueryTaskAsync and QueryHistoryTask both handle result updating (clearing if required) so directly calling
+        /// A non-query call is where QueryTaskAsync is not called.
+        /// QueryTaskAsync handles result updating (clearing if required) so directly calling
         /// Results.Clear() is not required. However when both are not called, we need to directly clear results and this
         /// method determines on the condition when clear results should happen.
         /// </summary>
@@ -1586,7 +1389,7 @@ namespace Flow.Launcher.ViewModel
         /// <returns>True if existing results should be cleared, false otherwise.</returns>
         private bool ShouldClearExistingResultsForNonQuery(ICollection<PluginPair> plugins)
         {
-            if (!Settings.ShowHistoryResultsForHomePage && (plugins.Count == 0 || plugins.All(x => x.Metadata.HomeDisabled == true)))
+            if (plugins.Count == 0 || plugins.All(x => x.Metadata.HomeDisabled == true))
             {
                 App.API.LogDebug(ClassName, $"Existing results should be cleared for non-query");
                 return true;
@@ -1680,12 +1483,6 @@ namespace Flow.Launcher.ViewModel
             return selected;
         }
 
-        private bool HistorySelected()
-        {
-            var selected = SelectedResults == History;
-            return selected;
-        }
-
         internal bool ResultsSelected(ResultsViewModel results)
         {
             var selected = SelectedResults == results;
@@ -1760,8 +1557,6 @@ namespace Flow.Launcher.ViewModel
 
         public async void Hide()
         {
-            lastHistoryIndex = 1;
-
             if (ExternalPreviewVisible)
             {
                 await CloseExternalPreviewAsync();
@@ -1826,11 +1621,10 @@ namespace Flow.Launcher.ViewModel
 #pragma warning restore VSTHRD100 // Avoid async void methods
 
         /// <summary>
-        /// Save history, user selected records and top most records
+        /// Save user selected records and top most records
         /// </summary>
         public void Save()
         {
-            _historyItemsStorage.Save();
             _userSelectedRecordStorage.Save();
             _topMostRecord.Save();
         }

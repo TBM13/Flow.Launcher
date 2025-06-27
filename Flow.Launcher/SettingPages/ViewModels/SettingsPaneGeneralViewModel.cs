@@ -69,19 +69,6 @@ public partial class SettingsPaneGeneralViewModel : BaseModel
         }
     }
 
-    public int MaxHistoryResultsToShowValue
-    {
-        get => Settings.MaxHistoryResultsToShowForHomePage;
-        set
-        {
-            if (Settings.MaxHistoryResultsToShowForHomePage != value)
-            {
-                Settings.MaxHistoryResultsToShowForHomePage = value;
-                OnPropertyChanged();
-            }
-        }
-    }
-
     private void UpdateEnumDropdownLocalizations()
     {
         DropdownDataGeneric<SearchWindowScreens>.UpdateLabels(SearchWindowScreens);

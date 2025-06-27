@@ -112,8 +112,6 @@
     <system:String x:Key="searchDelayTimeToolTip">Wait time before showing results after typing stops. Higher values wait longer. (ms)</system:String>
     <system:String x:Key="homePage">Home Page</system:String>
     <system:String x:Key="homePageToolTip">Show home page results when query text is empty.</system:String>
-    <system:String x:Key="historyResultsForHomePage">Show History Results in Home Page</system:String>
-    <system:String x:Key="historyResultsCountForHomePage">Maximum History Results Shown in Home Page</system:String>
     <system:String x:Key="homeToggleBoxToolTip">This can only be edited if plugin supports Home feature and Home Page is enabled.</system:String>
     <system:String x:Key="showAtTopmost">Show Search Window at Foremost</system:String>
     <system:String x:Key="showAtTopmostToolTip">Overrides other programs' 'Always on Top' setting and displays Flow in the foremost position.</system:String>
@@ -215,14 +213,11 @@
     <system:String x:Key="SelectPrevItemHotkey">Select Previous Item</system:String>
     <system:String x:Key="SelectNextPageHotkey">Next Page</system:String>
     <system:String x:Key="SelectPrevPageHotkey">Previous Page</system:String>
-    <system:String x:Key="CycleHistoryUpHotkey">Cycle Previous Query</system:String>
-    <system:String x:Key="CycleHistoryDownHotkey">Cycle Next Query</system:String>
     <system:String x:Key="OpenContextMenuHotkey">Open Context Menu</system:String>
     <system:String x:Key="OpenNativeContextMenuHotkey">Open Native Context Menu</system:String>
     <system:String x:Key="SettingWindowHotkey">Open Setting Window</system:String>
     <system:String x:Key="CopyFilePathHotkey">Copy File Path</system:String>
     <system:String x:Key="ToggleGameModeHotkey">Toggle Game Mode</system:String>
-    <system:String x:Key="ToggleHistoryHotkey">Toggle History</system:String>
     <system:String x:Key="OpenContainFolderHotkey">Open Containing Folder</system:String>
     <system:String x:Key="RunAsAdminHotkey">Run As Admin</system:String>
     <system:String x:Key="RequeryHotkey">Refresh Search Results</system:String>
@@ -415,7 +410,6 @@
     <system:String x:Key="HotkeyShiftEnterDesc">Open Context Menu</system:String>
     <system:String x:Key="HotkeyCtrlEnterDesc">Open Containing Folder</system:String>
     <system:String x:Key="HotkeyCtrlShiftEnterDesc">Run as Admin / Open Folder in Default File Manager</system:String>
-    <system:String x:Key="HotkeyCtrlHDesc">Query History</system:String>
     <system:String x:Key="HotkeyESCDesc">Back to Result in Context Menu</system:String>
     <system:String x:Key="HotkeyTabDesc">Autocomplete</system:String>
     <system:String x:Key="HotkeyRunDesc">Open / Run Selected Item</system:String>

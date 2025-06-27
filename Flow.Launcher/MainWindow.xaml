@@ -186,10 +186,6 @@
             Command="{Binding OpenSettingCommand}"
             Modifiers="{Binding SettingWindowHotkey, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='modifiers'}" />
         <KeyBinding
-            Key="{Binding OpenHistoryHotkey, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='key'}"
-            Command="{Binding LoadHistoryCommand}"
-            Modifiers="{Binding OpenHistoryHotkey, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='modifiers'}" />
-        <KeyBinding
             Key="{Binding OpenContextMenuHotkey, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='key'}"
             Command="{Binding LoadContextMenuCommand}"
             Modifiers="{Binding OpenContextMenuHotkey, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='modifiers'}" />
@@ -201,14 +197,6 @@
             Key="{Binding SelectPrevPageHotkey, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='key'}"
             Command="{Binding SelectPrevPageCommand}"
             Modifiers="{Binding SelectPrevPageHotkey, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='modifiers'}" />
-        <KeyBinding
-            Key="{Binding CycleHistoryUpHotkey, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='key'}"
-            Command="{Binding ReverseHistoryCommand}"
-            Modifiers="{Binding CycleHistoryUpHotkey, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='modifiers'}" />
-        <KeyBinding
-            Key="{Binding CycleHistoryDownHotkey, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='key'}"
-            Command="{Binding ForwardHistoryCommand}"
-            Modifiers="{Binding CycleHistoryDownHotkey, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='modifiers'}" />
     </Window.InputBindings>
 
     <Border MouseDown="OnMouseDown" Style="{DynamicResource WindowBorderStyle}">
@@ -343,7 +331,6 @@
                                     <MultiDataTrigger.Conditions>
                                         <Condition Binding="{Binding ElementName=ResultListBox, Path=Items.Count}" Value="0" />
                                         <Condition Binding="{Binding ElementName=ResultContextMenu, Path=Visibility}" Value="Collapsed" />
-                                        <Condition Binding="{Binding ElementName=History, Path=Visibility}" Value="Collapsed" />
                                     </MultiDataTrigger.Conditions>
                                     <MultiDataTrigger.Setters>
                                         <Setter Property="Visibility" Value="Collapsed" />
@@ -357,9 +344,6 @@
                                     <Setter Property="Visibility" Value="Visible" />
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding ElementName=ResultContextMenu, Path=Visibility}" Value="Visible">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding ElementName=History, Path=Visibility}" Value="Visible">
                                     <Setter Property="Visibility" Value="Visible" />
                                 </DataTrigger>
                             </Style.Triggers>-->
@@ -404,13 +388,6 @@
                             <flowlauncher:ResultListBox
                                 x:Name="ResultContextMenu"
                                 DataContext="{Binding ContextMenu}"
-                                LeftClickResultCommand="{Binding LeftClickResultCommand}"
-                                RightClickResultCommand="{Binding RightClickResultCommand}" />
-                        </ContentControl>
-                        <ContentControl>
-                            <flowlauncher:ResultListBox
-                                x:Name="History"
-                                DataContext="{Binding History}"
                                 LeftClickResultCommand="{Binding LeftClickResultCommand}"
                                 RightClickResultCommand="{Binding RightClickResultCommand}" />
                         </ContentControl>

@@ -86,15 +86,6 @@
                         <cc:HotkeyDisplay Keys="Ctrl+Shift+Enter" />
                     </cc:Card>
                     <cc:Card
-                        Title="{DynamicResource ToggleHistoryHotkey}"
-                        Icon="&#xf738;"
-                        Type="Inside">
-                        <flowlauncher:HotkeyControl
-                            DefaultHotkey="Ctrl+H"
-                            Type="OpenHistoryHotkey"
-                            ValidateKeyGesture="False" />
-                    </cc:Card>
-                    <cc:Card
                         Title="{DynamicResource CopyFilePathHotkey}"
                         Icon="&#xe8c8;"
                         Type="Inside">
@@ -141,24 +132,6 @@
                         Icon="&#xe72c;"
                         Type="Inside">
                         <cc:HotkeyDisplay Keys="Ctrl+R" />
-                    </cc:Card>
-                    <cc:Card
-                        Title="{DynamicResource CycleHistoryUpHotkey}"
-                        Icon="&#xe70e;"
-                        Type="Inside">
-                        <flowlauncher:HotkeyControl
-                            DefaultHotkey="Alt+Up"
-                            Type="CycleHistoryUpHotkey"
-                            ValidateKeyGesture="False" />
-                    </cc:Card>
-                    <cc:Card
-                        Title="{DynamicResource CycleHistoryDownHotkey}"
-                        Icon="&#xe70d;"
-                        Type="Inside">
-                        <flowlauncher:HotkeyControl
-                            DefaultHotkey="Alt+Down"
-                            Type="CycleHistoryDownHotkey"
-                            ValidateKeyGesture="False" />
                     </cc:Card>
                     <cc:Card
                         Title="{DynamicResource ReloadPluginHotkey}"

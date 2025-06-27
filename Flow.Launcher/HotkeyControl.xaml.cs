@@ -13,7 +13,8 @@ namespace Flow.Launcher
 {
     public partial class HotkeyControl
     {
-        public string WindowTitle {
+        public string WindowTitle
+        {
             get { return (string)GetValue(WindowTitleProperty); }
             set { SetValue(WindowTitleProperty, value); }
         }
@@ -100,9 +101,6 @@ namespace Flow.Launcher
             PreviewHotkey,
             OpenContextMenuHotkey,
             SettingWindowHotkey,
-            OpenHistoryHotkey,
-            CycleHistoryUpHotkey,
-            CycleHistoryDownHotkey,
             SelectPrevPageHotkey,
             SelectNextPageHotkey,
             AutoCompleteHotkey,
@@ -131,9 +129,6 @@ namespace Flow.Launcher
                     HotkeyType.PreviewHotkey => _settings.PreviewHotkey,
                     HotkeyType.OpenContextMenuHotkey => _settings.OpenContextMenuHotkey,
                     HotkeyType.SettingWindowHotkey => _settings.SettingWindowHotkey,
-                    HotkeyType.OpenHistoryHotkey => _settings.OpenHistoryHotkey,
-                    HotkeyType.CycleHistoryUpHotkey => _settings.CycleHistoryUpHotkey,
-                    HotkeyType.CycleHistoryDownHotkey => _settings.CycleHistoryDownHotkey,
                     HotkeyType.SelectPrevPageHotkey => _settings.SelectPrevPageHotkey,
                     HotkeyType.SelectNextPageHotkey => _settings.SelectNextPageHotkey,
                     HotkeyType.AutoCompleteHotkey => _settings.AutoCompleteHotkey,
@@ -167,15 +162,6 @@ namespace Flow.Launcher
                         break;
                     case HotkeyType.SettingWindowHotkey:
                         _settings.SettingWindowHotkey = value;
-                        break;
-                    case HotkeyType.OpenHistoryHotkey:
-                        _settings.OpenHistoryHotkey = value;
-                        break;                    
-                    case HotkeyType.CycleHistoryUpHotkey:
-                        _settings.CycleHistoryUpHotkey = value;
-                        break;
-                    case HotkeyType.CycleHistoryDownHotkey:
-                        _settings.CycleHistoryDownHotkey = value;
                         break;
                     case HotkeyType.SelectPrevPageHotkey:
                         _settings.SelectPrevPageHotkey = value;
