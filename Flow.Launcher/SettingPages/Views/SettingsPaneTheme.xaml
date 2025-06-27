@@ -561,29 +561,6 @@
                 </cc:Card>
             </cc:CardGroup>
 
-            <!--  Placeholder text  -->
-            <cc:ExCard
-                Title="{DynamicResource ShowPlaceholder}"
-                Margin="0 4 0 0"
-                Icon="&#xea80;"
-                Sub="{DynamicResource ShowPlaceholderTip}">
-                <cc:ExCard.SideContent>
-                    <ui:ToggleSwitch
-                        IsOn="{Binding ShowPlaceholder}"
-                        OffContent="{DynamicResource disable}"
-                        OnContent="{DynamicResource enable}" />
-                </cc:ExCard.SideContent>
-                <cc:Card
-                    Title="{DynamicResource PlaceholderText}"
-                    Sub="{Binding PlaceholderTextTip}"
-                    Type="InsideFit">
-                    <TextBox
-                        MinWidth="150"
-                        Text="{Binding PlaceholderText}"
-                        TextWrapping="NoWrap" />
-                </cc:Card>
-            </cc:ExCard>
-
             <!--  Fonts and icons  -->
             <cc:Card
                 Title="{DynamicResource useGlyphUI}"

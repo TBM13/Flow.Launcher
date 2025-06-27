@@ -141,33 +141,6 @@ namespace Flow.Launcher.Infrastructure.UserSettings
         public double? SettingWindowLeft { get; set; } = null;
         public WindowState SettingWindowState { get; set; } = WindowState.Normal;
 
-        private bool _showPlaceholder { get; set; } = true;
-        public bool ShowPlaceholder
-        {
-            get => _showPlaceholder;
-            set
-            {
-                if (_showPlaceholder != value)
-                {
-                    _showPlaceholder = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-        private string _placeholderText { get; set; } = string.Empty;
-        public string PlaceholderText
-        {
-            get => _placeholderText;
-            set
-            {
-                if (_placeholderText != value)
-                {
-                    _placeholderText = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
         private bool _showHomePage { get; set; } = true;
         public bool ShowHomePage
         {

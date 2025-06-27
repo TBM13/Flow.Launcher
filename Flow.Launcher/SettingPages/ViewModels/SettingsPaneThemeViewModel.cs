@@ -202,23 +202,6 @@ public partial class SettingsPaneThemeViewModel : BaseModel
         }
     }
 
-    public bool ShowPlaceholder
-    {
-        get => Settings.ShowPlaceholder;
-        set => Settings.ShowPlaceholder = value;
-    }
-
-    public string PlaceholderTextTip
-    {
-        get => string.Format(App.API.GetTranslation("PlaceholderTextTip"), App.API.GetTranslation("queryTextBoxPlaceholder"));
-    }
-
-    public string PlaceholderText
-    {
-        get => Settings.PlaceholderText;
-        set => Settings.PlaceholderText = value;
-    }
-
     public bool UseClock
     {
         get => Settings.UseClock;

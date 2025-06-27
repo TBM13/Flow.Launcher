@@ -123,10 +123,6 @@ namespace Flow.Launcher
                 App.API.SaveAppAllSettings();
             }
 
-            // Initialize place holder
-            SetupPlaceholderText();
-            _viewModel.PlaceholderText = _settings.PlaceholderText;
-
             // Hide window if need
             UpdatePosition();
             if (_settings.HideOnStartup)
@@ -241,12 +237,6 @@ namespace Flow.Launcher
                         break;
                     case nameof(Settings.WindowTop):
                         Top = _settings.WindowTop;
-                        break;
-                    case nameof(Settings.ShowPlaceholder):
-                        SetupPlaceholderText();
-                        break;
-                    case nameof(Settings.PlaceholderText):
-                        _viewModel.PlaceholderText = _settings.PlaceholderText;
                         break;
                     case nameof(Settings.KeepMaxResults):
                         SetupResizeMode();
@@ -1002,43 +992,6 @@ namespace Flow.Launcher
         private void QueryTextBox_OnPreviewDragOver(object sender, DragEventArgs e)
         {
             e.Handled = true;
-        }
-
-        #endregion
-
-        #region Placeholder
-
-        private void SetupPlaceholderText()
-        {
-            if (_settings.ShowPlaceholder)
-            {
-                QueryTextBox.TextChanged += QueryTextBox_TextChanged;
-                QueryTextSuggestionBox.TextChanged += QueryTextSuggestionBox_TextChanged;
-                SetPlaceholderText();
-            }
-            else
-            {
-                QueryTextBox.TextChanged -= QueryTextBox_TextChanged;
-                QueryTextSuggestionBox.TextChanged -= QueryTextSuggestionBox_TextChanged;
-                QueryTextPlaceholderBox.Visibility = Visibility.Collapsed;
-            }
-        }
-
-        private void QueryTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            SetPlaceholderText();
-        }
-
-        private void QueryTextSuggestionBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            SetPlaceholderText();
-        }
-
-        private void SetPlaceholderText()
-        {
-            var queryText = QueryTextBox.Text;
-            var suggestionText = QueryTextSuggestionBox.Text;
-            QueryTextPlaceholderBox.Visibility = string.IsNullOrEmpty(queryText) && string.IsNullOrEmpty(suggestionText) ? Visibility.Visible : Visibility.Collapsed;
         }
 
         #endregion

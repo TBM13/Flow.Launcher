@@ -202,10 +202,6 @@
     <system:String x:Key="BackdropTypesMicaAlt">Mica Alt</system:String>
     <system:String x:Key="TypeIsDarkToolTip">This theme supports two (light/dark) modes.</system:String>
     <system:String x:Key="TypeHasBlurToolTip">This theme supports Blur Transparent Background.</system:String>
-    <system:String x:Key="ShowPlaceholder">Show placeholder</system:String>
-    <system:String x:Key="ShowPlaceholderTip">Display placeholder when query is empty</system:String>
-    <system:String x:Key="PlaceholderText">Placeholder text</system:String>
-    <system:String x:Key="PlaceholderTextTip">Change placeholder text. Input empty will use: {0}</system:String>
     <system:String x:Key="KeepMaxResults">Fixed Window Size</system:String>
     <system:String x:Key="KeepMaxResultsToolTip">The window size is not adjustable by dragging.</system:String>
 
