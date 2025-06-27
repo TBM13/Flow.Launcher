@@ -45,8 +45,6 @@
         <converters:BorderClipConverter x:Key="BorderClipConverter" />
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:SplitterConverter x:Key="SplitterConverter" />
-        <converters:BoolToIMEConversionModeConverter x:Key="BoolToIMEConversionModeConverter" />
-        <converters:BoolToIMEStateConverter x:Key="BoolToIMEStateConverter" />
         <converters:StringToKeyBindingConverter x:Key="StringToKeyBindingConverter" />
     </Window.Resources>
     <Window.InputBindings>
