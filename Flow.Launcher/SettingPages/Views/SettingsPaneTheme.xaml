@@ -453,7 +453,8 @@
                 <cc:Card
                     Title="{DynamicResource queryWindowShadowEffect}"
                     Margin="0 0 0 0"
-                    Icon="&#xeb91;">
+                    Icon="&#xeb91;"
+                    Type="Last">
                     <ui:ToggleSwitch
                         IsOn="{Binding DropShadowEffect}"
                         OffContent="{DynamicResource disable}"
@@ -493,7 +494,10 @@
 
             <!--  Time and date  -->
             <cc:CardGroup Margin="0 14 0 0">
-                <cc:Card Title="{DynamicResource Clock}" Icon="&#xec92;">
+                <cc:Card
+                    Title="{DynamicResource Clock}"
+                    Icon="&#xec92;"
+                    Type="First">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock
                             VerticalAlignment="Center"
