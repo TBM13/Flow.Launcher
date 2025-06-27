@@ -274,7 +274,6 @@
                 <!--  Theme preview  -->
                 <Border
                     Grid.Column="0"
-                    Background="{Binding PreviewBackground}"
                     SnapsToDevicePixels="True"
                     UseLayoutRounding="True">
                     <Border.Style>

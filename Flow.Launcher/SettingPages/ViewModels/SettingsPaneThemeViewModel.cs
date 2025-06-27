@@ -293,11 +293,6 @@ public partial class SettingsPaneThemeViewModel : BaseModel
 
     public FontFamily ClockPanelFont { get; }
 
-    public Brush PreviewBackground
-    {
-        get => WallpaperPathRetrieval.GetWallpaperBrush();
-    }
-
     public ResultsViewModel PreviewResults { get; }
 
     public FontFamily SelectedQueryBoxFont
