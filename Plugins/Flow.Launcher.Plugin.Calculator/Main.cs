@@ -4,9 +4,9 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
-using Mages.Core;
 using Flow.Launcher.Plugin.Calculator.ViewModels;
 using Flow.Launcher.Plugin.Calculator.Views;
+using Mages.Core;
 
 namespace Flow.Launcher.Plugin.Calculator
 {
@@ -90,7 +90,7 @@ namespace Flow.Launcher.Plugin.Calculator
                             Title = newResult,
                             IcoPath = "Images/calculator.png",
                             Score = 300,
-                            SubTitle = Context.API.GetTranslation("flowlauncher_plugin_calculator_copy_number_to_clipboard"),
+                            SubTitle = "0x" + ((int)roundedResult).ToString("X"),
                             CopyText = newResult,
                             Action = c =>
                             {
