@@ -85,12 +85,11 @@ namespace Flow.Launcher.Plugin.Calculator
 
                     return new List<Result>
                     {
-                        new Result
-                        {
+                        new() {
                             Title = newResult,
                             IcoPath = "Images/calculator.png",
                             Score = 300,
-                            SubTitle = "0x" + ((int)roundedResult).ToString("X"),
+                            SubTitle = (roundedResult > long.MaxValue || roundedResult < long.MinValue) ? string.Empty : "0x" + ((long)roundedResult).ToString("X"),
                             CopyText = newResult,
                             Action = c =>
                             {
