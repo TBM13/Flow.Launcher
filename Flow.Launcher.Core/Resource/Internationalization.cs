@@ -51,7 +51,7 @@ namespace Flow.Launcher.Core.Resource
 
         private void AddPluginLanguageDirectories()
         {
-            foreach (var plugin in PluginManager.GetPluginsForInterface<IPluginI18n>())
+            foreach (var plugin in PluginManager.GetTranslationPlugins())
             {
                 var location = Assembly.GetAssembly(plugin.Plugin.GetType()).Location;
                 var dir = Path.GetDirectoryName(location);
@@ -228,7 +228,8 @@ namespace Flow.Launcher.Core.Resource
 
         private void UpdatePluginMetadataTranslations()
         {
-            foreach (var p in PluginManager.GetPluginsForInterface<IPluginI18n>())
+            // Update plugin metadata name & description
+            foreach (var p in PluginManager.GetTranslationPlugins())
             {
                 if (p.Plugin is not IPluginI18n pluginI18N) return;
                 try
