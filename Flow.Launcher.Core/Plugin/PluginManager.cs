@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.DependencyInjection;
@@ -11,14 +10,12 @@ using Flow.Launcher.Core.ExternalPlugins;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Plugin;
-using Flow.Launcher.Plugin.SharedCommands;
-using IRemovable = Flow.Launcher.Core.Storage.IRemovable;
 using ISavable = Flow.Launcher.Plugin.ISavable;
 
 namespace Flow.Launcher.Core.Plugin
 {
     /// <summary>
-    /// The entry for managing Flow Launcher plugins
+    /// Class for co-ordinating and managing all plugin lifecycle.
     /// </summary>
     public static class PluginManager
     {
