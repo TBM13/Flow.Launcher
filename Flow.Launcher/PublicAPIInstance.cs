@@ -537,17 +537,6 @@ namespace Flow.Launcher
         public ValueTask<ImageSource> LoadImageAsync(string path, bool loadFullImage = false, bool cacheImage = true) =>
             ImageLoader.LoadAsync(path, loadFullImage, cacheImage);
 
-        public bool PluginModified(string id) => PluginManager.PluginModified(id);
-
-        public Task UpdatePluginAsync(PluginMetadata pluginMetadata, UserPlugin plugin, string zipFilePath) =>
-            PluginManager.UpdatePluginAsync(pluginMetadata, plugin, zipFilePath);
-
-        public void InstallPlugin(UserPlugin plugin, string zipFilePath) =>
-            PluginManager.InstallPlugin(plugin, zipFilePath);
-
-        public Task UninstallPluginAsync(PluginMetadata pluginMetadata, bool removePluginSettings = false) =>
-            PluginManager.UninstallPluginAsync(pluginMetadata, removePluginSettings);
-
         public long StopwatchLogDebug(string className, string message, Action action, [CallerMemberName] string methodName = "") =>
             Stopwatch.Debug(className, message, action, methodName);
 
