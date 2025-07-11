@@ -290,6 +290,10 @@
         </Grid>
     </ControlTemplate>
 
+    <Style x:Key="BaseScrollViewerStyle" TargetType="{x:Type ScrollViewer}">
+        <Setter Property="CanContentScroll" Value="False"/>
+    </Style>
+
     <!--  button style in the middle of the scrollbar  -->
     <Style x:Key="BaseThumbStyle" TargetType="{x:Type Thumb}">
         <Setter Property="SnapsToDevicePixels" Value="True" />
