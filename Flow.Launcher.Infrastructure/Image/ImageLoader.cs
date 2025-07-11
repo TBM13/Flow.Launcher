@@ -37,10 +37,9 @@ namespace Flow.Launcher.Infrastructure.Image
             _storage = new BinaryStorage<List<(string, bool)>>("Image");
             _hashGenerator = new ImageHashGenerator();
 
-            var usage = await LoadStorageToConcurrentDictionaryAsync();
-            _storage.ClearData();
-
-            ImageCache.Initialize(usage);
+            // Even though we no longer do image preloading and thus don't need _storage,
+            // for some reason MemoryPackSerializer exceptions appear when this is removed
+            await LoadStorageToConcurrentDictionaryAsync();
 
             foreach (var icon in new[] { Constant.DefaultIcon, Constant.MissingImgIcon })
             {
@@ -48,44 +47,6 @@ namespace Flow.Launcher.Infrastructure.Image
                 img.Freeze();
                 ImageCache[icon, false] = img;
             }
-
-            _ = Task.Run(async () =>
-            {
-                await Stopwatch.InfoAsync(ClassName, "Preload images cost", async () =>
-                {
-                    foreach (var (path, isFullImage) in usage)
-                    {
-                        await LoadAsync(path, isFullImage);
-                    }
-                });
-                Log.Info(ClassName, $"Number of preload images is <{ImageCache.CacheSize()}>, Images Number: {ImageCache.CacheSize()}, Unique Items {ImageCache.UniqueImagesInCache()}");
-            });
-        }
-
-        public static async Task SaveAsync()
-        {
-            await storageLock.WaitAsync();
-
-            try
-            {
-                await _storage.SaveAsync(ImageCache.EnumerateEntries()
-                    .Select(x => x.Key)
-                    .ToList());
-            }
-            catch (System.Exception e)
-            {
-                Log.Exception(ClassName, "Failed to save image cache to file", e);
-            }
-            finally
-            {
-                storageLock.Release();
-            }
-        }
-
-        public static async Task WaitSaveAsync()
-        {
-            await storageLock.WaitAsync();
-            storageLock.Release();
         }
 
         private static async Task<List<(string, bool)>> LoadStorageToConcurrentDictionaryAsync()
@@ -276,6 +237,7 @@ namespace Flow.Launcher.Infrastructure.Image
 
         public static async ValueTask<ImageSource> LoadAsync(string path, bool loadFullImage = false, bool cacheImage = true)
         {
+            path = path.ToLowerInvariant();
             var imageResult = await LoadInternalAsync(path, loadFullImage);
 
             var img = imageResult.ImageSource;

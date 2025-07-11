@@ -76,9 +76,6 @@ namespace Flow.Launcher
             // UpdateManager.RestartApp() will call Environment.Exit(0)
             // which will cause ungraceful exit
             SaveAppAllSettings();
-
-            // Wait for all image caches to be saved before restarting
-            await ImageLoader.WaitSaveAsync();
         }
 
         public void ShowMainWindow() => _mainVM.Show();
@@ -103,7 +100,6 @@ namespace Flow.Launcher
                 PluginManager.Save();
                 _mainVM.Save();
             }
-            _ = ImageLoader.SaveAsync();
         }
 
         public Task ReloadAllPluginData() => PluginManager.ReloadDataAsync();

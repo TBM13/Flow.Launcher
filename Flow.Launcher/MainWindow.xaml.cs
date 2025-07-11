@@ -277,7 +277,6 @@ namespace Flow.Launcher
                 _notifyIcon.Visible = false;
                 App.API.SaveAppAllSettings();
                 e.Cancel = true;
-                await ImageLoader.WaitSaveAsync();
                 await PluginManager.DisposePluginsAsync();
                 Notification.Uninstall();
                 // After plugins are all disposed, we shutdown application to close app
