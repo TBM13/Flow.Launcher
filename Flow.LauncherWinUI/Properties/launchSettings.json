@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Flow.LauncherWinUI (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "Flow.LauncherWinUI (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

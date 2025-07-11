@@ -69,6 +69,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModernWpf", "ModernWpf\Mode
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModernWpf.Controls", "ModernWpf\ModernWpf.Controls\ModernWpf.Controls.csproj", "{F2B2048C-2CD6-6D4D-418A-86E69E716615}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flow.LauncherWinUI", "Flow.LauncherWinUI\Flow.LauncherWinUI.csproj", "{261D8C91-19BD-4E26-BC3B-D1AE97772660}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -283,6 +285,24 @@ Global
 		{F2B2048C-2CD6-6D4D-418A-86E69E716615}.Release|x64.Build.0 = Release|Any CPU
 		{F2B2048C-2CD6-6D4D-418A-86E69E716615}.Release|x86.ActiveCfg = Release|Any CPU
 		{F2B2048C-2CD6-6D4D-418A-86E69E716615}.Release|x86.Build.0 = Release|Any CPU
+		{261D8C91-19BD-4E26-BC3B-D1AE97772660}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{261D8C91-19BD-4E26-BC3B-D1AE97772660}.Debug|Any CPU.Build.0 = Debug|x64
+		{261D8C91-19BD-4E26-BC3B-D1AE97772660}.Debug|Any CPU.Deploy.0 = Debug|x64
+		{261D8C91-19BD-4E26-BC3B-D1AE97772660}.Debug|x64.ActiveCfg = Debug|x64
+		{261D8C91-19BD-4E26-BC3B-D1AE97772660}.Debug|x64.Build.0 = Debug|x64
+		{261D8C91-19BD-4E26-BC3B-D1AE97772660}.Debug|x64.Deploy.0 = Debug|x64
+		{261D8C91-19BD-4E26-BC3B-D1AE97772660}.Debug|x86.ActiveCfg = Debug|x86
+		{261D8C91-19BD-4E26-BC3B-D1AE97772660}.Debug|x86.Build.0 = Debug|x86
+		{261D8C91-19BD-4E26-BC3B-D1AE97772660}.Debug|x86.Deploy.0 = Debug|x86
+		{261D8C91-19BD-4E26-BC3B-D1AE97772660}.Release|Any CPU.ActiveCfg = Release|x64
+		{261D8C91-19BD-4E26-BC3B-D1AE97772660}.Release|Any CPU.Build.0 = Release|x64
+		{261D8C91-19BD-4E26-BC3B-D1AE97772660}.Release|Any CPU.Deploy.0 = Release|x64
+		{261D8C91-19BD-4E26-BC3B-D1AE97772660}.Release|x64.ActiveCfg = Release|x64
+		{261D8C91-19BD-4E26-BC3B-D1AE97772660}.Release|x64.Build.0 = Release|x64
+		{261D8C91-19BD-4E26-BC3B-D1AE97772660}.Release|x64.Deploy.0 = Release|x64
+		{261D8C91-19BD-4E26-BC3B-D1AE97772660}.Release|x86.ActiveCfg = Release|x86
+		{261D8C91-19BD-4E26-BC3B-D1AE97772660}.Release|x86.Build.0 = Release|x86
+		{261D8C91-19BD-4E26-BC3B-D1AE97772660}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
