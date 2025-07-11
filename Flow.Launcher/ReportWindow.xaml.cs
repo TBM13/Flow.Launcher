@@ -38,10 +38,6 @@ namespace Flow.Launcher
 
         private void SetException(Exception exception)
         {
-            var path = DataLocation.VersionLogDirectory;
-            var directory = new DirectoryInfo(path);
-            var log = directory.GetFiles().OrderByDescending(f => f.LastWriteTime).First();
-
             var websiteUrl = exception switch
             {
                 FlowPluginException pluginException => GetIssuesUrl(pluginException.Metadata.Website),
@@ -49,7 +45,7 @@ namespace Flow.Launcher
             };
 
             var paragraph = Hyperlink(App.API.GetTranslation("reportWindow_please_open_issue"), websiteUrl);
-            paragraph.Inlines.Add(string.Format(App.API.GetTranslation("reportWindow_upload_log"), log.FullName));
+            paragraph.Inlines.Add(App.API.GetTranslation("reportWindow_upload_log"));
             paragraph.Inlines.Add("\n");
             paragraph.Inlines.Add(App.API.GetTranslation("reportWindow_copy_below"));
             ErrorTextbox.Document.Blocks.Add(paragraph);

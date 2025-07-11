@@ -424,19 +424,6 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xf12b"),
-                    Title = "Open Log Location",
-                    IcoPath = "Images\\app.png",
-                    CopyText = DataLocation.VersionLogDirectory,
-                    AutoCompleteText = DataLocation.VersionLogDirectory,
-                    Action = c =>
-                    {
-                        _context.API.OpenDirectory(DataLocation.VersionLogDirectory);
-                        return true;
-                    }
-                },
-                new Result
-                {
                     Title = "Flow Launcher Tips",
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe897"),
                     IcoPath = "Images\\app.png",

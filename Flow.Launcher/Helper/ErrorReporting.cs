@@ -5,7 +5,6 @@ using System.Windows.Threading;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Exception;
 using Flow.Launcher.Infrastructure.Logger;
-using NLog;
 
 namespace Flow.Launcher.Helper;
 
@@ -13,8 +12,7 @@ public static class ErrorReporting
 {
     private static void Report(Exception e, bool silent = false, [CallerMemberName] string methodName = "UnHandledException")
     {
-        var logger = LogManager.GetLogger(methodName);
-        logger.Fatal(ExceptionFormatter.FormatExcpetion(e));
+        Log.Exception(nameof(ErrorReporting), "Unhandled Exception", e, methodName);
         if (silent) return;
         var reportWindow = new ReportWindow(e);
         reportWindow.Show();

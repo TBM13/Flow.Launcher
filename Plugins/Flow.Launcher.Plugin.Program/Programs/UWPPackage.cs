@@ -4,17 +4,17 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Principal;
-using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
-using Windows.ApplicationModel;
-using Windows.Management.Deployment;
-using Flow.Launcher.Plugin.Program.Logger;
-using Flow.Launcher.Plugin.SharedModels;
 using System.Threading.Channels;
-using System.Xml;
-using Windows.ApplicationModel.Core;
+using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
+using System.Xml;
+using Flow.Launcher.Infrastructure.Logger;
+using Flow.Launcher.Plugin.SharedModels;
 using MemoryPack;
+using Windows.ApplicationModel;
+using Windows.ApplicationModel.Core;
+using Windows.Management.Deployment;
 
 namespace Flow.Launcher.Plugin.Program.Programs
 {
@@ -59,7 +59,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 }
                 catch (Exception e)
                 {
-                    ProgramLogger.LogException($"|UWP|InitAppsInPackage|{Location}" +
+                    Log.Exception(GetType().FullName, $"|UWP|InitAppsInPackage|{Location}" +
                                                "|Unexpected exception occurs when trying to construct a Application from package"
                                                + $"{FullName} from location {Location}", e);
                 }
@@ -118,9 +118,9 @@ namespace Flow.Launcher.Plugin.Program.Programs
             }
             catch (Exception e)
             {
-                ProgramLogger.LogException($"|UWP|InitAppsInPackage|{Location}" +
-                                           "|Unexpected exception occurs when trying to construct a Application from package"
-                                           + $"{FullName} from location {Location}", e);
+                Log.Exception(GetType().FullName, $"|UWP|InitAppsInPackage|{Location}" +
+                    "|Unexpected exception occurs when trying to construct a Application from package"
+                    + $"{FullName} from location {Location}", e);
             }
         }
 
@@ -136,13 +136,12 @@ namespace Flow.Launcher.Plugin.Program.Programs
             }
             catch (FileNotFoundException e)
             {
-                ProgramLogger.LogException("UWP", "GetManifestXml", $"{Location}", "AppxManifest.xml not found.", e);
+                Log.Exception(GetType().FullName, $"{Location}: AppxManifest.xml not found.", e);
                 return null;
             }
             catch (Exception e)
             {
-                ProgramLogger.LogException("UWP", "GetManifestXml", $"{Location}",
-                    "An unexpected error occurred and unable to parse AppxManifest.xml", e);
+                Log.Exception(GetType().FullName, $"{Location}: An unexpected error occurred and unable to parse AppxManifest.xml", e);
                 return null;
             }
         }
@@ -160,14 +159,14 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     }
                 }
 
-                ProgramLogger.LogException($"|UWP|GetPackageVersionFromManifest|{Location}" +
+                Log.Exception(GetType().FullName, $"|UWP|GetPackageVersionFromManifest|{Location}" +
                                            "|Trying to get the package version of the UWP program, but an unknown UWP app-manifest version in package "
                                            + $"{FullName} from location {Location}", new FormatException());
                 return PackageVersion.Unknown;
             }
             else
             {
-                ProgramLogger.LogException($"|UWP|GetPackageVersionFromManifest|{Location}" +
+                Log.Exception(GetType().FullName, $"|UWP|GetPackageVersionFromManifest|{Location}" +
                                            "|Can't parse AppManifest.xml of package "
                                            + $"{FullName} from location {Location}",
                     new ArgumentNullException(nameof(xmlRoot)));
@@ -212,7 +211,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
 #if !DEBUG
                     catch (Exception e)
                     {
-                        ProgramLogger.LogException($"|UWP|All|{p.InstalledLocation}|An unexpected error occurred and unable to convert Package to UWP for {p.Id.FullName}", e);
+                        Log.Exception(nameof(UWPPackage), $"|UWP|All|{p.InstalledLocation}|An unexpected error occurred and unable to convert Package to UWP for {p.Id.FullName}", e);
                         return Array.Empty<UWPApp>();
                     }
 #endif
@@ -275,9 +274,8 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     }
                     catch (Exception e)
                     {
-                        ProgramLogger.LogException("UWP", "CurrentUserPackages", $"{p.Id.FullName}",
-                            "An unexpected error occurred and "
-                            + $"unable to verify if package is valid", e);
+                        Log.Exception(nameof(UWPPackage), $"{p.Id.FullName}: " +
+                            "An unexpected error occurred and unable to verify if package is valid", e);
                         return false;
                     }
                 });
@@ -435,7 +433,9 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 IcoPath = LogoPath,
                 Preview = new Result.PreviewInfo
                 {
-                    IsMedia = false, PreviewImagePath = PreviewImagePath, Description = Description
+                    IsMedia = false,
+                    PreviewImagePath = PreviewImagePath,
+                    Description = Description
                 },
                 Score = matchResult.Score,
                 TitleHighlightData = matchResult.MatchData,
@@ -535,7 +535,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
 
             if (string.IsNullOrWhiteSpace(uri))
             {
-                ProgramLogger.LogException($"|UWP|LogoPathFromUri|{Location}" +
+                Log.Exception(GetType().FullName, $"|UWP|LogoPathFromUri|{Location}" +
                                            $"|{UserModelId} 's logo uri is null or empty: {Location}",
                     new ArgumentException(null, nameof(uri)));
                 return string.Empty;
@@ -574,7 +574,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     if (String.IsNullOrEmpty(logoNamePrefix) || !Directory.Exists(logoDir))
                     {
                         // Known issue: Edge always triggers it since logo is not at uri
-                        ProgramLogger.LogException($"|UWP|LogoPathFromUri|{Location}" +
+                        Log.Exception(GetType().FullName, $"|UWP|LogoPathFromUri|{Location}" +
                                                    $"|{UserModelId} can't find logo uri for {uri} in package location (logo name or directory not found): {Location}",
                             new FileNotFoundException());
                         return string.Empty;
@@ -616,7 +616,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     }
                     else
                     {
-                        ProgramLogger.LogException($"|UWP|LogoPathFromUri|{Location}" +
+                        Log.Exception(GetType().FullName, $"|UWP|LogoPathFromUri|{Location}" +
                                                    $"|{UserModelId} can't find logo uri for {uri} in package location (can't find specified logo): {Location}",
                             new FileNotFoundException());
                         return string.Empty;
@@ -624,7 +624,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 }
                 else
                 {
-                    ProgramLogger.LogException($"|UWP|LogoPathFromUri|{Location}" +
+                    Log.Exception(GetType().FullName, $"|UWP|LogoPathFromUri|{Location}" +
                                                $"|Unable to find extension from {uri} for {UserModelId} " +
                                                $"in package location {Location}", new FileNotFoundException());
                     return string.Empty;
@@ -660,7 +660,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
         //    }
         //    else
         //    {
-        //        ProgramLogger.LogException($"|UWP|ImageFromPath|{(string.IsNullOrEmpty(path) ? "Not Available" : path)}" +
+        //        Log.Exception(GetType().FullName, $"|UWP|ImageFromPath|{(string.IsNullOrEmpty(path) ? "Not Available" : path)}" +
         //                                   $"|Unable to get logo for {UserModelId} from {path} and" +
         //                                   $" located in {Location}", new FileNotFoundException());
         //        return new BitmapImage(new Uri(Constant.MissingImgIcon));
@@ -709,7 +709,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
         //        }
         //        else
         //        {
-        //            ProgramLogger.LogException($"|UWP|PlatedImage|{Location}" +
+        //            Log.Exception(GetType().FullName, $"|UWP|PlatedImage|{Location}" +
         //                                       $"|Unable to convert background string {BackgroundColor} " +
         //                                       $"to color for {Location}", new InvalidOperationException());
 

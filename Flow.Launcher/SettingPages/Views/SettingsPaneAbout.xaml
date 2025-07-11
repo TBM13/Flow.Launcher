@@ -91,21 +91,11 @@
                         Margin="0 0 12 0"
                         Command="{Binding AskClearCacheFolderConfirmationCommand}"
                         Content="{Binding CacheFolderSize, Mode=OneWay}" />
-                    <Button
-                        Margin="0 0 12 0"
-                        Command="{Binding AskClearLogFolderConfirmationCommand}"
-                        Content="{Binding LogFolderSize, Mode=OneWay}" />
                     <Button>
                         <ui:FontIcon FontSize="20" Glyph="&#xec7a;" />
                         <ui:FlyoutService.Flyout>
                             <ui:MenuFlyout>
                                 <MenuItem Command="{Binding OpenSettingsFolderCommand}" Header="{DynamicResource settingfolder}">
-                                    <MenuItem.Icon>
-                                        <ui:FontIcon Glyph="&#xe8b7;" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
-
-                                <MenuItem Command="{Binding OpenLogsFolderCommand}" Header="{DynamicResource logfolder}">
                                     <MenuItem.Icon>
                                         <ui:FontIcon Glyph="&#xe8b7;" />
                                     </MenuItem.Icon>
@@ -127,16 +117,6 @@
                 Margin="0 14 0 0"
                 Icon="&#xE8B7;">
                 <StackPanel>
-                    <cc:Card
-                        Title="{DynamicResource logLevel}"
-                        Icon="&#xE749;"
-                        Type="Inside">
-                        <ComboBox
-                            DisplayMemberPath="Display"
-                            ItemsSource="{Binding LogLevels}"
-                            SelectedValue="{Binding LogLevel}"
-                            SelectedValuePath="Value" />
-                    </cc:Card>
                     <cc:Card
                         Title="{DynamicResource settingWindowFontTitle}"
                         Icon="&#xf259;"

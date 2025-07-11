@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Security;
 using System.Text;
+using System.Threading.Channels;
 using System.Threading.Tasks;
-using Microsoft.Win32;
-using Flow.Launcher.Plugin.Program.Logger;
+using System.Windows.Input;
+using Flow.Launcher.Infrastructure.Logger;
+using Flow.Launcher.Plugin.Program.Views.Models;
 using Flow.Launcher.Plugin.SharedCommands;
 using Flow.Launcher.Plugin.SharedModels;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Channels;
-using Flow.Launcher.Plugin.Program.Views.Models;
 using IniParser;
-using System.Windows.Input;
 using MemoryPack;
+using Microsoft.Win32;
 
 namespace Flow.Launcher.Plugin.Program.Programs
 {
@@ -316,16 +316,16 @@ namespace Flow.Launcher.Plugin.Program.Programs
             }
             catch (Exception e) when (e is SecurityException || e is UnauthorizedAccessException)
             {
-                ProgramLogger.LogException($"|Win32|Win32Program|{path}" +
-                                           $"|Permission denied when trying to load the program from {path}", e);
+                Log.Exception(nameof(Win32), $"|Win32|Win32Program|{path}" +
+                    $"|Permission denied when trying to load the program from {path}", e);
 
                 return Default;
             }
 #if !DEBUG
             catch (Exception e)
             {
-                ProgramLogger.LogException($"|Win32|Win32Program|{path}" +
-                                                "|An unexpected error occurred in the calling method Win32Program", e);
+                Log.Exception(nameof(Win32), $"|Win32|Win32Program|{path}" +
+                    "|An unexpected error occurred in the calling method Win32Program", e);
 
                 return Default;
             }
@@ -374,7 +374,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
             }
             catch (FileNotFoundException e)
             {
-                ProgramLogger.LogException($"|Win32|LnkProgram|{path}" +
+                Log.Exception(nameof(Win32), $"|Win32|LnkProgram|{path}" +
                                            "|An unexpected error occurred in the calling method LnkProgram", e);
 
                 return Default;
@@ -382,7 +382,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
 #if !DEBUG //Only do a catch all in production. This is so make developer aware of any unhandled exception and add the exception handling in.
             catch (Exception e)
             {
-                ProgramLogger.LogException($"|Win32|LnkProgram|{path}" +
+                Log.Exception(nameof(Win32), $"|Win32|LnkProgram|{path}" +
                                                 "|An unexpected error occurred in the calling method LnkProgram", e);
 
                 return Default;
@@ -442,14 +442,14 @@ namespace Flow.Launcher.Plugin.Program.Programs
             }
             catch (FileNotFoundException e)
             {
-                ProgramLogger.LogException($"|Win32|ExeProgram|{path}" +
+                Log.Exception(nameof(Win32), $"|Win32|ExeProgram|{path}" +
                                            $"|File not found when trying to load the program from {path}", e);
 
                 return Default;
             }
             catch (Exception e) when (e is SecurityException || e is UnauthorizedAccessException)
             {
-                ProgramLogger.LogException($"|Win32|ExeProgram|{path}" +
+                Log.Exception(nameof(Win32), $"|Win32|ExeProgram|{path}" +
                                            $"|Permission denied when trying to load the program from {path}", e);
 
                 return Default;
@@ -585,7 +585,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
             }
             catch (Exception e) when (e is SecurityException || e is UnauthorizedAccessException)
             {
-                ProgramLogger.LogException($"|Win32|GetProgramPathFromRegistrySubKeys|{path}" +
+                Log.Exception(nameof(Win32), $"|Win32|GetProgramPathFromRegistrySubKeys|{path}" +
                                            $"|Permission denied when trying to load the program from {path}", e);
 
                 return string.Empty;
@@ -718,7 +718,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
 #if !DEBUG //Only do a catch all in production.
             catch (Exception e)
             {
-                ProgramLogger.LogException("|Win32|All|Not available|An unexpected error occurred", e);
+                Log.Exception(nameof(Win32), "|Win32|All|Not available|An unexpected error occurred", e);
 
                 return Array.Empty<Win32>();
             }

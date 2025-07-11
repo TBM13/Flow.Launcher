@@ -239,9 +239,6 @@ namespace Flow.Launcher.Infrastructure.UserSettings
             }
         };
 
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public LOGLEVEL LogLevel { get; set; } = LOGLEVEL.INFO;
-
         public bool AlwaysPreview { get; set; } = false;
 
         private SearchPrecisionScore _querySearchPrecision = SearchPrecisionScore.Regular;

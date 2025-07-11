@@ -43,7 +43,6 @@ namespace Flow.Launcher.Infrastructure
 
         public const string Themes = "Themes";
         public const string Settings = "Settings";
-        public const string Logs = "Logs";
         public const string Cache = "Cache";
 
         public const string Website = "https://flowlauncher.com";

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
-using Flow.Launcher.Plugin.Program.Logger;
+using Flow.Launcher.Infrastructure.Logger;
 using Windows.Win32.Foundation;
-using Windows.Win32.UI.Shell;
 using Windows.Win32.Storage.FileSystem;
+using Windows.Win32.UI.Shell;
 
 namespace Flow.Launcher.Plugin.Program.Programs
 {
@@ -46,8 +46,8 @@ namespace Flow.Launcher.Plugin.Program.Programs
             }
             catch (COMException e)
             {
-                ProgramLogger.LogException($"|IShellLinkW|retrieveTargetPath|{path}" +
-                "|Error occurred while getting program arguments", e);
+                Log.Exception(GetType().FullName, $"|IShellLinkW|retrieveTargetPath|{path}" +
+                    "|Error occurred while getting program arguments", e);
             }
 
             // To set the app description
@@ -64,9 +64,8 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 catch (COMException e)
                 {
                     // C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\MiracastView.lnk always cause exception
-                    ProgramLogger.LogException($"|IShellLinkW|retrieveTargetPath|{path}" +
-                                               "|Error caused likely due to trying to get the description of the program",
-                        e);
+                    Log.Exception(GetType().FullName, $"|IShellLinkW|retrieveTargetPath|{path}" +
+                        "|Error caused likely due to trying to get the description of the program", e);
                 }
 
                 fixed (char* bufferPtr = buffer)

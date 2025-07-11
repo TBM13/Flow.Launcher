@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using CommunityToolkit.Mvvm.Input;
-using Flow.Launcher.Core;
 using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Infrastructure.Logger;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Plugin;
 
@@ -18,15 +15,6 @@ public partial class SettingsPaneAboutViewModel : BaseModel
     private static readonly string ClassName = nameof(SettingsPaneAboutViewModel);
 
     private readonly Settings _settings;
-
-    public string LogFolderSize
-    {
-        get
-        {
-            var size = GetLogFiles().Sum(file => file.Length);
-            return $"{App.API.GetTranslation("clearlogfolder")} ({BytesToReadableString(size)})";
-        }
-    }
 
     public string CacheFolderSize
     {
@@ -54,52 +42,9 @@ public partial class SettingsPaneAboutViewModel : BaseModel
         _settings.ActivateTimes
     );
 
-    public class LogLevelData : DropdownDataGeneric<LOGLEVEL> { }
-
-    public List<LogLevelData> LogLevels { get; } =
-        DropdownDataGeneric<LOGLEVEL>.GetValues<LogLevelData>("LogLevel");
-
-    public LOGLEVEL LogLevel
-    {
-        get => _settings.LogLevel;
-        set
-        {
-            if (_settings.LogLevel != value)
-            {
-                _settings.LogLevel = value;
-
-                Log.SetLogLevel(value);
-            }
-        }
-    }
-
     public SettingsPaneAboutViewModel(Settings settings)
     {
         _settings = settings;
-        UpdateEnumDropdownLocalizations();
-    }
-
-    private void UpdateEnumDropdownLocalizations()
-    {
-        DropdownDataGeneric<LOGLEVEL>.UpdateLabels(LogLevels);
-    }
-
-    [RelayCommand]
-    private void AskClearLogFolderConfirmation()
-    {
-        var confirmResult = App.API.ShowMsgBox(
-            App.API.GetTranslation("clearlogfolderMessage"),
-            App.API.GetTranslation("clearlogfolder"),
-            MessageBoxButton.YesNo
-        );
-
-        if (confirmResult == MessageBoxResult.Yes)
-        {
-            if (!ClearLogFolder())
-            {
-                App.API.ShowMsgBox(App.API.GetTranslation("clearfolderfailMessage"));
-            }
-        }
     }
 
     [RelayCommand]
@@ -138,64 +83,6 @@ public partial class SettingsPaneAboutViewModel : BaseModel
     private void OpenCacheFolder()
     {
         App.API.OpenDirectory(DataLocation.CacheDirectory);
-    }
-
-    [RelayCommand]
-    private void OpenLogsFolder()
-    {
-        App.API.OpenDirectory(GetLogDir(Constant.Version).FullName);
-    }
-
-    private bool ClearLogFolder()
-    {
-        var success = true;
-        var logDirectory = GetLogDir();
-        var logFiles = GetLogFiles();
-
-        logFiles.ForEach(f =>
-        {
-            try
-            {
-                f.Delete();
-            }
-            catch (Exception e)
-            {
-                App.API.LogException(ClassName, $"Failed to delete log file: {f.Name}", e);
-                success = false;
-            }
-        });
-
-        logDirectory.EnumerateDirectories("*", SearchOption.TopDirectoryOnly)
-            // Do not clean log files of current version
-            .Where(dir => !Constant.Version.Equals(dir.Name))
-            .ToList()
-            .ForEach(dir =>
-            {
-                try
-                {
-                    // Log folders are the last level of folders
-                    dir.Delete(recursive: false);
-                }
-                catch (Exception e)
-                {
-                    App.API.LogException(ClassName, $"Failed to delete log directory: {dir.Name}", e);
-                    success = false;
-                }
-            });
-
-        OnPropertyChanged(nameof(LogFolderSize));
-
-        return success;
-    }
-
-    private static DirectoryInfo GetLogDir(string version = "")
-    {
-        return new DirectoryInfo(Path.Combine(DataLocation.LogDirectory, version));
-    }
-
-    private static List<FileInfo> GetLogFiles(string version = "")
-    {
-        return GetLogDir(version).EnumerateFiles("*", SearchOption.AllDirectories).ToList();
     }
 
     private bool ClearCacheFolder()
