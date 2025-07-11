@@ -237,7 +237,9 @@ namespace Flow.Launcher.Infrastructure.Image
 
         public static async ValueTask<ImageSource> LoadAsync(string path, bool loadFullImage = false, bool cacheImage = true)
         {
-            path = path.ToLowerInvariant();
+            if (path != null)
+                path = path.ToLowerInvariant();
+
             var imageResult = await LoadInternalAsync(path, loadFullImage);
 
             var img = imageResult.ImageSource;
