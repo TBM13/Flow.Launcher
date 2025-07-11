@@ -1,0 +1,3 @@
+[submodule "ModernWpf"]
+	path = ModernWpf
+	url = https://github.com/TBM13/ModernWpf.git
