@@ -116,9 +116,11 @@ namespace Flow.Launcher.Infrastructure.Image
 
                 if (path.StartsWith("data:image", StringComparison.OrdinalIgnoreCase))
                 {
-                    var imageSource = new BitmapImage(new Uri(path));
+                    throw new NotSupportedException();
+
+                    /*var imageSource = new BitmapImage(new Uri(path));
                     imageSource.Freeze();
-                    return new ImageResult(imageSource, ImageType.Data);
+                    return new ImageResult(imageSource, ImageType.Data);*/
                 }
 
                 imageResult = await Task.Run(() => GetThumbnailResult(ref path, loadFullImage));

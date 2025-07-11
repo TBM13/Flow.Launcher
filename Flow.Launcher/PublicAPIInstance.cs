@@ -55,7 +55,6 @@ namespace Flow.Launcher
             _settings = settings;
             _mainVM = mainVM;
             GlobalHotkey.hookedKeyboardCallback = KListener_hookedKeyboardCallback;
-            WebRequest.RegisterPrefix("data", new DataWebRequestFactory());
         }
 
         #endregion
