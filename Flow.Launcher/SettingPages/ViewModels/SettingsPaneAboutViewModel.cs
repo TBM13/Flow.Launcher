@@ -169,23 +169,4 @@ public partial class SettingsPaneAboutViewModel : BaseModel
 
         return "0 B";
     }
-
-    public string SettingWindowFont
-    {
-        get => _settings.SettingWindowFont;
-        set
-        {
-            if (_settings.SettingWindowFont != value)
-            {
-                _settings.SettingWindowFont = value;
-                OnPropertyChanged();
-            }
-        }
-    }
-
-    [RelayCommand]
-    private void ResetSettingWindowFont()
-    {
-        SettingWindowFont = Win32Helper.GetSystemDefaultFont(false);
-    }
 }

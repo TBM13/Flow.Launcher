@@ -27,11 +27,6 @@ namespace Flow.Launcher.Infrastructure.UserSettings
         {
             // Initialize dependency injection instances after Ioc.Default is created
             _stringMatcher = Ioc.Default.GetRequiredService<StringMatcher>();
-
-            // Initialize application resources after application is created
-            var settingWindowFont = new FontFamily(SettingWindowFont);
-            Application.Current.Resources["SettingWindowFont"] = settingWindowFont;
-            Application.Current.Resources["ContentControlThemeFontFamily"] = settingWindowFont;
         }
 
         public void Save()
@@ -107,25 +102,6 @@ namespace Flow.Launcher.Infrastructure.UserSettings
         public bool UseGlyphIcons { get; set; } = true;
         public bool ShowBadges { get; set; } = false;
         public bool ShowBadgesGlobalOnly { get; set; } = false;
-
-        private string _settingWindowFont { get; set; } = Win32Helper.GetSystemDefaultFont(false);
-        public string SettingWindowFont
-        {
-            get => _settingWindowFont;
-            set
-            {
-                if (_settingWindowFont != value)
-                {
-                    _settingWindowFont = value;
-                    OnPropertyChanged();
-                    if (Application.Current != null)
-                    {
-                        Application.Current.Resources["SettingWindowFont"] = new FontFamily(value);
-                        Application.Current.Resources["ContentControlThemeFontFamily"] = new FontFamily(value);
-                    }
-                }
-            }
-        }
 
         public bool UseClock { get; set; } = true;
         public string TimeFormat { get; set; } = "hh:mm tt";

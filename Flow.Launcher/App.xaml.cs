@@ -163,10 +163,6 @@ namespace Flow.Launcher
                 // So set to OnExplicitShutdown to prevent the application from shutting down before main window is created
                 Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
-                // Update dynamic resources base on settings
-                Current.Resources["SettingWindowFont"] = new FontFamily(_settings.SettingWindowFont);
-                Current.Resources["ContentControlThemeFontFamily"] = new FontFamily(_settings.SettingWindowFont);
-
                 Notification.Install();
 
                 // Enable Win32 dark mode if the system is in dark mode before creating all windows

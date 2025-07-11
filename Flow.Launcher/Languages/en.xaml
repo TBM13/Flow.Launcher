@@ -282,7 +282,6 @@
     <system:String x:Key="userdatapathToolTip">User settings and installed plugins are saved in the user data folder. This location may vary depending on whether it's in portable mode or not.</system:String>
     <system:String x:Key="userdatapathButton">Open Folder</system:String>
     <system:String x:Key="advanced">Advanced</system:String>
-    <system:String x:Key="settingWindowFontTitle">Setting Window Font</system:String>
 
     <!--  FileManager Setting Dialog  -->
     <system:String x:Key="fileManagerWindow">Select File Manager</system:String>

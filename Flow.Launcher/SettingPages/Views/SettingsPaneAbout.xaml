@@ -112,30 +112,6 @@
                 </StackPanel>
             </cc:Card>
 
-            <cc:ExCard
-                Title="{DynamicResource advanced}"
-                Margin="0 14 0 0"
-                Icon="&#xE8B7;">
-                <StackPanel>
-                    <cc:Card
-                        Title="{DynamicResource settingWindowFontTitle}"
-                        Icon="&#xf259;"
-                        Type="Inside">
-                        <StackPanel Orientation="Horizontal">
-                            <Button Command="{Binding ResetSettingWindowFontCommand}" Content="{DynamicResource commonReset}" />
-                            <ComboBox
-                                Margin="12 8 0 8"
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Top"
-                                DisplayMemberPath="Source"
-                                ItemsSource="{Binding Source={StaticResource SortedFonts}}"
-                                SelectedValue="{Binding SettingWindowFont, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                SelectedValuePath="Source" />
-                        </StackPanel>
-                    </cc:Card>
-                </StackPanel>
-            </cc:ExCard>
-
             <TextBlock
                 Margin="14 20 0 0"
                 HorizontalAlignment="Center"

@@ -239,9 +239,6 @@ namespace Flow.Launcher
                     case nameof(Settings.KeepMaxResults):
                         SetupResizeMode();
                         break;
-                    case nameof(Settings.SettingWindowFont):
-                        InitializeContextMenu();
-                        break;
                     case nameof(Settings.ShowHomePage):
                         if (_viewModel.QueryResultsSelected() && string.IsNullOrEmpty(_viewModel.QueryText))
                         {
