@@ -37,11 +37,6 @@ public partial class SettingsPaneAboutViewModel : BaseModel
         _ => Constant.Version
     };
 
-    public string ActivatedTimes => string.Format(
-        App.API.GetTranslation("about_activate_times"),
-        _settings.ActivateTimes
-    );
-
     public SettingsPaneAboutViewModel(Settings settings)
     {
         _settings = settings;

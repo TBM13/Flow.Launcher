@@ -195,9 +195,6 @@ namespace Flow.Launcher
 
                                     // Focus query box
                                     QueryTextBox.Focus();
-
-                                    // Update activate times
-                                    _settings.ActivateTimes++;
                                 }
                             });
                             break;

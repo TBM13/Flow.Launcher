@@ -295,8 +295,6 @@ namespace Flow.Launcher.Infrastructure.UserSettings
 
         public int MaxResultsToShow { get; set; } = 5;
 
-        public int ActivateTimes { get; set; }
-
         public ObservableCollection<CustomPluginHotkey> CustomPluginHotkeys { get; set; } = new ObservableCollection<CustomPluginHotkey>();
 
         public ObservableCollection<CustomShortcutModel> CustomShortcuts { get; set; } = new ObservableCollection<CustomShortcutModel>();

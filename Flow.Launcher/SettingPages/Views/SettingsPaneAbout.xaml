@@ -111,16 +111,6 @@
                     </Button>
                 </StackPanel>
             </cc:Card>
-
-            <TextBlock
-                Margin="14 20 0 0"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Bottom"
-                DockPanel.Dock="Bottom"
-                FontSize="12"
-                Foreground="{DynamicResource Color15B}"
-                Text="{Binding ActivatedTimes}"
-                TextWrapping="WrapWithOverflow" />
         </StackPanel>
     </ScrollViewer>
 </ui:Page>
