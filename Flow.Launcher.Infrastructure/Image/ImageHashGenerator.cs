@@ -23,13 +23,12 @@ namespace Flow.Launcher.Infrastructure.Image
             {
                 using var outStream = new MemoryStream();
                 var enc = new JpegBitmapEncoder();
-                var bitmapFrame = BitmapFrame.Create(image);
+                var bitmapFrame = BitmapFrame.Create(image, null, null, null);
                 bitmapFrame.Freeze();
                 enc.Frames.Add(bitmapFrame);
                 enc.Save(outStream);
                 var byteArray = outStream.GetBuffer();
-                using var sha1 = SHA1.Create();
-                var hash = Convert.ToBase64String(sha1.ComputeHash(byteArray));
+                var hash = Convert.ToBase64String(SHA1.HashData(byteArray));
                 return hash;
             }
             catch
