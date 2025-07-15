@@ -29,7 +29,6 @@ namespace Flow.Launcher.Infrastructure.UserSettings
                         settings.Version = metadata.Version;
                     }
                     settings.DefaultActionKeywords = metadata.ActionKeywords; // metadata provides default values
-                    settings.DefaultSearchDelayTime = metadata.SearchDelayTime; // metadata provides default values
 
                     // update metadata values with settings
                     if (settings.ActionKeywords?.Count > 0)
@@ -44,7 +43,6 @@ namespace Flow.Launcher.Infrastructure.UserSettings
                     }
                     metadata.Disabled = settings.Disabled;
                     metadata.Priority = settings.Priority;
-                    metadata.SearchDelayTime = settings.SearchDelayTime;
                     metadata.HomeDisabled = settings.HomeDisabled;
                 }
                 else
@@ -59,9 +57,7 @@ namespace Flow.Launcher.Infrastructure.UserSettings
                         ActionKeywords = metadata.ActionKeywords, // use default value
                         Disabled = metadata.Disabled,
                         HomeDisabled = metadata.HomeDisabled,
-                        Priority = metadata.Priority,
-                        DefaultSearchDelayTime = metadata.SearchDelayTime, // metadata provides default values
-                        SearchDelayTime = metadata.SearchDelayTime, // use default value
+                        Priority = metadata.Priority
                     };
                 }
             }
@@ -98,11 +94,6 @@ namespace Flow.Launcher.Infrastructure.UserSettings
         public List<string> ActionKeywords { get; set; }
 
         public int Priority { get; set; }
-
-        [JsonIgnore]
-        public int? DefaultSearchDelayTime { get; set; }
-
-        public int? SearchDelayTime { get; set; }
 
         /// <summary>
         /// Used only to save the state of the plugin in settings

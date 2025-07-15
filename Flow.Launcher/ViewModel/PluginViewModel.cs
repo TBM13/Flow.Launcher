@@ -91,26 +91,6 @@ namespace Flow.Launcher.ViewModel
             }
         }
 
-        public double PluginSearchDelayTime
-        {
-            get => PluginPair.Metadata.SearchDelayTime == null ?
-                double.NaN :
-                PluginPair.Metadata.SearchDelayTime.Value;
-            set
-            {
-                if (double.IsNaN(value))
-                {
-                    PluginPair.Metadata.SearchDelayTime = null;
-                    PluginSettingsObject.SearchDelayTime = null;
-                }
-                else
-                {
-                    PluginPair.Metadata.SearchDelayTime = (int)value;
-                    PluginSettingsObject.SearchDelayTime = (int)value;
-                }
-            }
-        }
-
         private Control _settingControl;
         private bool _isExpanded;
 
@@ -142,12 +122,7 @@ namespace Flow.Launcher.ViewModel
             App.API.GetTranslation("plugin_query_time") + " " +
             PluginPair.Metadata.AvgQueryTime + "ms";
         public string ActionKeywordsText => string.Join(Query.ActionKeywordSeparator, PluginPair.Metadata.ActionKeywords);
-        public string SearchDelayTimeText => PluginPair.Metadata.SearchDelayTime == null ?
-            App.API.GetTranslation("default") :
-            App.API.GetTranslation($"SearchDelayTime{PluginPair.Metadata.SearchDelayTime}");
         public Infrastructure.UserSettings.Plugin PluginSettingsObject { get; init; }
-        public bool SearchDelayEnabled => Settings.SearchQueryResultsWithDelay;
-        public string DefaultSearchDelay => Settings.SearchDelayTime.ToString();
         public bool HomeEnabled => Settings.ShowHomePage && PluginManager.IsHomePlugin(PluginPair.Metadata.ID);
 
         public void OnActionKeywordsTextChanged()

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Windows;
+using System.Windows.Controls;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Infrastructure.UserSettings;
@@ -61,20 +61,6 @@ public partial class SettingsPanePluginsViewModel : BaseModel
             if (_isPrioritySelected != value)
             {
                 _isPrioritySelected = value;
-                OnPropertyChanged();
-            }
-        }
-    }
-
-    private bool _isSearchDelaySelected;
-    public bool IsSearchDelaySelected
-    {
-        get => _isSearchDelaySelected;
-        set
-        {
-            if (_isSearchDelaySelected != value)
-            {
-                _isSearchDelaySelected = value;
                 OnPropertyChanged();
             }
         }
@@ -157,18 +143,6 @@ public partial class SettingsPanePluginsViewModel : BaseModel
                     },
                     new TextBlock
                     {
-                        Text = (string)Application.Current.Resources["searchDelay"],
-                        FontSize = 18,
-                        Margin = new Thickness(0, 24, 0, 10),
-                        TextWrapping = TextWrapping.Wrap
-                    },
-                    new TextBlock
-                    {
-                        Text = (string)Application.Current.Resources["searchDelayTimeTips"],
-                        TextWrapping = TextWrapping.Wrap
-                    },
-                    new TextBlock
-                    {
                         Text = (string)Application.Current.Resources["homeTitle"],
                         FontSize = 18,
                         Margin = new Thickness(0, 24, 0, 10),
@@ -201,25 +175,16 @@ public partial class SettingsPanePluginsViewModel : BaseModel
             case DisplayMode.Priority:
                 IsOnOffSelected = false;
                 IsPrioritySelected = true;
-                IsSearchDelaySelected = false;
-                IsHomeOnOffSelected = false;
-                break;
-            case DisplayMode.SearchDelay:
-                IsOnOffSelected = false;
-                IsPrioritySelected = false;
-                IsSearchDelaySelected = true;
                 IsHomeOnOffSelected = false;
                 break;
             case DisplayMode.HomeOnOff:
                 IsOnOffSelected = false;
                 IsPrioritySelected = false;
-                IsSearchDelaySelected = false;
                 IsHomeOnOffSelected = true;
                 break;
             default:
                 IsOnOffSelected = true;
                 IsPrioritySelected = false;
-                IsSearchDelaySelected = false;
                 IsHomeOnOffSelected = false;
                 break;
         }
@@ -230,6 +195,5 @@ public enum DisplayMode
 {
     OnOff,
     Priority,
-    SearchDelay,
     HomeOnOff
 }

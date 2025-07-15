@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Windows.Forms;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core.Resource;
-using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Plugin;
 using Flow.Launcher.Plugin.SharedModels;
@@ -55,19 +52,6 @@ public partial class SettingsPaneGeneralViewModel : BaseModel
 
     public List<LastQueryModeData> LastQueryModes { get; } =
         DropdownDataGeneric<LastQueryMode>.GetValues<LastQueryModeData>("LastQuery");
-
-    public int SearchDelayTimeValue
-    {
-        get => Settings.SearchDelayTime;
-        set
-        {
-            if (Settings.SearchDelayTime != value)
-            {
-                Settings.SearchDelayTime = value;
-                OnPropertyChanged();
-            }
-        }
-    }
 
     private void UpdateEnumDropdownLocalizations()
     {

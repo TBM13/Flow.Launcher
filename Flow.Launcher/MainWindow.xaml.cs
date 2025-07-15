@@ -958,13 +958,13 @@ namespace Flow.Launcher
 
         #endregion
 
-        #region Search Delay
+        #region Search
 
         private void QueryTextBox_TextChanged1(object sender, TextChangedEventArgs e)
         {
             var textBox = (TextBox)sender;
             _viewModel.QueryText = textBox.Text;
-            _viewModel.Query(_settings.SearchQueryResultsWithDelay);
+            _viewModel.Query(false);
         }
 
         #endregion

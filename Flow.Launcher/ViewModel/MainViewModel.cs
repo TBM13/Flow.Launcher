@@ -1217,15 +1217,6 @@ namespace Flow.Launcher.ViewModel
             {
                 App.API.LogDebug(ClassName, $"Wait for querying plugin <{plugin.Metadata.Name}>");
 
-                if (searchDelay && !currentIsHomeQuery) // Do not delay for home query
-                {
-                    var searchDelayTime = plugin.Metadata.SearchDelayTime ?? Settings.SearchDelayTime;
-
-                    await Task.Delay(searchDelayTime, token);
-
-                    if (token.IsCancellationRequested) return;
-                }
-
                 // Since it is wrapped within a ThreadPool Thread, the synchronous context is null
                 // Task.Yield will force it to run in ThreadPool
                 await Task.Yield();

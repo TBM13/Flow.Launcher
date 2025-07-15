@@ -105,11 +105,6 @@
     <system:String x:Key="ShouldUsePinyinToolTip">Allows using Pinyin to search. Pinyin is the standard system of romanized spelling for translating Chinese.</system:String>
     <system:String x:Key="AlwaysPreview">Always Preview</system:String>
     <system:String x:Key="AlwaysPreviewToolTip">Always open preview panel when Flow activates. Press {0} to toggle preview.</system:String>
-    <system:String x:Key="searchDelay">Search Delay</system:String>
-    <system:String x:Key="searchDelayToolTip">Adds a short delay while typing to reduce UI flicker and result load. Recommended if your typing speed is average.</system:String>
-    <system:String x:Key="searchDelayNumberBoxToolTip">Enter the wait time (in ms) until input is considered complete. This can only be edited if Search Delay is enabled.</system:String>
-    <system:String x:Key="searchDelayTime">Default Search Delay Time</system:String>
-    <system:String x:Key="searchDelayTimeToolTip">Wait time before showing results after typing stops. Higher values wait longer. (ms)</system:String>
     <system:String x:Key="homePage">Home Page</system:String>
     <system:String x:Key="homePageToolTip">Show home page results when query text is empty.</system:String>
     <system:String x:Key="homeToggleBoxToolTip">This can only be edited if plugin supports Home feature and Home Page is enabled.</system:String>
@@ -131,12 +126,9 @@
     <system:String x:Key="currentActionKeywords">Current action keyword</system:String>
     <system:String x:Key="newActionKeyword">New action keyword</system:String>
     <system:String x:Key="actionKeywordsTooltip">Change Action Keywords</system:String>
-    <system:String x:Key="pluginSearchDelayTime">Plugin search delay time</system:String>
-    <system:String x:Key="pluginSearchDelayTimeTooltip">Change Plugin Search Delay Time</system:String>
     <system:String x:Key="FilterComboboxLabel">Advanced Settings:</system:String>
     <system:String x:Key="DisplayModeOnOff">Enabled</system:String>
     <system:String x:Key="DisplayModePriority">Priority</system:String>
-    <system:String x:Key="DisplayModeSearchDelay">Search Delay</system:String>
     <system:String x:Key="DisplayModeHomeOnOff">Home Page</system:String>
     <system:String x:Key="currentPriority">Current Priority</system:String>
     <system:String x:Key="newPriority">New Priority</system:String>
@@ -322,11 +314,7 @@
     <system:String x:Key="failedToCopy">Failed to copy</system:String>
     <system:String x:Key="actionkeyword_tips">Enter the action keywords you like to use to start the plugin and use whitespace to divide them. Use * if you don't want to specify any, and the plugin will be triggered without any action keywords.</system:String>
 
-    <!--  Search Delay Settings Dialog  -->
-    <system:String x:Key="searchDelayTimeTitle">Search Delay Time Setting</system:String>
-    <system:String x:Key="searchDelayTimeTips">Input the search delay time in ms you like to use for the plugin. Input empty if you don't want to specify any, and the plugin will use default search delay time.</system:String>
-
-    <!--  Search Delay Settings Dialog  -->
+    <!--  Home Page  -->
     <system:String x:Key="homeTitle">Home Page</system:String>
     <system:String x:Key="homeTips">Enable the plugin home page state if you like to show the plugin results when query is empty.</system:String>
 
