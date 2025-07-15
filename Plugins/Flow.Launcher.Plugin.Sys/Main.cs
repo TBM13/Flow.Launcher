@@ -5,13 +5,10 @@ using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
-using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Infrastructure.UserSettings;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Security;
 using Windows.Win32.System.Shutdown;
-using Application = System.Windows.Application;
 using Control = System.Windows.Controls.Control;
 
 namespace Flow.Launcher.Plugin.Sys
@@ -29,20 +26,9 @@ namespace Flow.Launcher.Plugin.Sys
             {"Lock", "flowlauncher_plugin_sys_lock_cmd"},
             {"Sleep", "flowlauncher_plugin_sys_sleep_cmd"},
             {"Hibernate", "flowlauncher_plugin_sys_hibernate_cmd"},
-            {"Index Option", "flowlauncher_plugin_sys_indexoption_cmd"},
             {"Empty Recycle Bin", "flowlauncher_plugin_sys_emptyrecyclebin_cmd"},
             {"Open Recycle Bin", "flowlauncher_plugin_sys_openrecyclebin_cmd"},
-            {"Exit", "flowlauncher_plugin_sys_exit_cmd"},
-            {"Save Settings", "flowlauncher_plugin_sys_save_all_settings_cmd"},
-            {"Restart Flow Launcher", "flowlauncher_plugin_sys_restart_cmd"},
-            {"Settings", "flowlauncher_plugin_sys_setting_cmd"},
-            {"Reload Plugin Data", "flowlauncher_plugin_sys_reload_plugin_data_cmd"},
-            {"Check For Update", "flowlauncher_plugin_sys_check_for_update_cmd"},
-            {"Open Log Location", "flowlauncher_plugin_sys_open_log_location_cmd"},
-            {"Flow Launcher Tips", "flowlauncher_plugin_sys_open_docs_tips_cmd"},
-            {"Flow Launcher UserData Folder", "flowlauncher_plugin_sys_open_userdata_location_cmd"},
             {"Toggle Game Mode", "flowlauncher_plugin_sys_toggle_game_mode_cmd"},
-            {"Set Flow Launcher Theme", "flowlauncher_plugin_sys_theme_selector_cmd"}
         };
         private readonly Dictionary<string, string> KeywordDescriptionMappings = new();
 
@@ -308,17 +294,6 @@ namespace Flow.Launcher.Plugin.Sys
                         return true;
                     }
                 },
-                 new Result
-                {
-                    Title = "Index Option",
-                    IcoPath = "Images\\indexoption.png",
-                    Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe773"),
-                    Action = c =>
-                    {
-                        Process.Start("control.exe", "srchadmin.dll");
-                        return true;
-                    }
-                },
                 new Result
                 {
                     Title = "Empty Recycle Bin",
@@ -357,99 +332,6 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = "Exit",
-                    IcoPath = "Images\\app.png",
-                    Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe89f"),
-                    Action = c =>
-                    {
-                        _context.API.HideMainWindow();
-                        Application.Current.MainWindow.Close();
-                        return true;
-                    }
-                },
-                new Result
-                {
-                    Title = "Save Settings",
-                    Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xea35"),
-                    IcoPath = "Images\\app.png",
-                    Action = c =>
-                    {
-                        _context.API.SaveAppAllSettings();
-                        _context.API.ShowMsg(_context.API.GetTranslation("flowlauncher_plugin_sys_dlgtitle_success"),
-                            _context.API.GetTranslation("flowlauncher_plugin_sys_dlgtext_all_settings_saved"));
-                        return true;
-                    }
-                },
-                new Result
-                {
-                    Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe72c"),
-                    Title = "Restart Flow Launcher",
-                    IcoPath = "Images\\app.png",
-                    Action = c =>
-                    {
-                        _context.API.RestartApp();
-                        return false;
-                    }
-                },
-                new Result
-                {
-                    Title = "Settings",
-                    Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xf210"),
-                    IcoPath = "Images\\app.png",
-                    Action = c =>
-                    {
-                        _context.API.OpenSettingDialog();
-                        return true;
-                    }
-                },
-                new Result
-                {
-                    Title = "Reload Plugin Data",
-                    IcoPath = "Images\\app.png",
-                    Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe72c"),
-                    Action = c =>
-                    {
-                        // Hide the window first then show msg after done because sometimes the reload could take a while, so not to make user think it's frozen. 
-                        _context.API.HideMainWindow();
-
-                        _ = _context.API.ReloadAllPluginData().ContinueWith(_ =>
-                            _context.API.ShowMsg(
-                                _context.API.GetTranslation("flowlauncher_plugin_sys_dlgtitle_success"),
-                                _context.API.GetTranslation(
-                                    "flowlauncher_plugin_sys_dlgtext_all_applicableplugins_reloaded")),
-                            System.Threading.Tasks.TaskScheduler.Current);
-
-                        return true;
-                    }
-                },
-                new Result
-                {
-                    Title = "Flow Launcher Tips",
-                    Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe897"),
-                    IcoPath = "Images\\app.png",
-                    CopyText = Constant.Documentation,
-                    AutoCompleteText = Constant.Documentation,
-                    Action = c =>
-                    {
-                        _context.API.OpenUrl(Constant.Documentation);
-                        return true;
-                    }
-                },
-                new Result
-                {
-                    Title = "Flow Launcher UserData Folder",
-                    Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xf12b"),
-                    IcoPath = "Images\\app.png",
-                    CopyText = DataLocation.DataDirectory(),
-                    AutoCompleteText = DataLocation.DataDirectory(),
-                    Action = c =>
-                    {
-                        _context.API.OpenDirectory(DataLocation.DataDirectory());
-                        return true;
-                    }
-                },
-                new Result
-                {
                     Title = "Toggle Game Mode",
                     IcoPath = "Images\\app.png",
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\ue7fc"),
@@ -457,17 +339,6 @@ namespace Flow.Launcher.Plugin.Sys
                     {
                         _context.API.ToggleGameMode();
                         return true;
-                    }
-                },
-                new Result
-                {
-                    Title = "Set Flow Launcher Theme",
-                    IcoPath = "Images\\app.png",
-                    Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\ue790"),
-                    Action = c =>
-                    {
-                        _context.API.ChangeQuery($"{ThemeSelector.Keyword} ");
-                        return false;
                     }
                 }
             });

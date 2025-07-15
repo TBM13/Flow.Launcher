@@ -311,16 +311,6 @@ Or download the [early access version](https://github.com/Flow-Launcher/Prerelea
 | Hibernate                          | Hibernate computer                                                          |
 | Empty Recycle Bin                  | Empty recycle bin                                                           |
 | Open Recycle Bin                   | Open recycle bin                                                            |
-| Exit                               | Close Flow Launcher                                                         |
-| Save Settings                      | Save all Flow Launcher settings                                             |
-| Restart Flow Launcher              | Restart Flow Launcher                                                       |
-| Settings                           | Tweak this app                                                              |
-| Reload Plugin Data                 | Refreshes plugin data with new content                                      |
-| Check For Update                   | Check for new Flow Launcher update                                          |
-| Open Log Location                  | Open Flow Launcher's log location                                           |
-| Index Option                       | Open Windows Search Index window                                            |
-| Flow Launcher Tips                 | Visit Flow Launcher's documentation for more help and how to use tips       |
-| Flow Launcher UserData Folder      | Open the location where Flow Launcher's settings are stored                 |
 | Toggle Game Mode                   | Toggle Game Mode                                                            |
 
 ### 💁‍♂️ Tips

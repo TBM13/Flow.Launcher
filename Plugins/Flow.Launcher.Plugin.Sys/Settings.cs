@@ -52,11 +52,6 @@ public class Settings : BaseModel
         },
         new()
         {
-            Key = "Index Option",
-            Keyword = "Index Option"
-        },
-        new()
-        {
             Key = "Empty Recycle Bin",
             Keyword = "Empty Recycle Bin"
         },
@@ -64,61 +59,6 @@ public class Settings : BaseModel
         {
             Key = "Open Recycle Bin",
             Keyword = "Open Recycle Bin"
-        },
-        new()
-        {
-            Key = "Exit",
-            Keyword = "Exit"
-        },
-        new()
-        {
-            Key = "Save Settings",
-            Keyword = "Save Settings"
-        },
-        new()
-        {
-            Key = "Restart Flow Launcher",
-            Keyword = "Restart Flow Launcher"
-        },
-        new()
-        {
-            Key = "Settings",
-            Keyword = "Settings"
-        },
-        new()
-        {
-            Key = "Reload Plugin Data",
-            Keyword = "Reload Plugin Data"
-        },
-        new()
-        {
-            Key = "Check For Update",
-            Keyword = "Check For Update"
-        },
-        new()
-        {
-            Key = "Open Log Location",
-            Keyword = "Open Log Location"
-        },
-        new()
-        {
-            Key = "Flow Launcher Tips",
-            Keyword = "Flow Launcher Tips"
-        },
-        new()
-        {
-            Key = "Flow Launcher UserData Folder",
-            Keyword = "Flow Launcher UserData Folder"
-        },
-        new()
-        {
-            Key = "Toggle Game Mode",
-            Keyword = "Toggle Game Mode"
-        },
-        new()
-        {
-            Key = "Set Flow Launcher Theme",
-            Keyword = "Set Flow Launcher Theme"
         }
     };
 
