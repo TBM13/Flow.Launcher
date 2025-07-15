@@ -117,26 +117,6 @@ public partial class SettingsPaneThemeViewModel : BaseModel
         }
     }
 
-    public List<string> TimeFormatList { get; } = new()
-    {
-        "h:mm",
-        "hh:mm",
-        "H:mm",
-        "HH:mm",
-        "tt h:mm",
-        "tt hh:mm",
-        "h:mm tt",
-        "hh:mm tt",
-        "hh:mm:ss tt",
-        "HH:mm:ss"
-    };
-
-    public string TimeFormat
-    {
-        get => Settings.TimeFormat;
-        set => Settings.TimeFormat = value;
-    }
-
     public IEnumerable<int> MaxResultsRange => Enumerable.Range(2, 16);
 
     public bool KeepMaxResults
@@ -145,21 +125,11 @@ public partial class SettingsPaneThemeViewModel : BaseModel
         set => Settings.KeepMaxResults = value;
     }
 
-    public string ClockText => DateTime.Now.ToString(TimeFormat, CultureInfo.CurrentUICulture);
-
     public bool UseGlyphIcons
     {
         get => Settings.UseGlyphIcons;
         set => Settings.UseGlyphIcons = value;
     }
-
-    public bool UseClock
-    {
-        get => Settings.UseClock;
-        set => Settings.UseClock = value;
-    }
-
-    public FontFamily ClockPanelFont { get; }
 
     public ResultsViewModel PreviewResults { get; }
 
@@ -303,7 +273,6 @@ public partial class SettingsPaneThemeViewModel : BaseModel
     {
         Settings = settings;
         _theme = theme;
-        ClockPanelFont = new FontFamily(DefaultFont);
         var results = new List<Result>
             {
                 new()

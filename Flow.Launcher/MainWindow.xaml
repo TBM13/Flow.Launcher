@@ -271,18 +271,6 @@
                     </Grid>
                 </Border>
 
-                <StackPanel
-                    x:Name="ClockPanel"
-                    IsHitTestVisible="False"
-                    Opacity="{Binding ClockPanelOpacity}"
-                    Style="{DynamicResource ClockPanel}"
-                    Visibility="{Binding ClockPanelVisibility}">
-                    <TextBlock
-                        x:Name="ClockBox"
-                        Style="{DynamicResource ClockBox}"
-                        Text="{Binding ClockText}"
-                        Visibility="{Binding Settings.UseClock, Converter={StaticResource BoolToVisibilityConverter}}" />
-                </StackPanel>
                 <Border>
                     <Grid WindowChrome.IsHitTestVisibleInChrome="True">
                         <Image

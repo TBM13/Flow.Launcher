@@ -258,14 +258,6 @@ namespace Flow.Launcher
                 }
             };
 
-            // QueryTextBox.Text change detection (modified to only work when character count is 1 or higher)
-            QueryTextBox.TextChanged += (s, e) => UpdateClockPanelVisibility();
-
-            // Detecting ResultContextMenu.Visibility changes
-            DependencyPropertyDescriptor
-                .FromProperty(VisibilityProperty, typeof(ResultListBox))
-                .AddValueChanged(ResultContextMenu, (s, e) => UpdateClockPanelVisibility());
-
             // Initialize query state
             if (_settings.ShowHomePage && string.IsNullOrEmpty(_viewModel.QueryText))
             {
@@ -317,7 +309,6 @@ namespace Flow.Launcher
             _settings.WindowLeft = Left;
             _settings.WindowTop = Top;
 
-            _viewModel.ClockPanelOpacity = 0.0;
             _viewModel.SearchIconOpacity = 0.0;
 
             // This condition stops extra hide call when animator is on,
@@ -902,46 +893,6 @@ namespace Flow.Launcher
             ProgressBar.Style = progressStyle;
 
             _viewModel.ProgressBarVisibility = Visibility.Hidden;
-        }
-
-        private void UpdateClockPanelVisibility()
-        {
-            if (QueryTextBox == null || ResultContextMenu == null || ClockPanel == null)
-            {
-                return;
-            }
-
-            // ✅ Conditions for showing ClockPanel (No query input / ResultContextMenu is closed)
-            var shouldShowClock = QueryTextBox.Text.Length == 0 &&
-                ResultContextMenu.Visibility != Visibility.Visible;
-
-            // ✅ 1. When ResultContextMenu opens, immediately set Visibility.Hidden (force hide without animation)
-            if (ResultContextMenu.Visibility == Visibility.Visible)
-            {
-                _viewModel.ClockPanelVisibility = Visibility.Hidden;
-                _viewModel.ClockPanelOpacity = 0.0;  // Set to 0 in case Opacity animation affects it
-                return;
-            }
-
-            // ✅ 2. When ResultContextMenu is closed, keep it Hidden if there's text in the query (remember previous state)
-            else if (QueryTextBox.Text.Length > 0)
-            {
-                _viewModel.ClockPanelVisibility = Visibility.Hidden;
-                _viewModel.ClockPanelOpacity = 0.0;
-                return;
-            }
-
-            // ✅ 3. Hide ClockPanel
-            if ((!shouldShowClock) && _viewModel.ClockPanelVisibility == Visibility.Visible)
-            {
-                _viewModel.ClockPanelVisibility = Visibility.Hidden;
-            }
-
-            // ✅ 4. Show ClockPanel
-            else if (shouldShowClock && _viewModel.ClockPanelVisibility != Visibility.Visible)
-            {
-                _viewModel.ClockPanelVisibility = Visibility.Visible;
-            }
         }
         #endregion
 

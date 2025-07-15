@@ -197,19 +197,6 @@
     <Thickness x:Key="ResultMargin">0 10 0 10</Thickness>
     <system:Double x:Key="ResultItemHeight">58</system:Double>
     <Style
-        x:Key="ClockPanel"
-        BasedOn="{StaticResource ClockPanel}"
-        TargetType="{x:Type StackPanel}">
-        <Setter Property="Margin" Value="0 0 54 0" />
-
-    </Style>
-    <Style
-        x:Key="ClockBox"
-        BasedOn="{StaticResource BaseClockBox}"
-        TargetType="{x:Type TextBlock}">
-        <Setter Property="Foreground" Value="{DynamicResource ClockDateForeground}" />
-    </Style>
-    <Style
         x:Key="PreviewBorderStyle"
         BasedOn="{StaticResource BasePreviewBorderStyle}"
         TargetType="{x:Type Border}">

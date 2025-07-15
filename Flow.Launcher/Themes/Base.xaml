@@ -113,38 +113,6 @@
         BasedOn="{StaticResource BasePendingLineStyle}"
         TargetType="{x:Type Line}" />
 
-    <Style x:Key="BaseClockPanelPosition" TargetType="{x:Type Canvas}" />
-
-    <Style x:Key="BaseClockPanel" TargetType="{x:Type StackPanel}">
-        <Setter Property="Orientation" Value="Horizontal" />
-        <Setter Property="HorizontalAlignment" Value="Right" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="Height" Value="Auto" />
-        <Setter Property="Margin" Value="0 0 66 0" />
-        <Setter Property="Visibility" Value="Collapsed" />
-    </Style>
-    <Style x:Key="BaseClockBox" TargetType="{x:Type TextBlock}">
-        <Setter Property="FontSize" Value="20" />
-        <Setter Property="Padding" Value="0" />
-        <Setter Property="Foreground" Value="#8f8f8f" />
-        <Setter Property="HorizontalAlignment" Value="Right" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="Margin" Value="0 0 0 3" />
-    </Style>
-
-    <Style
-        x:Key="ClockBox"
-        BasedOn="{StaticResource BaseClockBox}"
-        TargetType="{x:Type TextBlock}">
-        <Setter Property="Foreground" Value="#C6C6C6" />
-    </Style>
-    <Style
-        x:Key="ClockPanel"
-        BasedOn="{StaticResource BaseClockPanel}"
-        TargetType="{x:Type StackPanel}">
-        <Setter Property="Orientation" Value="Vertical" />
-    </Style>
-
     <!--  Item Style  -->
     <Style x:Key="ProgressBarResult" TargetType="{x:Type ProgressBar}">
         <Setter Property="Height" Value="18" />
@@ -490,12 +458,6 @@
         <Setter Property="Margin" Value="0 0 18 0" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="HorizontalAlignment" Value="Right" />
-    </Style>
-    <Style
-        x:Key="ClockPanelPosition"
-        BasedOn="{StaticResource BaseClockPanelPosition}"
-        TargetType="{x:Type Canvas}">
-        <Setter Property="Margin" Value="0 0 66 0" />
     </Style>
     <Style
         x:Key="ItemHotkeyStyle"

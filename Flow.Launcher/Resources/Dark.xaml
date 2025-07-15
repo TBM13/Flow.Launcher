@@ -17,7 +17,6 @@
     <SolidColorBrush x:Key="InlineHighlight" Color="#0078d7" />
     <SolidColorBrush x:Key="HotkeyForeground" Color="#33FFFFFF" />
     <SolidColorBrush x:Key="HotkeySelectedForeground" Color="#33FFFFFF" />
-    <SolidColorBrush x:Key="ClockDateForeground" Color="#26FFFFFF" />
     <Color x:Key="ItemSelectedBackgroundColorBrush">#198F8F8F</Color>
 
     <SolidColorBrush x:Key="BasicSystemAccentColor" Color="{m:DynamicColor SystemAccentColorLight1}" />

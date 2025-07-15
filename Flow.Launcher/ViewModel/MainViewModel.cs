@@ -154,7 +154,6 @@ namespace Flow.Launcher.ViewModel
             };
 
             RegisterViewUpdate();
-            _ = RegisterClockAndDateUpdateAsync();
 
             ThemeManager.Current.ActualApplicationThemeChanged += ThemeManager_ActualApplicationThemeChanged;
         }
@@ -267,17 +266,6 @@ namespace Flow.Launcher.ViewModel
                         App.API.LogError(ClassName, "Unable to add item to Result Update Queue");
                     }
                 };
-            }
-        }
-
-        private async Task RegisterClockAndDateUpdateAsync()
-        {
-            var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
-            // ReSharper disable once MethodSupportsCancellation
-            while (await timer.WaitForNextTickAsync().ConfigureAwait(false))
-            {
-                if (Settings.UseClock)
-                    ClockText = DateTime.Now.ToString(Settings.TimeFormat, CultureInfo.CurrentCulture);
             }
         }
 
@@ -524,7 +512,6 @@ namespace Flow.Launcher.ViewModel
         #region ViewModel Properties
 
         public Settings Settings { get; }
-        public string ClockText { get; private set; }
 
         public ResultsViewModel Results { get; private set; }
 
@@ -718,9 +705,7 @@ namespace Flow.Launcher.ViewModel
         public event VisibilityChangedEventHandler VisibilityChanged;
         public event ActualApplicationThemeChangedEventHandler ActualApplicationThemeChanged;
 
-        public Visibility ClockPanelVisibility { get; set; }
         public Visibility SearchIconVisibility { get; set; }
-        public double ClockPanelOpacity { get; set; } = 1;
         public double SearchIconOpacity { get; set; } = 1;
 
         public double MainWindowWidth
@@ -1547,11 +1532,9 @@ namespace Flow.Launcher.ViewModel
                     // 📌 Remove DWM Cloak (Make the window visible normally)
                     Win32Helper.DWMSetCloakForWindow(mainWindow, false);
 
-                    ClockPanelOpacity = 1.0;
                     SearchIconOpacity = 1.0;
 
-                    // Set clock and search icon visibility
-                    ClockPanelVisibility = string.IsNullOrEmpty(QueryText) ? Visibility.Visible : Visibility.Collapsed;
+                    // Set search icon visibility
                     if (PluginIconSource != null)
                     {
                         SearchIconOpacity = 0.0;
@@ -1606,25 +1589,17 @@ namespace Flow.Launcher.ViewModel
                 // When application is exiting, the Application.Current will be null
                 if (Application.Current?.MainWindow is MainWindow mainWindow)
                 {
-                    // Set clock and search icon opacity
-                    ClockPanelOpacity = 1.0;
+                    // Set search icon opacity & visibility
                     SearchIconOpacity = 1.0;
-
-                    // Set clock and search icon visibility
-                    ClockPanelVisibility = Visibility.Hidden;
                     SearchIconVisibility = Visibility.Hidden;
 
                     // Force UI update
-                    mainWindow.ClockPanel.UpdateLayout();
                     mainWindow.SearchIcon.UpdateLayout();
 
                     // 📌 Apply DWM Cloak (Completely hide the window)
                     Win32Helper.DWMSetCloakForWindow(mainWindow, true);
                 }
             }, DispatcherPriority.Render);
-
-            // Delay for a while to make sure clock will not flicker
-            await Task.Delay(50);
 
             // Update WPF properties
             MainWindowVisibilityStatus = false;

@@ -334,19 +334,6 @@
                                                 Style="{DynamicResource QueryBoxStyle}"
                                                 Text="{DynamicResource hiThere}" />
                                         </Border>
-                                        <StackPanel
-                                            x:Name="ClockPanel"
-                                            IsHitTestVisible="False"
-                                            Style="{DynamicResource ClockPanel}"
-                                            Visibility="Visible">
-                                            <!--  Because this textblock follows SettingWindowFont, we need to revert its font family explictly  -->
-                                            <TextBlock
-                                                x:Name="ClockBox"
-                                                FontFamily="{Binding ClockPanelFont, Mode=OneTime}"
-                                                Style="{DynamicResource ClockBox}"
-                                                Text="{Binding ClockText}"
-                                                Visibility="{Binding UseClock, Converter={StaticResource BoolToVisibilityConverter}}" />
-                                        </StackPanel>
                                         <Canvas Style="{DynamicResource SearchIconPosition}">
                                             <Path
                                                 Margin="0"
@@ -494,33 +481,6 @@
                         SelectedItem="{Binding Settings.MaxResultsToShow}" />
                 </cc:Card>
             </cc:ExCard>
-
-            <!--  Time and date  -->
-            <cc:CardGroup Margin="0 14 0 0">
-                <cc:Card
-                    Title="{DynamicResource Clock}"
-                    Icon="&#xec92;"
-                    Type="First">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock
-                            VerticalAlignment="Center"
-                            FontSize="14"
-                            Foreground="{DynamicResource Color04B}"
-                            Text="{Binding ClockText}" />
-                        <ComboBox
-                            MinWidth="180"
-                            Margin="10 0 18 0"
-                            VerticalAlignment="Center"
-                            FontSize="14"
-                            ItemsSource="{Binding TimeFormatList}"
-                            SelectedItem="{Binding TimeFormat}" />
-                        <ui:ToggleSwitch
-                            IsOn="{Binding UseClock}"
-                            OffContent="{DynamicResource disable}"
-                            OnContent="{DynamicResource enable}" />
-                    </StackPanel>
-                </cc:Card>
-            </cc:CardGroup>
 
             <!--  Fonts and icons  -->
             <cc:Card
