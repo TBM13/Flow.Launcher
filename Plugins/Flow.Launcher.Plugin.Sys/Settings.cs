@@ -59,7 +59,12 @@ public class Settings : BaseModel
         {
             Key = "Open Recycle Bin",
             Keyword = "Open Recycle Bin"
-        }
+        },
+        new()
+        {
+            Key = "Toggle Game Mode",
+            Keyword = "Toggle Game Mode"
+        },
     };
 
     [JsonIgnore]
