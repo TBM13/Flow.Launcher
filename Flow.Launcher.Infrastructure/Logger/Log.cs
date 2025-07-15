@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Runtime.ExceptionServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace Flow.Launcher.Infrastructure.Logger
 {
@@ -9,9 +7,7 @@ namespace Flow.Launcher.Infrastructure.Logger
         public static void Exception(string className, string message, System.Exception exception, [CallerMemberName] string methodName = "")
         {
 #if DEBUG
-            System.Diagnostics.Debug.WriteLine("EXCEPTION");
-            exception = exception.Demystify();
-            ExceptionDispatchInfo.Capture(exception).Throw();
+            System.Diagnostics.Debug.WriteLine($"EXCEPTION: {methodName}@{className}: {message}\n\n{exception}");
 #endif
         }
 
