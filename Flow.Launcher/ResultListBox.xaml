@@ -33,7 +33,6 @@
 
     <ListBox.Resources>
         <converter:SizeRatioConverter x:Key="SizeRatioConverter" />
-        <converter:BadgePositionConverter x:Key="BadgePositionConverter" />
         <converter:IconRadiusConverter x:Key="IconRadiusConverter" />
         <converter:DiameterToCenterPointConverter x:Key="DiameterToCenterPointConverter" />
         <converter:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
@@ -136,18 +135,6 @@
                                         Style="{DynamicResource ItemGlyph}"
                                         Text="{Binding Glyph.Glyph}"
                                         Visibility="{Binding ShowGlyph}" />
-
-                                    <Image
-                                        x:Name="BadgeIcon"
-                                        Width="{Binding ElementName=ImageIcon, Path=ActualWidth, Converter={StaticResource SizeRatioConverter}, ConverterParameter=0.6}"
-                                        Height="{Binding ElementName=ImageIcon, Path=ActualWidth, Converter={StaticResource SizeRatioConverter}, ConverterParameter=0.6}"
-                                        RenderOptions.BitmapScalingMode="HighQuality"
-                                        Source="{Binding BadgeImage, TargetNullValue={x:Null}}"
-                                        Visibility="{Binding ShowBadge}">
-                                        <Image.RenderTransform>
-                                            <TranslateTransform X="{Binding ElementName=ImageIcon, Path=ActualWidth, Converter={StaticResource BadgePositionConverter}, ConverterParameter=1}" Y="{Binding ElementName=ImageIcon, Path=ActualWidth, Converter={StaticResource BadgePositionConverter}, ConverterParameter=2}" />
-                                        </Image.RenderTransform>
-                                    </Image>
                                 </Grid>
                             </Border>
 

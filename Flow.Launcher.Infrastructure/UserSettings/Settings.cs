@@ -128,8 +128,6 @@ namespace Flow.Launcher.Infrastructure.UserSettings
         public string ResultSubFontWeight { get; set; }
         public string ResultSubFontStretch { get; set; }
         public bool UseGlyphIcons { get; set; } = true;
-        public bool ShowBadges { get; set; } = false;
-        public bool ShowBadgesGlobalOnly { get; set; } = false;
 
         public bool FirstLaunch { get; set; } = true;
 

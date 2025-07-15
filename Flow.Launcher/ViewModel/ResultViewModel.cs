@@ -91,7 +91,7 @@ namespace Flow.Launcher.ViewModel
             {
                 if (PreviewImageAvailable)
                     return Visibility.Visible;
-                
+
                 // Fall back to icon
                 return ShowIcon;
             }
@@ -103,7 +103,7 @@ namespace Flow.Launcher.ViewModel
             {
                 if (Result.RoundedIcon)
                     return IconXY / 2;
-                
+
                 return IconXY;
             }
         }
@@ -121,31 +121,11 @@ namespace Flow.Launcher.ViewModel
             }
         }
 
-        public Visibility ShowBadge
-        {
-            get
-            {
-                // If results do not allow badges, or user has disabled badges in settings,
-                // or badge icon is not available, then do not show badge
-                if (!Result.ShowBadge || !Settings.ShowBadges || !BadgeIconAvailable)
-                    return Visibility.Collapsed;
-
-                // If user has set to show badges only for global results, and this is not a global result,
-                // then do not show badge
-                if (Settings.ShowBadgesGlobalOnly && !IsGlobalQuery)
-                    return Visibility.Collapsed;
-
-                return Visibility.Visible;
-            }
-        }
-
         public bool IsGlobalQuery => string.IsNullOrEmpty(Result.OriginQuery.ActionKeyword);
 
         private bool GlyphAvailable => Glyph is not null;
 
         private bool ImgIconAvailable => !string.IsNullOrEmpty(Result.IcoPath) || Result.Icon is not null;
-
-        private bool BadgeIconAvailable => !string.IsNullOrEmpty(Result.BadgeIcoPath) || Result.BadgeIcon is not null;
 
         private bool PreviewImageAvailable => !string.IsNullOrEmpty(Result.Preview.PreviewImagePath) || Result.Preview.PreviewDelegate != null;
 
@@ -158,11 +138,9 @@ namespace Flow.Launcher.ViewModel
             : Result.SubTitleToolTip;
 
         private volatile bool _imageLoaded;
-        private volatile bool _badgeImageLoaded;
         private volatile bool _previewImageLoaded;
 
         private ImageSource _image = ImageLoader.LoadingImage;
-        private ImageSource _badgeImage = ImageLoader.LoadingImage;
         private ImageSource _previewImage = ImageLoader.LoadingImage;
 
         public ImageSource Image
@@ -178,21 +156,6 @@ namespace Flow.Launcher.ViewModel
                 return _image;
             }
             private set => _image = value;
-        }
-
-        public ImageSource BadgeImage
-        {
-            get
-            {
-                if (!_badgeImageLoaded)
-                {
-                    _badgeImageLoaded = true;
-                    _ = LoadBadgeImageAsync();
-                }
-
-                return _badgeImage;
-            }
-            private set => _badgeImage = value;
         }
 
         public ImageSource PreviewImage
@@ -248,21 +211,6 @@ namespace Flow.Launcher.ViewModel
             {
                 // We need to modify the property not field here to trigger the OnPropertyChanged event
                 Image = await LoadImageInternalAsync(imagePath, iconDelegate, false).ConfigureAwait(false);
-            }
-        }
-
-        private async Task LoadBadgeImageAsync()
-        {
-            var badgeImagePath = Result.BadgeIcoPath;
-            var badgeIconDelegate = Result.BadgeIcon;
-            if (ImageLoader.TryGetValue(badgeImagePath, false, out var img))
-            {
-                _badgeImage = img;
-            }
-            else
-            {
-                // We need to modify the property not field here to trigger the OnPropertyChanged event
-                BadgeImage = await LoadImageInternalAsync(badgeImagePath, badgeIconDelegate, false).ConfigureAwait(false);
             }
         }
 

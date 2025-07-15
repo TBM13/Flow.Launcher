@@ -23,8 +23,6 @@ namespace Flow.Launcher.Plugin
 
         private string _copyText = string.Empty;
 
-        private string _badgeIcoPath;
-
         /// <summary>
         /// The title of the result. This is always required.
         /// </summary>
@@ -88,33 +86,6 @@ namespace Flow.Launcher.Plugin
         }
 
         /// <summary>
-        /// The image to be displayed for the badge of the result.
-        /// </summary>
-        /// <value>Can be a local file path or a URL.</value>
-        /// <remarks>If null or empty, will use plugin icon</remarks>
-        public string BadgeIcoPath
-        {
-            get => _badgeIcoPath;
-            set
-            {
-                // As a standard this property will handle prepping and converting to absolute local path for icon image processing
-                if (!string.IsNullOrEmpty(value)
-                    && !string.IsNullOrEmpty(PluginDirectory)
-                    && !Path.IsPathRooted(value)
-                    && !value.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
-                    && !value.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
-                    && !value.StartsWith("data:image", StringComparison.OrdinalIgnoreCase))
-                {
-                    _badgeIcoPath = Path.Combine(PluginDirectory, value);
-                }
-                else
-                {
-                    _badgeIcoPath = value;
-                }
-            }
-        }
-
-        /// <summary>
         /// Determines if Icon has a border radius
         /// </summary>
         public bool RoundedIcon { get; set; } = false;
@@ -129,11 +100,6 @@ namespace Flow.Launcher.Plugin
         /// Delegate to load an icon for this result.
         /// </summary>
         public IconDelegate Icon = null;
-
-        /// <summary>
-        /// Delegate to load an icon for the badge of this result.
-        /// </summary>
-        public IconDelegate BadgeIcon = null;
 
         /// <summary>
         /// Information for Glyph Icon (Prioritized than IcoPath/Icon if user enable Glyph Icons)
@@ -188,9 +154,8 @@ namespace Flow.Launcher.Plugin
 
                 // When the Result object is returned from the query call, PluginDirectory is not provided until
                 // UpdatePluginMetadata call is made at PluginManager.cs L196. Once the PluginDirectory becomes available
-                // we need to update (only if not Uri path) the IcoPath and BadgeIcoPath with the full absolute path so the image can be loaded.
+                // we need to update (only if not Uri path) the IcoPath with the full absolute path so the image can be loaded.
                 IcoPath = _icoPath;
-                BadgeIcoPath = _badgeIcoPath;
             }
         }
 
@@ -252,12 +217,6 @@ namespace Flow.Launcher.Plugin
         public string RecordKey { get; set; } = null;
 
         /// <summary>
-        /// Determines if the badge icon should be shown.
-        /// If users want to show the result badges and here you set this to true, the results will show the badge icon.
-        /// </summary>
-        public bool ShowBadge { get; set; } = false;
-
-        /// <summary>
         /// Run this result, asynchronously
         /// </summary>
         /// <param name="context"></param>
@@ -286,10 +245,8 @@ namespace Flow.Launcher.Plugin
                 CopyText = CopyText,
                 AutoCompleteText = AutoCompleteText,
                 IcoPath = IcoPath,
-                BadgeIcoPath = BadgeIcoPath,
                 RoundedIcon = RoundedIcon,
                 Icon = Icon,
-                BadgeIcon = BadgeIcon,
                 Glyph = Glyph,
                 Action = Action,
                 AsyncAction = AsyncAction,
@@ -307,7 +264,6 @@ namespace Flow.Launcher.Plugin
                 Preview = Preview,
                 AddSelectedCount = AddSelectedCount,
                 RecordKey = RecordKey,
-                ShowBadge = ShowBadge,
             };
         }
 

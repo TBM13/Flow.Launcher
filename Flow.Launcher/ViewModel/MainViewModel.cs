@@ -246,14 +246,6 @@ namespace Flow.Launcher.ViewModel
                     // make a clone to avoid possible issue that plugin will also change the list and items when updating view model
                     var resultsCopy = DeepCloneResults(e.Results, token);
 
-                    foreach (var result in resultsCopy)
-                    {
-                        if (string.IsNullOrEmpty(result.BadgeIcoPath))
-                        {
-                            result.BadgeIcoPath = pair.Metadata.IcoPath;
-                        }
-                    }
-
                     PluginManager.UpdatePluginMetadata(resultsCopy, pair.Metadata, e.Query);
 
                     if (token.IsCancellationRequested) return;
@@ -1236,14 +1228,6 @@ namespace Flow.Launcher.ViewModel
                 {
                     // make a copy of results to avoid possible issue that FL changes some properties of the records, like score, etc.
                     resultsCopy = DeepCloneResults(results, token);
-                }
-
-                foreach (var result in resultsCopy)
-                {
-                    if (string.IsNullOrEmpty(result.BadgeIcoPath))
-                    {
-                        result.BadgeIcoPath = plugin.Metadata.IcoPath;
-                    }
                 }
 
                 if (token.IsCancellationRequested) return;
