@@ -71,20 +71,13 @@ namespace Flow.Launcher.Plugin.Calculator
                 }
 
                 var result = MagesEngine.Interpret(expression);
-
-                if (result?.ToString() == "NaN")
-                    result = Context.API.GetTranslation("flowlauncher_plugin_calculator_not_a_number");
-
-                if (result is Function)
-                    result = Context.API.GetTranslation("flowlauncher_plugin_calculator_expression_not_complete");
-
-                if (!string.IsNullOrEmpty(result?.ToString()))
+                if (result?.ToString() != "NaN" && result is not Function && !string.IsNullOrEmpty(result?.ToString()))
                 {
                     decimal roundedResult = Math.Round(Convert.ToDecimal(result), _settings.MaxDecimalPlaces, MidpointRounding.AwayFromZero);
                     string newResult = ChangeDecimalSeparator(roundedResult, GetDecimalSeparator());
 
-                    return new List<Result>
-                    {
+                    return
+                    [
                         new() {
                             Title = newResult,
                             IcoPath = "Images/calculator.png",
@@ -105,7 +98,7 @@ namespace Flow.Launcher.Plugin.Calculator
                                 }
                             }
                         }
-                    };
+                    ];
                 }
             }
             catch (Exception)
