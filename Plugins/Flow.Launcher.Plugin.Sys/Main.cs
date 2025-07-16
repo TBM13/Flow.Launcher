@@ -40,7 +40,6 @@ namespace Flow.Launcher.Plugin.Sys
 
         private PluginInitContext _context;
         private Settings _settings;
-        private ThemeSelector _themeSelector;
         private SettingsViewModel _viewModel;
 
         public Control CreateSettingPanel()
@@ -51,11 +50,6 @@ namespace Flow.Launcher.Plugin.Sys
 
         public List<Result> Query(Query query)
         {
-            if (query.Search.StartsWith(ThemeSelector.Keyword))
-            {
-                return _themeSelector.Query(query);
-            }
-
             var commands = Commands(query);
             var results = new List<Result>();
             var isEmptyQuery = string.IsNullOrWhiteSpace(query.Search);
@@ -122,7 +116,6 @@ namespace Flow.Launcher.Plugin.Sys
             _context = context;
             _settings = context.API.LoadSettingJsonStorage<Settings>();
             _viewModel = new SettingsViewModel(_settings);
-            _themeSelector = new ThemeSelector(context);
             foreach (string key in KeywordTitleMappings.Keys)
             {
                 // Remove _cmd in the last of the strings
