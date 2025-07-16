@@ -282,16 +282,6 @@
                             Source="{Binding PluginIconSource}"
                             Stretch="Uniform"
                             Style="{DynamicResource PluginActivationIcon}" />
-                        <Canvas Style="{DynamicResource SearchIconPosition}">
-                            <Path
-                                Name="SearchIcon"
-                                Margin="0"
-                                Data="{DynamicResource SearchIconImg}"
-                                Opacity="{Binding SearchIconOpacity}"
-                                Stretch="Fill"
-                                Style="{DynamicResource SearchIconStyle}"
-                                Visibility="{Binding SearchIconVisibility}" />
-                        </Canvas>
                     </Grid>
                 </Border>
                 <Line

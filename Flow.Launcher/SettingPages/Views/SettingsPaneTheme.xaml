@@ -334,13 +334,6 @@
                                                 Style="{DynamicResource QueryBoxStyle}"
                                                 Text="{DynamicResource hiThere}" />
                                         </Border>
-                                        <Canvas Style="{DynamicResource SearchIconPosition}">
-                                            <Path
-                                                Margin="0"
-                                                Data="{DynamicResource SearchIconImg}"
-                                                Stretch="Fill"
-                                                Style="{DynamicResource SearchIconStyle}" />
-                                        </Canvas>
 
                                         <Border Grid.Row="1" Margin="0 0 0 0">
                                             <Rectangle

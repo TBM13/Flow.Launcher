@@ -697,9 +697,6 @@ namespace Flow.Launcher.ViewModel
         public event VisibilityChangedEventHandler VisibilityChanged;
         public event ActualApplicationThemeChangedEventHandler ActualApplicationThemeChanged;
 
-        public Visibility SearchIconVisibility { get; set; }
-        public double SearchIconOpacity { get; set; } = 1;
-
         public double MainWindowWidth
         {
             get => Settings.WindowSize;
@@ -1074,7 +1071,6 @@ namespace Flow.Launcher.ViewModel
                 // Reset plugin icon
                 PluginIconPath = null;
                 PluginIconSource = null;
-                SearchIconVisibility = Visibility.Visible;
 
                 // Hide progress bar again because running query may set this to visible
                 ProgressBarVisibility = Visibility.Hidden;
@@ -1113,7 +1109,6 @@ namespace Flow.Launcher.ViewModel
 
                 PluginIconPath = null;
                 PluginIconSource = null;
-                SearchIconVisibility = Visibility.Visible;
             }
             else
             {
@@ -1123,13 +1118,11 @@ namespace Flow.Launcher.ViewModel
                 {
                     PluginIconPath = plugins.Single().Metadata.IcoPath;
                     PluginIconSource = await App.API.LoadImageAsync(PluginIconPath);
-                    SearchIconVisibility = Visibility.Hidden;
                 }
                 else
                 {
                     PluginIconPath = null;
                     PluginIconSource = null;
-                    SearchIconVisibility = Visibility.Visible;
                 }
             }
 
@@ -1506,18 +1499,6 @@ namespace Flow.Launcher.ViewModel
                 {
                     // 📌 Remove DWM Cloak (Make the window visible normally)
                     Win32Helper.DWMSetCloakForWindow(mainWindow, false);
-
-                    SearchIconOpacity = 1.0;
-
-                    // Set search icon visibility
-                    if (PluginIconSource != null)
-                    {
-                        SearchIconOpacity = 0.0;
-                    }
-                    else
-                    {
-                        SearchIconVisibility = Visibility.Visible;
-                    }
                 }
             }, DispatcherPriority.Render);
 
@@ -1564,13 +1545,6 @@ namespace Flow.Launcher.ViewModel
                 // When application is exiting, the Application.Current will be null
                 if (Application.Current?.MainWindow is MainWindow mainWindow)
                 {
-                    // Set search icon opacity & visibility
-                    SearchIconOpacity = 1.0;
-                    SearchIconVisibility = Visibility.Hidden;
-
-                    // Force UI update
-                    mainWindow.SearchIcon.UpdateLayout();
-
                     // 📌 Apply DWM Cloak (Completely hide the window)
                     Win32Helper.DWMSetCloakForWindow(mainWindow, true);
                 }

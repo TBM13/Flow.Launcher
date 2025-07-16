@@ -11,7 +11,6 @@
     <SolidColorBrush x:Key="QuerySelectionBrush" Color="#4a5459" />
     <SolidColorBrush x:Key="SubTitleForeground" Color="#33FFFFFF" />
     <SolidColorBrush x:Key="SubTitleSelectedForeground" Color="#33FFFFFF" />
-    <SolidColorBrush x:Key="SearchIconForeground" Color="#33FFFFFF" />
     <SolidColorBrush x:Key="SeparatorForeground" Color="#24FFFFFF" />
     <SolidColorBrush x:Key="ThumbColor" Color="#28F7F3FF" />
     <SolidColorBrush x:Key="InlineHighlight" Color="#0078d7" />
