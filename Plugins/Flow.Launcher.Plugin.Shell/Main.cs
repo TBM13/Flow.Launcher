@@ -5,9 +5,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Flow.Launcher.Plugin.SharedCommands;
 using WindowsInput;
 using WindowsInput.Native;
-using Flow.Launcher.Plugin.SharedCommands;
 using Control = System.Windows.Controls.Control;
 using Keys = System.Windows.Forms.Keys;
 
@@ -446,7 +446,6 @@ namespace Flow.Launcher.Plugin.Shell
                         Execute(ShellCommand.RunAsDifferentUser, PrepareProcessStartInfo(selectedResult.Title));
                         return true;
                     },
-                    IcoPath = "Images/user.png",
                     Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xe7ee")
                 },
                 new()
@@ -457,7 +456,6 @@ namespace Flow.Launcher.Plugin.Shell
                         Execute(Process.Start, PrepareProcessStartInfo(selectedResult.Title, true));
                         return true;
                     },
-                    IcoPath = "Images/admin.png",
                     Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xe7ef")
                 },
                 new()
@@ -468,7 +466,6 @@ namespace Flow.Launcher.Plugin.Shell
                         Context.API.CopyToClipboard(selectedResult.Title);
                         return true;
                     },
-                    IcoPath = "Images/copy.png",
                     Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xe8c8")
                 }
             };

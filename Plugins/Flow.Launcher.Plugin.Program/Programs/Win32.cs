@@ -232,7 +232,6 @@ namespace Flow.Launcher.Plugin.Program.Programs
 
                         return true;
                     },
-                    IcoPath = "Images/user.png",
                     Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xe7ee"),
                 },
                 new()
@@ -252,7 +251,6 @@ namespace Flow.Launcher.Plugin.Program.Programs
 
                         return true;
                     },
-                    IcoPath = "Images/cmd.png",
                     Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xe7ef"),
                 },
                 new()
@@ -264,7 +262,6 @@ namespace Flow.Launcher.Plugin.Program.Programs
 
                         return true;
                     },
-                    IcoPath = "Images/folder.png",
                     Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xe838"),
                 },
             };
@@ -285,7 +282,6 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     api.OpenDirectory(Path.GetDirectoryName(ExecutablePath), ExecutablePath);
                     return true;
                 },
-                IcoPath = "Images/folder.png",
                 Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xe8de"),
             };
         }

@@ -387,7 +387,6 @@ namespace Flow.Launcher.Plugin.Program
                         Context.API.ReQuery();
                         return false;
                     },
-                    IcoPath = "Images/disable.png",
                     Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xece4"),
                 }
             );

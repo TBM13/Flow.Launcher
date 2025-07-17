@@ -183,7 +183,6 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = "Shutdown",
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe7e8"),
-                    IcoPath = "Images\\shutdown.png",
                     Action = c =>
                     {
                         var result = _context.API.ShowMsgBox(
@@ -204,7 +203,6 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = "Restart",
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe777"),
-                    IcoPath = "Images\\restart.png",
                     Action = c =>
                     {
                         var result = _context.API.ShowMsgBox(
@@ -225,7 +223,6 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = "Restart With Advanced Boot Options",
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xecc5"),
-                    IcoPath = "Images\\restart_advanced.png",
                     Action = c =>
                     {
                         var result = _context.API.ShowMsgBox(
@@ -246,7 +243,6 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = "Log Off/Sign Out",
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe77b"),
-                    IcoPath = "Images\\logoff.png",
                     Action = c =>
                     {
                         var result = _context.API.ShowMsgBox(
@@ -264,7 +260,6 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = "Lock",
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe72e"),
-                    IcoPath = "Images\\lock.png",
                     Action = c =>
                     {
                         PInvoke.LockWorkStation();
@@ -275,7 +270,6 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = "Sleep",
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xec46"),
-                    IcoPath = "Images\\sleep.png",
                     Action = c =>
                     {
                         PInvoke.SetSuspendState(false, false, false);
@@ -286,7 +280,6 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = "Hibernate",
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe8be"),
-                    IcoPath = "Images\\hibernate.png",
                     Action= c =>
                     {
                         PInvoke.SetSuspendState(true, false, false);
@@ -296,7 +289,6 @@ namespace Flow.Launcher.Plugin.Sys
                 new Result
                 {
                     Title = "Empty Recycle Bin",
-                    IcoPath = "Images\\recyclebin.png",
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xea99"),
                     Action = c =>
                     {
@@ -320,7 +312,6 @@ namespace Flow.Launcher.Plugin.Sys
                 new Result
                 {
                     Title = "Open Recycle Bin",
-                    IcoPath = "Images\\openrecyclebin.png",
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe74d"),
                     CopyText = recycleBinFolder,
                     Action = c =>
@@ -332,7 +323,6 @@ namespace Flow.Launcher.Plugin.Sys
                 new Result
                 {
                     Title = "Toggle Game Mode",
-                    IcoPath = "Images\\app.png",
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\ue7fc"),
                     Action = c =>
                     {

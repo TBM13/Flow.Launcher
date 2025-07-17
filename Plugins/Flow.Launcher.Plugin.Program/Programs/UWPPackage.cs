@@ -485,7 +485,6 @@ namespace Flow.Launcher.Plugin.Program.Programs
 
                         return true;
                     },
-                    IcoPath = "Images/folder.png",
                     Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xe838"),
                 }
             };
@@ -500,7 +499,6 @@ namespace Flow.Launcher.Plugin.Program.Programs
                         _ = Task.Run(() => Launch(true)).ConfigureAwait(false);
                         return true;
                     },
-                    IcoPath = "Images/cmd.png",
                     Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xe7ef")
                 });
             }
