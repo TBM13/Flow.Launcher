@@ -201,77 +201,73 @@
 
     <Border MouseDown="OnMouseDown" Style="{DynamicResource WindowBorderStyle}">
         <StackPanel Orientation="Vertical">
-            <Grid x:Name="QueryBoxArea">
-                <Border MinHeight="30" Style="{DynamicResource QueryBoxBgStyle}">
-                    <Grid>
-                        <TextBox
-                            x:Name="QueryTextSuggestionBox"
-                            Height="{Binding MainWindowHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            FontSize="{Binding QueryBoxFontSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            IsEnabled="False"
-                            Style="{DynamicResource QuerySuggestionBoxStyle}">
-                            <TextBox.Text>
-                                <MultiBinding Converter="{StaticResource QuerySuggestionBoxConverter}">
-                                    <Binding ElementName="QueryTextBox" Mode="OneTime" />
-                                    <Binding ElementName="ResultListBox" Path="SelectedItem" />
-                                    <Binding ElementName="QueryTextBox" Path="Text" />
-                                </MultiBinding>
-                            </TextBox.Text>
-                        </TextBox>
-                        <TextBox
-                            x:Name="QueryTextBox"
-                            Height="{Binding MainWindowHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            AllowDrop="True"
-                            AutomationProperties.Name="{Binding Results.SelectedItem.Result.Title}"
-                            FontSize="{Binding QueryBoxFontSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            PreviewDragOver="QueryTextBox_OnPreviewDragOver"
-                            PreviewKeyUp="QueryTextBox_KeyUp"
-                            Style="{DynamicResource QueryBoxStyle}"
-                            Text="{Binding QueryText, Mode=OneWay}"
-                            TextChanged="QueryTextBox_TextChanged1"
-                            Visibility="Visible"
-                            WindowChrome.IsHitTestVisibleInChrome="True">
-                            <TextBox.CommandBindings>
-                                <CommandBinding Command="ApplicationCommands.Copy" Executed="QueryTextBox_OnCopy" />
-                            </TextBox.CommandBindings>
-                            <TextBox.ContextMenu>
-                                <ContextMenu MinWidth="160">
-                                    <MenuItem Command="ApplicationCommands.Cut" Header="{DynamicResource cut}">
-                                        <MenuItem.Icon>
-                                            <ui:FontIcon Glyph="&#xe8c6;" />
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <MenuItem Command="ApplicationCommands.Copy" Header="{DynamicResource copy}">
-                                        <MenuItem.Icon>
-                                            <ui:FontIcon Glyph="&#xe8c8;" />
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <MenuItem Command="ApplicationCommands.Paste" Header="{DynamicResource paste}">
-                                        <MenuItem.Icon>
-                                            <ui:FontIcon Glyph="&#xe77f;" />
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <Separator
-                                        Margin="0"
-                                        Padding="0 4 0 4"
-                                        Background="{DynamicResource ContextSeparator}" />
-                                    <MenuItem Click="OnContextMenusForSettingsClick" Header="{DynamicResource flowlauncher_settings}">
-                                        <MenuItem.Icon>
-                                            <ui:FontIcon Glyph="&#xe713;" />
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                    <MenuItem Command="{Binding EscCommand}" Header="{DynamicResource closeWindow}">
-                                        <MenuItem.Icon>
-                                            <ui:FontIcon Glyph="&#xe711;" />
-                                        </MenuItem.Icon>
-                                    </MenuItem>
-                                </ContextMenu>
-                            </TextBox.ContextMenu>
-                        </TextBox>
-                    </Grid>
-                </Border>
+            <Border MinHeight="30" Style="{DynamicResource QueryBoxBgStyle}">
+                <Grid>
+                    <TextBox
+                        x:Name="QueryTextSuggestionBox"
+                        Height="{Binding MainWindowHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        FontSize="{Binding QueryBoxFontSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        IsEnabled="False"
+                        Style="{DynamicResource QuerySuggestionBoxStyle}">
+                        <TextBox.Text>
+                            <MultiBinding Converter="{StaticResource QuerySuggestionBoxConverter}">
+                                <Binding ElementName="QueryTextBox" Mode="OneTime" />
+                                <Binding ElementName="ResultListBox" Path="SelectedItem" />
+                                <Binding ElementName="QueryTextBox" Path="Text" />
+                            </MultiBinding>
+                        </TextBox.Text>
+                    </TextBox>
+                    <TextBox
+                        x:Name="QueryTextBox"
+                        Height="{Binding MainWindowHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        AllowDrop="True"
+                        AutomationProperties.Name="{Binding Results.SelectedItem.Result.Title}"
+                        FontSize="{Binding QueryBoxFontSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        PreviewDragOver="QueryTextBox_OnPreviewDragOver"
+                        PreviewKeyUp="QueryTextBox_KeyUp"
+                        Style="{DynamicResource QueryBoxStyle}"
+                        Text="{Binding QueryText, Mode=OneWay}"
+                        TextChanged="QueryTextBox_TextChanged1"
+                        Visibility="Visible"
+                        WindowChrome.IsHitTestVisibleInChrome="True">
+                        <TextBox.CommandBindings>
+                            <CommandBinding Command="ApplicationCommands.Copy" Executed="QueryTextBox_OnCopy" />
+                        </TextBox.CommandBindings>
+                        <TextBox.ContextMenu>
+                            <ContextMenu MinWidth="160">
+                                <MenuItem Command="ApplicationCommands.Cut" Header="{DynamicResource cut}">
+                                    <MenuItem.Icon>
+                                        <ui:FontIcon Glyph="&#xe8c6;" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Command="ApplicationCommands.Copy" Header="{DynamicResource copy}">
+                                    <MenuItem.Icon>
+                                        <ui:FontIcon Glyph="&#xe8c8;" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Command="ApplicationCommands.Paste" Header="{DynamicResource paste}">
+                                    <MenuItem.Icon>
+                                        <ui:FontIcon Glyph="&#xe77f;" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <Separator
+                                    Margin="0"
+                                    Padding="0 4 0 4"
+                                    Background="{DynamicResource ContextSeparator}" />
+                                <MenuItem Click="OnContextMenusForSettingsClick" Header="{DynamicResource flowlauncher_settings}">
+                                    <MenuItem.Icon>
+                                        <ui:FontIcon Glyph="&#xe713;" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Command="{Binding EscCommand}" Header="{DynamicResource closeWindow}">
+                                    <MenuItem.Icon>
+                                        <ui:FontIcon Glyph="&#xe711;" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </ContextMenu>
+                        </TextBox.ContextMenu>
+                    </TextBox>
 
-                <Border>
                     <Image
                         WindowChrome.IsHitTestVisibleInChrome="True"
                         x:Name="PluginActivationIcon"
@@ -282,44 +278,42 @@
                         Source="{Binding PluginIconSource}"
                         Stretch="Uniform"
                         Style="{DynamicResource PluginActivationIcon}" />
-                </Border>
-            </Grid>
+                </Grid>
+            </Border>
 
-            <Grid x:Name="MiddleSeparatorArea" ClipToBounds="True">
-                <ContentControl>
-                    <ContentControl.Style>
-                        <Style TargetType="ContentControl">
-                            <Setter Property="Visibility" Value="Visible" />
-                            <Style.Triggers>
-                                <MultiDataTrigger>
-                                    <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding ElementName=ResultListBox, Path=Items.Count}" Value="0" />
-                                        <Condition Binding="{Binding ElementName=ResultContextMenu, Path=Visibility}" Value="Collapsed" />
-                                    </MultiDataTrigger.Conditions>
-                                    <MultiDataTrigger.Setters>
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                        <Setter Property="Margin" Value="0" />
-                                        <Setter Property="Height" Value="0" />
-                                    </MultiDataTrigger.Setters>
-                                </MultiDataTrigger>
-                            </Style.Triggers>
-                            <!--<Style.Triggers>
-                                <DataTrigger Binding="{Binding ElementName=ResultListBox, Path=Visibility}" Value="Visible">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding ElementName=ResultContextMenu, Path=Visibility}" Value="Visible">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                </DataTrigger>
-                            </Style.Triggers>-->
-                        </Style>
-                    </ContentControl.Style>
-                    <Rectangle
-                        Name="MiddleSeparator"
-                        Width="Auto"
-                        HorizontalAlignment="Stretch"
-                        Style="{DynamicResource SeparatorStyle}" />
-                </ContentControl>
-            </Grid>
+            <ContentControl>
+                <ContentControl.Style>
+                    <Style TargetType="ContentControl">
+                        <Setter Property="Visibility" Value="Visible" />
+                        <Style.Triggers>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding ElementName=ResultListBox, Path=Items.Count}" Value="0" />
+                                    <Condition Binding="{Binding ElementName=ResultContextMenu, Path=Visibility}" Value="Collapsed" />
+                                </MultiDataTrigger.Conditions>
+                                <MultiDataTrigger.Setters>
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Setter Property="Margin" Value="0" />
+                                    <Setter Property="Height" Value="0" />
+                                </MultiDataTrigger.Setters>
+                            </MultiDataTrigger>
+                        </Style.Triggers>
+                        <!--<Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=ResultListBox, Path=Visibility}" Value="Visible">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ElementName=ResultContextMenu, Path=Visibility}" Value="Visible">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>-->
+                    </Style>
+                </ContentControl.Style>
+                <Rectangle
+                    Name="MiddleSeparator"
+                    Width="Auto"
+                    HorizontalAlignment="Stretch"
+                    Style="{DynamicResource SeparatorStyle}" />
+            </ContentControl>
 
             <Border x:Name="ResultPreviewAreaBoarder" Style="{DynamicResource WindowRadius}">
                 <Border.Clip>
