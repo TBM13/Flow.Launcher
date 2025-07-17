@@ -32,10 +32,8 @@
     <!--  IsSynchronizedWithCurrentItem: http://stackoverflow.com/a/7833798/2833083  -->
 
     <ListBox.Resources>
-        <converter:SizeRatioConverter x:Key="SizeRatioConverter" />
         <converter:IconRadiusConverter x:Key="IconRadiusConverter" />
         <converter:DiameterToCenterPointConverter x:Key="DiameterToCenterPointConverter" />
-        <converter:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </ListBox.Resources>
     <ListBox.ItemTemplate>
         <DataTemplate>
