@@ -52,20 +52,6 @@ namespace Flow.Launcher.Infrastructure.UserSettings
 
         public string ColorScheme { get; set; } = "System";
 
-        private bool _showOpenResultHotkey = true;
-        public bool ShowOpenResultHotkey
-        {
-            get => _showOpenResultHotkey;
-            set
-            {
-                if (_showOpenResultHotkey != value)
-                {
-                    _showOpenResultHotkey = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
         public double WindowSize { get; set; } = 580;
         public string PreviewHotkey { get; set; } = $"F1";
         public string AutoCompleteHotkey { get; set; } = $"{KeyConstant.Ctrl} + Tab";

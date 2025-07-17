@@ -195,8 +195,6 @@
     <system:String x:Key="hotkeyPresetsToolTip">List of currently registered hotkeys</system:String>
     <system:String x:Key="openResultModifiers">Open Result Modifier Key</system:String>
     <system:String x:Key="openResultModifiersToolTip">Select a modifier key to open selected result via keyboard.</system:String>
-    <system:String x:Key="showOpenResultHotkey">Show Hotkey</system:String>
-    <system:String x:Key="showOpenResultHotkeyToolTip">Show result selection hotkey with results.</system:String>
     <system:String x:Key="autoCompleteHotkey">Auto Complete</system:String>
     <system:String x:Key="autoCompleteHotkeyToolTip">Runs autocomplete for the selected items.</system:String>
     <system:String x:Key="SelectNextItemHotkey">Select Next Item</system:String>
