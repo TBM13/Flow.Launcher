@@ -687,7 +687,6 @@ namespace Flow.Launcher.ViewModel
             }
         }
 
-        public Visibility ProgressBarVisibility { get; set; }
         public Visibility MainWindowVisibility { get; set; }
 
         // This is to be used for determining the visibility status of the main window instead of MainWindowVisibility
@@ -1072,8 +1071,6 @@ namespace Flow.Launcher.ViewModel
                 PluginIconPath = null;
                 PluginIconSource = null;
 
-                // Hide progress bar again because running query may set this to visible
-                ProgressBarVisibility = Visibility.Hidden;
                 return;
             }
 
@@ -1088,7 +1085,6 @@ namespace Flow.Launcher.ViewModel
             var currentCancellationToken = _updateSource.Token;
             _updateToken = currentCancellationToken;
 
-            ProgressBarVisibility = Visibility.Hidden;
             _isQueryRunning = true;
 
             // Switch to ThreadPool thread
@@ -1137,18 +1133,6 @@ namespace Flow.Launcher.ViewModel
                 if (currentCancellationToken.IsCancellationRequested) return;
             }*/
 
-            _ = Task.Delay(200, currentCancellationToken).ContinueWith(_ =>
-                {
-                    // start the progress bar if query takes more than 200 ms and this is the current running query and it didn't finish yet
-                    if (_isQueryRunning)
-                    {
-                        ProgressBarVisibility = Visibility.Visible;
-                    }
-                },
-                currentCancellationToken,
-                TaskContinuationOptions.NotOnCanceled,
-                TaskScheduler.Default);
-
             // plugins are ICollection, meaning LINQ will get the Count and preallocate Array
 
             Task[] tasks;
@@ -1190,12 +1174,6 @@ namespace Flow.Launcher.ViewModel
             // this should happen once after all queries are done so progress bar should continue
             // until the end of all querying
             _isQueryRunning = false;
-
-            if (!currentCancellationToken.IsCancellationRequested)
-            {
-                // update to hidden if this is still the current query
-                ProgressBarVisibility = Visibility.Hidden;
-            }
 
             // Local function
             async Task QueryTaskAsync(PluginPair plugin, CancellationToken token)

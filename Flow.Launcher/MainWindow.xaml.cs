@@ -1,16 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Linq;
-using System.Media;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Interop;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 using System.Windows.Shell;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.DependencyInjection;
@@ -18,12 +13,10 @@ using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Hotkey;
-using Flow.Launcher.Infrastructure.Image;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Plugin;
 using Flow.Launcher.Plugin.SharedCommands;
 using Flow.Launcher.ViewModel;
-using Microsoft.Win32;
 using ModernWpf.Controls;
 using DataObject = System.Windows.DataObject;
 using Key = System.Windows.Input.Key;
@@ -148,9 +141,6 @@ namespace Flow.Launcher
             {
                 ModernWpf.ThemeManager.Current.ApplicationTheme = ModernWpf.ApplicationTheme.Dark;
             }
-
-            // Initialize position
-            InitProgressbarAnimation();
 
             // Force update position
             UpdatePosition();
@@ -837,58 +827,6 @@ namespace Flow.Launcher
             return top;
         }
 
-        #endregion
-
-        #region Window Animation
-
-        private void InitProgressbarAnimation()
-        {
-            var progressBarStoryBoard = new Storyboard();
-
-            var da = new DoubleAnimation(ProgressBar.X2, ActualWidth + 100,
-                new Duration(new TimeSpan(0, 0, 0, 0, 1600)));
-            var da1 = new DoubleAnimation(ProgressBar.X1, ActualWidth + 0,
-                new Duration(new TimeSpan(0, 0, 0, 0, 1600)));
-            Storyboard.SetTargetProperty(da, new PropertyPath("(Line.X2)"));
-            Storyboard.SetTargetProperty(da1, new PropertyPath("(Line.X1)"));
-            progressBarStoryBoard.Children.Add(da);
-            progressBarStoryBoard.Children.Add(da1);
-            progressBarStoryBoard.RepeatBehavior = RepeatBehavior.Forever;
-
-            da.Freeze();
-            da1.Freeze();
-
-            const string progressBarAnimationName = "ProgressBarAnimation";
-            var beginStoryboard = new BeginStoryboard
-            {
-                Name = progressBarAnimationName,
-                Storyboard = progressBarStoryBoard
-            };
-
-            var stopStoryboard = new StopStoryboard()
-            {
-                BeginStoryboardName = progressBarAnimationName
-            };
-
-            var trigger = new Trigger
-            {
-                Property = VisibilityProperty,
-                Value = Visibility.Visible
-            };
-            trigger.EnterActions.Add(beginStoryboard);
-            trigger.ExitActions.Add(stopStoryboard);
-
-            var progressStyle = new Style(typeof(Line))
-            {
-                BasedOn = FindResource("PendingLineStyle") as Style
-            };
-            progressStyle.RegisterName(progressBarAnimationName, beginStoryboard);
-            progressStyle.Triggers.Add(trigger);
-
-            ProgressBar.Style = progressStyle;
-
-            _viewModel.ProgressBarVisibility = Visibility.Hidden;
-        }
         #endregion
 
         #region QueryTextBox Event

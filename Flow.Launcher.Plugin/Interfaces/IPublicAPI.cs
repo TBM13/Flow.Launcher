@@ -395,16 +395,6 @@ namespace Flow.Launcher.Plugin
         public Task ShowProgressBoxAsync(string caption, Func<Action<double>, Task> reportProgressAsync, Action cancelProgress = null);
 
         /// <summary>
-        /// Start the loading bar in main window
-        /// </summary>
-        public void StartLoadingBar();
-
-        /// <summary>
-        /// Stop the loading bar in main window
-        /// </summary>
-        public void StopLoadingBar();
-
-        /// <summary>
         /// Get all available themes
         /// </summary>
         /// <returns></returns>

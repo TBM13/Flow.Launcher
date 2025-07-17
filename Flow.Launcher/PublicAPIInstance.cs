@@ -227,10 +227,6 @@ namespace Flow.Launcher
             return null;
         }
 
-        public void StartLoadingBar() => _mainVM.ProgressBarVisibility = Visibility.Visible;
-
-        public void StopLoadingBar() => _mainVM.ProgressBarVisibility = Visibility.Collapsed;
-
         public string GetTranslation(string key) => Internationalization.GetTranslation(key);
 
         public List<PluginPair> GetAllPlugins() => PluginManager.AllPlugins.ToList();

@@ -283,19 +283,6 @@
                         Stretch="Uniform"
                         Style="{DynamicResource PluginActivationIcon}" />
                 </Border>
-                <Line
-                    x:Name="ProgressBar"
-                    Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=ActualWidth}"
-                    Height="2"
-                    Margin="12 0 12 0"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Bottom"
-                    StrokeThickness="2"
-                    Visibility="{Binding ProgressBarVisibility, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    X1="-100"
-                    X2="0"
-                    Y1="0"
-                    Y2="0" />
             </Grid>
 
             <Grid x:Name="MiddleSeparatorArea" ClipToBounds="True">
