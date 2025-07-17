@@ -239,16 +239,6 @@ namespace Flow.Launcher.ViewModel
         }
 
         public Result Result { get; }
-        public int ResultProgress
-        {
-            get
-            {
-                if (Result.ProgressBar == null)
-                    return 0;
-
-                return Result.ProgressBar.Value;
-            }
-        }
 
         public string QuerySuggestionText { get; set; }
 
