@@ -272,17 +272,16 @@
                 </Border>
 
                 <Border>
-                    <Grid WindowChrome.IsHitTestVisibleInChrome="True">
-                        <Image
-                            x:Name="PluginActivationIcon"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Center"
-                            Panel.ZIndex="2"
-                            RenderOptions.BitmapScalingMode="HighQuality"
-                            Source="{Binding PluginIconSource}"
-                            Stretch="Uniform"
-                            Style="{DynamicResource PluginActivationIcon}" />
-                    </Grid>
+                    <Image
+                        WindowChrome.IsHitTestVisibleInChrome="True"
+                        x:Name="PluginActivationIcon"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Panel.ZIndex="2"
+                        RenderOptions.BitmapScalingMode="HighQuality"
+                        Source="{Binding PluginIconSource}"
+                        Stretch="Uniform"
+                        Style="{DynamicResource PluginActivationIcon}" />
                 </Border>
                 <Line
                     x:Name="ProgressBar"
