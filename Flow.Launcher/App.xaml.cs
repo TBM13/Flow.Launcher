@@ -14,6 +14,7 @@ using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Plugin;
 using Flow.Launcher.SettingPages.ViewModels;
 using Flow.Launcher.ViewModel;
+using iNKORE.UI.WPF.Modern.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.Threading;
@@ -47,6 +48,9 @@ namespace Flow.Launcher
 
         public App()
         {
+            // Do not use bitmap cache since it can cause WPF second window freezing issue
+            ShadowAssist.UseBitmapCache = false;
+
             // Configure the dependency injection container
             try
             {
