@@ -552,6 +552,8 @@ namespace Flow.Launcher
             remove => _mainVM.ActualApplicationThemeChanged -= value;
         }
 
+        public string GetDataDirectory() => DataLocation.DataDirectory();
+
         #endregion
 
         #region Private Methods
