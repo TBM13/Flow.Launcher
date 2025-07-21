@@ -68,17 +68,36 @@ namespace Flow.Launcher
                 Margin = new Thickness(0)
             };
 
-            var link = new Hyperlink
+            Hyperlink link = null;
+            try
             {
-                IsEnabled = true
-            };
-            link.Inlines.Add(url);
-            link.NavigateUri = new Uri(url);
-            link.Click += (s, e) => SearchWeb.OpenInBrowserTab(url);
+                var uri = new Uri(url);
+
+                link = new Hyperlink
+                {
+                    IsEnabled = true
+                };
+                link.Inlines.Add(url);
+                link.NavigateUri = uri;
+                link.Click += (s, e) => SearchWeb.OpenInBrowserTab(url);
+            }
+            catch (Exception)
+            {
+                // Leave link as null if the URL is invalid
+            }
 
             paragraph.Inlines.Add(textBeforeUrl);
             paragraph.Inlines.Add(" ");
-            paragraph.Inlines.Add(link);
+            if (link is null)
+            {
+                // Add the URL as plain text if it is invalid
+                paragraph.Inlines.Add(url);
+            }
+            else
+            {
+                // Add the hyperlink if it is valid
+                paragraph.Inlines.Add(link);
+            }
             paragraph.Inlines.Add("\n");
 
             return paragraph;
