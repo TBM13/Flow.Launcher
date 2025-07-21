@@ -3,14 +3,12 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Image;
-using Flow.Launcher.Infrastructure.Logger;
 using Flow.Launcher.Infrastructure.Storage;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Plugin;
@@ -168,6 +166,9 @@ namespace Flow.Launcher
                 // Enable Win32 dark mode if the system is in dark mode before creating all windows
                 Win32Helper.EnableWin32DarkMode(_settings.ColorScheme);
 
+                // Initialize language before portable clean up since it needs translations
+                await Ioc.Default.GetRequiredService<Internationalization>().InitializeLanguageAsync();
+
                 API.LogInfo(ClassName, "Begin Flow Launcher startup ----------------------------------------------------");
                 API.LogInfo(ClassName, $"Runtime info:{ErrorReporting.RuntimeInfo()}");
 
@@ -184,8 +185,8 @@ namespace Flow.Launcher
 
                 await PluginManager.InitializePluginsAsync();
 
-                // Change language after all plugins are initialized because we need to update plugin title based on their api
-                await Ioc.Default.GetRequiredService<Internationalization>().InitializeLanguageAsync();
+                // Update plugin titles after plugins are initialized with their api instances
+                Internationalization.UpdatePluginMetadataTranslations();
 
                 await imageLoadertask;
 

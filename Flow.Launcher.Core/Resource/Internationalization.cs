@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -28,54 +27,46 @@ namespace Flow.Launcher.Core.Resource
         private const string DefaultFile = "en.xaml";
         private const string Extension = ".xaml";
         private readonly Settings _settings;
-        private readonly List<string> _languageDirectories = new();
-        private readonly List<ResourceDictionary> _oldResources = new();
+        private readonly List<string> _languageDirectories = [];
+        private readonly List<ResourceDictionary> _oldResources = [];
         private static string SystemLanguageCode;
 
         public Internationalization(Settings settings)
         {
             _settings = settings;
-            AddFlowLauncherLanguageDirectory();
         }
 
-        private void AddFlowLauncherLanguageDirectory()
-        {
-            var directory = Path.Combine(Constant.ProgramDirectory, Folder);
-            _languageDirectories.Add(directory);
-        }
+        #region Initialization
 
+        /// <summary>
+        /// Initialize the system language code based on the current culture.
+        /// </summary>
         public static void InitSystemLanguageCode()
         {
-            SystemLanguageCode = DefaultLanguageCode;
-        }
+            var availableLanguages = AvailableLanguages.GetAvailableLanguages();
 
-        private void AddPluginLanguageDirectories()
-        {
-            foreach (var plugin in PluginManager.GetTranslationPlugins())
+            // Retrieve the language identifiers for the current culture.
+            // ChangeLanguage method overrides the CultureInfo.CurrentCulture, so this needs to
+            // be called at startup in order to get the correct lang code of system. 
+            var currentCulture = CultureInfo.CurrentCulture;
+            var twoLetterCode = currentCulture.TwoLetterISOLanguageName;
+            var threeLetterCode = currentCulture.ThreeLetterISOLanguageName;
+            var fullName = currentCulture.Name;
+
+            // Try to find a match in the available languages list
+            foreach (var language in availableLanguages)
             {
-                var location = Assembly.GetAssembly(plugin.Plugin.GetType()).Location;
-                var dir = Path.GetDirectoryName(location);
-                if (dir != null)
+                var languageCode = language.LanguageCode;
+
+                if (string.Equals(languageCode, twoLetterCode, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(languageCode, threeLetterCode, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(languageCode, fullName, StringComparison.OrdinalIgnoreCase))
                 {
-                    var pluginThemeDirectory = Path.Combine(dir, Folder);
-                    _languageDirectories.Add(pluginThemeDirectory);
-                }
-                else
-                {
-                    API.LogError(ClassName, $"Can't find plugin path <{location}> for <{plugin.Metadata.Name}>");
+                    SystemLanguageCode = languageCode;
                 }
             }
 
-            LoadDefaultLanguage();
-        }
-
-        private void LoadDefaultLanguage()
-        {
-            // Removes language files loaded before any plugins were loaded.
-            // Prevents the language Flow started in from overwriting English if the user switches back to English
-            RemoveOldLanguageFiles();
-            LoadLanguage(AvailableLanguages.English);
-            _oldResources.Clear();
+            SystemLanguageCode = DefaultLanguageCode;
         }
 
         /// <summary>
@@ -93,12 +84,63 @@ namespace Flow.Launcher.Core.Resource
             // Get language by language code and change language
             var language = GetLanguageByLanguageCode(languageCode);
 
+            // Add Flow Launcher language directory
+            AddFlowLauncherLanguageDirectory();
+
             // Add plugin language directories first so that we can load language files from plugins
             AddPluginLanguageDirectories();
 
+            // Load default language resources
+            LoadDefaultLanguage();
+
             // Change language
-            await ChangeLanguageAsync(language);
+            await ChangeLanguageAsync(language, false);
         }
+
+        private void AddFlowLauncherLanguageDirectory()
+        {
+            // Check if Flow Launcher language directory exists
+            var directory = Path.Combine(Constant.ProgramDirectory, Folder);
+            if (!Directory.Exists(directory))
+            {
+                API.LogError(ClassName, $"Flow Launcher language directory can't be found <{directory}>");
+                return;
+            }
+
+            _languageDirectories.Add(directory);
+        }
+
+        private void AddPluginLanguageDirectories()
+        {
+            foreach (var pluginsDir in PluginManager.Directories)
+            {
+                if (!Directory.Exists(pluginsDir)) continue;
+
+                // Enumerate all top directories in the plugin directory
+                foreach (var dir in Directory.GetDirectories(pluginsDir))
+                {
+                    // Check if the directory contains a language folder
+                    var pluginLanguageDir = Path.Combine(dir, Folder);
+                    if (!Directory.Exists(pluginLanguageDir)) continue;
+
+                    // Check if the language directory contains default language file since it will be checked later
+                    _languageDirectories.Add(pluginLanguageDir);
+                }
+            }
+        }
+
+        private void LoadDefaultLanguage()
+        {
+            // Removes language files loaded before any plugins were loaded.
+            // Prevents the language Flow started in from overwriting English if the user switches back to English
+            RemoveOldLanguageFiles();
+            LoadLanguage(AvailableLanguages.English);
+            _oldResources.Clear();
+        }
+
+        #endregion
+
+        #region Change Language
 
         /// <summary>
         /// Change language during runtime. Will change app language and plugin language & save settings.
@@ -128,8 +170,8 @@ namespace Flow.Launcher.Core.Resource
 
         private static Language GetLanguageByLanguageCode(string languageCode)
         {
-            var lowercase = languageCode.ToLower();
-            var language = AvailableLanguages.GetAvailableLanguages().FirstOrDefault(o => o.LanguageCode.ToLower() == lowercase);
+            var language = AvailableLanguages.GetAvailableLanguages().
+                FirstOrDefault(o => o.LanguageCode.Equals(languageCode, StringComparison.OrdinalIgnoreCase));
             if (language == null)
             {
                 API.LogError(ClassName, $"Language code can't be found <{languageCode}>");
@@ -141,7 +183,7 @@ namespace Flow.Launcher.Core.Resource
             }
         }
 
-        private async Task ChangeLanguageAsync(Language language)
+        private async Task ChangeLanguageAsync(Language language, bool updateMetadata = true)
         {
             // Remove old language files and load language
             RemoveOldLanguageFiles();
@@ -153,8 +195,11 @@ namespace Flow.Launcher.Core.Resource
             // Change culture info
             ChangeCultureInfo(language.LanguageCode);
 
-            // Raise event for plugins after culture is set
-            await Task.Run(UpdatePluginMetadataTranslations);
+            if (updateMetadata)
+            {
+                // Raise event for plugins after culture is set
+                await Task.Run(UpdatePluginMetadataTranslations);
+            }
         }
 
         public static void ChangeCultureInfo(string languageCode)
@@ -176,6 +221,10 @@ namespace Flow.Launcher.Core.Resource
             thread.CurrentCulture = currentCulture;
             thread.CurrentUICulture = currentCulture;
         }
+
+        #endregion
+
+        #region Language Resources Management
 
         private void RemoveOldLanguageFiles()
         {
@@ -212,39 +261,6 @@ namespace Flow.Launcher.Core.Resource
             }
         }
 
-        public static string GetTranslation(string key)
-        {
-            var translation = Application.Current.TryFindResource(key);
-            if (translation is string)
-            {
-                return translation.ToString();
-            }
-            else
-            {
-                API.LogError(ClassName, $"No Translation for key {key}");
-                return $"No Translation for key {key}";
-            }
-        }
-
-        private void UpdatePluginMetadataTranslations()
-        {
-            // Update plugin metadata name & description
-            foreach (var p in PluginManager.GetTranslationPlugins())
-            {
-                if (p.Plugin is not IPluginI18n pluginI18N) return;
-                try
-                {
-                    p.Metadata.Name = pluginI18N.GetTranslatedPluginTitle();
-                    p.Metadata.Description = pluginI18N.GetTranslatedPluginDescription();
-                    pluginI18N.OnCultureInfoChanged(CultureInfo.CurrentCulture);
-                }
-                catch (Exception e)
-                {
-                    API.LogException(ClassName, $"Failed for <{p.Metadata.Name}>", e);
-                }
-            }
-        }
-
         private static string LanguageFile(string folder, string language)
         {
             if (Directory.Exists(folder))
@@ -274,5 +290,57 @@ namespace Flow.Launcher.Core.Resource
                 return string.Empty;
             }
         }
+
+        #endregion
+
+        #region Available Languages
+
+        public List<Language> LoadAvailableLanguages()
+        {
+            return AvailableLanguages.GetAvailableLanguages();
+        }
+
+        #endregion
+
+        #region Get Translations
+
+        public static string GetTranslation(string key)
+        {
+            var translation = Application.Current.TryFindResource(key);
+            if (translation is string)
+            {
+                return translation.ToString();
+            }
+            else
+            {
+                API.LogError(ClassName, $"No Translation for key {key}");
+                return $"No Translation for key {key}";
+            }
+        }
+
+        #endregion
+
+        #region Update Metadata
+
+        public static void UpdatePluginMetadataTranslations()
+        {
+            // Update plugin metadata name & description
+            foreach (var p in PluginManager.GetTranslationPlugins())
+            {
+                if (p.Plugin is not IPluginI18n pluginI18N) return;
+                try
+                {
+                    p.Metadata.Name = pluginI18N.GetTranslatedPluginTitle();
+                    p.Metadata.Description = pluginI18N.GetTranslatedPluginDescription();
+                    pluginI18N.OnCultureInfoChanged(CultureInfo.CurrentCulture);
+                }
+                catch (Exception e)
+                {
+                    API.LogException(ClassName, $"Failed for <{p.Metadata.Name}>", e);
+                }
+            }
+        }
+
+        #endregion
     }
 }
