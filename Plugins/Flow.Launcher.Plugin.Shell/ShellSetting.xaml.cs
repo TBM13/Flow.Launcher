@@ -16,20 +16,18 @@ namespace Flow.Launcher.Plugin.Shell
 
         private void CMDSetting_OnLoaded(object sender, RoutedEventArgs re)
         {
-            ReplaceWinR.IsChecked = _settings.ReplaceWinR;
-
             CloseShellAfterPress.IsChecked = _settings.CloseShellAfterPress;
-            
+
             LeaveShellOpen.IsChecked = _settings.LeaveShellOpen;
-            
+
             AlwaysRunAsAdministrator.IsChecked = _settings.RunAsAdministrator;
 
             UseWindowsTerminal.IsChecked = _settings.UseWindowsTerminal;
-            
+
             LeaveShellOpen.IsEnabled = _settings.Shell != Shell.RunCommand;
-            
+
             ShowOnlyMostUsedCMDs.IsChecked = _settings.ShowOnlyMostUsedCMDs;
-            
+
             if ((bool)!ShowOnlyMostUsedCMDs.IsChecked)
                 ShowOnlyMostUsedCMDsNumber.IsEnabled = false;
 
@@ -86,16 +84,6 @@ namespace Flow.Launcher.Plugin.Shell
             UseWindowsTerminal.Unchecked += (o, e) =>
             {
                 _settings.UseWindowsTerminal = false;
-            };
-
-            ReplaceWinR.Checked += (o, e) =>
-            {
-                _settings.ReplaceWinR = true;
-            };
-
-            ReplaceWinR.Unchecked += (o, e) =>
-            {
-                _settings.ReplaceWinR = false;
             };
 
             ShellComboBox.SelectedIndex = _settings.Shell switch

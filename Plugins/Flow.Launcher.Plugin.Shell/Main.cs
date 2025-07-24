@@ -4,24 +4,18 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Flow.Launcher.Plugin.SharedCommands;
-using WindowsInput;
-using WindowsInput.Native;
 using Control = System.Windows.Controls.Control;
-using Keys = System.Windows.Forms.Keys;
 
 namespace Flow.Launcher.Plugin.Shell
 {
-    public class Main : IPlugin, ISettingProvider, IPluginI18n, IContextMenu, IDisposable
+    public class Main : IPlugin, ISettingProvider, IPluginI18n, IContextMenu
     {
         private static readonly string ClassName = nameof(Main);
 
         internal PluginInitContext Context { get; private set; }
 
         private const string Image = "Images/shell.png";
-        private bool _winRStroked;
-        private readonly KeyboardSimulator _keyboardSimulator = new(new InputSimulator());
 
         private Settings _settings;
 
@@ -380,43 +374,6 @@ namespace Flow.Launcher.Plugin.Shell
         {
             Context = context;
             _settings = context.API.LoadSettingJsonStorage<Settings>();
-            context.API.RegisterGlobalKeyboardCallback(API_GlobalKeyboardEvent);
-        }
-
-        bool API_GlobalKeyboardEvent(int keyevent, int vkcode, SpecialKeyState state)
-        {
-            if (!Context.CurrentPluginMetadata.Disabled && _settings.ReplaceWinR)
-            {
-                if (keyevent == (int)KeyEvent.WM_KEYDOWN && vkcode == (int)Keys.R && state.WinPressed)
-                {
-                    _winRStroked = true;
-                    OnWinRPressed();
-                    return false;
-                }
-                if (keyevent == (int)KeyEvent.WM_KEYUP && _winRStroked && vkcode == (int)Keys.LWin)
-                {
-                    _winRStroked = false;
-                    _keyboardSimulator.ModifiedKeyStroke(VirtualKeyCode.LWIN, VirtualKeyCode.CONTROL);
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        private void OnWinRPressed()
-        {
-            Context.API.ShowMainWindow();
-            // show the main window and set focus to the query box
-            _ = Task.Run(async () =>
-            {
-                Context.API.ChangeQuery($"{Context.CurrentPluginMetadata.ActionKeywords[0]}{Plugin.Query.TermSeparator}");
-
-                // Win+R is a system-reserved shortcut, and though the plugin intercepts the keyboard event and
-                // shows the main window, Windows continues to process the Win key and briefly reclaims focus.
-                // So we need to wait until the keyboard event processing is completed and then set focus
-                await Task.Delay(50);
-                Context.API.FocusQueryTextBox();
-            });
         }
 
         public Control CreateSettingPanel()
@@ -471,11 +428,6 @@ namespace Flow.Launcher.Plugin.Shell
             };
 
             return results;
-        }
-
-        public void Dispose()
-        {
-            Context.API.RemoveGlobalKeyboardCallback(API_GlobalKeyboardEvent);
         }
     }
 }

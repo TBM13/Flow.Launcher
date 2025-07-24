@@ -5,11 +5,9 @@ namespace Flow.Launcher.Plugin.Shell
     public class Settings
     {
         public Shell Shell { get; set; } = Shell.Cmd;
-        
-        public bool ReplaceWinR { get; set; } = false;
 
         public bool CloseShellAfterPress { get; set; } = false;
-        
+
         public bool LeaveShellOpen { get; set; }
 
         public bool RunAsAdministrator { get; set; } = true;

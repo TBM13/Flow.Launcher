@@ -19,12 +19,6 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <CheckBox
-            x:Name="ReplaceWinR"
-            Grid.Row="0"
-            Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
-            HorizontalAlignment="Left"
-            Content="{DynamicResource flowlauncher_plugin_cmd_relace_winr}" />
-        <CheckBox
             x:Name="CloseShellAfterPress"
             Grid.Row="1"
             Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
