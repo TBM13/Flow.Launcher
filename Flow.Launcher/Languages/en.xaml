@@ -28,10 +28,6 @@
     <system:String x:Key="cancelTopMostInThisQuery">Cancel topmost in this query</system:String>
     <system:String x:Key="executeQuery">Execute query: {0}</system:String>
     <system:String x:Key="lastExecuteTime">Last execution time: {0}</system:String>
-    <system:String x:Key="iconTrayOpen">Open</system:String>
-    <system:String x:Key="iconTraySettings">Settings</system:String>
-    <system:String x:Key="iconTrayAbout">About</system:String>
-    <system:String x:Key="iconTrayExit">Exit</system:String>
     <system:String x:Key="closeWindow">Close</system:String>
     <system:String x:Key="copy">Copy</system:String>
     <system:String x:Key="cut">Cut</system:String>
@@ -94,8 +90,6 @@
     <system:String x:Key="select">Select</system:String>
     <system:String x:Key="hideOnStartup">Hide Flow Launcher on startup</system:String>
     <system:String x:Key="hideOnStartupToolTip">Flow Launcher search window is hidden in the tray after starting up.</system:String>
-    <system:String x:Key="hideNotifyIcon">Hide tray icon</system:String>
-    <system:String x:Key="hideNotifyIconToolTip">When the icon is hidden from the tray, the Settings menu can be opened by right-clicking on the search window.</system:String>
     <system:String x:Key="querySearchPrecision">Query Search Precision</system:String>
     <system:String x:Key="querySearchPrecisionToolTip">Changes minimum match score required for results.</system:String>
     <system:String x:Key="SearchPrecisionNone">None</system:String>

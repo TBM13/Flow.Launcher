@@ -18,11 +18,8 @@ using Flow.Launcher.Plugin;
 using Flow.Launcher.Plugin.SharedCommands;
 using Flow.Launcher.Plugin.SharedModels;
 using Flow.Launcher.ViewModel;
-using ModernWpf.Controls;
 using DataObject = System.Windows.DataObject;
 using Key = System.Windows.Input.Key;
-using MouseButtons = System.Windows.Forms.MouseButtons;
-using NotifyIcon = System.Windows.Forms.NotifyIcon;
 
 namespace Flow.Launcher
 {
@@ -44,11 +41,6 @@ namespace Flow.Launcher
         private readonly Settings _settings;
         private readonly Theme _theme;
 
-        // Window Notify Icon
-        private NotifyIcon _notifyIcon;
-
-        // Window Context Menu
-        private readonly ContextMenu _contextMenu = new();
         private readonly MainViewModel _viewModel;
 
         // Window Event: Key Event
@@ -128,10 +120,6 @@ namespace Flow.Launcher
                 _viewModel.Show();
             }
 
-            // Initialize context menu & notify icon
-            InitializeContextMenu();
-            InitializeNotifyIcon();
-
             // Initialize color scheme
             if (_settings.ColorScheme == Constant.Light)
             {
@@ -198,11 +186,6 @@ namespace Flow.Launcher
                             _viewModel.QueryTextCursorMovedToEnd = false;
                         }
                         break;
-                    case nameof(MainViewModel.GameModeStatus):
-                        _notifyIcon.Icon = _viewModel.GameModeStatus
-                            ? Properties.Resources.gamemode
-                            : Properties.Resources.app;
-                        break;
                 }
             };
 
@@ -211,18 +194,11 @@ namespace Flow.Launcher
             {
                 switch (e.PropertyName)
                 {
-                    case nameof(Settings.HideNotifyIcon):
-                        _notifyIcon.Visible = !_settings.HideNotifyIcon;
-                        break;
                     case nameof(Settings.Language):
-                        UpdateNotifyIconText();
                         if (_settings.ShowHomePage && _viewModel.QueryResultsSelected() && string.IsNullOrEmpty(_viewModel.QueryText))
                         {
                             _viewModel.QueryResults();
                         }
-                        break;
-                    case nameof(Settings.Hotkey):
-                        UpdateNotifyIconText();
                         break;
                     case nameof(Settings.WindowLeft):
                         Left = _settings.WindowLeft;
@@ -257,7 +233,6 @@ namespace Flow.Launcher
             if (!CanClose)
             {
                 CanClose = true;
-                _notifyIcon.Visible = false;
                 App.API.SaveAppAllSettings();
                 e.Cancel = true;
                 await PluginManager.DisposePluginsAsync();
@@ -531,103 +506,6 @@ namespace Flow.Launcher
             }
 
             return IntPtr.Zero;
-        }
-
-        #endregion
-
-        #region Window Notify Icon
-
-        private void InitializeNotifyIcon()
-        {
-            _notifyIcon = new NotifyIcon
-            {
-                Text = Constant.FlowLauncherFullName,
-                Icon = Constant.Version == "1.0.0" ? Properties.Resources.dev : Properties.Resources.app,
-                Visible = !_settings.HideNotifyIcon
-            };
-
-            _notifyIcon.MouseClick += (o, e) =>
-            {
-                switch (e.Button)
-                {
-                    case MouseButtons.Left:
-                        _viewModel.ToggleFlowLauncher();
-                        break;
-                    case MouseButtons.Right:
-
-                        _contextMenu.IsOpen = true;
-                        // Get context menu handle and bring it to the foreground
-                        if (PresentationSource.FromVisual(_contextMenu) is HwndSource hwndSource)
-                        {
-                            Win32Helper.SetForegroundWindow(hwndSource.Handle);
-                        }
-
-                        _contextMenu.Focus();
-                        break;
-                }
-            };
-        }
-
-        private void UpdateNotifyIconText()
-        {
-            var menu = _contextMenu;
-            ((MenuItem)menu.Items[0]).Header = App.API.GetTranslation("iconTrayOpen") +
-                                               " (" + _settings.Hotkey + ")";
-            ((MenuItem)menu.Items[1]).Header = App.API.GetTranslation("GameMode");
-            ((MenuItem)menu.Items[2]).Header = App.API.GetTranslation("PositionReset");
-            ((MenuItem)menu.Items[3]).Header = App.API.GetTranslation("iconTraySettings");
-            ((MenuItem)menu.Items[4]).Header = App.API.GetTranslation("iconTrayExit");
-        }
-
-        private void InitializeContextMenu()
-        {
-            var menu = _contextMenu;
-            menu.Items.Clear();
-            var openIcon = new FontIcon { Glyph = "\ue71e" };
-            var open = new MenuItem
-            {
-                Header = App.API.GetTranslation("iconTrayOpen") + " (" + _settings.Hotkey + ")",
-                Icon = openIcon
-            };
-            var gamemodeIcon = new FontIcon { Glyph = "\ue7fc" };
-            var gamemode = new MenuItem
-            {
-                Header = App.API.GetTranslation("GameMode"),
-                Icon = gamemodeIcon
-            };
-            var positionresetIcon = new FontIcon { Glyph = "\ue73f" };
-            var positionreset = new MenuItem
-            {
-                Header = App.API.GetTranslation("PositionReset"),
-                Icon = positionresetIcon
-            };
-            var settingsIcon = new FontIcon { Glyph = "\ue713" };
-            var settings = new MenuItem
-            {
-                Header = App.API.GetTranslation("iconTraySettings"),
-                Icon = settingsIcon
-            };
-            var exitIcon = new FontIcon { Glyph = "\ue7e8" };
-            var exit = new MenuItem
-            {
-                Header = App.API.GetTranslation("iconTrayExit"),
-                Icon = exitIcon
-            };
-
-            open.Click += (o, e) => _viewModel.ToggleFlowLauncher();
-            gamemode.Click += (o, e) => _viewModel.ToggleGameMode();
-            positionreset.Click += (o, e) => _ = PositionResetAsync();
-            settings.Click += (o, e) => App.API.OpenSettingDialog();
-            exit.Click += (o, e) => Close();
-
-            gamemode.ToolTip = App.API.GetTranslation("GameModeToolTip");
-            positionreset.ToolTip = App.API.GetTranslation("PositionResetToolTip");
-
-            _contextMenu.Items.Add(open);
-            _contextMenu.Items.Add(gamemode);
-            _contextMenu.Items.Add(positionreset);
-            _contextMenu.Items.Add(settings);
-            _contextMenu.Items.Add(exit);
         }
 
         #endregion
@@ -914,7 +792,6 @@ namespace Flow.Launcher
                 if (disposing)
                 {
                     _hwndSource?.Dispose();
-                    _notifyIcon?.Dispose();
                     _viewModel.ActualApplicationThemeChanged -= ViewModel_ActualApplicationThemeChanged;
                 }
 

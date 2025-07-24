@@ -294,19 +294,6 @@ namespace Flow.Launcher.Infrastructure.UserSettings
         public bool EnableUpdateLog { get; set; }
 
         public bool HideOnStartup { get; set; } = true;
-        private bool _hideNotifyIcon;
-        public bool HideNotifyIcon
-        {
-            get => _hideNotifyIcon;
-            set
-            {
-                if (_hideNotifyIcon != value)
-                {
-                    _hideNotifyIcon = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
         public bool LeaveCmdOpen { get; set; }
         public bool HideWhenDeactivated { get; set; } = true;
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -145,7 +146,7 @@ namespace Flow.Launcher.Core.Plugin
                 API.LogException(ClassName, $"Failed to save plugin settings to path: {SettingPath}", e);
             }
         }
-        
+
         public bool NeedCreateSettingPanel()
         {
             // If there are no settings or the settings configuration is empty, return null
@@ -287,7 +288,9 @@ namespace Flow.Launcher.Core.Plugin
 
                             Btn.Click += (_, _) =>
                             {
-                                using System.Windows.Forms.CommonDialog dialog = type switch
+                                throw new NotImplementedException();
+
+                                /*using System.Windows.Forms.CommonDialog dialog = type switch
                                 {
                                     "inputWithFolderBtn" => new System.Windows.Forms.FolderBrowserDialog(),
                                     _ => new System.Windows.Forms.OpenFileDialog(),
@@ -306,7 +309,7 @@ namespace Flow.Launcher.Core.Plugin
                                 };
 
                                 textBox.Text = path;
-                                Settings[attributes.Name] = path;
+                                Settings[attributes.Name] = path;*/
                             };
 
                             var stackPanel = new StackPanel()
