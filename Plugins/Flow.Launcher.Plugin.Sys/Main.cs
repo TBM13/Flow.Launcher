@@ -26,8 +26,11 @@ namespace Flow.Launcher.Plugin.Sys
             {"Lock", "flowlauncher_plugin_sys_lock_cmd"},
             {"Sleep", "flowlauncher_plugin_sys_sleep_cmd"},
             {"Hibernate", "flowlauncher_plugin_sys_hibernate_cmd"},
+
             {"Empty Recycle Bin", "flowlauncher_plugin_sys_emptyrecyclebin_cmd"},
             {"Open Recycle Bin", "flowlauncher_plugin_sys_openrecyclebin_cmd"},
+            {"Settings", "flowlauncher_plugin_sys_setting_cmd"},
+            {"Exit", "flowlauncher_plugin_sys_exit_cmd"},
             {"Toggle Game Mode", "flowlauncher_plugin_sys_toggle_game_mode_cmd"},
         };
         private readonly Dictionary<string, string> KeywordDescriptionMappings = new();
@@ -315,6 +318,29 @@ namespace Flow.Launcher.Plugin.Sys
                     Action = c =>
                     {
                         Process.Start("explorer", recycleBinFolder);
+                        return true;
+                    }
+                },
+                new Result
+                {
+                    Title = "Exit",
+                    IcoPath = "Images\\app.png",
+                    Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe89f"),
+                    Action = c =>
+                    {
+                        _context.API.HideMainWindow();
+                        Application.Current.MainWindow.Close();
+                        return true;
+                    }
+                },
+                new Result
+                {
+                    Title = "Settings",
+                    Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xf210"),
+                    IcoPath = "Images\\app.png",
+                    Action = c =>
+                    {
+                        _context.API.OpenSettingDialog();
                         return true;
                     }
                 },

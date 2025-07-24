@@ -62,6 +62,16 @@ public class Settings : BaseModel
         },
         new()
         {
+            Key = "Exit",
+            Keyword = "Exit"
+        },
+        new()
+        {
+            Key = "Settings",
+            Keyword = "Settings"
+        },
+        new()
+        {
             Key = "Toggle Game Mode",
             Keyword = "Toggle Game Mode"
         },
