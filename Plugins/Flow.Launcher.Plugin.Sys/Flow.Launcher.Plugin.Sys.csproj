@@ -7,7 +7,6 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Flow.Launcher.Plugin.Sys</RootNamespace>
     <AssemblyName>Flow.Launcher.Plugin.Sys</AssemblyName>
-    <UseWindowsForms>true</UseWindowsForms>
     <UseWpf>true</UseWpf>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
