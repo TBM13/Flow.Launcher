@@ -34,12 +34,6 @@ WINDOW_STYLE
 SetLastError
 WINDOW_EX_STYLE
 
-GetSystemMetrics
-EnumDisplayMonitors
-MonitorFromWindow
-GetMonitorInfo
-MONITORINFOEXW
-
 WM_ENTERSIZEMOVE
 WM_EXITSIZEMOVE
 WM_NCLBUTTONDBLCLK
@@ -51,17 +45,7 @@ SC_MINIMIZE
 OleInitialize
 OleUninitialize
 
-GetKeyboardLayout
 GetWindowThreadProcessId
-ActivateKeyboardLayout
-GetKeyboardLayoutList
-PostMessage
-WM_INPUTLANGCHANGEREQUEST
-INPUTLANGCHANGE_FORWARD
-LOCALE_TRANSIENT_KEYBOARD1
-LOCALE_TRANSIENT_KEYBOARD2
-LOCALE_TRANSIENT_KEYBOARD3
-LOCALE_TRANSIENT_KEYBOARD4
 
 SHParseDisplayName
 SHOpenFolderAndSelectItems

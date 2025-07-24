@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Markup;
 using System.Windows.Media;
+using Flow.Launcher.Plugin.SharedModels;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Dwm;
@@ -79,9 +80,9 @@ namespace Flow.Launcher.Infrastructure
 
         #region Window Foreground
 
-        public static nint GetForegroundWindow()
+        public static unsafe nint GetForegroundWindow()
         {
-            return PInvoke.GetForegroundWindow().Value;
+            return (nint)PInvoke.GetForegroundWindow().Value;
         }
 
         public static bool SetForegroundWindow(Window window)
@@ -240,15 +241,15 @@ namespace Flow.Launcher.Infrastructure
             {
                 var hWndDesktop = PInvoke.FindWindowEx(hWnd, HWND.Null, "SHELLDLL_DefView", null);
                 hWndDesktop = PInvoke.FindWindowEx(hWndDesktop, HWND.Null, "SysListView32", "FolderView");
-                if (hWndDesktop.Value != IntPtr.Zero)
+                if (hWndDesktop != HWND.Null)
                 {
                     return false;
                 }
             }
 
             var monitorInfo = MonitorInfo.GetNearestDisplayMonitor(hWnd);
-            return (appBounds.bottom - appBounds.top) == monitorInfo.RectMonitor.Height &&
-                   (appBounds.right - appBounds.left) == monitorInfo.RectMonitor.Width;
+            return (appBounds.bottom - appBounds.top) == monitorInfo.Bounds.Height &&
+                   (appBounds.right - appBounds.left) == monitorInfo.Bounds.Width;
         }
 
         #endregion

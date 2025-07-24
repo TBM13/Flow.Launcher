@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Windows.Forms;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Infrastructure.UserSettings;
@@ -39,9 +38,9 @@ public partial class SettingsPaneGeneralViewModel : BaseModel
     {
         get
         {
-            var screens = Screen.AllScreens;
+            var screens = MonitorInfo.GetDisplayMonitors();
             var screenNumbers = new List<int>();
-            for (int i = 1; i <= screens.Length; i++)
+            for (int i = 1; i <= screens.Count; i++)
             {
                 screenNumbers.Add(i);
             }

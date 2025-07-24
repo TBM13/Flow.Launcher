@@ -16,13 +16,13 @@ using Flow.Launcher.Infrastructure.Hotkey;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Plugin;
 using Flow.Launcher.Plugin.SharedCommands;
+using Flow.Launcher.Plugin.SharedModels;
 using Flow.Launcher.ViewModel;
 using ModernWpf.Controls;
 using DataObject = System.Windows.DataObject;
 using Key = System.Windows.Input.Key;
 using MouseButtons = System.Windows.Forms.MouseButtons;
 using NotifyIcon = System.Windows.Forms.NotifyIcon;
-using Screen = System.Windows.Forms.Screen;
 
 namespace Flow.Launcher
 {
@@ -410,7 +410,7 @@ namespace Flow.Launcher
                         double yRatio = mousePos.Y / maxHeight;
 
                         // Current monitor information
-                        var screen = Screen.FromHandle(new WindowInteropHelper(this).Handle);
+                        var screen = MonitorInfo.GetNearestDisplayMonitor(new WindowInteropHelper(this).Handle);
                         var workingArea = screen.WorkingArea;
                         var screenLeftTop = Win32Helper.TransformPixelsToDIP(this, workingArea.X, workingArea.Y);
 
@@ -760,36 +760,36 @@ namespace Flow.Launcher
             }
         }
 
-        private Screen SelectedScreen()
+        private MonitorInfo SelectedScreen()
         {
-            Screen screen;
+            MonitorInfo screen;
             switch (_settings.SearchWindowScreen)
             {
                 case SearchWindowScreens.Cursor:
-                    screen = Screen.FromPoint(System.Windows.Forms.Cursor.Position);
-                    break;
-                case SearchWindowScreens.Primary:
-                    screen = Screen.PrimaryScreen;
+                    screen = MonitorInfo.GetCursorDisplayMonitor();
                     break;
                 case SearchWindowScreens.Focus:
-                    var foregroundWindowHandle = Win32Helper.GetForegroundWindow();
-                    screen = Screen.FromHandle(foregroundWindowHandle);
+                    screen = MonitorInfo.GetNearestDisplayMonitor(Win32Helper.GetForegroundWindow());
+                    break;
+                case SearchWindowScreens.Primary:
+                    screen = MonitorInfo.GetPrimaryDisplayMonitor();
                     break;
                 case SearchWindowScreens.Custom:
-                    if (_settings.CustomScreenNumber <= Screen.AllScreens.Length)
-                        screen = Screen.AllScreens[_settings.CustomScreenNumber - 1];
+                    var allScreens = MonitorInfo.GetDisplayMonitors();
+                    if (_settings.CustomScreenNumber <= allScreens.Count)
+                        screen = allScreens[_settings.CustomScreenNumber - 1];
                     else
-                        screen = Screen.AllScreens[0];
+                        screen = allScreens[0];
                     break;
                 default:
-                    screen = Screen.AllScreens[0];
+                    screen = MonitorInfo.GetDisplayMonitors()[0];
                     break;
             }
 
-            return screen ?? Screen.AllScreens[0];
+            return screen ?? MonitorInfo.GetDisplayMonitors()[0];
         }
 
-        private double HorizonCenter(Screen screen)
+        private double HorizonCenter(MonitorInfo screen)
         {
             var dip1 = Win32Helper.TransformPixelsToDIP(this, screen.WorkingArea.X, 0);
             var dip2 = Win32Helper.TransformPixelsToDIP(this, screen.WorkingArea.Width, 0);
@@ -797,7 +797,7 @@ namespace Flow.Launcher
             return left;
         }
 
-        private double VerticalCenter(Screen screen)
+        private double VerticalCenter(MonitorInfo screen)
         {
             var dip1 = Win32Helper.TransformPixelsToDIP(this, 0, screen.WorkingArea.Y);
             var dip2 = Win32Helper.TransformPixelsToDIP(this, 0, screen.WorkingArea.Height);
@@ -805,7 +805,7 @@ namespace Flow.Launcher
             return top;
         }
 
-        private double HorizonRight(Screen screen)
+        private double HorizonRight(MonitorInfo screen)
         {
             var dip1 = Win32Helper.TransformPixelsToDIP(this, screen.WorkingArea.X, 0);
             var dip2 = Win32Helper.TransformPixelsToDIP(this, screen.WorkingArea.Width, 0);
@@ -813,14 +813,14 @@ namespace Flow.Launcher
             return left;
         }
 
-        private double HorizonLeft(Screen screen)
+        private double HorizonLeft(MonitorInfo screen)
         {
             var dip1 = Win32Helper.TransformPixelsToDIP(this, screen.WorkingArea.X, 0);
             var left = dip1.X + 10;
             return left;
         }
 
-        public double VerticalTop(Screen screen)
+        public double VerticalTop(MonitorInfo screen)
         {
             var dip1 = Win32Helper.TransformPixelsToDIP(this, 0, screen.WorkingArea.Y);
             var top = dip1.Y + 10;
