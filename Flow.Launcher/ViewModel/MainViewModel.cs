@@ -814,6 +814,9 @@ namespace Flow.Launcher.ViewModel
         public UserControl CustomizedPreviewControl
             => ShowCustomizedPreview == Visibility.Visible ? PreviewSelectedItem?.Result.PreviewPanel.Value : null;
 
+        public Visibility ShowDefaultPreview
+            => InternalPreviewVisible && PreviewSelectedItem?.Result.PreviewPanel == null ? Visibility.Visible : Visibility.Collapsed;
+
         public int ResultAreaColumn { get; set; } = ResultAreaColumnPreviewShown;
 
         // This is not a reliable indicator of whether external preview is visible due to the

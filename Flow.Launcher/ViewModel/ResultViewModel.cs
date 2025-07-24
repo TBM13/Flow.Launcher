@@ -64,8 +64,6 @@ namespace Flow.Launcher.ViewModel
 
         public Settings Settings { get; }
 
-        public Visibility ShowDefaultPreview => Result.PreviewPanel == null ? Visibility.Visible : Visibility.Collapsed;
-
         public Visibility ShowIcon
         {
             get
@@ -229,7 +227,7 @@ namespace Flow.Launcher.ViewModel
 
         public void LoadPreviewImage()
         {
-            if (ShowDefaultPreview == Visibility.Visible && !_previewImageLoaded && ShowPreviewImage == Visibility.Visible)
+            if (!_previewImageLoaded && ShowPreviewImage == Visibility.Visible)
             {
                 _previewImageLoaded = true;
                 _ = LoadPreviewImageAsync();

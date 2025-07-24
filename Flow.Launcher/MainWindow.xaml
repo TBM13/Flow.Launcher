@@ -375,10 +375,10 @@
                         Visibility="{Binding InternalPreviewVisible, Converter={StaticResource BoolToVisibilityConverter}}">
                         <Border
                             MinHeight="380"
-                            d:DataContext="{d:DesignInstance vm:ResultViewModel}"
-                            DataContext="{Binding PreviewSelectedItem, Mode=OneWay}"
                             Visibility="{Binding ShowDefaultPreview}">
                             <Grid
+                                d:DataContext="{d:DesignInstance vm:ResultViewModel}"
+                                DataContext="{Binding PreviewSelectedItem, Mode=OneWay}"
                                 Margin="0 0 10 5"
                                 VerticalAlignment="Stretch"
                                 Background="Transparent">
