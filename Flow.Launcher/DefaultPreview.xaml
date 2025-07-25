@@ -13,14 +13,9 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" VerticalAlignment="Center">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+        <StackPanel VerticalAlignment="Center">
             <TextBlock
                 x:Name="PreviewGlyphIcon"
-                Grid.Row="0"
                 Height="Auto"
                 Margin="0 16 0 0"
                 FontFamily="{Binding Glyph.FontFamily}"
@@ -29,7 +24,6 @@
                 Visibility="{Binding ShowGlyph}" />
             <Image
                 x:Name="PreviewImageIcon"
-                Grid.Row="0"
                 MaxHeight="320"
                 Margin="0 16 0 0"
                 HorizontalAlignment="Center"
@@ -49,14 +43,13 @@
             </Image>
             <TextBlock
                 x:Name="PreviewTitle"
-                Grid.Row="1"
                 Margin="0 6 0 16"
                 HorizontalAlignment="Stretch"
                 Style="{DynamicResource PreviewItemTitleStyle}"
                 Text="{Binding Result.Title}"
                 TextAlignment="Center"
                 TextWrapping="Wrap" />
-        </Grid>
+        </StackPanel>
         <StackPanel Grid.Row="1">
             <StackPanel.Style>
                 <Style TargetType="{x:Type StackPanel}">
