@@ -187,4 +187,10 @@
         TargetType="{x:Type TextBlock}">
         <Setter Property="Foreground" Value="{DynamicResource Color05B}" />
     </Style>
+    <Style 
+        x:Key="PreviewSeparatorStyle"
+        TargetType="{x:Type Separator}"
+        BasedOn="{StaticResource BasePreviewSeparatorStyle}">
+        <Setter Property="Background" Value="{DynamicResource SeparatorForeground}" />
+    </Style>
 </ResourceDictionary>

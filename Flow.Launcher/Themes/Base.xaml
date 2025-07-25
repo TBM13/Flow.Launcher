@@ -371,9 +371,8 @@
         x:Key="PreviewGlyph"
         BasedOn="{StaticResource BasePreviewGlyph}"
         TargetType="{x:Type TextBlock}" />
-    <Style x:Key="PreviewSep" TargetType="{x:Type Separator}">
+    <Style x:Key="BasePreviewSeparatorStyle" TargetType="{x:Type Separator}">
         <Setter Property="Visibility" Value="Visible" />
-        <Setter Property="Background" Value="{Binding ElementName=MiddleSeparator, Path=Fill}" />
         <Setter Property="Margin" Value="0 15 5 5" />
         <Style.Triggers>
             <DataTrigger Binding="{Binding ElementName=PreviewSubTitle, UpdateSourceTrigger=PropertyChanged, Path=Text.Length}" Value="0">
@@ -389,8 +388,7 @@
         <Setter Property="BorderBrush" Value="Gray" />
     </Style>
 
-    <Style x:Key="PreviewArea" TargetType="{x:Type Grid}">
-        <Setter Property="Visibility" Value="Collapsed" />
+    <Style x:Key="PreviewArea" TargetType="{x:Type ContentPresenter}">
         <Style.Triggers>
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>

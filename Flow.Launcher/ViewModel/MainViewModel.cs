@@ -779,6 +779,7 @@ namespace Flow.Launcher.ViewModel
 
         private bool? _selectedItemFromQueryResults;
 
+        private readonly DefaultPreview _defaultPreview = new();
         private ResultViewModel _previewSelectedItem;
         public ResultViewModel PreviewSelectedItem
         {
@@ -808,16 +809,28 @@ namespace Flow.Launcher.ViewModel
             }
         }
 
-        public Visibility ShowCustomizedPreview
-            => InternalPreviewVisible && PreviewSelectedItem?.Result.PreviewPanel != null ? Visibility.Visible : Visibility.Collapsed;
+        public Control PreviewContent
+        {
+            get
+            {
+                if (!InternalPreviewVisible || PreviewSelectedItem == null)
+                    return null;
 
-        public UserControl CustomizedPreviewControl
-            => ShowCustomizedPreview == Visibility.Visible ? PreviewSelectedItem?.Result.PreviewPanel.Value : null;
+                if (PreviewSelectedItem.Result.PreviewPanel != null)
+                    return PreviewSelectedItem.Result.PreviewPanel.Value;
 
-        public Visibility ShowDefaultPreview
-            => InternalPreviewVisible && PreviewSelectedItem?.Result.PreviewPanel == null ? Visibility.Visible : Visibility.Collapsed;
+                _defaultPreview.DataContext = PreviewSelectedItem;
+                return _defaultPreview;
+            }
+        }
 
-        public int ResultAreaColumn { get; set; } = ResultAreaColumnPreviewShown;
+        public Visibility PreviewVisibility =>
+            !InternalPreviewVisible || PreviewSelectedItem == null ? Visibility.Collapsed : Visibility.Visible;
+
+        public double PreviewMinHeight =>
+            PreviewVisibility == Visibility.Visible ? 380 : 0;
+
+        public int ResultAreaColumn { get; set; } = ResultAreaColumnPreviewHidden;
 
         // This is not a reliable indicator of whether external preview is visible due to the
         // ability of manually closing/exiting the external preview program which, does not inform flow that
