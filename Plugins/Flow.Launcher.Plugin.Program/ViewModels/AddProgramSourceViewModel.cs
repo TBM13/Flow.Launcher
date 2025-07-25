@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
 using Flow.Launcher.Plugin.Program.Views;
 using Flow.Launcher.Plugin.Program.Views.Models;
 
@@ -60,12 +59,13 @@ namespace Flow.Launcher.Plugin.Program.ViewModels
 
         public void Browse()
         {
-            var dialog = new FolderBrowserDialog();
+            throw new NotImplementedException();
+            /*var dialog = new FolderBrowserDialog();
             DialogResult result = dialog.ShowDialog();
             if (result == DialogResult.OK)
             {
                 Location = dialog.SelectedPath;
-            }
+            }*/
         }
 
         public (bool modified, string message) AddProgramSource()
