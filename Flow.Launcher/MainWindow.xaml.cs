@@ -711,7 +711,7 @@ namespace Flow.Launcher
 
         private void QueryTextBox_OnCopy(object sender, ExecutedRoutedEventArgs e)
         {
-            var result = _viewModel.Results.SelectedItem?.Result;
+            var result = _viewModel.SelectedResults.SelectedItem?.Result;
             if (QueryTextBox.SelectionLength == 0 && result != null)
             {
                 string copyText = result.CopyText;

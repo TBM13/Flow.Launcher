@@ -221,7 +221,7 @@
                         x:Name="QueryTextBox"
                         Height="{Binding MainWindowHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                         AllowDrop="True"
-                        AutomationProperties.Name="{Binding Results.SelectedItem.Result.Title}"
+                        AutomationProperties.Name="{Binding SelectedResults.SelectedItem.Result.Title}"
                         FontSize="{Binding QueryBoxFontSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                         PreviewDragOver="QueryTextBox_OnPreviewDragOver"
                         PreviewKeyUp="QueryTextBox_KeyUp"
@@ -281,40 +281,6 @@
                 </Grid>
             </Border>
 
-            <ContentControl>
-                <ContentControl.Style>
-                    <Style TargetType="ContentControl">
-                        <Setter Property="Visibility" Value="Visible" />
-                        <Style.Triggers>
-                            <MultiDataTrigger>
-                                <MultiDataTrigger.Conditions>
-                                    <Condition Binding="{Binding ElementName=ResultListBox, Path=Items.Count}" Value="0" />
-                                    <Condition Binding="{Binding ElementName=ResultContextMenu, Path=Visibility}" Value="Collapsed" />
-                                </MultiDataTrigger.Conditions>
-                                <MultiDataTrigger.Setters>
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                    <Setter Property="Margin" Value="0" />
-                                    <Setter Property="Height" Value="0" />
-                                </MultiDataTrigger.Setters>
-                            </MultiDataTrigger>
-                        </Style.Triggers>
-                        <!--<Style.Triggers>
-                            <DataTrigger Binding="{Binding ElementName=ResultListBox, Path=Visibility}" Value="Visible">
-                                <Setter Property="Visibility" Value="Visible" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding ElementName=ResultContextMenu, Path=Visibility}" Value="Visible">
-                                <Setter Property="Visibility" Value="Visible" />
-                            </DataTrigger>
-                        </Style.Triggers>-->
-                    </Style>
-                </ContentControl.Style>
-                <Rectangle
-                    Name="MiddleSeparator"
-                    Width="Auto"
-                    HorizontalAlignment="Stretch"
-                    Style="{DynamicResource SeparatorStyle}" />
-            </ContentControl>
-
             <Border x:Name="ResultPreviewAreaBoarder" Style="{DynamicResource WindowRadius}">
                 <Border.Clip>
                     <MultiBinding Converter="{StaticResource BorderClipConverter}">
@@ -331,25 +297,25 @@
                         <ColumnDefinition Width="0.85*" MinWidth="244" />
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel
-                        x:Name="ResultArea"
+                    <Rectangle
+                        Name="MiddleSeparator"
+                        Width="Auto"
                         Grid.Column="0"
-                        Grid.ColumnSpan="{Binding ResultAreaColumn}">
-                        <ContentControl>
-                            <flowlauncher:ResultListBox
-                                x:Name="ResultListBox"
-                                DataContext="{Binding Results}"
-                                LeftClickResultCommand="{Binding LeftClickResultCommand}"
-                                RightClickResultCommand="{Binding RightClickResultCommand}" />
-                        </ContentControl>
-                        <ContentControl>
-                            <flowlauncher:ResultListBox
-                                x:Name="ResultContextMenu"
-                                DataContext="{Binding ContextMenu}"
-                                LeftClickResultCommand="{Binding LeftClickResultCommand}"
-                                RightClickResultCommand="{Binding RightClickResultCommand}" />
-                        </ContentControl>
-                    </StackPanel>
+                        Grid.ColumnSpan="3"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Top"
+                        Style="{DynamicResource SeparatorStyle}"
+                        Visibility="{Binding MiddleSeparatorVisibility}">
+                    </Rectangle>
+                    
+                    <flowlauncher:ResultListBox
+                        x:Name="ResultListBox"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="{Binding DataContext.ResultAreaColumn, ElementName=FlowMainWindow}"
+                        VerticalAlignment="Top"
+                        DataContext="{Binding SelectedResults}"
+                        LeftClickResultCommand="{Binding LeftClickResultCommand}"
+                        RightClickResultCommand="{Binding RightClickResultCommand}" />
 
                     <GridSplitter
                         x:Name="PreviewMiddleSeparator"

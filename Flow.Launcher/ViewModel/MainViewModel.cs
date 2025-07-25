@@ -49,7 +49,8 @@ namespace Flow.Launcher.ViewModel
         private ChannelWriter<ResultsForUpdate> _resultsUpdateChannelWriter;
         private Task _resultsViewUpdateTask;
 
-        private readonly IReadOnlyList<Result> _emptyResult = new List<Result>();
+        private readonly ResultsViewModel _results, _contextMenu;
+        private readonly IReadOnlyList<Result> _emptyResult = [];
 
         #endregion
 
@@ -128,30 +129,39 @@ namespace Flow.Launcher.ViewModel
             _topMostRecord = new FlowLauncherJsonStorageTopMostRecord();
             _userSelectedRecord = _userSelectedRecordStorage.Load();
 
-            ContextMenu = new ResultsViewModel(Settings, this)
+            _contextMenu = new ResultsViewModel(Settings, this)
             {
                 LeftClickResultCommand = OpenResultCommand,
                 RightClickResultCommand = LoadContextMenuCommand,
                 IsPreviewOn = Settings.AlwaysPreview
             };
-            Results = new ResultsViewModel(Settings, this)
+            _results = new ResultsViewModel(Settings, this)
             {
                 LeftClickResultCommand = OpenResultCommand,
                 RightClickResultCommand = LoadContextMenuCommand,
                 IsPreviewOn = Settings.AlwaysPreview
             };
-            _selectedResults = Results;
+            _selectedResults = _results;
 
-            Results.PropertyChanged += (o, args) =>
+            _results.PropertyChanged += (o, args) =>
             {
                 switch (args.PropertyName)
                 {
-                    case nameof(Results.SelectedItem):
+                    case nameof(_results.SelectedItem):
                         _selectedItemFromQueryResults = true;
-                        PreviewSelectedItem = Results.SelectedItem;
+                        PreviewSelectedItem = _results.SelectedItem;
                         _ = UpdatePreviewAsync();
                         break;
                 }
+            };
+
+            _results.Results.CollectionChanged += (s, e) =>
+            {
+                OnPropertyChanged(nameof(MiddleSeparatorVisibility));
+            };
+            _contextMenu.Results.CollectionChanged += (s, e) =>
+            {
+                OnPropertyChanged(nameof(MiddleSeparatorVisibility));
             };
 
             RegisterViewUpdate();
@@ -297,11 +307,11 @@ namespace Flow.Launcher.ViewModel
                 // When switch to ContextMenu from QueryResults, but no item being chosen, should do nothing
                 // i.e. Shift+Enter/Ctrl+O right after Alt + Space should do nothing
                 if (SelectedResults.SelectedItem != null)
-                    SelectedResults = ContextMenu;
+                    SelectedResults = _contextMenu;
             }
             else
             {
-                SelectedResults = Results;
+                SelectedResults = _results;
             }
         }
 
@@ -446,7 +456,7 @@ namespace Flow.Launcher.ViewModel
         {
             if (QueryResultsSelected() // Results selected
                 && string.IsNullOrEmpty(QueryText) // No input
-                && Results.Visibility != Visibility.Visible) // No items in result list, e.g. when home page is off and no query text is entered, therefore the view is collapsed.
+                && _results.Visibility != Visibility.Visible) // No items in result list, e.g. when home page is off and no query text is entered, therefore the view is collapsed.
             {
 
             }
@@ -467,7 +477,7 @@ namespace Flow.Launcher.ViewModel
         {
             if (!QueryResultsSelected())
             {
-                SelectedResults = Results;
+                SelectedResults = _results;
             }
             else
             {
@@ -479,7 +489,7 @@ namespace Flow.Launcher.ViewModel
         {
             if (!QueryResultsSelected())
             {
-                SelectedResults = Results;
+                SelectedResults = _results;
             }
         }
 
@@ -492,7 +502,7 @@ namespace Flow.Launcher.ViewModel
         [RelayCommand]
         public void CopyAlternative()
         {
-            var result = Results.SelectedItem?.Result?.CopyText;
+            var result = _results.SelectedItem?.Result?.CopyText;
 
             if (result != null)
             {
@@ -503,12 +513,7 @@ namespace Flow.Launcher.ViewModel
         #endregion
 
         #region ViewModel Properties
-
         public Settings Settings { get; }
-
-        public ResultsViewModel Results { get; private set; }
-
-        public ResultsViewModel ContextMenu { get; private set; }
 
         public bool GameModeStatus { get; set; } = false;
 
@@ -639,18 +644,18 @@ namespace Flow.Launcher.ViewModel
 
         private ResultsViewModel _selectedResults;
 
-        private ResultsViewModel SelectedResults
+        public ResultsViewModel SelectedResults
         {
             get => _selectedResults;
-            set
+            private set
             {
                 var isReturningFromQueryResults = QueryResultsSelected();
                 var isReturningFromContextMenu = ContextMenuSelected();
                 _selectedResults = value;
                 if (QueryResultsSelected())
                 {
-                    Results.Visibility = Visibility.Visible;
-                    ContextMenu.Visibility = Visibility.Collapsed;
+                    _results.Visibility = Visibility.Visible;
+                    _contextMenu.Visibility = Visibility.Collapsed;
 
                     // QueryText setter (used in ChangeQueryText) runs the query again, resetting the selected
                     // result from the one that was selected before going into the context menu to the first result.
@@ -672,8 +677,8 @@ namespace Flow.Launcher.ViewModel
                 }
                 else
                 {
-                    Results.Visibility = Visibility.Collapsed;
-                    ContextMenu.Visibility = Visibility.Visible;
+                    _results.Visibility = Visibility.Collapsed;
+                    _contextMenu.Visibility = Visibility.Visible;
                     _queryTextBeforeLeaveResults = QueryText;
 
                     // Because of Fody's optimization
@@ -687,6 +692,9 @@ namespace Flow.Launcher.ViewModel
                 }
             }
         }
+
+        public Visibility MiddleSeparatorVisibility
+            => _selectedResults.Results.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
 
         public Visibility MainWindowVisibility { get; set; }
 
@@ -966,13 +974,13 @@ namespace Flow.Launcher.ViewModel
 
         private bool CanExternalPreviewSelectedResult(out string path)
         {
-            path = QueryResultsPreviewed() ? Results.SelectedItem?.Result?.Preview.FilePath : string.Empty;
+            path = QueryResultsPreviewed() ? _results.SelectedItem?.Result?.Preview.FilePath : string.Empty;
             return !string.IsNullOrEmpty(path);
         }
 
         private bool QueryResultsPreviewed()
         {
-            var previewed = PreviewSelectedItem == Results.SelectedItem;
+            var previewed = PreviewSelectedItem == _results.SelectedItem;
             return previewed;
         }
 
@@ -1027,9 +1035,9 @@ namespace Flow.Launcher.ViewModel
         {
             const string id = "Context Menu ID";
             var query = QueryText.ToLower().Trim();
-            ContextMenu.Clear();
+            _contextMenu.Clear();
 
-            var selected = Results.SelectedItem?.Result;
+            var selected = _results.SelectedItem?.Result;
 
             if (selected != null) // SelectedItem returns null if selection is empty.
             {
@@ -1081,11 +1089,11 @@ namespace Flow.Launcher.ViewModel
                             r.Score = match.Score;
                             return true;
                         }).ToList();
-                    ContextMenu.AddResults(filtered, id);
+                    _contextMenu.AddResults(filtered, id);
                 }
                 else
                 {
-                    ContextMenu.AddResults(results, id);
+                    _contextMenu.AddResults(results, id);
                 }
             }
         }
@@ -1103,8 +1111,8 @@ namespace Flow.Launcher.ViewModel
                 App.API.LogDebug(ClassName, $"Clear query results");
 
                 // Hide and clear results again because running query may show and add some results
-                Results.Visibility = Visibility.Collapsed;
-                Results.Clear();
+                _results.Visibility = Visibility.Collapsed;
+                _results.Clear();
 
                 // Reset plugin icon
                 PluginIconPath = null;
@@ -1179,7 +1187,7 @@ namespace Flow.Launcher.ViewModel
             {
                 if (ShouldClearExistingResultsForNonQuery(plugins))
                 {
-                    Results.Clear();
+                    _results.Clear();
                     App.API.LogDebug(ClassName, $"Existing results are cleared for non-query");
                 }
 
@@ -1457,13 +1465,13 @@ namespace Flow.Launcher.ViewModel
 
         internal bool QueryResultsSelected()
         {
-            var selected = SelectedResults == Results;
+            var selected = SelectedResults == _results;
             return selected;
         }
 
         private bool ContextMenuSelected()
         {
-            var selected = SelectedResults == ContextMenu;
+            var selected = SelectedResults == _contextMenu;
             return selected;
         }
 
@@ -1654,7 +1662,7 @@ namespace Flow.Launcher.ViewModel
             // it should be the same for all results
             bool reSelect = resultsForUpdates.First().ReSelectFirstResult;
 
-            Results.AddResults(resultsForUpdates, token, reSelect);
+            _results.AddResults(resultsForUpdates, token, reSelect);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>")]
