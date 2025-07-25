@@ -50,21 +50,9 @@
                 TextAlignment="Center"
                 TextWrapping="Wrap" />
         </StackPanel>
-        <StackPanel Grid.Row="1">
-            <StackPanel.Style>
-                <Style TargetType="{x:Type StackPanel}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding ElementName=PreviewSubTitle, UpdateSourceTrigger=PropertyChanged, Path=Text.Length}" Value="0">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </StackPanel.Style>
-            <Separator Style="{DynamicResource PreviewSeparatorStyle}" />
-            <TextBlock
-                x:Name="PreviewSubTitle"
-                Style="{DynamicResource PreviewItemSubTitleStyle}"
-                Text="{Binding Result.SubTitle}" />
-        </StackPanel>
+        <TextBlock Grid.Row="1"
+            x:Name="PreviewSubTitle"
+            Style="{DynamicResource PreviewItemSubTitleStyle}"
+            Text="{Binding Result.SubTitle}" />
     </Grid>
 </UserControl>

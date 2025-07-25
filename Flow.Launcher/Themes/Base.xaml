@@ -371,15 +371,6 @@
         x:Key="PreviewGlyph"
         BasedOn="{StaticResource BasePreviewGlyph}"
         TargetType="{x:Type TextBlock}" />
-    <Style x:Key="BasePreviewSeparatorStyle" TargetType="{x:Type Separator}">
-        <Setter Property="Visibility" Value="Visible" />
-        <Setter Property="Margin" Value="0 15 5 5" />
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding ElementName=PreviewSubTitle, UpdateSourceTrigger=PropertyChanged, Path=Text.Length}" Value="0">
-                <Setter Property="Visibility" Value="Collapsed" />
-            </DataTrigger>
-        </Style.Triggers>
-    </Style>
 
     <Style
         x:Key="PreviewBorderStyle"
@@ -447,6 +438,12 @@
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
     <Style x:Key="BasePreviewItemSubTitleStyle" TargetType="{x:Type TextBlock}">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding ElementName=PreviewSubTitle, UpdateSourceTrigger=PropertyChanged, Path=Text.Length}" Value="0">
+                <Setter Property="Visibility" Value="Collapsed" />
+            </DataTrigger>
+        </Style.Triggers>
+
         <Setter Property="Foreground" Value="#8f8f8f" />
         <Setter Property="FontSize" Value="12" />
         <Setter Property="FontWeight" Value="Normal" />
