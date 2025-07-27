@@ -649,10 +649,14 @@ namespace Flow.Launcher.ViewModel
             get => _selectedResults;
             private set
             {
+                var isReturningFromQueryResults = QueryResultsSelected();
                 var isReturningFromContextMenu = ContextMenuSelected();
                 _selectedResults = value;
                 if (QueryResultsSelected())
                 {
+                    _results.Visibility = Visibility.Visible;
+                    _contextMenu.Visibility = Visibility.Collapsed;
+
                     // QueryText setter (used in ChangeQueryText) runs the query again, resetting the selected
                     // result from the one that was selected before going into the context menu to the first result.
                     // The code below correctly restores QueryText and puts the text caret at the end without
@@ -673,6 +677,8 @@ namespace Flow.Launcher.ViewModel
                 }
                 else
                 {
+                    _results.Visibility = Visibility.Collapsed;
+                    _contextMenu.Visibility = Visibility.Visible;
                     _queryTextBeforeLeaveResults = QueryText;
 
                     // Because of Fody's optimization
@@ -1104,7 +1110,8 @@ namespace Flow.Launcher.ViewModel
             {
                 App.API.LogDebug(ClassName, $"Clear query results");
 
-                // Clear results again because running query may show and add some results
+                // Hide and clear results again because running query may show and add some results
+                _results.Visibility = Visibility.Collapsed;
                 _results.Clear();
 
                 // Reset plugin icon
