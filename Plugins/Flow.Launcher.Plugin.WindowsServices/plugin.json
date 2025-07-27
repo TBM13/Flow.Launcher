@@ -1,0 +1,12 @@
+{
+  "ID": "42f63e8d-3d3d-4b4b-9e91-c6094bf240ec",
+  "ActionKeyword": "svc",
+  "Name": "Windows Services",
+  "Description": "Manage Windows Services from Flow Launcher",
+  "Author": "TBM13",
+  "Version": "1.0.0",
+  "Language": "csharp",
+  "Website": "https://github.com/TBM13/Flow.Launcher/tree/TBM13/Plugins/Flow.Launcher.Plugin.WindowsServices",
+  "IcoPath": "Images\\app.png",
+  "ExecuteFileName": "Flow.Launcher.Plugin.WindowsServices.dll"
+}
