@@ -19,4 +19,10 @@ internal static partial class MainRegexHelper
                     @"[\+\%\-\*\/\^\., ""]|[\(\)\|\!\[\]]" +
                     @")+$", RegexOptions.Compiled)]
     public static partial Regex GetRegValidExpressChar();
+
+    [GeneratedRegex(@"[\d\.,]+", RegexOptions.Compiled)]
+    public static partial Regex GetNumberRegex();
+
+    [GeneratedRegex(@"\B(?=(\d{3})+(?!\d))", RegexOptions.Compiled)]
+    public static partial Regex GetThousandGroupRegex();
 }
