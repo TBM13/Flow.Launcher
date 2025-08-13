@@ -113,7 +113,7 @@ namespace Flow.Launcher.Plugin.Calculator
         /// <returns>A normalized number string with '.' as the decimal separator for the Mages engine.</returns>
         private string NormalizeNumber(string numberStr, ParsingContext context)
         {
-            var systemGroupSep = CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator;
+            var systemGroupSep = Dot;
             int dotCount = numberStr.Count(f => f == '.');
             int commaCount = numberStr.Count(f => f == ',');
 
