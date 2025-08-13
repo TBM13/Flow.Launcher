@@ -12,26 +12,16 @@ namespace Flow.Launcher.Plugin.Calculator
 {
     public class Main : IPlugin, IPluginI18n, ISettingProvider
     {
-        private static readonly Regex RegValidExpressChar = new Regex(
-                        @"^(" +
-                        @"ceil|floor|exp|pi|e|max|min|det|abs|log|ln|sqrt|" +
-                        @"sin|cos|tan|arcsin|arccos|arctan|" +
-                        @"eigval|eigvec|eig|sum|polar|plot|round|sort|real|zeta|" +
-                        @"bin2dec|hex2dec|oct2dec|" +
-                        @"factorial|sign|isprime|isinfty|" +
-                        @"==|~=|&&|\|\||(?:\<|\>)=?|" +
-                        @"[ei]|[0-9]|0x[\da-fA-F]+|0b[01]+|0o[0-7]+|" +
-                        @"[\+\%\-\*\/\^\., ""]|[\(\)\|\!\[\]]" +
-                        @")+$", RegexOptions.Compiled);
-        private static readonly Regex RegBrackets = new Regex(@"[\(\)\[\]]", RegexOptions.Compiled);
+        private static readonly Regex RegValidExpressChar = MainRegexHelper.GetRegValidExpressChar();
+        private static readonly Regex RegBrackets = MainRegexHelper.GetRegBrackets();
         private static Engine MagesEngine;
-        private const string comma = ",";
-        private const string dot = ".";
+        private const string Comma = ",";
+        private const string Dot = ".";
 
-        private PluginInitContext Context { get; set; }
+        internal static PluginInitContext Context { get; set; } = null!;
 
-        private static Settings _settings;
-        private static SettingsViewModel _viewModel;
+        private Settings _settings;
+        private SettingsViewModel _viewModel;
 
         public void Init(PluginInitContext context)
         {
@@ -76,9 +66,10 @@ namespace Flow.Launcher.Plugin.Calculator
                     decimal roundedResult = Math.Round(Convert.ToDecimal(result), _settings.MaxDecimalPlaces, MidpointRounding.AwayFromZero);
                     string newResult = ChangeDecimalSeparator(roundedResult, GetDecimalSeparator());
 
-                    return
-                    [
-                        new() {
+                    return new List<Result>
+                    {
+                        new Result
+                        {
                             Title = newResult,
                             IcoPath = "Images/calculator.png",
                             Score = 300,
@@ -98,7 +89,7 @@ namespace Flow.Launcher.Plugin.Calculator
                                 }
                             }
                         }
-                    ];
+                    };
                 }
             }
             catch (Exception)
@@ -127,16 +118,16 @@ namespace Flow.Launcher.Plugin.Calculator
                 return false;
             }
 
-            if ((query.Search.Contains(dot) && GetDecimalSeparator() != dot) ||
-                (query.Search.Contains(comma) && GetDecimalSeparator() != comma))
+            if ((query.Search.Contains(Dot) && GetDecimalSeparator() != Dot) ||
+                (query.Search.Contains(Comma) && GetDecimalSeparator() != Comma))
                 return false;
 
             return true;
         }
 
-        private string ChangeDecimalSeparator(decimal value, string newDecimalSeparator)
+        private static string ChangeDecimalSeparator(decimal value, string newDecimalSeparator)
         {
-            if (String.IsNullOrEmpty(newDecimalSeparator))
+            if (string.IsNullOrEmpty(newDecimalSeparator))
             {
                 return value.ToString();
             }
@@ -148,19 +139,19 @@ namespace Flow.Launcher.Plugin.Calculator
             return value.ToString(numberFormatInfo);
         }
 
-        private static string GetDecimalSeparator()
+        private string GetDecimalSeparator()
         {
             string systemDecimalSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
             return _settings.DecimalSeparator switch
             {
                 DecimalSeparator.UseSystemLocale => systemDecimalSeparator,
-                DecimalSeparator.Dot => dot,
-                DecimalSeparator.Comma => comma,
+                DecimalSeparator.Dot => Dot,
+                DecimalSeparator.Comma => Comma,
                 _ => systemDecimalSeparator,
             };
         }
 
-        private bool IsBracketComplete(string query)
+        private static bool IsBracketComplete(string query)
         {
             var matchs = RegBrackets.Matches(query);
             var leftBracketCount = 0;
