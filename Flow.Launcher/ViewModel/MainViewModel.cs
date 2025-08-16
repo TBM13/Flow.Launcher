@@ -1069,7 +1069,6 @@ namespace Flow.Launcher.ViewModel
                     });
 
                     results.Add(ContextMenuTopMost(selected));
-                    results.Add(ContextMenuPluginInfo(selected));
                 }
 
                 if (!string.IsNullOrEmpty(query))
@@ -1430,36 +1429,6 @@ namespace Flow.Launcher.ViewModel
                 };
             }
 
-            return menu;
-        }
-
-        private static Result ContextMenuPluginInfo(Result result)
-        {
-            var id = result.PluginID;
-            var metadata = PluginManager.GetPluginForId(id).Metadata;
-            var translator = App.API;
-
-            var author = translator.GetTranslation("author");
-            var website = translator.GetTranslation("website");
-            var version = translator.GetTranslation("version");
-            var plugin = translator.GetTranslation("plugin");
-            var title = $"{plugin}: {metadata.Name}";
-            var icon = metadata.IcoPath;
-            var subtitle = $"{author} {metadata.Author}";
-
-            var menu = new Result
-            {
-                Title = title,
-                IcoPath = icon,
-                SubTitle = subtitle,
-                PluginDirectory = metadata.PluginDirectory,
-                Action = _ =>
-                {
-                    App.API.OpenUrl(metadata.Website);
-                    return true;
-                },
-                OriginQuery = result.OriginQuery
-            };
             return menu;
         }
 
