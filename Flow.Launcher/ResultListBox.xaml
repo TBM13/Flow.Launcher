@@ -25,93 +25,84 @@
     SelectionChanged="OnSelectionChanged"
     SelectionMode="Single"
     Style="{DynamicResource BaseListboxStyle}"
+    ScrollViewer.CanContentScroll="True"
     VirtualizingStackPanel.IsVirtualizing="True"
-    VirtualizingStackPanel.VirtualizationMode="Standard"
+    VirtualizingStackPanel.VirtualizationMode="Recycling"
+    VirtualizingPanel.ScrollUnit="Pixel"
+    VirtualizingPanel.CacheLength="1,1"
+    VirtualizingPanel.CacheLengthUnit="Page"
     Visibility="{Binding Visibility}"
     mc:Ignorable="d">
     <!--  IsSynchronizedWithCurrentItem: http://stackoverflow.com/a/7833798/2833083  -->
 
     <ListBox.ItemTemplate>
         <DataTemplate>
-            <Button HorizontalAlignment="Stretch">
-                <Button.Template>
-                    <ControlTemplate>
-                        <ContentPresenter Content="{TemplateBinding Button.Content}" />
-                    </ControlTemplate>
-                </Button.Template>
-                <Button.Content>
-                    <Grid
-                        Margin="0"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch"
-                        UseLayoutRounding="False">
-                        <Grid.Resources>
-                            <converter:HighlightTextConverter x:Key="HighlightTextConverter" />
-                        </Grid.Resources>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Style="{DynamicResource ImageAreaWidth}" />
-                            <ColumnDefinition Width="9*" />
-                        </Grid.ColumnDefinitions>
+            <DockPanel
+                Margin="0"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                UseLayoutRounding="False">
+                <DockPanel.Resources>
+                    <converter:HighlightTextConverter x:Key="HighlightTextConverter" />
+                </DockPanel.Resources>
 
-                        <StackPanel
-                            Grid.Column="0"
-                            Margin="9 0 0 0"
-                            VerticalAlignment="Center">
-                            <Image
-                                x:Name="ImageIcon"
-                                IsHitTestVisible="False"
-                                RenderOptions.BitmapScalingMode="Linear"
-                                Source="{Binding Image, TargetNullValue={x:Null}}"
-                                Stretch="Uniform"
-                                StretchDirection="DownOnly"
-                                Style="{DynamicResource ImageIconStyle}"
-                                Visibility="{Binding ShowIcon}">
-                            </Image>
+                <Image
+                    DockPanel.Dock="Left"
+                    Margin="5 0 0 0"
+                    Width="60"
+                    VerticalAlignment="Center"
+                    x:Name="ImageIcon"
+                    IsHitTestVisible="False"
+                    RenderOptions.BitmapScalingMode="Linear"
+                    Source="{Binding Image, TargetNullValue={x:Null}}"
+                    Stretch="Uniform"
+                    StretchDirection="DownOnly"
+                    Style="{DynamicResource ImageIconStyle}"
+                    Visibility="{Binding ShowIcon}"/>
+                <TextBlock
+                    DockPanel.Dock="Left"
+                    Margin="5 0 0 0"
+                    Width="60"
+                    VerticalAlignment="Center"
+                    x:Name="GlyphIcon"
+                    FontFamily="{Binding Glyph.FontFamily}"
+                    Style="{DynamicResource ItemGlyph}"
+                    Text="{Binding Glyph.Glyph}"
+                    TextAlignment="Center"
+                    Visibility="{Binding ShowGlyph}" />
 
-                            <TextBlock
-                                x:Name="GlyphIcon"
-                                FontFamily="{Binding Glyph.FontFamily}"
-                                Style="{DynamicResource ItemGlyph}"
-                                Text="{Binding Glyph.Glyph}"
-                                Visibility="{Binding ShowGlyph}" />
-                        </StackPanel>
-
-                        <StackPanel
-                            Grid.Column="1"
-                            Margin="6 0 10 0"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Center">
-                            <TextBlock
-                                x:Name="Title"
-                                DockPanel.Dock="Left"
-                                FontSize="{Binding Settings.ResultItemFontSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                IsEnabled="False"
-                                Style="{DynamicResource ItemTitleStyle}"
-                                Text="{Binding Result.Title}"
-                                TextTrimming="CharacterEllipsis"
-                                ToolTip="{Binding ShowTitleToolTip}"
-                                ToolTipService.ShowOnDisabled="True">
-                                <vm:ResultsViewModel.FormattedText>
-                                    <MultiBinding Converter="{StaticResource HighlightTextConverter}">
-                                        <Binding Path="Result.Title" />
-                                        <Binding Path="Result.TitleHighlightData" />
-                                    </MultiBinding>
-                                </vm:ResultsViewModel.FormattedText>
-                            </TextBlock>
-                            <TextBlock
-                                x:Name="SubTitle"
-                                FontSize="{Binding Settings.ResultSubItemFontSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                IsEnabled="False"
-                                Style="{DynamicResource ItemSubTitleStyle}"
-                                Text="{Binding Result.SubTitle}"
-                                TextTrimming="CharacterEllipsis"
-                                ToolTip="{Binding ShowSubTitleToolTip}"
-                                ToolTipService.ShowOnDisabled="True" />
-                        </StackPanel>
-
-                    </Grid>
-                </Button.Content>
-            </Button>
+                <StackPanel
+                    Margin="6 0 10 0"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center">
+                    <TextBlock
+                        x:Name="Title"
+                        DockPanel.Dock="Left"
+                        FontSize="{Binding Settings.ResultItemFontSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        IsEnabled="False"
+                        Style="{DynamicResource ItemTitleStyle}"
+                        Text="{Binding Result.Title}"
+                        TextTrimming="CharacterEllipsis"
+                        ToolTip="{Binding ShowTitleToolTip}"
+                        ToolTipService.ShowOnDisabled="True">
+                        <vm:ResultsViewModel.FormattedText>
+                            <MultiBinding Converter="{StaticResource HighlightTextConverter}">
+                                <Binding Path="Result.Title" />
+                                <Binding Path="Result.TitleHighlightData" />
+                            </MultiBinding>
+                        </vm:ResultsViewModel.FormattedText>
+                    </TextBlock>
+                    <TextBlock
+                        x:Name="SubTitle"
+                        FontSize="{Binding Settings.ResultSubItemFontSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        IsEnabled="False"
+                        Style="{DynamicResource ItemSubTitleStyle}"
+                        Text="{Binding Result.SubTitle}"
+                        TextTrimming="CharacterEllipsis"
+                        ToolTip="{Binding ShowSubTitleToolTip}"
+                        ToolTipService.ShowOnDisabled="True" />
+                </StackPanel>
+            </DockPanel>
             <!--  a result item height is 52 including margin  -->
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
