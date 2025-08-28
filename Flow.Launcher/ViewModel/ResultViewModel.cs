@@ -97,9 +97,6 @@ namespace Flow.Launcher.ViewModel
         {
             get
             {
-                if (Result.RoundedIcon)
-                    return IconXY / 2;
-
                 return IconXY;
             }
         }

@@ -31,10 +31,6 @@
     mc:Ignorable="d">
     <!--  IsSynchronizedWithCurrentItem: http://stackoverflow.com/a/7833798/2833083  -->
 
-    <ListBox.Resources>
-        <converter:IconRadiusConverter x:Key="IconRadiusConverter" />
-        <converter:DiameterToCenterPointConverter x:Key="DiameterToCenterPointConverter" />
-    </ListBox.Resources>
     <ListBox.ItemTemplate>
         <DataTemplate>
             <Button HorizontalAlignment="Stretch">
@@ -95,22 +91,6 @@
                                 StretchDirection="DownOnly"
                                 Style="{DynamicResource ImageIconStyle}"
                                 Visibility="{Binding ShowIcon}">
-                                <Image.Clip>
-                                    <EllipseGeometry Center="{Binding ElementName=ImageIcon, Path=ActualWidth, Converter={StaticResource DiameterToCenterPointConverter}}">
-                                        <EllipseGeometry.RadiusX>
-                                            <MultiBinding Converter="{StaticResource IconRadiusConverter}">
-                                                <Binding ElementName="ImageIcon" Path="ActualWidth" />
-                                                <Binding Path="Result.RoundedIcon" />
-                                            </MultiBinding>
-                                        </EllipseGeometry.RadiusX>
-                                        <EllipseGeometry.RadiusY>
-                                            <MultiBinding Converter="{StaticResource IconRadiusConverter}">
-                                                <Binding ElementName="ImageIcon" Path="ActualWidth" />
-                                                <Binding Path="Result.RoundedIcon" />
-                                            </MultiBinding>
-                                        </EllipseGeometry.RadiusY>
-                                    </EllipseGeometry>
-                                </Image.Clip>
                             </Image>
 
                             <TextBlock
