@@ -85,7 +85,7 @@
                             <Image
                                 x:Name="ImageIcon"
                                 IsHitTestVisible="False"
-                                RenderOptions.BitmapScalingMode="Fant"
+                                RenderOptions.BitmapScalingMode="Linear"
                                 Source="{Binding Image, TargetNullValue={x:Null}}"
                                 Stretch="Uniform"
                                 StretchDirection="DownOnly"
