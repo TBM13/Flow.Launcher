@@ -155,9 +155,7 @@ namespace Flow.Launcher.Core.Resource
             }
 
             if (dict["ItemTitleStyle"] is Style resultItemStyle &&
-                dict["ItemTitleSelectedStyle"] is Style resultItemSelectedStyle &&
-                dict["ItemHotkeyStyle"] is Style resultHotkeyItemStyle &&
-                dict["ItemHotkeySelectedStyle"] is Style resultHotkeyItemSelectedStyle)
+                dict["ItemTitleSelectedStyle"] is Style resultItemSelectedStyle)
             {
                 var fontFamily = new FontFamily(_settings.ResultFont);
                 var fontStyle = FontHelper.GetFontStyleFromInvariantStringOrNormal(_settings.ResultFontStyle);
@@ -166,8 +164,6 @@ namespace Flow.Launcher.Core.Resource
 
                 SetFontProperties(resultItemStyle, fontFamily, fontStyle, fontWeight, fontStretch, false);
                 SetFontProperties(resultItemSelectedStyle, fontFamily, fontStyle, fontWeight, fontStretch, false);
-                SetFontProperties(resultHotkeyItemStyle, fontFamily, fontStyle, fontWeight, fontStretch, false);
-                SetFontProperties(resultHotkeyItemSelectedStyle, fontFamily, fontStyle, fontWeight, fontStretch, false);
             }
 
             if (dict["ItemSubTitleStyle"] is Style resultSubItemStyle &&
@@ -285,9 +281,7 @@ namespace Flow.Launcher.Core.Resource
             }
 
             if (dict["ItemTitleStyle"] is Style resultItemStyle &&
-                dict["ItemTitleSelectedStyle"] is Style resultItemSelectedStyle &&
-                dict["ItemHotkeyStyle"] is Style resultHotkeyItemStyle &&
-                dict["ItemHotkeySelectedStyle"] is Style resultHotkeyItemSelectedStyle)
+                dict["ItemTitleSelectedStyle"] is Style resultItemSelectedStyle)
             {
                 Setter fontFamily = new Setter(TextBlock.FontFamilyProperty, new FontFamily(_settings.ResultFont));
                 Setter fontStyle = new Setter(TextBlock.FontStyleProperty, FontHelper.GetFontStyleFromInvariantStringOrNormal(_settings.ResultFontStyle));
@@ -296,7 +290,7 @@ namespace Flow.Launcher.Core.Resource
 
                 Setter[] setters = { fontFamily, fontStyle, fontWeight, fontStretch };
                 Array.ForEach(
-                    new[] { resultItemStyle, resultItemSelectedStyle, resultHotkeyItemStyle, resultHotkeyItemSelectedStyle }, o
+                    new[] { resultItemStyle, resultItemSelectedStyle }, o
                     => Array.ForEach(setters, p => o.Setters.Add(p)));
             }
 

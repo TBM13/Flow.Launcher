@@ -15,7 +15,6 @@
     <SolidColorBrush x:Key="ThumbColor" Color="#28F7F3FF" />
     <SolidColorBrush x:Key="InlineHighlight" Color="#0078d7" />
     <SolidColorBrush x:Key="HotkeyForeground" Color="#33FFFFFF" />
-    <SolidColorBrush x:Key="HotkeySelectedForeground" Color="#33FFFFFF" />
     <Color x:Key="ItemSelectedBackgroundColorBrush">#198F8F8F</Color>
 
     <SolidColorBrush x:Key="BasicSystemAccentColor" Color="{m:DynamicColor SystemAccentColorLight1}" />
@@ -56,9 +55,6 @@
     <SolidColorBrush x:Key="BasicLabelColor" Color="#ffffff" />
     <SolidColorBrush x:Key="BasicSeparatorColor" Color="#cecece" />
     <SolidColorBrush x:Key="BasicLineColor" Color="#cecece" />
-
-    <SolidColorBrush x:Key="NewHotkeyForeground" Color="#44FFFFFF" />
-    <SolidColorBrush x:Key="BasicHotkeyBGColor" Color="#13FFFFFF" />
 
     <SolidColorBrush x:Key="ThemeHoverButton" Color="#3c3c3c" />
     <SolidColorBrush x:Key="PopuBGColor" Color="#202020" />

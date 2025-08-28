@@ -47,36 +47,11 @@
                         UseLayoutRounding="False">
                         <Grid.Resources>
                             <converter:HighlightTextConverter x:Key="HighlightTextConverter" />
-                            <converter:OrdinalConverter x:Key="OrdinalConverter" />
-                            <converter:OpenResultHotkeyVisibilityConverter x:Key="OpenResultHotkeyVisibilityConverter" />
                         </Grid.Resources>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Style="{DynamicResource ImageAreaWidth}" />
                             <ColumnDefinition Width="9*" />
-                            <ColumnDefinition Width="Auto" MinWidth="8" />
                         </Grid.ColumnDefinitions>
-                        <Border
-                            x:Name="HotkeyBG"
-                            Grid.Column="2"
-                            VerticalAlignment="Center"
-                            Style="{DynamicResource ItemHotkeyBGStyle}">
-                            <Border.Visibility>
-                                <Binding Converter="{StaticResource ResourceKey=OpenResultHotkeyVisibilityConverter}" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}" />
-                            </Border.Visibility>
-                            <TextBlock
-                                x:Name="Hotkey"
-                                Padding="0 0 0 0"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Center"
-                                Style="{DynamicResource ItemHotkeyStyle}">
-                                <TextBlock.Text>
-                                    <MultiBinding StringFormat="{}{0}+{1}">
-                                        <Binding Mode="OneWay" Path="Settings.OpenResultModifiers" />
-                                        <Binding Converter="{StaticResource ResourceKey=OrdinalConverter}" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}" />
-                                    </MultiBinding>
-                                </TextBlock.Text>
-                            </TextBlock>
-                        </Border>
 
                         <StackPanel
                             Grid.Column="0"
@@ -142,8 +117,6 @@
                 <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
                     <Setter TargetName="Title" Property="Style" Value="{DynamicResource ItemTitleSelectedStyle}" />
                     <Setter TargetName="SubTitle" Property="Style" Value="{DynamicResource ItemSubTitleSelectedStyle}" />
-                    <Setter TargetName="Hotkey" Property="Style" Value="{DynamicResource ItemHotkeySelectedStyle}" />
-                    <Setter TargetName="HotkeyBG" Property="Style" Value="{DynamicResource ItemHotkeyBGSelectedStyle}" />
                     <Setter TargetName="GlyphIcon" Property="Style" Value="{DynamicResource ItemGlyphSelectedStyle}" />
                 </DataTrigger>
             </DataTemplate.Triggers>
