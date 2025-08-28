@@ -688,7 +688,7 @@ namespace Flow.Launcher.ViewModel
                     QueryText = string.Empty;
                     // When we are changing query because selected results are changed to history or context menu,
                     // we should not delay the query
-                    Query(false);
+                    //Query(false);
                 }
             }
         }
