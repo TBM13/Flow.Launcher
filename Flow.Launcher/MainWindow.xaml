@@ -274,7 +274,7 @@
                         HorizontalAlignment="Right"
                         VerticalAlignment="Center"
                         Panel.ZIndex="2"
-                        RenderOptions.BitmapScalingMode="HighQuality"
+                        RenderOptions.BitmapScalingMode="LowQuality"
                         Source="{Binding PluginIconSource}"
                         Stretch="Uniform"
                         Style="{DynamicResource PluginActivationIcon}" />
