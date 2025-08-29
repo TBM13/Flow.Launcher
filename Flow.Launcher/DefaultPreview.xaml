@@ -7,12 +7,13 @@
              xmlns:vm="clr-namespace:Flow.Launcher.ViewModel"
              d:DataContext="{d:DesignInstance Type=vm:ResultViewModel}"
              mc:Ignorable="d">
-    <Grid
-        Background="Transparent">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+    <DockPanel Background="Transparent">
+        <TextBlock
+            DockPanel.Dock="Bottom"
+            x:Name="PreviewSubTitle"
+            Style="{DynamicResource PreviewItemSubTitleStyle}"
+            Text="{Binding Result.SubTitle}" />
+
         <StackPanel VerticalAlignment="Center">
             <TextBlock
                 x:Name="PreviewGlyphIcon"
@@ -50,9 +51,5 @@
                 TextAlignment="Center"
                 TextWrapping="Wrap" />
         </StackPanel>
-        <TextBlock Grid.Row="1"
-            x:Name="PreviewSubTitle"
-            Style="{DynamicResource PreviewItemSubTitleStyle}"
-            Text="{Binding Result.SubTitle}" />
-    </Grid>
+    </DockPanel>
 </UserControl>
