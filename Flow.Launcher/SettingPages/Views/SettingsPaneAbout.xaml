@@ -47,7 +47,7 @@
                 <Button Command="{Binding OpenParentOfSettingsFolderCommand}" Content="{DynamicResource userdatapathButton}" />
             </ui:SettingsCard>
 
-            <ui:SettingsCard Header="{DynamicResource icons}">
+            <ui:SettingsCard Margin="0 4 0 0" Header="{DynamicResource icons}">
                 <ui:SettingsCard.HeaderIcon>
                     <ui:FontIcon Glyph="&#xE8FE;" />
                 </ui:SettingsCard.HeaderIcon>

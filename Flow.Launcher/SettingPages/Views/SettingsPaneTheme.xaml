@@ -435,7 +435,7 @@
             </ui:SettingsExpander>
 
             <!--  Drop shadow effect  -->
-            <ui:SettingsCard Margin="0 0 0 0" Header="{DynamicResource queryWindowShadowEffect}">
+            <ui:SettingsCard Margin="0 4 0 0" Header="{DynamicResource queryWindowShadowEffect}">
                 <ui:SettingsCard.HeaderIcon>
                     <ui:FontIcon Glyph="&#xeb91;" />
                 </ui:SettingsCard.HeaderIcon>
