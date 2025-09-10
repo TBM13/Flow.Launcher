@@ -42,7 +42,7 @@
                     OnContent="{DynamicResource enable}" />
             </ui:SettingsCard>
 
-            <ui:SettingsCard Margin="0 14 0 0" Header="{DynamicResource hideFlowLauncherWhenLoseFocus}">
+            <ui:SettingsCard Margin="0 12 0 0" Header="{DynamicResource hideFlowLauncherWhenLoseFocus}">
                 <ui:ToggleSwitch
                     IsOn="{Binding Settings.HideWhenDeactivated}"
                     OffContent="{DynamicResource disable}"
@@ -88,7 +88,11 @@
                 </StackPanel>
             </ui:SettingsCard>
 
-            <ui:SettingsCard Header="{DynamicResource SearchWindowAlign}" Visibility="{ext:CollapsedWhen {Binding Settings.SearchWindowScreen}, IsEqualTo={x:Static userSettings:SearchWindowScreens.RememberLastLaunchLocation}}">
+            <ui:SettingsCard
+                Margin="0 4 0 0"
+                Header="{DynamicResource SearchWindowAlign}"
+                Visibility="{ext:CollapsedWhen {Binding Settings.SearchWindowScreen},
+                                               IsEqualTo={x:Static userSettings:SearchWindowScreens.RememberLastLaunchLocation}}">
                 <ui:SettingsCard.HeaderIcon>
                     <ui:FontIcon Glyph="&#xe7f4;" />
                 </ui:SettingsCard.HeaderIcon>
@@ -155,7 +159,10 @@
                     ToolTip="{Binding AlwaysPreviewToolTip}" />
             </ui:SettingsCard>
 
-            <ui:SettingsCard Description="{DynamicResource querySearchPrecisionToolTip}" Header="{DynamicResource querySearchPrecision}">
+            <ui:SettingsCard
+                Margin="0 14 0 0"
+                Description="{DynamicResource querySearchPrecisionToolTip}"
+                Header="{DynamicResource querySearchPrecision}">
 
                 <ComboBox
                     MaxWidth="200"
@@ -165,7 +172,10 @@
                     SelectedValuePath="Value" />
             </ui:SettingsCard>
 
-            <ui:SettingsCard Description="{DynamicResource lastQueryModeToolTip}" Header="{DynamicResource lastQueryMode}">
+            <ui:SettingsCard
+                Margin="0 4 0 0"
+                Description="{DynamicResource lastQueryModeToolTip}"
+                Header="{DynamicResource lastQueryMode}">
                 <ComboBox
                     MinWidth="210"
                     DisplayMemberPath="Display"
@@ -204,7 +214,10 @@
                     Content="{Binding Settings.CustomExplorer.Name}" />
             </ui:SettingsCard>
 
-            <ui:SettingsCard Description="{DynamicResource defaultBrowserToolTip}" Header="{DynamicResource defaultBrowser}">
+            <ui:SettingsCard
+                Margin="0 4 0 0"
+                Description="{DynamicResource defaultBrowserToolTip}"
+                Header="{DynamicResource defaultBrowser}">
                 <ui:SettingsCard.HeaderIcon>
                     <ui:FontIcon Glyph="&#xf6fa;" />
                 </ui:SettingsCard.HeaderIcon>
