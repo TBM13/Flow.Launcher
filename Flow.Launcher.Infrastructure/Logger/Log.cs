@@ -53,9 +53,9 @@ namespace Flow.Launcher.Infrastructure.Logger
 
     public enum LOGLEVEL
     {
-        DEBUG,
+        NONE,
+        ERROR,
         INFO,
-        WARN,
-        ERROR
+        DEBUG
     }
 }
