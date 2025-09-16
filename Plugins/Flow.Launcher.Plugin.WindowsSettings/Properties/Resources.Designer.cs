@@ -593,7 +593,7 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Devices.
+        ///   Looks up a localized string similar to BT &amp; Devices.
         /// </summary>
         public static string AreaDevices {
             get {
@@ -1610,15 +1610,6 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Check keyboard status.
-        /// </summary>
-        public static string CheckKeyboardStatus {
-            get {
-                return ResourceManager.GetString("CheckKeyboardStatus", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Check processor speed.
         /// </summary>
         public static string CheckProcessorSpeed {
@@ -1997,7 +1988,7 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Default apps.
+        ///   Looks up a localized string similar to Default apps/programs.
         /// </summary>
         public static string DefaultApps {
             get {
@@ -2398,6 +2389,15 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Properties {
         public static string FeedbackAndDiagnostics {
             get {
                 return ResourceManager.GetString("FeedbackAndDiagnostics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File History.
+        /// </summary>
+        public static string FileHistory {
+            get {
+                return ResourceManager.GetString("FileHistory", resourceCulture);
             }
         }
         
@@ -3032,6 +3032,15 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Keyboard Properties.
+        /// </summary>
+        public static string KeyboardProperties {
+            get {
+                return ResourceManager.GetString("KeyboardProperties", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Keypad.
         /// </summary>
         public static string Keypad {
@@ -3482,15 +3491,6 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Mouse.
-        /// </summary>
-        public static string Mouse {
-            get {
-                return ResourceManager.GetString("Mouse", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Mouse and touchpad.
         /// </summary>
         public static string MouseAndTouchpad {
@@ -3514,6 +3514,15 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Properties {
         public static string MousePointer {
             get {
                 return ResourceManager.GetString("MousePointer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mouse Properties.
+        /// </summary>
+        public static string MouseProperties {
+            get {
+                return ResourceManager.GetString("MouseProperties", resourceCulture);
             }
         }
         
@@ -4634,15 +4643,6 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Restore your files with File History.
-        /// </summary>
-        public static string RestoreYourFilesWithFileHistory {
-            get {
-                return ResourceManager.GetString("RestoreYourFilesWithFileHistory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Review your computer&apos;s status and resolve issues.
         /// </summary>
         public static string ReviewYourComputersStatusAndResolveIssues {
@@ -5291,11 +5291,11 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to System.
+        ///   Looks up a localized string similar to System Properties.
         /// </summary>
-        public static string System {
+        public static string SystemProperties {
             get {
-                return ResourceManager.GetString("System", resourceCulture);
+                return ResourceManager.GetString("SystemProperties", resourceCulture);
             }
         }
         

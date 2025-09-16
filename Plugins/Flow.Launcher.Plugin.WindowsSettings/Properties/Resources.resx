@@ -260,7 +260,7 @@
     <value>Cortana</value>
   </data>
   <data name="AreaDevices" xml:space="preserve">
-    <value>Devices</value>
+    <value>BT &amp; Devices</value>
   </data>
   <data name="AreaEaseOfAccess" xml:space="preserve">
     <value>Ease of access</value>
@@ -515,7 +515,7 @@
     <comment>Area TimeAndLanguage</comment>
   </data>
   <data name="DefaultApps" xml:space="preserve">
-    <value>Default apps</value>
+    <value>Default apps/programs</value>
     <comment>Area Apps</comment>
   </data>
   <data name="DefaultCamera" xml:space="preserve">
@@ -909,8 +909,8 @@
     <value>Motion</value>
     <comment>Area Privacy</comment>
   </data>
-  <data name="Mouse" xml:space="preserve">
-    <value>Mouse</value>
+  <data name="MouseProperties" xml:space="preserve">
+    <value>Mouse Properties</value>
     <comment>Area EaseOfAccess</comment>
   </data>
   <data name="MouseAndTouchpad" xml:space="preserve">
@@ -1465,8 +1465,8 @@
     <value>sysdm.cpl</value>
     <comment>File name, Should not translated</comment>
   </data>
-  <data name="System" xml:space="preserve">
-    <value>System</value>
+  <data name="SystemProperties" xml:space="preserve">
+    <value>System Properties</value>
     <comment>Area Control Panel (legacy settings)</comment>
   </data>
   <data name="SystemPropertiesAndAddNewHardwareWizard" xml:space="preserve">
@@ -1871,8 +1871,8 @@
   <data name="MicrosoftIMERegisterWordJapanese" xml:space="preserve">
     <value>Microsoft IME Register Word (Japanese)</value>
   </data>
-  <data name="RestoreYourFilesWithFileHistory" xml:space="preserve">
-    <value>Restore your files with File History</value>
+  <data name="FileHistory" xml:space="preserve">
+    <value>File History</value>
   </data>
   <data name="TurnOnScreenKeyboardOnOrOff" xml:space="preserve">
     <value>Turn On-Screen keyboard on or off</value>
@@ -1991,8 +1991,8 @@
   <data name="ChangeTheOrderOfWindowsSideshowGadgets" xml:space="preserve">
     <value>Change the order of Windows SideShow gadgets</value>
   </data>
-  <data name="CheckKeyboardStatus" xml:space="preserve">
-    <value>Check keyboard status</value>
+  <data name="KeyboardProperties" xml:space="preserve">
+    <value>Keyboard Properties</value>
   </data>
   <data name="ControlTheComputerWithoutTheMouseOrKeyboard" xml:space="preserve">
     <value>Control the computer without the mouse or keyboard</value>
