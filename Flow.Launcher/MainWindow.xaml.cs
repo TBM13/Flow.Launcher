@@ -18,6 +18,8 @@ using Flow.Launcher.Plugin;
 using Flow.Launcher.Plugin.SharedCommands;
 using Flow.Launcher.Plugin.SharedModels;
 using Flow.Launcher.ViewModel;
+using iNKORE.UI.WPF.Modern;
+using iNKORE.UI.WPF.Modern.Controls;
 using DataObject = System.Windows.DataObject;
 using Key = System.Windows.Input.Key;
 
@@ -123,11 +125,11 @@ namespace Flow.Launcher
             // Initialize color scheme
             if (_settings.ColorScheme == Constant.Light)
             {
-                ModernWpf.ThemeManager.Current.ApplicationTheme = ModernWpf.ApplicationTheme.Light;
+                ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
             }
             else if (_settings.ColorScheme == Constant.Dark)
             {
-                ModernWpf.ThemeManager.Current.ApplicationTheme = ModernWpf.ApplicationTheme.Dark;
+                ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
             }
 
             // Force update position

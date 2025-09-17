@@ -10,7 +10,7 @@ using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Plugin.SharedModels;
 using Flow.Launcher.SettingPages.Views;
 using Flow.Launcher.ViewModel;
-using ModernWpf.Controls;
+using iNKORE.UI.WPF.Modern.Controls;
 
 namespace Flow.Launcher;
 
