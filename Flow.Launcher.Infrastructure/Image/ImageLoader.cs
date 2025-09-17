@@ -17,14 +17,14 @@ namespace Flow.Launcher.Infrastructure.Image
         private static readonly string ClassName = nameof(ImageLoader);
 
         private static readonly ImageCache ImageCache = new();
-        private static SemaphoreSlim storageLock { get; } = new SemaphoreSlim(1, 1);
+        private static Lock storageLock { get; } = new();
         private static BinaryStorage<List<(string, bool)>> _storage;
         private static readonly ConcurrentDictionary<string, string> GuidToKey = new();
         private static IImageHashGenerator _hashGenerator;
         private static readonly bool EnableImageHash = true;
-        public static ImageSource Image { get; } = new BitmapImage(new Uri(Constant.ImageIcon));
-        public static ImageSource MissingImage { get; } = new BitmapImage(new Uri(Constant.MissingImgIcon));
-        public static ImageSource LoadingImage { get; } = new BitmapImage(new Uri(Constant.LoadingImgIcon));
+        public static ImageSource Image => ImageCache[Constant.ImageIcon, false];
+        public static ImageSource MissingImage => ImageCache[Constant.MissingImgIcon, false];
+        public static ImageSource LoadingImage => ImageCache[Constant.LoadingImgIcon, false];
         public const int SmallIconSize = 64;
         public const int FullIconSize = 256;
         public const int FullImageSize = 320;
@@ -34,31 +34,29 @@ namespace Flow.Launcher.Infrastructure.Image
 
         public static async Task InitializeAsync()
         {
-            _storage = new BinaryStorage<List<(string, bool)>>("Image");
-            _hashGenerator = new ImageHashGenerator();
-
-            // Even though we no longer do image preloading and thus don't need _storage,
-            // for some reason MemoryPackSerializer exceptions appear when this is removed
-            await LoadStorageToConcurrentDictionaryAsync();
-
-            foreach (var icon in new[] { Constant.DefaultIcon, Constant.MissingImgIcon })
+            await Task.Run(() =>
             {
-                ImageSource img = new BitmapImage(new Uri(icon));
-                img.Freeze();
-                ImageCache[icon, false] = img;
-            }
+                _storage = new BinaryStorage<List<(string, bool)>>("Image");
+                _hashGenerator = new ImageHashGenerator();
+
+                // Even though we no longer do image preloading and thus don't need _storage,
+                // for some reason MemoryPackSerializer exceptions appear when this is removed
+                LoadStorageToConcurrentDictionary();
+
+                foreach (var icon in new[] { Constant.DefaultIcon, Constant.ImageIcon, Constant.MissingImgIcon, Constant.LoadingImgIcon })
+                {
+                    ImageSource img = new BitmapImage(new Uri(icon));
+                    img.Freeze();
+                    ImageCache[icon, false] = img;
+                }
+            });
         }
 
-        private static async Task<List<(string, bool)>> LoadStorageToConcurrentDictionaryAsync()
+        private static List<(string, bool)> LoadStorageToConcurrentDictionary()
         {
-            await storageLock.WaitAsync();
-            try
+            lock (storageLock)
             {
-                return await _storage.TryLoadAsync(new List<(string, bool)>());
-            }
-            finally
-            {
-                storageLock.Release();
+                return _storage.TryLoad([]);
             }
         }
 
@@ -109,7 +107,7 @@ namespace Flow.Launcher.Infrastructure.Image
                 {
                     Log.Error(ClassName, $"Failed to load image from path {path}: Remote images are not supported.");
 
-                    ImageSource image = ImageCache[Constant.MissingImgIcon, false];
+                    ImageSource image = MissingImage;
                     ImageCache[path, false] = image;
                     imageResult = new ImageResult(image, ImageType.Error);
                 }
@@ -137,7 +135,7 @@ namespace Flow.Launcher.Infrastructure.Image
                     Log.Exception(ClassName, $"Failed to get thumbnail for {path} on first try", e);
                     Log.Exception(ClassName, $"Failed to get thumbnail for {path} on second try", e2);
 
-                    ImageSource image = ImageCache[Constant.MissingImgIcon, false];
+                    ImageSource image = MissingImage;
                     ImageCache[path, false] = image;
                     imageResult = new ImageResult(image, ImageType.Error);
                 }
@@ -205,7 +203,7 @@ namespace Flow.Launcher.Infrastructure.Image
             }
             else
             {
-                image = ImageCache[Constant.MissingImgIcon, false];
+                image = MissingImage;
                 path = Constant.MissingImgIcon;
             }
 

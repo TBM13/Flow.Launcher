@@ -68,7 +68,7 @@ namespace Flow.Launcher
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "<Pending>")]
-        public async void RestartApp()
+        public void RestartApp()
         {
             _mainVM.Hide();
 
