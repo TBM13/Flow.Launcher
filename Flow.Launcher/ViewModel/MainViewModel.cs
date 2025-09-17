@@ -23,7 +23,7 @@ using Flow.Launcher.Plugin;
 using Flow.Launcher.Plugin.SharedCommands;
 using Flow.Launcher.Storage;
 using Microsoft.VisualStudio.Threading;
-using ModernWpf;
+using iNKORE.UI.WPF.Modern;
 
 namespace Flow.Launcher.ViewModel
 {
