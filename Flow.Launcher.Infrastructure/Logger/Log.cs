@@ -55,6 +55,7 @@ namespace Flow.Launcher.Infrastructure.Logger
     {
         NONE,
         ERROR,
+        WARN,
         INFO,
         DEBUG
     }
