@@ -470,15 +470,6 @@
                     </ui:SettingsCard>
                 </ui:SettingsExpander.Items>
             </ui:SettingsExpander>
-            <cc:InfoBar
-                Title=""
-                Margin="0 4 0 0"
-                Closable="False"
-                IsIconVisible="True"
-                Length="Long"
-                Message="{DynamicResource MaxShowResultsCannotWorkWithAlwaysPreview}"
-                Type="Warning"
-                Visibility="{Binding Settings.AlwaysPreview, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
 
             <!--  Fonts and icons  -->
             <ui:SettingsCard
