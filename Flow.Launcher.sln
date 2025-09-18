@@ -58,10 +58,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flow.Launcher.Plugin.Proces
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flow.Launcher.Plugin.WindowsSettings", "Plugins\Flow.Launcher.Plugin.WindowsSettings\Flow.Launcher.Plugin.WindowsSettings.csproj", "{5043CECE-E6A7-4867-9CBE-02D27D83747A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModernWpf", "ModernWpf\ModernWpf\ModernWpf.csproj", "{B6438E5E-D00F-AC32-68CF-EEF79434F3FB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModernWpf.Controls", "ModernWpf\ModernWpf.Controls\ModernWpf.Controls.csproj", "{F2B2048C-2CD6-6D4D-418A-86E69E716615}"
-EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Flow.Plugin.RegJump", "Plugins\Flow.Plugin.RegJump\src\Flow.Plugin.RegJump.fsproj", "{037FC1AE-9FAE-E4E0-408B-0CB5F5847A20}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flow.Launcher.Plugin.WindowsServices", "Plugins\Flow.Launcher.Plugin.WindowsServices\Flow.Launcher.Plugin.WindowsServices.csproj", "{F68C5D49-5338-48CC-AEED-3F0B852B2657}"
@@ -219,30 +215,6 @@ Global
 		{5043CECE-E6A7-4867-9CBE-02D27D83747A}.Release|x64.Build.0 = Release|Any CPU
 		{5043CECE-E6A7-4867-9CBE-02D27D83747A}.Release|x86.ActiveCfg = Release|Any CPU
 		{5043CECE-E6A7-4867-9CBE-02D27D83747A}.Release|x86.Build.0 = Release|Any CPU
-		{B6438E5E-D00F-AC32-68CF-EEF79434F3FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B6438E5E-D00F-AC32-68CF-EEF79434F3FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B6438E5E-D00F-AC32-68CF-EEF79434F3FB}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{B6438E5E-D00F-AC32-68CF-EEF79434F3FB}.Debug|x64.Build.0 = Debug|Any CPU
-		{B6438E5E-D00F-AC32-68CF-EEF79434F3FB}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{B6438E5E-D00F-AC32-68CF-EEF79434F3FB}.Debug|x86.Build.0 = Debug|Any CPU
-		{B6438E5E-D00F-AC32-68CF-EEF79434F3FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B6438E5E-D00F-AC32-68CF-EEF79434F3FB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B6438E5E-D00F-AC32-68CF-EEF79434F3FB}.Release|x64.ActiveCfg = Release|Any CPU
-		{B6438E5E-D00F-AC32-68CF-EEF79434F3FB}.Release|x64.Build.0 = Release|Any CPU
-		{B6438E5E-D00F-AC32-68CF-EEF79434F3FB}.Release|x86.ActiveCfg = Release|Any CPU
-		{B6438E5E-D00F-AC32-68CF-EEF79434F3FB}.Release|x86.Build.0 = Release|Any CPU
-		{F2B2048C-2CD6-6D4D-418A-86E69E716615}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F2B2048C-2CD6-6D4D-418A-86E69E716615}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F2B2048C-2CD6-6D4D-418A-86E69E716615}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{F2B2048C-2CD6-6D4D-418A-86E69E716615}.Debug|x64.Build.0 = Debug|Any CPU
-		{F2B2048C-2CD6-6D4D-418A-86E69E716615}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{F2B2048C-2CD6-6D4D-418A-86E69E716615}.Debug|x86.Build.0 = Debug|Any CPU
-		{F2B2048C-2CD6-6D4D-418A-86E69E716615}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F2B2048C-2CD6-6D4D-418A-86E69E716615}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F2B2048C-2CD6-6D4D-418A-86E69E716615}.Release|x64.ActiveCfg = Release|Any CPU
-		{F2B2048C-2CD6-6D4D-418A-86E69E716615}.Release|x64.Build.0 = Release|Any CPU
-		{F2B2048C-2CD6-6D4D-418A-86E69E716615}.Release|x86.ActiveCfg = Release|Any CPU
-		{F2B2048C-2CD6-6D4D-418A-86E69E716615}.Release|x86.Build.0 = Release|Any CPU
 		{037FC1AE-9FAE-E4E0-408B-0CB5F5847A20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{037FC1AE-9FAE-E4E0-408B-0CB5F5847A20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{037FC1AE-9FAE-E4E0-408B-0CB5F5847A20}.Debug|x64.ActiveCfg = Debug|Any CPU
