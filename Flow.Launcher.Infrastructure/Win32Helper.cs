@@ -12,6 +12,7 @@ using System.Windows.Interop;
 using System.Windows.Markup;
 using System.Windows.Media;
 using Flow.Launcher.Plugin.SharedModels;
+using Microsoft.Win32;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Dwm;
@@ -534,6 +535,20 @@ namespace Flow.Launcher.Infrastructure
             {
                 // Ignore errors on unsupported OS
             }
+        }
+
+        #endregion
+
+        #region File / Folder Dialog
+
+        public static string SelectFile()
+        {
+            var dlg = new OpenFileDialog();
+            var result = dlg.ShowDialog();
+            if (result == true)
+                return dlg.FileName;
+
+            return string.Empty;
         }
 
         #endregion

@@ -60,6 +60,8 @@ public partial class SettingsPaneGeneralViewModel : BaseModel
         DropdownDataGeneric<LastQueryMode>.UpdateLabels(LastQueryModes);
         // Since we are using Binding instead of DynamicResource, we need to manually trigger the update
         OnPropertyChanged(nameof(AlwaysPreviewToolTip));
+        Settings.CustomExplorer.OnDisplayNameChanged();
+        Settings.CustomBrowser.OnDisplayNameChanged();
     }
 
     public string Language

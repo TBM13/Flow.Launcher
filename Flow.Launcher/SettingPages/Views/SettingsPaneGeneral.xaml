@@ -211,7 +211,7 @@
                     MaxWidth="250"
                     Margin="10 0 0 0"
                     Command="{Binding SelectFileManagerCommand}"
-                    Content="{Binding Settings.CustomExplorer.Name}" />
+                    Content="{Binding Settings.CustomExplorer.DisplayName}" />
             </ui:SettingsCard>
 
             <ui:SettingsCard
@@ -227,7 +227,7 @@
                     MaxWidth="250"
                     Margin="10 0 0 0"
                     Command="{Binding SelectBrowserCommand}"
-                    Content="{Binding Settings.CustomBrowser.Name}" />
+                    Content="{Binding Settings.CustomBrowser.DisplayName}" />
             </ui:SettingsCard>
         </VirtualizingStackPanel>
     </ui:ScrollViewerEx>
