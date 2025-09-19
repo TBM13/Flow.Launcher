@@ -20,7 +20,7 @@ namespace Flow.Launcher.Infrastructure.Image
         private static Lock storageLock { get; } = new();
         private static BinaryStorage<List<(string, bool)>> _storage;
         private static readonly ConcurrentDictionary<string, string> GuidToKey = new();
-        private static IImageHashGenerator _hashGenerator;
+        private static ImageHashGenerator _hashGenerator;
         private static readonly bool EnableImageHash = true;
         public static ImageSource Image => ImageCache[Constant.ImageIcon, false];
         public static ImageSource MissingImage => ImageCache[Constant.MissingImgIcon, false];
@@ -29,7 +29,7 @@ namespace Flow.Launcher.Infrastructure.Image
         public const int FullIconSize = 256;
         public const int FullImageSize = 320;
 
-        private static readonly string[] ImageExtensions = { ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".ico" };
+        private static readonly string[] ImageExtensions = [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".ico"];
         private static readonly string SvgExtension = ".svg";
 
         public static async Task InitializeAsync()
@@ -271,7 +271,7 @@ namespace Flow.Launcher.Infrastructure.Image
             return img;
         }
 
-        private static ImageSource LoadFullImage(string path)
+        private static BitmapImage LoadFullImage(string path)
         {
             BitmapImage image = new BitmapImage();
             image.BeginInit();
