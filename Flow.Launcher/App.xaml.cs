@@ -38,6 +38,7 @@ namespace Flow.Launcher
         private static Settings _settings;
         private static MainWindow _mainWindow;
         private readonly MainViewModel _mainVM;
+        private readonly Internationalization _internationalization;
 
         // To prevent two disposals running at the same time.
         private static readonly object _disposingLock = new();
@@ -91,6 +92,7 @@ namespace Flow.Launcher
                 API = Ioc.Default.GetRequiredService<IPublicAPI>();
                 _settings.Initialize();
                 _mainVM = Ioc.Default.GetRequiredService<MainViewModel>();
+                _internationalization = Ioc.Default.GetRequiredService<Internationalization>();
             }
             catch (Exception e)
             {
@@ -171,7 +173,7 @@ namespace Flow.Launcher
                 Win32Helper.EnableWin32DarkMode(_settings.ColorScheme);
 
                 // Initialize language before portable clean up since it needs translations
-                await Ioc.Default.GetRequiredService<Internationalization>().InitializeLanguageAsync();
+                await _internationalization.InitializeLanguageAsync();
 
                 API.LogInfo(ClassName, "Begin Flow Launcher startup ----------------------------------------------------");
                 API.LogInfo(ClassName, $"Runtime info:{ErrorReporting.RuntimeInfo()}");
@@ -308,6 +310,7 @@ namespace Flow.Launcher
                     // since some resources owned by the thread need to be disposed.
                     _mainWindow?.Dispatcher.Invoke(_mainWindow.Dispose);
                     _mainVM?.Dispose();
+                    _internationalization.Dispose();
                 }
 
                 API.LogInfo(ClassName, "End Flow Launcher dispose ----------------------------------------------------");
