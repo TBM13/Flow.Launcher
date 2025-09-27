@@ -13,8 +13,8 @@ public class Settings : BaseModel
         }
     }
 
-    public ObservableCollection<Command> Commands { get; set; } = new ObservableCollection<Command>
-    {
+    public ObservableCollection<Command> Commands { get; set; } =
+    [
         new()
         {
             Key = "Shutdown",
@@ -75,7 +75,7 @@ public class Settings : BaseModel
             Key = "Toggle Game Mode",
             Keyword = "Toggle Game Mode"
         },
-    };
+    ];
 
     [JsonIgnore]
     public Command SelectedCommand { get; set; }

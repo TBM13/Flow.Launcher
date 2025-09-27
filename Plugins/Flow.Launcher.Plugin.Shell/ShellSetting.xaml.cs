@@ -28,7 +28,7 @@ namespace Flow.Launcher.Plugin.Shell
 
             ShowOnlyMostUsedCMDs.IsChecked = _settings.ShowOnlyMostUsedCMDs;
 
-            if ((bool)!ShowOnlyMostUsedCMDs.IsChecked)
+            if (ShowOnlyMostUsedCMDs.IsChecked != true)
                 ShowOnlyMostUsedCMDsNumber.IsEnabled = false;
 
             ShowOnlyMostUsedCMDsNumber.ItemsSource = new List<int>() { 5, 10, 20 };
@@ -125,7 +125,6 @@ namespace Flow.Launcher.Plugin.Shell
             {
                 _settings.ShowOnlyMostUsedCMDsNumber = (int)ShowOnlyMostUsedCMDsNumber.SelectedItem;
             };
-
         }
     }
 }

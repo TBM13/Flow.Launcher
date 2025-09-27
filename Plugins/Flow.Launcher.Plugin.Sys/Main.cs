@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -33,7 +34,7 @@ namespace Flow.Launcher.Plugin.Sys
             {"Exit", "flowlauncher_plugin_sys_exit_cmd"},
             {"Toggle Game Mode", "flowlauncher_plugin_sys_toggle_game_mode_cmd"},
         };
-        private readonly Dictionary<string, string> KeywordDescriptionMappings = new();
+        private readonly Dictionary<string, string> KeywordDescriptionMappings = [];
 
         // SHTDN_REASON_MAJOR_OTHER indicates a generic shutdown reason that isn't categorized under hardware failure,
         // software updates, or other predefined reasons.
@@ -41,14 +42,14 @@ namespace Flow.Launcher.Plugin.Sys
         private const SHUTDOWN_REASON REASON = SHUTDOWN_REASON.SHTDN_REASON_MAJOR_OTHER |
             SHUTDOWN_REASON.SHTDN_REASON_FLAG_PLANNED;
 
-        private PluginInitContext _context;
+        internal static PluginInitContext Context { get; private set; }
         private Settings _settings;
         private SettingsViewModel _viewModel;
 
         public Control CreateSettingPanel()
         {
             UpdateLocalizedNameDescription(false);
-            return new SysSettings(_context, _viewModel);
+            return new SysSettings(_viewModel);
         }
 
         public List<Result> Query(Query query)
@@ -68,9 +69,9 @@ namespace Flow.Launcher.Plugin.Sys
                 }
 
                 // Match from localized title & localized subtitle & keyword
-                var titleMatch = _context.API.FuzzySearch(query.Search, c.Title);
-                var subTitleMatch = _context.API.FuzzySearch(query.Search, c.SubTitle);
-                var keywordMatch = _context.API.FuzzySearch(query.Search, command.Keyword);
+                var titleMatch = Context.API.FuzzySearch(query.Search, c.Title);
+                var subTitleMatch = Context.API.FuzzySearch(query.Search, c.SubTitle);
+                var keywordMatch = Context.API.FuzzySearch(query.Search, command.Keyword);
 
                 // Get the largest score from them
                 var score = Math.Max(titleMatch.Score, subTitleMatch.Score);
@@ -96,27 +97,27 @@ namespace Flow.Launcher.Plugin.Sys
         {
             if (!KeywordTitleMappings.TryGetValue(key, out var translationKey))
             {
-                _context.API.LogError(ClassName, $"Title not found for: {key}");
+                Context.API.LogError(ClassName, $"Title not found for: {key}");
                 return "Title Not Found";
             }
 
-            return _context.API.GetTranslation(translationKey);
+            return Context.API.GetTranslation(translationKey);
         }
 
         private string GetDescription(string key)
         {
             if (!KeywordDescriptionMappings.TryGetValue(key, out var translationKey))
             {
-                _context.API.LogError(ClassName, $"Description not found for: {key}");
+                Context.API.LogError(ClassName, $"Description not found for: {key}");
                 return "Description Not Found";
             }
 
-            return _context.API.GetTranslation(translationKey);
+            return Context.API.GetTranslation(translationKey);
         }
 
         public void Init(PluginInitContext context)
         {
-            _context = context;
+            Context = context;
             _settings = context.API.LoadSettingJsonStorage<Settings>();
             _viewModel = new SettingsViewModel(_settings);
             foreach (string key in KeywordTitleMappings.Keys)
@@ -176,21 +177,21 @@ namespace Flow.Launcher.Plugin.Sys
             }
         }
 
-        private List<Result> Commands(Query query)
+        private static List<Result> Commands(Query query)
         {
             var results = new List<Result>();
             var recycleBinFolder = "shell:RecycleBinFolder";
-            results.AddRange(new[]
-            {
+            results.AddRange(
+            [
                 new Result
                 {
                     Title = "Shutdown",
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe7e8"),
                     Action = c =>
                     {
-                        var result = _context.API.ShowMsgBox(
-                            _context.API.GetTranslation("flowlauncher_plugin_sys_dlgtext_shutdown_computer"),
-                            _context.API.GetTranslation("flowlauncher_plugin_sys_shutdown_computer"),
+                        var result = Context.API.ShowMsgBox(
+                            Localize.flowlauncher_plugin_sys_dlgtext_shutdown_computer(),
+                            Localize.flowlauncher_plugin_sys_shutdown_computer(),
                             MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
                         if (result == MessageBoxResult.Yes)
@@ -208,9 +209,9 @@ namespace Flow.Launcher.Plugin.Sys
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe777"),
                     Action = c =>
                     {
-                        var result = _context.API.ShowMsgBox(
-                            _context.API.GetTranslation("flowlauncher_plugin_sys_dlgtext_restart_computer"),
-                            _context.API.GetTranslation("flowlauncher_plugin_sys_restart_computer"),
+                        var result = Context.API.ShowMsgBox(
+                            Localize.flowlauncher_plugin_sys_dlgtext_restart_computer(),
+                            Localize.flowlauncher_plugin_sys_restart_computer(),
                             MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
                         if (result == MessageBoxResult.Yes)
@@ -228,9 +229,9 @@ namespace Flow.Launcher.Plugin.Sys
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xecc5"),
                     Action = c =>
                     {
-                        var result = _context.API.ShowMsgBox(
-                            _context.API.GetTranslation("flowlauncher_plugin_sys_dlgtext_restart_computer_advanced"),
-                            _context.API.GetTranslation("flowlauncher_plugin_sys_restart_computer"),
+                        var result = Context.API.ShowMsgBox(
+                            Localize.flowlauncher_plugin_sys_dlgtext_restart_computer_advanced(),
+                            Localize.flowlauncher_plugin_sys_restart_computer(),
                             MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
                         if (result == MessageBoxResult.Yes)
@@ -248,9 +249,9 @@ namespace Flow.Launcher.Plugin.Sys
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe77b"),
                     Action = c =>
                     {
-                        var result = _context.API.ShowMsgBox(
-                            _context.API.GetTranslation("flowlauncher_plugin_sys_dlgtext_logoff_computer"),
-                            _context.API.GetTranslation("flowlauncher_plugin_sys_log_off"),
+                        var result = Context.API.ShowMsgBox(
+                            Localize.flowlauncher_plugin_sys_dlgtext_logoff_computer(),
+                            Localize.flowlauncher_plugin_sys_log_off(),
                             MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
                         if (result == MessageBoxResult.Yes)
@@ -301,9 +302,9 @@ namespace Flow.Launcher.Plugin.Sys
                         var result = PInvoke.SHEmptyRecycleBin(new(), string.Empty, 0);
                         if (result != HRESULT.S_OK && result != HRESULT.E_UNEXPECTED)
                         {
-                            _context.API.ShowMsgBox(
-                                string.Format(_context.API.GetTranslation("flowlauncher_plugin_sys_dlgtext_empty_recycle_bin_failed"), Environment.NewLine),
-                                _context.API.GetTranslation("flowlauncher_plugin_sys_dlgtitle_error"),
+                            Context.API.ShowMsgBox(
+                                Localize.flowlauncher_plugin_sys_dlgtext_empty_recycle_bin_failed(Environment.NewLine),
+                                Localize.flowlauncher_plugin_sys_dlgtitle_error(),
                                 MessageBoxButton.OK, MessageBoxImage.Error);
                         }
 
@@ -328,7 +329,7 @@ namespace Flow.Launcher.Plugin.Sys
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe89f"),
                     Action = c =>
                     {
-                        _context.API.HideMainWindow();
+                        Context.API.HideMainWindow();
                         Application.Current.MainWindow.Close();
                         return true;
                     }
@@ -340,7 +341,7 @@ namespace Flow.Launcher.Plugin.Sys
                     IcoPath = "Images\\app.png",
                     Action = c =>
                     {
-                        _context.API.OpenSettingDialog();
+                        Context.API.OpenSettingDialog();
                         return true;
                     }
                 },
@@ -350,23 +351,23 @@ namespace Flow.Launcher.Plugin.Sys
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\ue7fc"),
                     Action = c =>
                     {
-                        _context.API.ToggleGameMode();
+                        Context.API.ToggleGameMode();
                         return true;
                     }
                 }
-            });
+            ]);
 
             return results;
         }
 
         public string GetTranslatedPluginTitle()
         {
-            return _context.API.GetTranslation("flowlauncher_plugin_sys_plugin_name");
+            return Localize.flowlauncher_plugin_sys_plugin_name();
         }
 
         public string GetTranslatedPluginDescription()
         {
-            return _context.API.GetTranslation("flowlauncher_plugin_sys_plugin_description");
+            return Localize.flowlauncher_plugin_sys_plugin_description();
         }
 
         public void OnCultureInfoChanged(CultureInfo _)

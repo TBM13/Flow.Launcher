@@ -16,8 +16,8 @@ namespace Flow.Launcher.Plugin.ProcessKiller
     {
         private static readonly string ClassName = nameof(ProcessHelper);
 
-        private readonly HashSet<string> _systemProcessList = new()
-        {
+        private readonly HashSet<string> _systemProcessList =
+        [
             "conhost",
             "svchost",
             "idle",
@@ -32,7 +32,7 @@ namespace Flow.Launcher.Plugin.ProcessKiller
             "services",
             "spoolsv",
             "explorer"
-        };
+        ];
 
         private const string FlowLauncherProcessName = "Flow.Launcher";
 
@@ -142,7 +142,7 @@ namespace Flow.Launcher.Plugin.ProcessKiller
             return Process.GetProcesses().Where(p => !IsSystemProcessOrFlowLauncher(p) && TryGetProcessFilename(p) == processPath);
         }
 
-        public void TryKill(PluginInitContext context, Process p)
+        public static void TryKill(Process p)
         {
             try
             {
@@ -154,11 +154,11 @@ namespace Flow.Launcher.Plugin.ProcessKiller
             }
             catch (Exception e)
             {
-                context.API.LogException(ClassName, $"Failed to kill process {p.ProcessName}", e);
+                Main.Context.API.LogException(ClassName, $"Failed to kill process {p.ProcessName}", e);
             }
         }
 
-        public unsafe string TryGetProcessFilename(Process p)
+        public static unsafe string TryGetProcessFilename(Process p)
         {
             try
             {
