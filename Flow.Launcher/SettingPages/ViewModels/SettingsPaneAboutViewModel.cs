@@ -21,7 +21,7 @@ public partial class SettingsPaneAboutViewModel : BaseModel
         get
         {
             var size = GetCacheFiles().Sum(file => file.Length);
-            return $"{App.API.GetTranslation("clearcachefolder")} ({BytesToReadableString(size)})";
+            return $"{Localize.clearcachefolder()} ({BytesToReadableString(size)})";
         }
     }
 
@@ -46,8 +46,8 @@ public partial class SettingsPaneAboutViewModel : BaseModel
     private void AskClearCacheFolderConfirmation()
     {
         var confirmResult = App.API.ShowMsgBox(
-            App.API.GetTranslation("clearcachefolderMessage"),
-            App.API.GetTranslation("clearcachefolder"),
+            Localize.clearcachefolderMessage(),
+            Localize.clearcachefolder(),
             MessageBoxButton.YesNo
         );
 
@@ -55,7 +55,7 @@ public partial class SettingsPaneAboutViewModel : BaseModel
         {
             if (!ClearCacheFolder())
             {
-                App.API.ShowMsgBox(App.API.GetTranslation("clearfolderfailMessage"));
+                App.API.ShowMsgBox(Localize.clearfolderfailMessage());
             }
         }
     }
@@ -69,8 +69,8 @@ public partial class SettingsPaneAboutViewModel : BaseModel
     [RelayCommand]
     private void OpenParentOfSettingsFolder(object parameter)
     {
-        string settingsFolderPath = Path.Combine(DataLocation.SettingsDirectory);
-        string parentFolderPath = Path.GetDirectoryName(settingsFolderPath);
+        var settingsFolderPath = Path.Combine(DataLocation.SettingsDirectory);
+        var parentFolderPath = Path.GetDirectoryName(settingsFolderPath);
         App.API.OpenDirectory(parentFolderPath);
     }
 
@@ -159,9 +159,9 @@ public partial class SettingsPaneAboutViewModel : BaseModel
     {
         const int scale = 1024;
         string[] orders = { "GB", "MB", "KB", "B" };
-        long max = (long)Math.Pow(scale, orders.Length - 1);
+        var max = (long)Math.Pow(scale, orders.Length - 1);
 
-        foreach (string order in orders)
+        foreach (var order in orders)
         {
             if (bytes > max) return $"{decimal.Divide(bytes, max):##.##} {order}";
 

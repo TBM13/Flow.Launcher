@@ -33,6 +33,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <NoWarn>$(NoWarn);FLSG0007</NoWarn>
   </PropertyGroup>
   
   <ItemGroup>
@@ -54,6 +55,7 @@
   <ItemGroup>
     <PackageReference Include="BitFaster.Caching" Version="2.5.4" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="Flow.Launcher.Localization" Version="0.0.6" />
     <PackageReference Include="Fody" Version="6.9.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -69,5 +71,15 @@
     </PackageReference>
   </ItemGroup>
 
+  <PropertyGroup>
+    <FLLUseDependencyInjection>true</FLLUseDependencyInjection>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Remove="Languages\en.xaml" />
+    <AdditionalFiles Include="..\Flow.Launcher\Languages\en.xaml">
+      <Link>Languages\en.xaml</Link>
+    </AdditionalFiles>
+  </ItemGroup>
   
 </Project>

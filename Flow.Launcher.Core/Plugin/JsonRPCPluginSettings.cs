@@ -286,7 +286,7 @@ namespace Flow.Launcher.Core.Plugin
                                 HorizontalAlignment = HorizontalAlignment.Left,
                                 VerticalAlignment = VerticalAlignment.Center,
                                 Margin = SettingPanelItemLeftMargin,
-                                Content = API.GetTranslation("select")
+                                Content = Localize.select()
                             };
 
                             Btn.Click += (_, _) =>

@@ -22,8 +22,8 @@ using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Plugin;
 using Flow.Launcher.Plugin.SharedCommands;
 using Flow.Launcher.Storage;
-using Microsoft.VisualStudio.Threading;
 using iNKORE.UI.WPF.Modern;
+using Microsoft.VisualStudio.Threading;
 
 namespace Flow.Launcher.ViewModel
 {
@@ -278,8 +278,8 @@ namespace Flow.Launcher.ViewModel
             Hide();
 
             await PluginManager.ReloadDataAsync().ConfigureAwait(false);
-            App.API.ShowMsg(App.API.GetTranslation("success"),
-                App.API.GetTranslation("completedSuccessfully"));
+            App.API.ShowMsg(Localize.success(),
+                Localize.completedSuccessfully());
         }
 
         [RelayCommand]
@@ -1396,13 +1396,13 @@ namespace Flow.Launcher.ViewModel
             {
                 menu = new Result
                 {
-                    Title = App.API.GetTranslation("cancelTopMostInThisQuery"),
+                    Title = Localize.cancelTopMostInThisQuery(),
                     IcoPath = "Images\\down.png",
                     PluginDirectory = Constant.ProgramDirectory,
                     Action = _ =>
                     {
                         _topMostRecord.Remove(result);
-                        App.API.ShowMsg(App.API.GetTranslation("success"));
+                        App.API.ShowMsg(Localize.success());
                         App.API.ReQuery();
                         return false;
                     },
@@ -1414,13 +1414,13 @@ namespace Flow.Launcher.ViewModel
             {
                 menu = new Result
                 {
-                    Title = App.API.GetTranslation("setAsTopMostInThisQuery"),
+                    Title = Localize.setAsTopMostInThisQuery(),
                     IcoPath = "Images\\up.png",
                     PluginDirectory = Constant.ProgramDirectory,
                     Action = _ =>
                     {
                         _topMostRecord.AddOrUpdate(result);
-                        App.API.ShowMsg(App.API.GetTranslation("success"));
+                        App.API.ShowMsg(Localize.success());
                         App.API.ReQuery();
                         return false;
                     },
@@ -1629,7 +1629,7 @@ namespace Flow.Launcher.ViewModel
             }
 
             // it should be the same for all results
-            bool reSelect = resultsForUpdates.First().ReSelectFirstResult;
+            var reSelect = resultsForUpdates.First().ReSelectFirstResult;
 
             _results.AddResults(resultsForUpdates, token, reSelect);
         }

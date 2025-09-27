@@ -40,7 +40,7 @@ public partial class SettingsPaneGeneralViewModel : BaseModel
         {
             var screens = MonitorInfo.GetDisplayMonitors();
             var screenNumbers = new List<int>();
-            for (int i = 1; i <= screens.Count; i++)
+            for (var i = 1; i <= screens.Count; i++)
             {
                 screenNumbers.Add(i);
             }
@@ -75,10 +75,7 @@ public partial class SettingsPaneGeneralViewModel : BaseModel
         }
     }
 
-    public string AlwaysPreviewToolTip => string.Format(
-        App.API.GetTranslation("AlwaysPreviewToolTip"),
-        Settings.PreviewHotkey
-    );
+    public string AlwaysPreviewToolTip => Localize.AlwaysPreviewToolTip(Settings.PreviewHotkey);
 
     [RelayCommand]
     private void SelectFileManager()

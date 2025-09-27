@@ -8,6 +8,7 @@ using System.Windows.Documents;
 using Flow.Launcher.Core.ExternalPlugins;
 using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
+using Flow.Launcher.Infrastructure.Logger;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Plugin.SharedCommands;
 
@@ -44,13 +45,13 @@ namespace Flow.Launcher
                 _ => Constant.IssuesUrl
             };
 
-            var paragraph = Hyperlink(App.API.GetTranslation("reportWindow_please_open_issue"), websiteUrl);
-            paragraph.Inlines.Add(App.API.GetTranslation("reportWindow_upload_log"));
+            var paragraph = Hyperlink(Localize.reportWindow_please_open_issue(), websiteUrl);
+            paragraph.Inlines.Add(Localize.reportWindow_upload_log(string.Empty));
             paragraph.Inlines.Add("\n");
-            paragraph.Inlines.Add(App.API.GetTranslation("reportWindow_copy_below"));
+            paragraph.Inlines.Add(Localize.reportWindow_copy_below());
             ErrorTextbox.Document.Blocks.Add(paragraph);
 
-            StringBuilder content = new StringBuilder();
+            var content = new StringBuilder();
             content.AppendLine(ErrorReporting.RuntimeInfo());
             content.AppendLine();
             content.AppendLine($"Date: {DateTime.Now.ToString(CultureInfo.InvariantCulture)}");

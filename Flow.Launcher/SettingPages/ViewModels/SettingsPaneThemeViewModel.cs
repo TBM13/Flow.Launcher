@@ -276,8 +276,8 @@ public partial class SettingsPaneThemeViewModel : BaseModel
             {
                 new()
                 {
-                    Title = App.API.GetTranslation("SampleTitleExplorer"),
-                    SubTitle = App.API.GetTranslation("SampleSubTitleExplorer"),
+                    Title = Localize.SampleTitleExplorer(),
+                    SubTitle = Localize.SampleSubTitleExplorer(),
                     IcoPath = Path.Combine(
                         Constant.ProgramDirectory,
                         @"Plugins\Flow.Launcher.Plugin.Explorer\Images\explorer.png"
@@ -285,8 +285,8 @@ public partial class SettingsPaneThemeViewModel : BaseModel
                 },
                 new()
                 {
-                    Title = App.API.GetTranslation("SampleTitleProgram"),
-                    SubTitle = App.API.GetTranslation("SampleSubTitleProgram"),
+                    Title = Localize.SampleTitleProgram(),
+                    SubTitle = Localize.SampleSubTitleProgram(),
                     IcoPath = Path.Combine(
                         Constant.ProgramDirectory,
                         @"Plugins\Flow.Launcher.Plugin.Program\Images\program.png"
@@ -294,8 +294,8 @@ public partial class SettingsPaneThemeViewModel : BaseModel
                 },
                 new()
                 {
-                    Title = App.API.GetTranslation("SampleTitleProcessKiller"),
-                    SubTitle = App.API.GetTranslation("SampleSubTitleProcessKiller"),
+                    Title = Localize.SampleTitleProcessKiller(),
+                    SubTitle = Localize.SampleSubTitleProcessKiller(),
                     IcoPath = Path.Combine(
                         Constant.ProgramDirectory,
                         @"Plugins\Flow.Launcher.Plugin.ProcessKiller\Images\app.png"

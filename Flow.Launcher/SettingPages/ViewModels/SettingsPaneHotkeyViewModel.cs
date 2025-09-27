@@ -40,15 +40,13 @@ public partial class SettingsPaneHotkeyViewModel : BaseModel
         var item = SelectedCustomPluginHotkey;
         if (item is null)
         {
-            App.API.ShowMsgBox(App.API.GetTranslation("pleaseSelectAnItem"));
+            App.API.ShowMsgBox(Localize.pleaseSelectAnItem());
             return;
         }
 
         var result = App.API.ShowMsgBox(
-            string.Format(
-                App.API.GetTranslation("deleteCustomHotkeyWarning"), item.Hotkey
-            ),
-            App.API.GetTranslation("delete"),
+            Localize.deleteCustomHotkeyWarning(item.Hotkey),
+            Localize.delete(),
             MessageBoxButton.YesNo
         );
 
@@ -65,7 +63,7 @@ public partial class SettingsPaneHotkeyViewModel : BaseModel
         var item = SelectedCustomPluginHotkey;
         if (item is null)
         {
-            App.API.ShowMsgBox(App.API.GetTranslation("pleaseSelectAnItem"));
+            App.API.ShowMsgBox(Localize.pleaseSelectAnItem());
             return;
         }
 
@@ -73,7 +71,7 @@ public partial class SettingsPaneHotkeyViewModel : BaseModel
             o.ActionKeyword == item.ActionKeyword && o.Hotkey == item.Hotkey);
         if (settingItem == null)
         {
-            App.API.ShowMsgBox(App.API.GetTranslation("invalidPluginHotkey"));
+            App.API.ShowMsgBox(Localize.invalidPluginHotkey());
             return;
         }
 
@@ -104,15 +102,13 @@ public partial class SettingsPaneHotkeyViewModel : BaseModel
         var item = SelectedCustomShortcut;
         if (item is null)
         {
-            App.API.ShowMsgBox(App.API.GetTranslation("pleaseSelectAnItem"));
+            App.API.ShowMsgBox(Localize.pleaseSelectAnItem());
             return;
         }
 
         var result = App.API.ShowMsgBox(
-            string.Format(
-                App.API.GetTranslation("deleteCustomShortcutWarning"), item.Key, item.Value
-            ),
-            App.API.GetTranslation("delete"),
+            Localize.deleteCustomShortcutWarning(item.Key, item.Value),
+            Localize.delete(),
             MessageBoxButton.YesNo
         );
 
@@ -128,7 +124,7 @@ public partial class SettingsPaneHotkeyViewModel : BaseModel
         var item = SelectedCustomShortcut;
         if (item is null)
         {
-            App.API.ShowMsgBox(App.API.GetTranslation("pleaseSelectAnItem"));
+            App.API.ShowMsgBox(Localize.pleaseSelectAnItem());
             return;
         }
 
@@ -136,7 +132,7 @@ public partial class SettingsPaneHotkeyViewModel : BaseModel
             o.Key == item.Key && o.Value == item.Value);
         if (settingItem == null)
         {
-            App.API.ShowMsgBox(App.API.GetTranslation("invalidShortcut"));
+            App.API.ShowMsgBox(Localize.invalidShortcut());
             return;
         }
 

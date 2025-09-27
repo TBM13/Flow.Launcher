@@ -135,8 +135,7 @@ namespace Flow.Launcher.ViewModel
                 App.API.LogException(ClassName, $"Failed to create setting panel for {pair.Metadata.Name}", e);
 
                 // Show error message in UI
-                var errorMsg = string.Format(App.API.GetTranslation("errorCreatingSettingPanel"),
-                    pair.Metadata.Name, Environment.NewLine, e.Message);
+                var errorMsg = Localize.errorCreatingSettingPanel(pair.Metadata.Name, Environment.NewLine, e.Message);
                 return CreateErrorSettingPanel(errorMsg);
             }
         }
@@ -145,11 +144,11 @@ namespace Flow.Launcher.ViewModel
             Visibility.Collapsed : Visibility.Visible;
         public string InitializeTime => PluginPair.Metadata.InitTime + "ms";
         public string QueryTime => PluginPair.Metadata.AvgQueryTime + "ms";
-        public string Version => App.API.GetTranslation("plugin_query_version") + " " + PluginPair.Metadata.Version;
+        public string Version => Localize.plugin_query_version() + " " + PluginPair.Metadata.Version;
         public string InitAndQueryTime =>
-            App.API.GetTranslation("plugin_init_time") + " " +
+            Localize.plugin_init_time() + " " +
             PluginPair.Metadata.InitTime + "ms, " +
-            App.API.GetTranslation("plugin_query_time") + " " +
+            Localize.plugin_query_time() + " " +
             PluginPair.Metadata.AvgQueryTime + "ms";
         public string ActionKeywordsText => string.Join(Query.ActionKeywordSeparator, PluginPair.Metadata.ActionKeywords);
         public Infrastructure.UserSettings.Plugin PluginSettingsObject { get; init; }

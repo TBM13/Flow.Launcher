@@ -32,6 +32,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <NoWarn>$(NoWarn);FLSG0007</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -52,12 +53,24 @@
   </ItemGroup>
   
   <ItemGroup>
+    <PackageReference Include="Flow.Launcher.Localization" Version="0.0.6" />
     <PackageReference Include="Meziantou.Framework.Win32.Jobs" Version="3.4.5" />
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
     <PackageReference Include="StreamJsonRpc" Version="2.22.11" />
     <PackageReference Include="YamlDotNet" Version="16.3.0" />
   </ItemGroup>
-  
+
+  <PropertyGroup>
+    <FLLUseDependencyInjection>true</FLLUseDependencyInjection>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Remove="Languages\en.xaml" />
+    <AdditionalFiles Include="..\Flow.Launcher\Languages\en.xaml">
+      <Link>Languages\en.xaml</Link>
+    </AdditionalFiles>
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Flow.Launcher.Infrastructure\Flow.Launcher.Infrastructure.csproj" />
     <ProjectReference Include="..\Flow.Launcher.Plugin\Flow.Launcher.Plugin.csproj" />

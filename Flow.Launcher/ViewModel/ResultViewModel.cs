@@ -31,7 +31,7 @@ namespace Flow.Launcher.ViewModel
                 // Checks if it's a system installed font, which does not require path to be provided.
                 if (glyph.FontFamily.EndsWith(".ttf") || glyph.FontFamily.EndsWith(".otf"))
                 {
-                    string fontFamilyPath = glyph.FontFamily;
+                    var fontFamilyPath = glyph.FontFamily;
 
                     if (!Path.IsPathRooted(fontFamilyPath))
                     {
