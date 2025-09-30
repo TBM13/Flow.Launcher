@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Flow.Launcher.Plugin.SharedCommands;
+using Flow.Launcher.Plugin.Shell.Views;
 using Control = System.Windows.Controls.Control;
 
 namespace Flow.Launcher.Plugin.Shell
@@ -376,6 +377,14 @@ namespace Flow.Launcher.Plugin.Shell
         {
             Context = context;
             _settings = context.API.LoadSettingJsonStorage<Settings>();
+
+            // Since the old Settings class set default value of ShowOnlyMostUsedCMDsNumber to 0 which is a wrong value,
+            // we need to fix it here to make sure the default value is 5
+            // todo: remove this code block after release v2.2.0
+            if (_settings.ShowOnlyMostUsedCMDsNumber == 0)
+            {
+                _settings.ShowOnlyMostUsedCMDsNumber = 5;
+            }
         }
 
         public Control CreateSettingPanel()
