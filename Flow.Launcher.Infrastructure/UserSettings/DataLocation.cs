@@ -35,6 +35,7 @@ namespace Flow.Launcher.Infrastructure.UserSettings
         public static readonly string PluginCacheDirectory = Path.Combine(DataDirectory(), Constant.Cache, Constant.Plugins);
 
         public const string PluginEnvironments = "Environments";
+        public const string PluginDeleteFile = "NeedDelete.txt";
         public static readonly string PluginEnvironmentsPath = Path.Combine(DataDirectory(), PluginEnvironments);
     }
 }
