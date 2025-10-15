@@ -15,6 +15,7 @@ using System.Windows.Threading;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core.Plugin;
+using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Hotkey;
 using Flow.Launcher.Infrastructure.Storage;
@@ -381,18 +382,15 @@ namespace Flow.Launcher.ViewModel
             {
                 // not null means pressing modifier key + number, should ignore the modifier key
                 SpecialKeyState = index is not null ? SpecialKeyState.Default : GlobalHotkey.CheckModifiers()
-            })
-            .ConfigureAwait(false);
-
-            if (QueryResultsSelected())
-            {
-                _userSelectedRecord.Add(result);
-            }
+            }).ConfigureAwait(false);
 
             if (hideWindow)
             {
                 Hide();
             }
+
+            // Record user selected result for result ranking
+            _userSelectedRecord.Add(result);
         }
 
         private static IReadOnlyList<Result> DeepCloneResults(IReadOnlyList<Result> results, CancellationToken token = default)
