@@ -167,6 +167,7 @@ namespace Flow.Launcher
                 // So set to OnExplicitShutdown to prevent the application from shutting down before main window is created
                 Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
+                // Initialize notification system before any notification api is called
                 Notification.Install();
 
                 // Enable Win32 dark mode if the system is in dark mode before creating all windows
@@ -182,19 +183,7 @@ namespace Flow.Launcher
                 RegisterDispatcherUnhandledException();
                 RegisterTaskSchedulerUnhandledException();
 
-                var imageLoadertask = ImageLoader.InitializeAsync();
-
-                PluginManager.LoadPlugins(_settings.PluginSettings);
-
-                // Register ResultsUpdated event after all plugins are loaded
-                Ioc.Default.GetRequiredService<MainViewModel>().RegisterResultsUpdatedEvent();
-
-                await PluginManager.InitializePluginsAsync();
-
-                // Update plugin titles after plugins are initialized with their api instances
-                Internationalization.UpdatePluginMetadataTranslations();
-
-                await imageLoadertask;
+                await ImageLoader.InitializeAsync();
 
                 _mainWindow = new MainWindow();
 
@@ -213,7 +202,28 @@ namespace Flow.Launcher
                 RegisterExitEvents();
 
                 API.SaveAppAllSettings();
-                API.LogInfo(ClassName, "End Flow Launcher startup ----------------------------------------------------");
+                API.LogInfo(ClassName, "End Flow Launcher startup ------------------------------------------------------");
+
+                _ = API.StopwatchLogInfoAsync(ClassName, "Startup cost", async () =>
+                {
+                    API.LogInfo(ClassName, "Begin plugin initialization ----------------------------------------------------");
+
+                    PluginManager.LoadPlugins(_settings.PluginSettings);
+
+                    await PluginManager.InitializePluginsAsync(_mainVM);
+
+                    // Refresh home page after plugins are initialized because users may open main window during plugin initialization
+                    // And home page is created without full plugin list
+                    if (_settings.ShowHomePage && _mainVM.QueryResultsSelected() && string.IsNullOrEmpty(_mainVM.QueryText))
+                    {
+                        _mainVM.QueryResults();
+                    }
+
+                    // Save all settings since we possibly update the plugin environment paths
+                    API.SaveAppAllSettings();
+
+                    API.LogInfo(ClassName, "End plugin initialization ------------------------------------------------------");
+                });
             });
         }
 
