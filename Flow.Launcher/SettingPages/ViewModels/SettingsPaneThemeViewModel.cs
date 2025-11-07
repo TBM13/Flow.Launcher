@@ -39,7 +39,11 @@ public partial class SettingsPaneThemeViewModel : BaseModel
         set
         {
             _selectedTheme = value;
-            App.API.SetCurrentTheme(value);
+            if (!App.API.SetCurrentTheme(value))
+            {
+                // Revert selection if failed to set theme
+                OnPropertyChanged();
+            }
 
             // Update UI state
             OnPropertyChanged(nameof(DropShadowEffect));

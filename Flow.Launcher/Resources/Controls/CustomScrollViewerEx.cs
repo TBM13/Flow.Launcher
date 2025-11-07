@@ -1,13 +1,14 @@
-﻿using iNKORE.UI.WPF.Modern.Controls;
-using iNKORE.UI.WPF.Modern.Controls.Helpers;
-using iNKORE.UI.WPF.Modern.Controls.Primitives;
-using System;
+﻿using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using iNKORE.UI.WPF.Modern.Controls;
+using iNKORE.UI.WPF.Modern.Controls.Helpers;
+using iNKORE.UI.WPF.Modern.Controls.Primitives;
 
 namespace Flow.Launcher.Resources.Controls
 {
+    // TODO: Use IsScrollAnimationEnabled property in future: https://github.com/iNKORE-NET/UI.WPF.Modern/pull/347
     public class CustomScrollViewerEx : ScrollViewer
     {
         private double LastVerticalLocation = 0;
