@@ -60,7 +60,7 @@ namespace Flow.Launcher
             lock (_lock)
             {
                 curItem = (ListBoxItem)sender;
-                var p = e.GetPosition((IInputElement)sender);
+                var p = e.GetPosition(null);
                 _lastpos = p;
             }
         }
@@ -69,10 +69,11 @@ namespace Flow.Launcher
         {
             lock (_lock)
             {
-                var p = e.GetPosition((IInputElement)sender);
-                if (_lastpos != p)
+                var p = e.GetPosition(null);
+                if (_lastpos != p && sender is ListBoxItem item)
                 {
-                    ((ListBoxItem)sender).IsSelected = true;
+                    if (!item.IsSelected)
+                        item.IsSelected = true;
                 }
             }
         }
