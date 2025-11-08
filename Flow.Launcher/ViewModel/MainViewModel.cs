@@ -1064,22 +1064,6 @@ namespace Flow.Launcher.ViewModel
                 else
                 {
                     results = PluginManager.GetContextMenusForPlugin(selected);
-
-                    // To prevent accidental actions, make the topmost (and default) element a simple 'Go back'
-                    results.Insert(0, new()
-                    {
-                        Title = "Go back",
-                        PluginDirectory = Constant.ProgramDirectory,
-                        Action = _ =>
-                        {
-                            SelectedResults = _results;
-                            return false;
-                        },
-                        Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\uF743"),
-                        OriginQuery = selected.OriginQuery
-
-                    });
-
                     results.Add(ContextMenuTopMost(selected));
                 }
 
