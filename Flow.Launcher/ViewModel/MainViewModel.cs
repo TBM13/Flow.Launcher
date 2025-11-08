@@ -1072,7 +1072,7 @@ namespace Flow.Launcher.ViewModel
                         PluginDirectory = Constant.ProgramDirectory,
                         Action = _ =>
                         {
-                            App.API.ReQuery();
+                            SelectedResults = _results;
                             return false;
                         },
                         Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\uF743"),
