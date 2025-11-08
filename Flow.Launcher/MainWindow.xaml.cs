@@ -11,6 +11,7 @@ using System.Windows.Threading;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Resource;
+using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Hotkey;
 using Flow.Launcher.Infrastructure.UserSettings;
@@ -52,6 +53,10 @@ namespace Flow.Launcher
         private HwndSource _hwndSource;
         private int _initialWidth;
         private int _initialHeight;
+
+        // ResultListbox
+        private ScrollViewer _resultListboxScrollviewer;
+        private double _resultListboxVerticalOffset = 0;
 
         // IDisposable
         private bool _disposed = false;
@@ -187,6 +192,21 @@ namespace Flow.Launcher
                             Dispatcher.Invoke(() => QueryTextBox.CaretIndex = QueryTextBox.Text.Length);
                             _viewModel.QueryTextCursorMovedToEnd = false;
                         }
+                        break;
+
+                    case nameof(MainViewModel.SelectedResults):
+                        _resultListboxScrollviewer ??= WpfHelper.FindVisualChild<ScrollViewer>(ResultListBox);
+                        if (_viewModel.QueryResultsSelected())
+                        {
+                            // Restore previous scroll position
+                            _resultListboxScrollviewer.ScrollToVerticalOffset(_resultListboxVerticalOffset);
+                        }
+                        else
+                        {
+                            // Save current scroll position
+                            _resultListboxVerticalOffset = _resultListboxScrollviewer.VerticalOffset;
+                        }
+
                         break;
                 }
             };
