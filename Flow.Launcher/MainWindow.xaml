@@ -313,7 +313,7 @@
                         Grid.Column="0"
                         Grid.ColumnSpan="{Binding DataContext.ResultAreaColumn, ElementName=FlowMainWindow}"
                         VerticalAlignment="Top"
-                        DataContext="{Binding SelectedResults}"
+                        DataContext="{Binding LateSelectedResults}"
                         LeftClickResultCommand="{Binding LeftClickResultCommand}"
                         RightClickResultCommand="{Binding RightClickResultCommand}" />
 

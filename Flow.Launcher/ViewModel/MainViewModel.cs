@@ -143,6 +143,7 @@ namespace Flow.Launcher.ViewModel
                 IsPreviewOn = Settings.AlwaysPreview
             };
             _selectedResults = _results;
+            _lateSelectedResults = _selectedResults;
 
             _results.PropertyChanged += (o, args) =>
             {
@@ -653,14 +654,10 @@ namespace Flow.Launcher.ViewModel
             get => _selectedResults;
             private set
             {
-                var isReturningFromQueryResults = QueryResultsSelected();
                 var isReturningFromContextMenu = ContextMenuSelected();
                 _selectedResults = value;
                 if (QueryResultsSelected())
                 {
-                    _results.Visibility = Visibility.Visible;
-                    _contextMenu.Visibility = Visibility.Collapsed;
-
                     // QueryText setter (used in ChangeQueryText) runs the query again, resetting the selected
                     // result from the one that was selected before going into the context menu to the first result.
                     // The code below correctly restores QueryText and puts the text caret at the end without
@@ -681,19 +678,30 @@ namespace Flow.Launcher.ViewModel
                 }
                 else
                 {
-                    _results.Visibility = Visibility.Collapsed;
-                    _contextMenu.Visibility = Visibility.Visible;
                     _queryTextBeforeLeaveResults = QueryText;
+                    QueryText = string.Empty;
 
                     // Because of Fody's optimization
                     // setter won't be called when property value is not changed.
                     // so we need manually call Query()
                     // http://stackoverflow.com/posts/25895769/revisions
-                    QueryText = string.Empty;
-                    // When we are changing query because selected results are changed to history or context menu,
-                    // we should not delay the query
-                    //Query(false);
+                    if (_queryTextBeforeLeaveResults == string.Empty)
+                        Query(false);
                 }
+
+                // Update LateSelectedResults later so UI doesn't flicker when entering context menu
+                LateSelectedResults = _selectedResults;
+            }
+        }
+
+        private ResultsViewModel _lateSelectedResults;
+        public ResultsViewModel LateSelectedResults
+        {
+            get => _lateSelectedResults;
+            private set
+            {
+                _lateSelectedResults = value;
+                OnPropertyChanged(nameof(LateSelectedResults));
             }
         }
 
