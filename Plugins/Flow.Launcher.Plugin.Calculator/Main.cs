@@ -121,6 +121,13 @@ namespace Flow.Launcher.Plugin.Calculator
                     decimal roundedResult = Math.Round(Convert.ToDecimal(result), _settings.MaxDecimalPlaces, MidpointRounding.AwayFromZero);
                     string newResult = FormatResult(roundedResult);
 
+                    string hex = (roundedResult > long.MaxValue || roundedResult < long.MinValue)
+                        ? string.Empty
+                        : "0x" + ((long)roundedResult).ToString("X");
+                    string subtitle = string.IsNullOrEmpty(hex)
+                        ? string.Empty
+                        : hex + " (CTRL + Click to copy)";
+
                     return
                     [
                         new Result
@@ -128,12 +135,21 @@ namespace Flow.Launcher.Plugin.Calculator
                             Title = newResult,
                             IcoPath = IcoPath,
                             Score = 300,
-                            SubTitle = (roundedResult > long.MaxValue || roundedResult < long.MinValue) ? string.Empty : "0x" + ((long)roundedResult).ToString("X"),
+                            SubTitle = subtitle,
                             CopyText = newResult,
                             Action = c =>
                             {
                                 try
                                 {
+                                    if (c.SpecialKeyState.CtrlPressed)
+                                    {
+                                        if (!string.IsNullOrEmpty(hex))
+                                        {
+                                            Context.API.CopyToClipboard(hex);
+                                            return true;
+                                        }
+                                    }
+
                                     Context.API.CopyToClipboard(newResult);
                                     return true;
                                 }
