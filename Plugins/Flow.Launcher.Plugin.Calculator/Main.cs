@@ -145,12 +145,12 @@ namespace Flow.Launcher.Plugin.Calculator
                                     {
                                         if (!string.IsNullOrEmpty(hex))
                                         {
-                                            Context.API.CopyToClipboard(hex);
+                                            Context.API.CopyToClipboard(hex, showDefaultNotification: false);
                                             return true;
                                         }
                                     }
 
-                                    Context.API.CopyToClipboard(newResult);
+                                    Context.API.CopyToClipboard(newResult, showDefaultNotification: false);
                                     return true;
                                 }
                                 catch (ExternalException)
