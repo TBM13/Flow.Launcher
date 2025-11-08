@@ -150,7 +150,12 @@ namespace Flow.Launcher.Plugin.Calculator
                                         }
                                     }
 
-                                    Context.API.CopyToClipboard(newResult, showDefaultNotification: false);
+                                    // Remove group separators before copying value
+                                    string decimalSeparator = GetDecimalSeparator();
+                                    string groupSeparator = GetGroupSeparator(decimalSeparator);
+                                    string value = newResult.Replace(groupSeparator, "");
+
+                                    Context.API.CopyToClipboard(value, showDefaultNotification: false);
                                     return true;
                                 }
                                 catch (ExternalException)
