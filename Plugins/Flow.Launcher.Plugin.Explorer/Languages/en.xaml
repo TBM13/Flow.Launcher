@@ -83,7 +83,7 @@
 
     <!--  Context menu items  -->
     <system:String x:Key="plugin_explorer_copypath">Copy path</system:String>
-    <system:String x:Key="plugin_explorer_copypath_subtitle">Copy path of current item to clipboard</system:String>
+    <system:String x:Key="plugin_explorer_copypath_subtitle">You can open the containing dir. with CTRL + Click on the result</system:String>
     <system:String x:Key="plugin_explorer_name">Name</system:String>
     <system:String x:Key="plugin_explorer_type">Type</system:String>
     <system:String x:Key="plugin_explorer_path">Path</system:String>
