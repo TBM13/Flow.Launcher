@@ -162,7 +162,7 @@ public static class ServiceHelper
                     break;
                 case Action.Restart:
                     info.FileName = "cmd";
-                    info.Arguments = $"/c sc stop \"{serviceResult.ServiceName}\" && timeout 2 && sc start \"{serviceResult.ServiceName}\"";
+                    info.Arguments = $"/c sc stop \"{serviceResult.ServiceName}\" && timeout 1 && sc start \"{serviceResult.ServiceName}\"";
                     break;
 
                 case Action.Disable:
