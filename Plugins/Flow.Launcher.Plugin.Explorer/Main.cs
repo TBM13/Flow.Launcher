@@ -65,7 +65,6 @@ namespace Flow.Launcher.Plugin.Explorer
                         Title = e.Message,
                         SubTitle = "Enter to copy the message to clipboard",
                         Score = 501,
-                        IcoPath = Constants.GeneralSearchErrorImagePath,
                         AsyncAction =  _ =>
                         {
                             Context.API.CopyToClipboard(e.ToString());

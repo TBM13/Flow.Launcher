@@ -5,16 +5,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
 {
     internal static class Constants
     {
-        internal const string FolderImagePath = "Images\\folder.png";
-        internal const string FileImagePath = "Images\\file.png";
-        internal const string DeleteFileFolderImagePath = "Images\\deletefilefolder.png";
-        internal const string CopyImagePath = "Images\\copy.png";
         internal const string ExplorerIconImagePath = "Images\\explorer.png";
-        internal const string DifferentUserIconImagePath = "Images\\user.png";
-        internal const string QuickAccessImagePath = "Images\\quickaccess.png";
-        internal const string RemoveQuickAccessImagePath = "Images\\removequickaccess.png";
-        internal const string ShowContextMenuImagePath = "Images\\context_menu.png";
-        internal const string GeneralSearchErrorImagePath = "Images\\robot_error.png";
 
         internal const char AllFilesFolderSearchWildcard = '>';
 

@@ -48,7 +48,6 @@ namespace Flow.Launcher.Plugin.Explorer
                     contextMenus.Add(CreateOpenWithMenu(record));
                 }
 
-                var icoPath = (record.Type == ResultType.File) ? Constants.FileImagePath : Constants.FolderImagePath;
                 bool isFile = record.Type == ResultType.File;
 
                 contextMenus.Add(new Result
@@ -69,7 +68,6 @@ namespace Flow.Launcher.Plugin.Explorer
                             return false;
                         }
                     },
-                    IcoPath = Constants.CopyImagePath,
                     Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue8c8")
                 });
 
@@ -91,7 +89,6 @@ namespace Flow.Launcher.Plugin.Explorer
                             return false;
                         }
                     },
-                    IcoPath = Constants.CopyImagePath,
                     Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue8c8")
                 });
 
@@ -113,7 +110,6 @@ namespace Flow.Launcher.Plugin.Explorer
                             return false;
                         }
                     },
-                    IcoPath = icoPath,
                     Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\uf12b")
                 });
 
@@ -155,7 +151,6 @@ namespace Flow.Launcher.Plugin.Explorer
 
                             return true;
                         },
-                        IcoPath = Constants.DeleteFileFolderImagePath,
                         Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue74d")
                     });
 
@@ -164,7 +159,6 @@ namespace Flow.Launcher.Plugin.Explorer
                     contextMenus.Add(new Result()
                     {
                         Title = Localize.plugin_explorer_show_contextmenu_title(),
-                        IcoPath = Constants.ShowContextMenuImagePath,
                         Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue700"),
                         Action = _ =>
                         {
@@ -199,7 +193,6 @@ namespace Flow.Launcher.Plugin.Explorer
 
                             return true;
                         },
-                        IcoPath = Constants.DifferentUserIconImagePath,
                         Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue748"),
                     });
 
@@ -267,7 +260,6 @@ namespace Flow.Launcher.Plugin.Explorer
 
                     return true;
                 },
-                IcoPath = Constants.FolderImagePath,
                 Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue838")
             };
         }
@@ -299,7 +291,6 @@ namespace Flow.Launcher.Plugin.Explorer
                     }
                 },
                 Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue70f"),
-                IcoPath = Constants.FileImagePath
             };
         }
 
@@ -331,8 +322,7 @@ namespace Flow.Launcher.Plugin.Explorer
                         return false;
                     }
                 },
-                Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue756"),
-                IcoPath = Constants.FolderImagePath
+                Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue756")
             };
         }
 
@@ -347,7 +337,6 @@ namespace Flow.Launcher.Plugin.Explorer
                     Process.Start("rundll32.exe", $"{Path.Combine(Environment.SystemDirectory, "shell32.dll")},OpenAs_RunDLL {record.FullPath}");
                     return true;
                 },
-                IcoPath = Constants.ShowContextMenuImagePath,
                 Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue7ac"),
             };
         }
