@@ -143,7 +143,7 @@
     <system:String x:Key="plugin_explorer_diskfreespace">{0} free of {1}</system:String>
     <system:String x:Key="plugin_explorer_openresultfolder">Open in Default File Manager</system:String>
     <system:String x:Key="plugin_explorer_openresultfolder_subtitle">
-        Use '>' to search in this directory, '*' to search for file extensions or '>*' to combine both searches.
+        Use '*' to search in this directory, '>' to search in this and all subdirectories.
     </system:String>
 
     <!--  Everything  -->
