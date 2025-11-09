@@ -67,6 +67,7 @@ namespace Flow.Launcher.Plugin.Explorer
                     contextMenus.Add(new Result()
                     {
                         Title = Localize.plugin_explorer_show_contextmenu_title(),
+                        SubTitle = Localize.plugin_explorer_show_contextmenu_subtitle(),
                         Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue700"),
                         Action = _ =>
                         {
