@@ -75,8 +75,8 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             if (path.EndsWith('\\'))
             {
                 results.Add(path.EndsWith(":\\")
-                    ? ResultManager.CreateDriveSpaceDisplayResult(path)
-                    : ResultManager.CreateOpenCurrentFolderResult(path));
+                    ? ResultManager.CreateDriveSpaceDisplayResult(query, path)
+                    : ResultManager.CreateOpenCurrentFolderResult(query, path));
             }
 
             if (token.IsCancellationRequested)

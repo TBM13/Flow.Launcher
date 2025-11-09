@@ -28,10 +28,14 @@ namespace Flow.Launcher.Plugin.Explorer.Search
 
         public static string GetAutoCompleteText(Query query, string path, ResultType resultType)
         {
-            if (resultType == ResultType.File)
-                return $"{query.ActionKeyword} {path}";
+            string actionKeyword = string.IsNullOrEmpty(query.ActionKeyword)
+                ? string.Empty
+                : query.ActionKeyword + ' ';
 
-            return $"{query.ActionKeyword} {path}" + Constants.DirectorySeparator;
+            if (resultType != ResultType.File && !path.EndsWith(Constants.DirectorySeparator))
+                path += Constants.DirectorySeparator;
+
+            return actionKeyword + path;
         }
 
         public static Result CreateResult(Query query, SearchResult result)
@@ -136,7 +140,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             };
         }
 
-        internal static Result CreateDriveSpaceDisplayResult(string path, int score = 500)
+        internal static Result CreateDriveSpaceDisplayResult(Query query, string path, int score = 500)
         {
             var driveLetter = path[..1].ToUpper();
             DriveInfo drv = new DriveInfo(driveLetter);
@@ -155,7 +159,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             {
                 Title = path,
                 SubTitle = subtitle,
-                AutoCompleteText = path,
+                AutoCompleteText = GetAutoCompleteText(query, path, ResultType.Volume),
                 IcoPath = path,
                 Score = score,
                 Preview = new Result.PreviewInfo
@@ -201,7 +205,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             return returnStr;
         }
 
-        internal static Result CreateOpenCurrentFolderResult(string path)
+        internal static Result CreateOpenCurrentFolderResult(Query query, string path)
         {
             // Path passed from PathSearchAsync ends with Constants.DirectorySeparator ('\'), need to remove the separator
             // so it's consistent with folder results returned by index search which does not end with one
@@ -211,7 +215,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             {
                 Title = Localize.plugin_explorer_openresultfolder(),
                 SubTitle = Localize.plugin_explorer_openresultfolder_subtitle(),
-                AutoCompleteText = folderPath,
+                AutoCompleteText = GetAutoCompleteText(query, path, ResultType.Folder),
                 IcoPath = folderPath,
                 Score = 500,
                 CopyText = folderPath,
