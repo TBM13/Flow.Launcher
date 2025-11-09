@@ -7,14 +7,7 @@
     <system:String x:Key="plugin_explorer_make_selection_warning">Please make a selection first</system:String>
     <system:String x:Key="plugin_explorer_quick_access_link_no_folder_selected">Please select a folder path.</system:String>
     <system:String x:Key="plugin_explorer_quick_access_link_path_already_exists">Please choose a different name or folder path.</system:String>
-    <system:String x:Key="plugin_explorer_delete_quick_access_link">Are you sure you want to delete this quick access link?</system:String>
-    <system:String x:Key="plugin_explorer_delete_index_search_excluded_path">Are you sure you want to delete this index search excluded path?</system:String>
     <system:String x:Key="plugin_explorer_select_folder_link_warning">Please select a folder link</system:String>
-    <system:String x:Key="plugin_explorer_delete_folder_link">Are you sure you want to delete {0}?</system:String>
-    <system:String x:Key="plugin_explorer_deletefileconfirm">Are you sure you want to permanently delete this file?</system:String>
-    <system:String x:Key="plugin_explorer_deletefilefolderconfirm">Are you sure you want to permanently delete this file/folder?</system:String>
-    <system:String x:Key="plugin_explorer_deletefilefoldersuccess">Deletion successful</system:String>
-    <system:String x:Key="plugin_explorer_deletefilefoldersuccess_detail">Successfully deleted {0}</system:String>
     <system:String x:Key="plugin_explorer_globalActionKeywordInvalid">Assigning the global action keyword could bring up too many results during search. Please choose a specific action keyword</system:String>
     <system:String x:Key="plugin_explorer_quickaccess_globalActionKeywordInvalid">Quick Access can not be set to the global action keyword when enabled. Please choose a specific action keyword</system:String>
     <system:String x:Key="plugin_explorer_windowsSearchServiceNotRunning">The required service for Windows Index Search does not appear to be running</system:String>
@@ -27,7 +20,6 @@
     <system:String x:Key="plugin_explorer_new_action_keyword_assigned">This new action keyword is already assigned to another plugin, please choose a different one</system:String>
 
     <!--  Controls  -->
-    <system:String x:Key="plugin_explorer_delete">Delete</system:String>
     <system:String x:Key="plugin_explorer_edit">Edit</system:String>
     <system:String x:Key="plugin_explorer_add">Add</system:String>
     <system:String x:Key="plugin_explorer_generalsetting_header">General Setting</system:String>
@@ -92,24 +84,13 @@
     <!--  Context menu items  -->
     <system:String x:Key="plugin_explorer_copypath">Copy path</system:String>
     <system:String x:Key="plugin_explorer_copypath_subtitle">Copy path of current item to clipboard</system:String>
-    <system:String x:Key="plugin_explorer_copyname">Copy name</system:String>
-    <system:String x:Key="plugin_explorer_copyname_subtitle">Copy name of current item to clipboard</system:String>
-    <system:String x:Key="plugin_explorer_copyfilefolder">Copy</system:String>
-    <system:String x:Key="plugin_explorer_copyfile_subtitle">Copy current file to clipboard</system:String>
-    <system:String x:Key="plugin_explorer_copyfolder_subtitle">Copy current folder to clipboard</system:String>
-    <system:String x:Key="plugin_explorer_deletefilefolder">Delete</system:String>
-    <system:String x:Key="plugin_explorer_deletefile_subtitle">Permanently delete current file</system:String>
-    <system:String x:Key="plugin_explorer_deletefolder_subtitle">Permanently delete current folder</system:String>
     <system:String x:Key="plugin_explorer_name">Name</system:String>
     <system:String x:Key="plugin_explorer_type">Type</system:String>
     <system:String x:Key="plugin_explorer_path">Path</system:String>
     <system:String x:Key="plugin_explorer_file">File</system:String>
     <system:String x:Key="plugin_explorer_folder">Folder</system:String>
-    <system:String x:Key="plugin_explorer_deletefilefolder_subtitle">Delete the selected</system:String>
     <system:String x:Key="plugin_explorer_runasdifferentuser">Run as different user</system:String>
     <system:String x:Key="plugin_explorer_runasdifferentuser_subtitle">Run the selected using a different user account</system:String>
-    <system:String x:Key="plugin_explorer_opencontainingfolder">Open containing folder</system:String>
-    <system:String x:Key="plugin_explorer_opencontainingfolder_subtitle">Open the location that contains current item</system:String>
     <system:String x:Key="plugin_explorer_openwitheditor">Open With Editor:</system:String>
     <system:String x:Key="plugin_explorer_openwitheditor_error">Failed to open file at {0} with Editor {1} at {2}</system:String>
     <system:String x:Key="plugin_explorer_openwithshell">Open With Shell:</system:String>

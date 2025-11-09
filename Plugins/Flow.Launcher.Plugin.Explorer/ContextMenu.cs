@@ -30,26 +30,6 @@ namespace Flow.Launcher.Plugin.Explorer
             var contextMenus = new List<Result>();
             if (selectedResult.ContextData is SearchResult record)
             {
-                if (record.Type == ResultType.File && !string.IsNullOrEmpty(Settings.EditorPath))
-                    contextMenus.Add(CreateOpenWithEditorResult(record, Settings.EditorPath));
-
-                if ((record.Type == ResultType.Folder || record.Type == ResultType.Volume) && !string.IsNullOrEmpty(Settings.FolderEditorPath))
-                    contextMenus.Add(CreateOpenWithEditorResult(record, Settings.FolderEditorPath));
-
-                if (record.Type == ResultType.Folder)
-                {
-                    contextMenus.Add(CreateOpenWithShellResult(record));
-                }
-
-                contextMenus.Add(CreateOpenContainingFolderResult(record));
-
-                if (record.Type == ResultType.File)
-                {
-                    contextMenus.Add(CreateOpenWithMenu(record));
-                }
-
-                bool isFile = record.Type == ResultType.File;
-
                 contextMenus.Add(new Result
                 {
                     Title = Localize.plugin_explorer_copypath(),
@@ -58,7 +38,7 @@ namespace Flow.Launcher.Plugin.Explorer
                     {
                         try
                         {
-                            Context.API.CopyToClipboard(record.FullPath);
+                            Context.API.CopyToClipboard(record.FullPath, showDefaultNotification: false);
                             return true;
                         }
                         catch (Exception e)
@@ -71,88 +51,16 @@ namespace Flow.Launcher.Plugin.Explorer
                     Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue8c8")
                 });
 
-                contextMenus.Add(new Result
-                {
-                    Title = Localize.plugin_explorer_copyname(),
-                    SubTitle = Localize.plugin_explorer_copyname_subtitle(),
-                    Action = _ =>
-                    {
-                        try
-                        {
-                            Context.API.CopyToClipboard(Path.GetFileName(record.FullPath));
-                            return true;
-                        }
-                        catch (Exception e)
-                        {
-                            LogException("Fail to set text in clipboard", e);
-                            Context.API.ShowMsgError(Localize.plugin_explorer_fail_to_set_text());
-                            return false;
-                        }
-                    },
-                    Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue8c8")
-                });
+                if (record.Type == ResultType.File && !string.IsNullOrEmpty(Settings.EditorPath))
+                    contextMenus.Add(CreateOpenWithEditorResult(record, Settings.EditorPath));
 
-                contextMenus.Add(new Result
-                {
-                    Title = Localize.plugin_explorer_copyfilefolder(),
-                    SubTitle = isFile ? Localize.plugin_explorer_copyfile_subtitle() : Localize.plugin_explorer_copyfolder_subtitle(),
-                    Action = _ =>
-                    {
-                        try
-                        {
-                            Context.API.CopyToClipboard(record.FullPath, directCopy: true);
-                            return true;
-                        }
-                        catch (Exception e)
-                        {
-                            LogException($"Fail to set file/folder in clipboard", e);
-                            Context.API.ShowMsgError(Localize.plugin_explorer_fail_to_set_files());
-                            return false;
-                        }
-                    },
-                    Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\uf12b")
-                });
+                if ((record.Type == ResultType.Folder || record.Type == ResultType.Volume) && !string.IsNullOrEmpty(Settings.FolderEditorPath))
+                    contextMenus.Add(CreateOpenWithEditorResult(record, Settings.FolderEditorPath));
 
-                if (record.Type is ResultType.File or ResultType.Folder)
-                    contextMenus.Add(new Result
-                    {
-                        Title = Localize.plugin_explorer_deletefilefolder(),
-                        SubTitle = isFile ? Localize.plugin_explorer_deletefile_subtitle() : Localize.plugin_explorer_deletefolder_subtitle(),
-                        Action = (context) =>
-                        {
-                            try
-                            {
-                                if (Context.API.ShowMsgBox(
-                                        Localize.plugin_explorer_delete_folder_link(record.FullPath),
-                                        Localize.plugin_explorer_deletefilefolder(),
-                                        MessageBoxButton.OKCancel,
-                                        MessageBoxImage.Warning)
-                                    == MessageBoxResult.Cancel)
-                                    return false;
-
-                                if (isFile)
-                                    File.Delete(record.FullPath);
-                                else
-                                    Directory.Delete(record.FullPath, true);
-
-                                _ = Task.Run(() =>
-                                {
-                                    Context.API.ShowMsg(Localize.plugin_explorer_deletefilefoldersuccess(),
-                                        Localize.plugin_explorer_deletefilefoldersuccess_detail(record.FullPath),
-                                        Constants.ExplorerIconImageFullPath);
-                                });
-                            }
-                            catch (Exception e)
-                            {
-                                LogException($"Fail to delete {record.FullPath}", e);
-                                Context.API.ShowMsgError(Localize.plugin_explorer_fail_to_delete(record.FullPath));
-                                return false;
-                            }
-
-                            return true;
-                        },
-                        Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue74d")
-                    });
+                if (record.Type == ResultType.Folder)
+                    contextMenus.Add(CreateOpenWithShellResult(record));
+                else if (record.Type == ResultType.File)
+                    contextMenus.Add(CreateOpenWithMenu(record));
 
                 if (record.Type is not ResultType.Volume)
                 {
@@ -237,31 +145,6 @@ namespace Flow.Launcher.Plugin.Explorer
             }
 
             return contextMenus;
-        }
-
-        private Result CreateOpenContainingFolderResult(SearchResult record)
-        {
-            return new Result
-            {
-                Title = Localize.plugin_explorer_opencontainingfolder(),
-                SubTitle = Localize.plugin_explorer_opencontainingfolder_subtitle(),
-                Action = _ =>
-                {
-                    try
-                    {
-                        Context.API.OpenDirectory(Path.GetDirectoryName(record.FullPath), record.FullPath);
-                    }
-                    catch (Exception e)
-                    {
-                        LogException($"Fail to open file at {record.FullPath}", e);
-                        Context.API.ShowMsgError(Localize.plugin_explorer_fail_to_open(record.FullPath));
-                        return false;
-                    }
-
-                    return true;
-                },
-                Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue838")
-            };
         }
 
         private Result CreateOpenWithEditorResult(SearchResult record, string editorPath)
