@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.ServiceProcess;
 using Microsoft.Win32;
 
@@ -132,6 +133,19 @@ public static class ServiceHelper
                 SubTitle = GetResultSubTitle(s),
                 ContextData = serviceResult,
                 Glyph = glyph,
+                Action = c =>
+                {
+                    try
+                    {
+                        Main.Context.API.CopyToClipboard(s.ServiceName, showDefaultNotification: false);
+                        return true;
+                    }
+                    catch (ExternalException)
+                    {
+                        Main.Context.API.ShowMsgBox("Failed to copy service name to clipboard.");
+                        return false;
+                    }
+                }
             };
         }).Where(s => s != null);
 

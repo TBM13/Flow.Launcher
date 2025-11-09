@@ -7,11 +7,11 @@ namespace Flow.Launcher.Plugin.WindowsServices;
 
 public class Main : IPlugin, IContextMenu
 {
-    private static PluginInitContext _context;
+    internal static PluginInitContext Context { get; private set; }
 
     public void Init(PluginInitContext context)
     {
-        _context = context;
+        Context = context;
     }
 
     public List<Result> Query(Query query)
@@ -27,7 +27,7 @@ public class Main : IPlugin, IContextMenu
         }
         catch (Exception e)
         {
-            _context.API.ShowMsgError("Failed to change startup type", e.ToString());
+            Context.API.ShowMsgError("Failed to change startup type", e.ToString());
             return false;
         }
 
@@ -39,12 +39,12 @@ public class Main : IPlugin, IContextMenu
             }
             catch (Exception e)
             {
-                _context.API.ShowMsgError("Failed to start service", e.ToString());
+                Context.API.ShowMsgError("Failed to start service", e.ToString());
                 return false;
             }
         }
 
-        _context.API.ReQuery();
+        Context.API.ReQuery();
         return true;
     }
 
@@ -56,7 +56,7 @@ public class Main : IPlugin, IContextMenu
         }
         catch (Exception e)
         {
-            _context.API.ShowMsgError("Failed to change startup type", e.ToString());
+            Context.API.ShowMsgError("Failed to change startup type", e.ToString());
             return false;
         }
 
@@ -68,12 +68,12 @@ public class Main : IPlugin, IContextMenu
             }
             catch (Exception e)
             {
-                _context.API.ShowMsgError("Failed to stop service", e.ToString());
+                Context.API.ShowMsgError("Failed to stop service", e.ToString());
                 return false;
             }
         }
 
-        _context.API.ReQuery();
+        Context.API.ReQuery();
         return true;
     }
 
@@ -98,11 +98,11 @@ public class Main : IPlugin, IContextMenu
                         }
                         catch (Exception e)
                         {
-                            _context.API.ShowMsgError("Failed to restart service", e.ToString());
+                            Context.API.ShowMsgError("Failed to restart service", e.ToString());
                             return false;
                         }
 
-                        _context.API.ReQuery();
+                        Context.API.ReQuery();
                         return true;
                     }
                 });
@@ -120,11 +120,11 @@ public class Main : IPlugin, IContextMenu
                     }
                     catch (Exception e)
                     {
-                        _context.API.ShowMsgError("Failed to stop service", e.ToString());
+                        Context.API.ShowMsgError("Failed to stop service", e.ToString());
                         return false;
                     }
 
-                    _context.API.ReQuery();
+                    Context.API.ReQuery();
                     return true;
                 }
             });
@@ -143,11 +143,11 @@ public class Main : IPlugin, IContextMenu
                     }
                     catch (Exception e)
                     {
-                        _context.API.ShowMsgError("Failed to start service", e.ToString());
+                        Context.API.ShowMsgError("Failed to start service", e.ToString());
                         return false;
                     }
 
-                    _context.API.ReQuery();
+                    Context.API.ReQuery();
                     return true;
                 }
             });
