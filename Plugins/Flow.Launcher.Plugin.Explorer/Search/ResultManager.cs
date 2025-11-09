@@ -138,7 +138,6 @@ namespace Flow.Launcher.Plugin.Explorer.Search
 
         internal static Result CreateDriveSpaceDisplayResult(string path, int score = 500)
         {
-            var title = string.Empty; // hide title when use progress bar,
             var driveLetter = path[..1].ToUpper();
             DriveInfo drv = new DriveInfo(driveLetter);
             var freespace = ToReadableSize(drv.AvailableFreeSpace, 2);
@@ -154,7 +153,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
 
             return new Result
             {
-                Title = title,
+                Title = path,
                 SubTitle = subtitle,
                 AutoCompleteText = path,
                 IcoPath = path,

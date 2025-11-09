@@ -72,11 +72,12 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             if (!FilesFolders.ReturnPreviousDirectoryIfIncompleteString(path).LocationExists())
                 return [.. results];
 
-            var retrievedDirectoryPath = FilesFolders.ReturnPreviousDirectoryIfIncompleteString(path);
-
-            results.Add(retrievedDirectoryPath.EndsWith(":\\")
-                ? ResultManager.CreateDriveSpaceDisplayResult(retrievedDirectoryPath)
-                : ResultManager.CreateOpenCurrentFolderResult(retrievedDirectoryPath));
+            if (path.EndsWith('\\'))
+            {
+                results.Add(path.EndsWith(":\\")
+                    ? ResultManager.CreateDriveSpaceDisplayResult(path)
+                    : ResultManager.CreateOpenCurrentFolderResult(path));
+            }
 
             if (token.IsCancellationRequested)
                 return [];
