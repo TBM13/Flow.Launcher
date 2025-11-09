@@ -19,8 +19,6 @@
 
         public string WindowsContextMenuExcludedItems { get; set; } = string.Empty;
 
-        public bool DisplayMoreInformationInToolTip { get; set; } = false;
-
         public bool ShowFileSizeInPreviewPanel { get; set; } = true;
 
         public bool ShowCreatedDateInPreviewPanel { get; set; } = true;

@@ -155,15 +155,6 @@
                     Content="{DynamicResource plugin_explorer_use_location_as_working_dir}"
                     IsChecked="{Binding Settings.UseLocationAsWorkingDir}" />
 
-                <CheckBox
-                    Grid.Row="2"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    Margin="{StaticResource SettingPanelItemTopBottomMargin}"
-                    HorizontalAlignment="Left"
-                    Content="{DynamicResource plugin_explorer_display_more_info_in_tooltip}"
-                    IsChecked="{Binding Settings.DisplayMoreInformationInToolTip}" />
-
                 <TextBlock
                     Grid.Row="3"
                     Grid.Column="0"
