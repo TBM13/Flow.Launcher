@@ -141,24 +141,24 @@ public static class ServiceHelper
         {
             var info = new ProcessStartInfo
             {
-                FileName = "net",
+                FileName = "sc",
                 Verb = "runas",
                 UseShellExecute = true,
                 WindowStyle = ProcessWindowStyle.Hidden,
             };
 
-            if (action == Action.Start)
+            switch (action)
             {
+                case Action.Start:
                 info.Arguments = $"start \"{serviceResult.ServiceName}\"";
-            }
-            else if (action == Action.Stop)
-            {
+                    break;
+                case Action.Stop:
                 info.Arguments = $"stop \"{serviceResult.ServiceName}\"";
-            }
-            else if (action == Action.Restart)
-            {
+                    break;
+                case Action.Restart:
                 info.FileName = "cmd";
-                info.Arguments = $"/c net stop \"{serviceResult.ServiceName}\" && net start \"{serviceResult.ServiceName}\"";
+                    info.Arguments = $"/c sc stop \"{serviceResult.ServiceName}\" && timeout 2 && sc start \"{serviceResult.ServiceName}\"";
+                    break;
             }
 
             var process = Process.Start(info);
