@@ -46,12 +46,14 @@ public class Main : IPlugin, IContextMenu
                     Action = (c) => {
                         try {
                             ServiceHelper.ChangeStatus(service, Action.Start);
-                            return true;
                         }
                         catch (Exception e) {
                             _context.API.ShowMsgError("Failed to start service", e.ToString());
                             return false;
                         }
+
+                        _context.API.ReQuery();
+                        return true;
                     }
                 }
             ];
@@ -66,12 +68,14 @@ public class Main : IPlugin, IContextMenu
                 Action = (c) => {
                     try {
                         ServiceHelper.ChangeStatus(service, Action.Restart);
-                        return true;
                     }
                     catch (Exception e) {
                         _context.API.ShowMsgError("Failed to restart service", e.ToString());
                         return false;
                     }
+
+                    _context.API.ReQuery();
+                    return true;
                 }
             },
 
@@ -82,12 +86,14 @@ public class Main : IPlugin, IContextMenu
                 Action = (c) => {
                     try {
                         ServiceHelper.ChangeStatus(service, Action.Stop);
-                        return true;
                     }
                     catch (Exception e) {
                         _context.API.ShowMsgError("Failed to stop service", e.ToString());
                         return false;
                     }
+
+                    _context.API.ReQuery();
+                    return true;
                 }
             }
         ];
