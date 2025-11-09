@@ -30,8 +30,7 @@ namespace Flow.Launcher.Plugin.ProcessKiller
             "wininit",
             "winlogon",
             "services",
-            "spoolsv",
-            "explorer"
+            "spoolsv"
         ];
 
         private const string FlowLauncherProcessName = "Flow.Launcher";
