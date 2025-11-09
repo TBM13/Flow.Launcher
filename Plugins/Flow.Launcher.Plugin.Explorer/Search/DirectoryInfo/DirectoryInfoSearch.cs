@@ -63,12 +63,11 @@ namespace Flow.Launcher.Plugin.Explorer.Search.DirectoryInfo
                         FullPath = fileSystemInfo.FullName,
                         Type = fileSystemInfo switch
                         {
-                            System.IO.DirectoryInfo {Parent: null} => ResultType.Volume,
+                            System.IO.DirectoryInfo { Parent: null } => ResultType.Volume,
                             System.IO.DirectoryInfo => ResultType.Folder,
                             FileInfo => ResultType.File,
                             _ => throw new ArgumentOutOfRangeException(nameof(fileSystemInfo))
                         },
-                        WindowsIndexed = false
                     });
 
                     if (token.IsCancellationRequested)
@@ -78,12 +77,12 @@ namespace Flow.Launcher.Plugin.Explorer.Search.DirectoryInfo
             catch (Exception e)
             {
                 Main.Context.API.LogException(ClassName, "Error occurred while searching path", e);
-                
+
                 throw;
             }
 
             // Initial ordering, this order can be updated later by UpdateResultView.MainViewModel based on history of user selection.
-            return results.OrderBy(r=>r.Type).ThenBy(r=>r.FullPath);
+            return results.OrderBy(r => r.Type).ThenBy(r => r.FullPath);
         }
     }
 }

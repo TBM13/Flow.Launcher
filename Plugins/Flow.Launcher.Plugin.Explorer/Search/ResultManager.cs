@@ -63,9 +63,9 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             return result.Type switch
             {
                 ResultType.Folder or ResultType.Volume =>
-                    CreateFolderResult(Path.GetFileName(result.FullPath), result.FullPath, result.FullPath, query, result.Score, result.WindowsIndexed),
+                    CreateFolderResult(Path.GetFileName(result.FullPath), result.FullPath, result.FullPath, query, result.Score),
                 ResultType.File =>
-                    CreateFileResult(result.FullPath, query, result.Score, result.WindowsIndexed),
+                    CreateFileResult(result.FullPath, query, result.Score),
                 _ => throw new ArgumentOutOfRangeException(null)
             };
         }
@@ -91,7 +91,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             }
         }
 
-        internal static Result CreateFolderResult(string title, string subtitle, string path, Query query, int score = 0, bool windowsIndexed = false)
+        internal static Result CreateFolderResult(string title, string subtitle, string path, Query query, int score = 0)
         {
             return new Result
             {
@@ -167,23 +167,17 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 Score = score,
                 TitleToolTip = Localize.plugin_explorer_plugin_ToolTipOpenDirectory(),
                 SubTitleToolTip = Settings.DisplayMoreInformationInToolTip ? GetFolderMoreInfoTooltip(path) : path,
-                ContextData = new SearchResult { Type = ResultType.Folder, FullPath = path, WindowsIndexed = windowsIndexed }
+                ContextData = new SearchResult { Type = ResultType.Folder, FullPath = path }
             };
+        }
+
+        internal static Result CreateDriveSpaceDisplayResult(string path, string actionKeyword)
+        {
+            return CreateDriveSpaceDisplayResult(path, actionKeyword, 500);
         }
 
         internal static Result CreateDriveSpaceDisplayResult(string path, string actionKeyword, int score)
         {
-            return CreateDriveSpaceDisplayResult(path, actionKeyword, score, SearchManager.UseIndexSearch(path));
-        }
-
-        internal static Result CreateDriveSpaceDisplayResult(string path, string actionKeyword, bool windowsIndexed = false)
-        {
-            return CreateDriveSpaceDisplayResult(path, actionKeyword, 500, windowsIndexed);
-        }
-
-        private static Result CreateDriveSpaceDisplayResult(string path, string actionKeyword, int score, bool windowsIndexed = false)
-        {
-            var progressBarColor = "#26a0da";
             var title = string.Empty; // hide title when use progress bar,
             var driveLetter = path[..1].ToUpper();
             DriveInfo drv = new DriveInfo(driveLetter);
@@ -193,9 +187,6 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             double usingSize = (Convert.ToDouble(drv.TotalSize) - Convert.ToDouble(drv.AvailableFreeSpace)) / Convert.ToDouble(drv.TotalSize) * 100;
 
             int? progressValue = Convert.ToInt32(usingSize);
-
-            if (progressValue >= 90)
-                progressBarColor = "#da2626";
 
             var tooltip = Settings.DisplayMoreInformationInToolTip
                 ? GetVolumeMoreInfoTooltip(path, freespace, totalspace)
@@ -219,7 +210,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 },
                 TitleToolTip = tooltip,
                 SubTitleToolTip = tooltip,
-                ContextData = new SearchResult { Type = ResultType.Volume, FullPath = path, WindowsIndexed = windowsIndexed }
+                ContextData = new SearchResult { Type = ResultType.Volume, FullPath = path }
             };
         }
 
@@ -251,7 +242,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             return returnStr;
         }
 
-        internal static Result CreateOpenCurrentFolderResult(string path, string actionKeyword, bool windowsIndexed = false)
+        internal static Result CreateOpenCurrentFolderResult(string path, string actionKeyword)
         {
             // Path passed from PathSearchAsync ends with Constants.DirectorySeparator ('\'), need to remove the separator
             // so it's consistent with folder results returned by index search which does not end with one
@@ -275,11 +266,11 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                     OpenFolder(folderPath);
                     return true;
                 },
-                ContextData = new SearchResult { Type = ResultType.Folder, FullPath = folderPath, WindowsIndexed = windowsIndexed }
+                ContextData = new SearchResult { Type = ResultType.Folder, FullPath = folderPath }
             };
         }
 
-        internal static Result CreateFileResult(string filePath, Query query, int score = 0, bool windowsIndexed = false)
+        internal static Result CreateFileResult(string filePath, Query query, int score = 0)
         {
             var isMedia = IsMedia(Path.GetExtension(filePath));
             var title = Path.GetFileName(filePath) ?? string.Empty;
@@ -334,7 +325,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 },
                 TitleToolTip = Localize.plugin_explorer_plugin_ToolTipOpenContainingFolder(),
                 SubTitleToolTip = Settings.DisplayMoreInformationInToolTip ? GetFileMoreInfoTooltip(filePath) : filePath,
-                ContextData = new SearchResult { Type = ResultType.File, FullPath = filePath, WindowsIndexed = windowsIndexed }
+                ContextData = new SearchResult { Type = ResultType.File, FullPath = filePath }
             };
             return result;
         }

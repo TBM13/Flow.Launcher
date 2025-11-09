@@ -50,9 +50,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             // This allows the user to type the below action keywords and see/search the list of quick folder links
             if (ActionKeywordMatch(query, Settings.ActionKeyword.SearchActionKeyword)
                 || ActionKeywordMatch(query, Settings.ActionKeyword.QuickAccessActionKeyword)
-                || ActionKeywordMatch(query, Settings.ActionKeyword.PathSearchActionKeyword)
-                || ActionKeywordMatch(query, Settings.ActionKeyword.IndexSearchActionKeyword)
-                || ActionKeywordMatch(query, Settings.ActionKeyword.FileContentSearchActionKeyword))
+                || ActionKeywordMatch(query, Settings.ActionKeyword.PathSearchActionKeyword))
             {
                 if (string.IsNullOrEmpty(query.Search) && ActionKeywordMatch(query, Settings.ActionKeyword.QuickAccessActionKeyword))
                     return QuickAccess.AccessLinkListAll(query, Settings.QuickAccessLinks);
@@ -63,13 +61,9 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 return new List<Result>();
             }
 
-            IAsyncEnumerable<SearchResult> searchResults;
-
             bool isPathSearch = query.Search.IsLocationPathString()
                 || EnvironmentVariables.IsEnvironmentVariableSearch(query.Search)
                 || EnvironmentVariables.HasEnvironmentVar(query.Search);
-
-            string engineName;
 
             switch (isPathSearch)
             {
@@ -81,21 +75,6 @@ namespace Flow.Launcher.Plugin.Explorer.Search
 
                     return results.ToList();
 
-                case false
-                    when ActionKeywordMatch(query, Settings.ActionKeyword.FileContentSearchActionKeyword):
-
-                    searchResults = Settings.ContentIndexProvider.ContentSearchAsync("", query.Search, token);
-                    engineName = Enum.GetName(Settings.ContentSearchEngine);
-                    break;
-
-                case false
-                    when ActionKeywordMatch(query, Settings.ActionKeyword.IndexSearchActionKeyword)
-                         || ActionKeywordMatch(query, Settings.ActionKeyword.SearchActionKeyword):
-
-                    searchResults = Settings.IndexProvider.SearchAsync(query.Search, token);
-                    engineName = Enum.GetName(Settings.IndexSearchEngine);
-                    break;
-
                 case true or false
                     when ActionKeywordMatch(query, Settings.ActionKeyword.QuickAccessActionKeyword):
                     return QuickAccess.AccessLinkListMatched(query, Settings.QuickAccessLinks);
@@ -103,39 +82,6 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 default:
                     return results.ToList();
             }
-
-            // Merge Quick Access Link results for non-path searches.
-            results.UnionWith(QuickAccess.AccessLinkListMatched(query, Settings.QuickAccessLinks));
-
-            try
-            {
-                await foreach (var search in searchResults.WithCancellation(token).ConfigureAwait(false))
-                    if (search.Type == ResultType.File && IsExcludedFile(search))
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        results.Add(ResultManager.CreateResult(query, search));
-                    }
-            }
-            catch (OperationCanceledException)
-            {
-                return new List<Result>();
-            }
-            catch (EngineNotAvailableException)
-            {
-                throw;
-            }
-            catch (Exception e)
-            {
-                throw new SearchException(engineName, e.Message, e);
-            }
-
-            results.RemoveWhere(r => Settings.IndexSearchExcludedSubdirectoryPaths.Any(
-                excludedPath => FilesFolders.PathContains(excludedPath.Path, r.SubTitle, allowEqual: true)));
-
-            return results.ToList();
         }
 
         private bool ActionKeywordMatch(Query query, Settings.ActionKeyword allowedActionKeyword)
@@ -148,10 +94,6 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                                                               keyword == Settings.SearchActionKeyword,
                 Settings.ActionKeyword.PathSearchActionKeyword => Settings.PathSearchKeywordEnabled &&
                                                                   keyword == Settings.PathSearchActionKeyword,
-                Settings.ActionKeyword.FileContentSearchActionKeyword => Settings.FileContentSearchKeywordEnabled &&
-                                                                         keyword == Settings.FileContentSearchActionKeyword,
-                Settings.ActionKeyword.IndexSearchActionKeyword => Settings.IndexSearchKeywordEnabled &&
-                                                                   keyword == Settings.IndexSearchActionKeyword,
                 Settings.ActionKeyword.QuickAccessActionKeyword => Settings.QuickAccessKeywordEnabled &&
                                                                    keyword == Settings.QuickAccessActionKeyword,
                 _ => throw new ArgumentOutOfRangeException(nameof(allowedActionKeyword), allowedActionKeyword, "actionKeyword out of range")
@@ -178,14 +120,11 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             if (!FilesFolders.ReturnPreviousDirectoryIfIncompleteString(path).LocationExists())
                 return results.ToList();
 
-            var useIndexSearch = Settings.IndexSearchEngine is Settings.IndexSearchEngineOption.WindowsIndex
-                                 && UseWindowsIndexForDirectorySearch(path);
-
             var retrievedDirectoryPath = FilesFolders.ReturnPreviousDirectoryIfIncompleteString(path);
 
             results.Add(retrievedDirectoryPath.EndsWith(":\\")
-                ? ResultManager.CreateDriveSpaceDisplayResult(retrievedDirectoryPath, query.ActionKeyword, useIndexSearch)
-                : ResultManager.CreateOpenCurrentFolderResult(retrievedDirectoryPath, query.ActionKeyword, useIndexSearch));
+                ? ResultManager.CreateDriveSpaceDisplayResult(retrievedDirectoryPath, query.ActionKeyword)
+                : ResultManager.CreateOpenCurrentFolderResult(retrievedDirectoryPath, query.ActionKeyword));
 
             if (token.IsCancellationRequested)
                 return new List<Result>();
@@ -194,20 +133,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
 
             var recursiveIndicatorIndex = path.IndexOf('>');
 
-            if (recursiveIndicatorIndex > 0 && Settings.PathEnumerationEngine != Settings.PathEnumerationEngineOption.DirectEnumeration)
-            {
-                directoryResult =
-                    Settings.PathEnumerator.EnumerateAsync(
-                        path[..recursiveIndicatorIndex].Trim(),
-                        path[(recursiveIndicatorIndex + 1)..],
-                        true,
-                        token);
-
-            }
-            else
-            {
-                directoryResult = DirectoryInfoSearch.TopLevelDirectorySearch(query, path, token).ToAsyncEnumerable();
-            }
+            directoryResult = DirectoryInfoSearch.TopLevelDirectorySearch(query, path, token).ToAsyncEnumerable();
 
             if (token.IsCancellationRequested)
                 return new List<Result>();
@@ -221,35 +147,11 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             }
             catch (Exception e)
             {
-                throw new SearchException(Enum.GetName(Settings.PathEnumerationEngine), e.Message, e);
+                throw new SearchException(e.Message, e);
             }
 
 
             return results.ToList();
-        }
-
-        public bool IsFileContentSearch(string actionKeyword) => actionKeyword == Settings.FileContentSearchActionKeyword;
-
-        public static bool UseIndexSearch(string path)
-        {
-            if (Main.Settings.IndexSearchEngine is not Settings.IndexSearchEngineOption.WindowsIndex)
-                return false;
-
-            // Check if the path is using windows index search
-            var pathToDirectory = FilesFolders.ReturnPreviousDirectoryIfIncompleteString(path);
-
-            return !Main.Settings.IndexSearchExcludedSubdirectoryPaths.Any(
-                       x => FilesFolders.ReturnPreviousDirectoryIfIncompleteString(pathToDirectory).StartsWith(x.Path, StringComparison.OrdinalIgnoreCase))
-                   && WindowsIndex.WindowsIndex.PathIsIndexed(pathToDirectory);
-        }
-
-        private bool UseWindowsIndexForDirectorySearch(string locationPath)
-        {
-            var pathToDirectory = FilesFolders.ReturnPreviousDirectoryIfIncompleteString(locationPath);
-
-            return !Settings.IndexSearchExcludedSubdirectoryPaths.Any(
-                       x => FilesFolders.ReturnPreviousDirectoryIfIncompleteString(pathToDirectory).StartsWith(x.Path, StringComparison.OrdinalIgnoreCase))
-                   && WindowsIndex.WindowsIndex.PathIsIndexed(pathToDirectory);
         }
 
         private bool IsExcludedFile(SearchResult result)

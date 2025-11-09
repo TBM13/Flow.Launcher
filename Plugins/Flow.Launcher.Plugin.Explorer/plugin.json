@@ -9,7 +9,7 @@
   ],
   "HideActionKeywordPanel": true,
   "Name": "Explorer",
-  "Description": "Find and manage files and folders via Windows Search",
+  "Description": "Explore and manage files and folders",
   "Author": "Jeremy Wu",
   "Version": "1.0.0",
   "Language": "csharp",

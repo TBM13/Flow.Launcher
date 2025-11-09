@@ -5,11 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using Flow.Launcher.Plugin.SharedCommands;
+using Flow.Launcher.Plugin.Explorer.Helper;
 using Flow.Launcher.Plugin.Explorer.Search;
 using Flow.Launcher.Plugin.Explorer.Search.QuickAccessLinks;
-using Flow.Launcher.Plugin.Explorer.Helper;
 using Flow.Launcher.Plugin.Explorer.ViewModels;
+using Flow.Launcher.Plugin.SharedCommands;
 
 namespace Flow.Launcher.Plugin.Explorer
 {
@@ -41,10 +41,6 @@ namespace Flow.Launcher.Plugin.Explorer
                 if (record.Type == ResultType.Folder)
                 {
                     contextMenus.Add(CreateOpenWithShellResult(record));
-                    if (record.WindowsIndexed)
-                    {
-                        contextMenus.Add(CreateAddToIndexSearchExclusionListResult(record));
-                    }
                 }
 
                 contextMenus.Add(CreateOpenContainingFolderResult(record));
@@ -52,11 +48,6 @@ namespace Flow.Launcher.Plugin.Explorer
                 if (record.Type == ResultType.File)
                 {
                     contextMenus.Add(CreateOpenWithMenu(record));
-                }
-
-                if (record.WindowsIndexed)
-                {
-                    contextMenus.Add(CreateOpenWindowsIndexingOptions());
                 }
 
                 var icoPath = (record.Type == ResultType.File) ? Constants.FileImagePath : Constants.FolderImagePath;
@@ -159,7 +150,7 @@ namespace Flow.Launcher.Plugin.Explorer
                 contextMenus.Add(new Result
                 {
                     Title = Localize.plugin_explorer_copyfilefolder(),
-                    SubTitle = isFile ? Localize.plugin_explorer_copyfile_subtitle(): Localize.plugin_explorer_copyfolder_subtitle(),
+                    SubTitle = isFile ? Localize.plugin_explorer_copyfile_subtitle() : Localize.plugin_explorer_copyfolder_subtitle(),
                     Action = _ =>
                     {
                         try
@@ -182,7 +173,7 @@ namespace Flow.Launcher.Plugin.Explorer
                     contextMenus.Add(new Result
                     {
                         Title = Localize.plugin_explorer_deletefilefolder(),
-                        SubTitle = isFile ? Localize.plugin_explorer_deletefile_subtitle(): Localize.plugin_explorer_deletefolder_subtitle(),
+                        SubTitle = isFile ? Localize.plugin_explorer_deletefile_subtitle() : Localize.plugin_explorer_deletefolder_subtitle(),
                         Action = (context) =>
                         {
                             try
@@ -379,7 +370,8 @@ namespace Flow.Launcher.Plugin.Explorer
                     {
                         Process.Start(new ProcessStartInfo()
                         {
-                            FileName = shellPath, WorkingDirectory = record.FullPath
+                            FileName = shellPath,
+                            WorkingDirectory = record.FullPath
                         });
                         return true;
                     }
@@ -393,70 +385,6 @@ namespace Flow.Launcher.Plugin.Explorer
                 },
                 Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue756"),
                 IcoPath = Constants.FolderImagePath
-            };
-        }
-
-        private Result CreateAddToIndexSearchExclusionListResult(SearchResult record)
-        {
-            return new Result
-            {
-                Title = Localize.plugin_explorer_excludefromindexsearch(),
-                SubTitle = Localize.plugin_explorer_path()+ " " + record.FullPath,
-                Action = c_ =>
-                {
-                    if (!Settings.IndexSearchExcludedSubdirectoryPaths.Any(x => string.Equals(x.Path, record.FullPath, StringComparison.OrdinalIgnoreCase)))
-                        Settings.IndexSearchExcludedSubdirectoryPaths.Add(new AccessLink
-                        {
-                            Path = record.FullPath
-                        });
-
-                    _ = Task.Run(() =>
-                    {
-                        Context.API.ShowMsg(Localize.plugin_explorer_excludedfromindexsearch_msg(),
-                            Localize.plugin_explorer_path()+
-                            " " + record.FullPath, Constants.ExplorerIconImageFullPath);
-
-                        // so the new path can be persisted to storage and not wait till next ViewModel save.
-                        Context.API.SaveAppAllSettings();
-                    });
-
-                    return false;
-                },
-                IcoPath = Constants.ExcludeFromIndexImagePath,
-                Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\uf140"),
-            };
-        }
-
-        private Result CreateOpenWindowsIndexingOptions()
-        {
-            return new Result
-            {
-                Title = Localize.plugin_explorer_openindexingoptions(),
-                SubTitle = Localize.plugin_explorer_openindexingoptions_subtitle(),
-                Action = _ =>
-                {
-                    try
-                    {
-                        var psi = new ProcessStartInfo
-                        {
-                            FileName = "control.exe",
-                            UseShellExecute = true,
-                            Arguments = "srchadmin.dll"
-                        };
-
-                        Process.Start(psi);
-                        return true;
-                    }
-                    catch (Exception e)
-                    {
-                        var message = Localize.plugin_explorer_openindexingoptions_errormsg();
-                        LogException(message, e);
-                        Context.API.ShowMsgError(message);
-                        return false;
-                    }
-                },
-                IcoPath = Constants.IndexingOptionsIconImagePath,
-                Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue773"),
             };
         }
 

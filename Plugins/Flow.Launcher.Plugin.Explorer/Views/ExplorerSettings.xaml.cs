@@ -34,8 +34,7 @@ namespace Flow.Launcher.Plugin.Explorer.Views
                 ContextMenuExpander,
                 PreviewPanelExpander,
                 ActionKeywordsExpander,
-                QuickAccessExpander,
-                ExcludedPathsExpander
+                QuickAccessExpander
             };
         }
 
@@ -72,18 +71,9 @@ namespace Flow.Launcher.Plugin.Explorer.Views
             }
         }
 
-        private void btnOpenIndexingOptions_Click(object sender, RoutedEventArgs e)
-        {
-            SettingsViewModel.OpenWindowsIndexingOptions();
-        }
-
         private void LbxAccessLinks_OnDrop(object sender, DragEventArgs e)
         {
             AccessLinkDragDrop("QuickAccessLink", e);
-        }
-        private void LbxExcludedPaths_OnDrop(object sender, DragEventArgs e)
-        {
-            AccessLinkDragDrop("IndexSearchExcludedPath", e);
         }
 
         private void AllowOnlyNumericInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
@@ -111,11 +101,6 @@ namespace Flow.Launcher.Plugin.Explorer.Views
         private void lbxAccessLinks_Loaded(object sender, RoutedEventArgs e)
         {
             lbxAccessLinks.Items.SortDescriptions.Add(new SortDescription("Path", ListSortDirection.Ascending));
-        }
-
-        private void lbxExcludedPaths_Loaded(object sender, RoutedEventArgs e)
-        {
-            lbxExcludedPaths.Items.SortDescriptions.Add(new SortDescription("Path", ListSortDirection.Ascending));
         }
 
         private void lbxAccessLinks_SizeChanged(object sender, SizeChangedEventArgs e)

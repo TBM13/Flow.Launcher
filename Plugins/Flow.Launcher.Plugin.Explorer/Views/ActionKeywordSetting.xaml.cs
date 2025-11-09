@@ -57,9 +57,6 @@ namespace Flow.Launcher.Plugin.Explorer.Views
             if (ActionKeyword == Query.GlobalPluginWildcardSign)
                 switch (CurrentActionKeyword.KeywordProperty, KeywordEnabled)
                 {
-                    case (Settings.ActionKeyword.FileContentSearchActionKeyword, true):
-                        Main.Context.API.ShowMsgBox(Localize.plugin_explorer_globalActionKeywordInvalid());
-                        return;
                     case (Settings.ActionKeyword.QuickAccessActionKeyword, true):
                         Main.Context.API.ShowMsgBox(Localize.plugin_explorer_quickaccess_globalActionKeywordInvalid());
                         return;
@@ -81,7 +78,7 @@ namespace Flow.Launcher.Plugin.Explorer.Views
             DialogResult = false;
             Close();
         }
-        
+
         private void TxtCurrentActionKeyword_OnKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
@@ -95,7 +92,7 @@ namespace Flow.Launcher.Plugin.Explorer.Views
                 e.Handled = true;
             }
         }
-        
+
         private void TextBox_Pasting(object sender, DataObjectPastingEventArgs e)
         {
             if (e.DataObject.GetDataPresent(DataFormats.Text))

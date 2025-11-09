@@ -22,16 +22,11 @@ namespace Flow.Launcher.Plugin.Explorer.ViewModels
 
         internal PluginInitContext Context { get; set; }
 
-        public IReadOnlyList<EnumBindingModel<Settings.IndexSearchEngineOption>> IndexSearchEngines { get; set; }
-        public IReadOnlyList<EnumBindingModel<Settings.ContentIndexSearchEngineOption>> ContentIndexSearchEngines { get; set; }
-        public IReadOnlyList<EnumBindingModel<Settings.PathEnumerationEngineOption>> PathEnumerationEngines { get; set; }
-
         public SettingsViewModel(PluginInitContext context, Settings settings)
         {
             Context = context;
             Settings = settings;
 
-            InitializeEngineSelection();
             InitializeActionKeywordModels();
         }
 
@@ -39,64 +34,6 @@ namespace Flow.Launcher.Plugin.Explorer.ViewModels
         {
             Context.API.SaveSettingJsonStorage<Settings>();
         }
-
-        #region Engine Selection
-
-        private EnumBindingModel<Settings.IndexSearchEngineOption> _selectedIndexSearchEngine;
-        private EnumBindingModel<Settings.ContentIndexSearchEngineOption> _selectedContentSearchEngine;
-        private EnumBindingModel<Settings.PathEnumerationEngineOption> _selectedPathEnumerationEngine;
-
-        public EnumBindingModel<Settings.IndexSearchEngineOption> SelectedIndexSearchEngine
-        {
-            get => _selectedIndexSearchEngine;
-            set
-            {
-                _selectedIndexSearchEngine = value;
-                Settings.IndexSearchEngine = value.Value;
-                OnPropertyChanged();
-            }
-        }
-
-        public EnumBindingModel<Settings.ContentIndexSearchEngineOption> SelectedContentSearchEngine
-        {
-            get => _selectedContentSearchEngine;
-            set
-            {
-                _selectedContentSearchEngine = value;
-                Settings.ContentSearchEngine = value.Value;
-                OnPropertyChanged();
-            }
-        }
-
-        public EnumBindingModel<Settings.PathEnumerationEngineOption> SelectedPathEnumerationEngine
-        {
-            get => _selectedPathEnumerationEngine;
-            set
-            {
-                _selectedPathEnumerationEngine = value;
-                Settings.PathEnumerationEngine = value.Value;
-                OnPropertyChanged();
-            }
-        }
-
-        [MemberNotNull(nameof(IndexSearchEngines),
-            nameof(ContentIndexSearchEngines),
-            nameof(PathEnumerationEngines),
-            nameof(_selectedIndexSearchEngine),
-            nameof(_selectedContentSearchEngine),
-            nameof(_selectedPathEnumerationEngine))]
-        private void InitializeEngineSelection()
-        {
-            IndexSearchEngines = EnumBindingModel<Settings.IndexSearchEngineOption>.CreateList();
-            ContentIndexSearchEngines = EnumBindingModel<Settings.ContentIndexSearchEngineOption>.CreateList();
-            PathEnumerationEngines = EnumBindingModel<Settings.PathEnumerationEngineOption>.CreateList();
-
-            _selectedIndexSearchEngine = IndexSearchEngines.First(x => x.Value == Settings.IndexSearchEngine);
-            _selectedContentSearchEngine = ContentIndexSearchEngines.First(x => x.Value == Settings.ContentSearchEngine);
-            _selectedPathEnumerationEngine = PathEnumerationEngines.First(x => x.Value == Settings.PathEnumerationEngine);
-        }
-
-        #endregion
 
         #region Native Context Menu
 
@@ -270,12 +207,8 @@ namespace Flow.Launcher.Plugin.Explorer.ViewModels
             {
                 new(Settings.ActionKeyword.SearchActionKeyword,
                     "plugin_explorer_actionkeywordview_search"),
-                new(Settings.ActionKeyword.FileContentSearchActionKeyword,
-                    "plugin_explorer_actionkeywordview_filecontentsearch"),
                 new(Settings.ActionKeyword.PathSearchActionKeyword,
                     "plugin_explorer_actionkeywordview_pathsearch"),
-                new(Settings.ActionKeyword.IndexSearchActionKeyword,
-                    "plugin_explorer_actionkeywordview_indexsearch"),
                 new(Settings.ActionKeyword.QuickAccessActionKeyword,
                     "plugin_explorer_actionkeywordview_quickaccess")
             };
@@ -328,69 +261,15 @@ namespace Flow.Launcher.Plugin.Explorer.ViewModels
         #region AccessLinks
 
         public AccessLink? SelectedQuickAccessLink { get; set; }
-        public AccessLink? SelectedIndexSearchExcludedPath { get; set; }
 
         public void AppendLink(string containerName, AccessLink link)
         {
             var container = containerName switch
             {
                 "QuickAccessLink" => Settings.QuickAccessLinks,
-                "IndexSearchExcludedPaths" => Settings.IndexSearchExcludedSubdirectoryPaths,
                 _ => throw new ArgumentException($"Unknown container name: {containerName}")
             };
             container.Add(link);
-        }
-
-        [RelayCommand]
-        private void EditIndexSearchExcludePaths()
-        {
-            var selectedLink = SelectedIndexSearchExcludedPath;
-            var collection = Settings.IndexSearchExcludedSubdirectoryPaths;
-
-            if (selectedLink is null)
-            {
-                ShowUnselectedMessage();
-                return;
-            }
-
-            var path = PromptUserSelectPath(selectedLink.Type,
-                selectedLink.Type == ResultType.Folder
-                    ? selectedLink.Path
-                    : Path.GetDirectoryName(selectedLink.Path));
-
-            if (path is null)
-                return;
-
-            collection.Remove(selectedLink);
-            collection.Add(new AccessLink
-            {
-                Path = path,
-                Type = selectedLink.Type,
-                Name = path.GetPathName()
-            });
-            Save();
-        }
-
-        [RelayCommand]
-        private void AddIndexSearchExcludePaths()
-        {
-            var container = Settings.IndexSearchExcludedSubdirectoryPaths;
-
-            if (container is null) return;
-
-            var folderBrowserDialog = new FolderBrowserDialog();
-
-            if (folderBrowserDialog.ShowDialog() != DialogResult.OK)
-                return;
-
-            var newAccessLink = new AccessLink
-            {
-                Name = folderBrowserDialog.SelectedPath.GetPathName(),
-                Path = folderBrowserDialog.SelectedPath
-            };
-
-            container.Add(newAccessLink);
-            Save();
         }
 
         [RelayCommand]
@@ -440,17 +319,6 @@ namespace Flow.Launcher.Plugin.Explorer.ViewModels
                         return;
                     Settings.QuickAccessLinks.Remove(SelectedQuickAccessLink);
                     break;
-                case "IndexSearchExcludedPaths":
-                    if (SelectedIndexSearchExcludedPath == null) return;
-                    if (Context.API.ShowMsgBox(
-                            Localize.plugin_explorer_delete_index_search_excluded_path(),
-                            Localize.plugin_explorer_delete(),
-                            MessageBoxButton.OKCancel,
-                            MessageBoxImage.Warning)
-                        == MessageBoxResult.Cancel)
-                        return;
-                    Settings.IndexSearchExcludedSubdirectoryPaths.Remove(SelectedIndexSearchExcludedPath);
-                    break;
             }
             Save();
         }
@@ -491,18 +359,6 @@ namespace Flow.Launcher.Plugin.Explorer.ViewModels
                 path = openFileDialog.FileName;
             }
             return path;
-        }
-
-        internal static void OpenWindowsIndexingOptions()
-        {
-            var psi = new ProcessStartInfo
-            {
-                FileName = "control.exe",
-                UseShellExecute = true,
-                Arguments = Constants.WindowsIndexingOptions
-            };
-
-            Process.Start(psi);
         }
 
         [RelayCommand]
