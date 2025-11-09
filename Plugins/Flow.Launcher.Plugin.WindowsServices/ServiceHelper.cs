@@ -37,6 +37,11 @@ public enum Action
     Start,
     Stop,
     Restart,
+
+    Disable,
+    EnableManual,
+    EnableAutomatic,
+    EnableAutomaticDelayed
 }
 
 public class ServiceResult
@@ -150,15 +155,31 @@ public static class ServiceHelper
             switch (action)
             {
                 case Action.Start:
-                info.Arguments = $"start \"{serviceResult.ServiceName}\"";
+                    info.Arguments = $"start \"{serviceResult.ServiceName}\"";
                     break;
                 case Action.Stop:
-                info.Arguments = $"stop \"{serviceResult.ServiceName}\"";
+                    info.Arguments = $"stop \"{serviceResult.ServiceName}\"";
                     break;
                 case Action.Restart:
-                info.FileName = "cmd";
+                    info.FileName = "cmd";
                     info.Arguments = $"/c sc stop \"{serviceResult.ServiceName}\" && timeout 2 && sc start \"{serviceResult.ServiceName}\"";
                     break;
+
+                case Action.Disable:
+                    info.Arguments = $"config \"{serviceResult.ServiceName}\" start= disabled";
+                    break;
+                case Action.EnableManual:
+                    info.Arguments = $"config \"{serviceResult.ServiceName}\" start= demand";
+                    break;
+                case Action.EnableAutomatic:
+                    info.Arguments = $"config \"{serviceResult.ServiceName}\" start= auto";
+                    break;
+                case Action.EnableAutomaticDelayed:
+                    info.Arguments = $"config \"{serviceResult.ServiceName}\" start= delayed-auto";
+                    break;
+
+                default:
+                    throw new Exception("Unknown action");
             }
 
             var process = Process.Start(info);
