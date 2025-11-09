@@ -1,13 +1,6 @@
 {
   "ID": "572be03c74c642baae319fc283e561a8",
-  "ActionKeywords": [
-    "*",
-    "doc:",
-    "*",
-    "*",
-    "*"
-  ],
-  "HideActionKeywordPanel": true,
+  "ActionKeyword": "*",
   "Name": "Explorer",
   "Description": "Explore and manage files and folders",
   "Author": "Jeremy Wu",

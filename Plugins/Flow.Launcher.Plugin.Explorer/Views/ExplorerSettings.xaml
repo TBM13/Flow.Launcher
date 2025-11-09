@@ -4,7 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:qa="clr-namespace:Flow.Launcher.Plugin.Explorer.Search.QuickAccessLinks"
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     xmlns:viewModels="clr-namespace:Flow.Launcher.Plugin.Explorer.ViewModels"
     d:DataContext="{d:DesignInstance viewModels:SettingsViewModel}"
@@ -13,66 +12,6 @@
     mc:Ignorable="d">
 
     <UserControl.Resources>
-        <DataTemplate x:Key="ListViewTemplateAccessLinks" DataType="qa:AccessLink">
-            <TextBlock Margin="0 5 0 5" Text="{Binding Path, Mode=OneTime}" />
-        </DataTemplate>
-        <DataTemplate x:Key="ListViewActionKeywords" DataType="{x:Type viewModels:ActionKeywordModel}">
-            <Grid>
-                <TextBlock
-                    Margin="0 5 0 5"
-                    IsEnabled="{Binding Enabled}"
-                    Text="{Binding LocalizedDescription, Mode=OneTime}">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Style.Triggers>
-                                <Trigger Property="IsEnabled" Value="True">
-                                    <Setter Property="Foreground" Value="{DynamicResource Color05B}" />
-                                </Trigger>
-                                <Trigger Property="IsEnabled" Value="False">
-                                    <Setter Property="Foreground" Value="{DynamicResource Color18B}" />
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-
-                <TextBlock
-                    Margin="250 5 0 5"
-                    IsEnabled="{Binding Enabled}"
-                    Text="{Binding Keyword}">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Style.Triggers>
-                                <Trigger Property="IsEnabled" Value="True">
-                                    <Setter Property="Foreground" Value="{DynamicResource Color05B}" />
-                                </Trigger>
-                                <Trigger Property="IsEnabled" Value="False">
-                                    <Setter Property="Foreground" Value="{DynamicResource Color18B}" />
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-
-                <TextBlock Margin="480 5 0 5">
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Enabled}" Value="True">
-                                    <Setter Property="Text" Value="{DynamicResource plugin_explorer_enabled}" />
-                                    <Setter Property="Foreground" Value="{DynamicResource Color05B}" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding Enabled}" Value="False">
-                                    <Setter Property="Text" Value="{DynamicResource plugin_explorer_disabled}" />
-                                    <Setter Property="Foreground" Value="{DynamicResource Color18B}" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-            </Grid>
-        </DataTemplate>
-
         <Style x:Key="CustomExpanderStyle" TargetType="Expander">
             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
             <Setter Property="Background" Value="Transparent" />
@@ -215,15 +154,6 @@
                     HorizontalAlignment="Left"
                     Content="{DynamicResource plugin_explorer_use_location_as_working_dir}"
                     IsChecked="{Binding Settings.UseLocationAsWorkingDir}" />
-
-                <CheckBox
-                    Grid.Row="1"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    Margin="{StaticResource SettingPanelItemTopBottomMargin}"
-                    HorizontalAlignment="Left"
-                    Content="{DynamicResource plugin_explorer_default_open_in_file_manager}"
-                    IsChecked="{Binding Settings.DefaultOpenFolderInFileManager}" />
 
                 <CheckBox
                     Grid.Row="2"
@@ -516,111 +446,6 @@
                         </StackPanel>
                     </WrapPanel>
                 </DockPanel>
-            </Grid>
-        </Expander>
-
-        <!--  Manage Action Keywords Expander  -->
-        <Expander
-            x:Name="ActionKeywordsExpander"
-            Expanded="Expander_Expanded"
-            Header="{DynamicResource plugin_explorer_manageactionkeywords_header}"
-            IsExpanded="False"
-            Style="{StaticResource CustomExpanderStyle}">
-            <Grid Margin="32 -10 0 0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-
-                <Border
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    Margin="{StaticResource SettingPanelItemTopBottomMargin}"
-                    HorizontalAlignment="Stretch"
-                    BorderBrush="{DynamicResource PopupButtonAreaBorderColor}"
-                    BorderThickness="1">
-                    <ListView
-                        ItemTemplate="{StaticResource ListViewActionKeywords}"
-                        ItemsSource="{Binding ActionKeywordsModels}"
-                        SelectedItem="{Binding SelectedActionKeyword}" />
-                </Border>
-
-                <StackPanel
-                    Grid.Row="1"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    Margin="{StaticResource SettingPanelItemTopBottomMargin}"
-                    HorizontalAlignment="Right"
-                    Orientation="Horizontal">
-                    <Button
-                        MinWidth="100"
-                        Command="{Binding EditActionKeywordCommand}"
-                        Content="{DynamicResource plugin_explorer_edit}" />
-                </StackPanel>
-            </Grid>
-        </Expander>
-
-        <!--  Quick Access Links Expander  -->
-        <Expander
-            x:Name="QuickAccessExpander"
-            Expanded="Expander_Expanded"
-            Header="{DynamicResource plugin_explorer_quickaccesslinks_header}"
-            IsExpanded="False"
-            Style="{StaticResource CustomExpanderStyle}">
-            <Grid Margin="32 -10 0 0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-
-                <Border
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    Margin="{StaticResource SettingPanelItemTopBottomMargin}"
-                    HorizontalAlignment="Stretch"
-                    BorderBrush="{DynamicResource PopupButtonAreaBorderColor}"
-                    BorderThickness="1">
-                    <ListView
-                        x:Name="lbxAccessLinks"
-                        Height="200"
-                        AllowDrop="True"
-                        BorderThickness="1"
-                        DragEnter="lbxAccessLinks_DragEnter"
-                        Drop="LbxAccessLinks_OnDrop"
-                        ItemsSource="{Binding Settings.QuickAccessLinks}"
-                        Loaded="lbxAccessLinks_Loaded"
-                        SelectedItem="{Binding SelectedQuickAccessLink}"
-                        SizeChanged="lbxAccessLinks_SizeChanged">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn Width="600" Header="{DynamicResource plugin_explorer_name}">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Name}" />
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Width="900" Header="{DynamicResource plugin_explorer_path}">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Path}" TextTrimming="CharacterEllipsis" />
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-                </Border>
             </Grid>
         </Expander>
     </StackPanel>

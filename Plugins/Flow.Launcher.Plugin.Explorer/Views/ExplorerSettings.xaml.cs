@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Flow.Launcher.Plugin.Explorer.Search.QuickAccessLinks;
 using Flow.Launcher.Plugin.Explorer.ViewModels;
 using DataFormats = System.Windows.DataFormats;
 using DragDropEffects = System.Windows.DragDropEffects;
@@ -26,37 +25,12 @@ namespace Flow.Launcher.Plugin.Explorer.Views
 
             DataContext = viewModel;
 
-            ActionKeywordModel.Init(viewModel.Settings);
-
-            _expanders = new List<Expander>
-            {
+            _expanders =
+            [
                 GeneralSettingsExpander,
                 ContextMenuExpander,
-                PreviewPanelExpander,
-                ActionKeywordsExpander,
-                QuickAccessExpander
-            };
-        }
-
-        private void AccessLinkDragDrop(string containerName, DragEventArgs e)
-        {
-            var files = (string[])e.Data.GetData(DataFormats.FileDrop);
-
-            if (files == null || files.Length == 0)
-            {
-                return;
-            }
-            foreach (var s in files)
-            {
-                if (Directory.Exists(s))
-                {
-                    var newFolderLink = new AccessLink
-                    {
-                        Path = s
-                    };
-                    _viewModel.AppendLink(containerName, newFolderLink);
-                }
-            }
+                PreviewPanelExpander
+            ];
         }
 
         private void lbxAccessLinks_DragEnter(object sender, DragEventArgs e)
@@ -69,11 +43,6 @@ namespace Flow.Launcher.Plugin.Explorer.Views
             {
                 e.Effects = DragDropEffects.None;
             }
-        }
-
-        private void LbxAccessLinks_OnDrop(object sender, DragEventArgs e)
-        {
-            AccessLinkDragDrop("QuickAccessLink", e);
         }
 
         private void AllowOnlyNumericInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
@@ -96,11 +65,6 @@ namespace Flow.Launcher.Plugin.Explorer.Views
                     }
                 }
             }
-        }
-
-        private void lbxAccessLinks_Loaded(object sender, RoutedEventArgs e)
-        {
-            lbxAccessLinks.Items.SortDescriptions.Add(new SortDescription("Path", ListSortDirection.Ascending));
         }
 
         private void lbxAccessLinks_SizeChanged(object sender, SizeChangedEventArgs e)

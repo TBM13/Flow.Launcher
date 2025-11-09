@@ -26,36 +26,12 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             Settings = settings;
         }
 
-        public static string GetPathWithActionKeyword(string path, ResultType type, string actionKeyword)
+        public static string GetAutoCompleteText(Query query, string path, ResultType resultType)
         {
-            // actionKeyword will be empty string if using global, query.ActionKeyword is ""
+            if (resultType == ResultType.File)
+                return $"{query.ActionKeyword} {path}";
 
-            var usePathSearchActionKeyword = Settings.PathSearchKeywordEnabled && !Settings.SearchActionKeywordEnabled;
-
-            var pathSearchActionKeyword = Settings.PathSearchActionKeyword == Query.GlobalPluginWildcardSign
-                ? string.Empty
-                : $"{Settings.PathSearchActionKeyword} ";
-
-            var searchActionKeyword = Settings.SearchActionKeyword == Query.GlobalPluginWildcardSign
-                ? string.Empty
-                : $"{Settings.SearchActionKeyword} ";
-
-            var keyword = usePathSearchActionKeyword ? pathSearchActionKeyword : searchActionKeyword;
-
-            var formattedPath = path;
-
-            if (type == ResultType.Folder)
-                // the separator is needed so when navigating the folder structure contents of the folder are listed
-                formattedPath = path.EndsWith(Constants.DirectorySeparator) ? path : path + Constants.DirectorySeparator;
-
-            return $"{keyword}{formattedPath}";
-        }
-
-        public static string GetAutoCompleteText(string title, Query query, string path, ResultType resultType)
-        {
-            return !Settings.PathSearchKeywordEnabled && !Settings.SearchActionKeywordEnabled
-                ? $"{query.ActionKeyword} {title}" // Only Quick Access action keyword is used in this scenario
-                : GetPathWithActionKeyword(path, resultType, query.ActionKeyword);
+            return $"{query.ActionKeyword} {path}" + Constants.DirectorySeparator;
         }
 
         public static Result CreateResult(Query query, SearchResult result)
@@ -98,7 +74,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 Title = title,
                 IcoPath = path,
                 SubTitle = subtitle,
-                AutoCompleteText = GetAutoCompleteText(title, query, path, ResultType.Folder),
+                AutoCompleteText = GetAutoCompleteText(query, path, ResultType.Folder),
                 TitleHighlightData = Context.API.FuzzySearch(query.Search, title).MatchData,
                 CopyText = path,
                 Preview = new Result.PreviewInfo
@@ -142,27 +118,16 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                         }
                     }
 
-                    // If path search is disabled just open it in file manager
-                    if (Settings.DefaultOpenFolderInFileManager || (!Settings.PathSearchKeywordEnabled && !Settings.SearchActionKeywordEnabled))
+                    try
                     {
-                        try
-                        {
-                            OpenFolder(path);
-                            return true;
-                        }
-                        catch (Exception ex)
-                        {
-                            Context.API.ShowMsgBox(ex.Message, Localize.plugin_explorer_opendir_error());
-                            return false;
-                        }
+                        OpenFolder(path);
+                        return true;
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        // or make this folder the current query
-                        Context.API.ChangeQuery(GetPathWithActionKeyword(path, ResultType.Folder, query.ActionKeyword));
+                        Context.API.ShowMsgBox(ex.Message, Localize.plugin_explorer_opendir_error());
+                        return false;
                     }
-
-                    return false;
                 },
                 Score = score,
                 TitleToolTip = Localize.plugin_explorer_plugin_ToolTipOpenDirectory(),
@@ -171,12 +136,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             };
         }
 
-        internal static Result CreateDriveSpaceDisplayResult(string path, string actionKeyword)
-        {
-            return CreateDriveSpaceDisplayResult(path, actionKeyword, 500);
-        }
-
-        internal static Result CreateDriveSpaceDisplayResult(string path, string actionKeyword, int score)
+        internal static Result CreateDriveSpaceDisplayResult(string path, int score = 500)
         {
             var title = string.Empty; // hide title when use progress bar,
             var driveLetter = path[..1].ToUpper();
@@ -196,7 +156,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             {
                 Title = title,
                 SubTitle = subtitle,
-                AutoCompleteText = GetPathWithActionKeyword(path, ResultType.Folder, actionKeyword),
+                AutoCompleteText = path,
                 IcoPath = path,
                 Score = score,
                 Preview = new Result.PreviewInfo
@@ -242,7 +202,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             return returnStr;
         }
 
-        internal static Result CreateOpenCurrentFolderResult(string path, string actionKeyword)
+        internal static Result CreateOpenCurrentFolderResult(string path)
         {
             // Path passed from PathSearchAsync ends with Constants.DirectorySeparator ('\'), need to remove the separator
             // so it's consistent with folder results returned by index search which does not end with one
@@ -252,7 +212,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             {
                 Title = Localize.plugin_explorer_openresultfolder(),
                 SubTitle = Localize.plugin_explorer_openresultfolder_subtitle(),
-                AutoCompleteText = GetPathWithActionKeyword(folderPath, ResultType.Folder, actionKeyword),
+                AutoCompleteText = folderPath,
                 IcoPath = folderPath,
                 Score = 500,
                 CopyText = folderPath,
@@ -289,7 +249,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                     PreviewImagePath = isMedia ? filePath : null,
                     FilePath = filePath,
                 },
-                AutoCompleteText = GetAutoCompleteText(title, query, filePath, ResultType.File),
+                AutoCompleteText = GetAutoCompleteText(query, filePath, ResultType.File),
                 TitleHighlightData = Context.API.FuzzySearch(query.Search, title).MatchData,
                 Score = score,
                 CopyText = filePath,

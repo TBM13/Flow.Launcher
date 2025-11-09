@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using Flow.Launcher.Plugin.Explorer.Helper;
 using Flow.Launcher.Plugin.Explorer.Search;
-using Flow.Launcher.Plugin.Explorer.Search.QuickAccessLinks;
-using Flow.Launcher.Plugin.Explorer.ViewModels;
 using Flow.Launcher.Plugin.SharedCommands;
 
 namespace Flow.Launcher.Plugin.Explorer
@@ -52,56 +50,6 @@ namespace Flow.Launcher.Plugin.Explorer
 
                 var icoPath = (record.Type == ResultType.File) ? Constants.FileImagePath : Constants.FolderImagePath;
                 bool isFile = record.Type == ResultType.File;
-
-                if (Settings.QuickAccessLinks.All(x => !x.Path.Equals(record.FullPath, StringComparison.OrdinalIgnoreCase)))
-                {
-                    contextMenus.Add(new Result
-                    {
-                        Title = Localize.plugin_explorer_add_to_quickaccess_title(),
-                        SubTitle = Localize.plugin_explorer_add_to_quickaccess_subtitle(),
-                        Action = (context) =>
-                        {
-                            Settings.QuickAccessLinks.Add(new AccessLink
-                            {
-                                Name = record.FullPath.GetPathName(),
-                                Path = record.FullPath,
-                                Type = record.Type
-                            });
-
-                            Context.API.ShowMsg(Localize.plugin_explorer_addfilefoldersuccess(),
-                                Localize.plugin_explorer_addfilefoldersuccess_detail(),
-                                Constants.ExplorerIconImageFullPath);
-
-                            return true;
-                        },
-                        SubTitleToolTip = Localize.plugin_explorer_contextmenu_titletooltip(),
-                        TitleToolTip = Localize.plugin_explorer_contextmenu_titletooltip(),
-                        IcoPath = Constants.QuickAccessImagePath,
-                        Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue718"),
-                    });
-                }
-                else
-                {
-                    contextMenus.Add(new Result
-                    {
-                        Title = Localize.plugin_explorer_remove_from_quickaccess_title(),
-                        SubTitle = Localize.plugin_explorer_remove_from_quickaccess_subtitle(),
-                        Action = (context) =>
-                        {
-                            Settings.QuickAccessLinks.Remove(Settings.QuickAccessLinks.FirstOrDefault(x => string.Equals(x.Path, record.FullPath, StringComparison.OrdinalIgnoreCase)));
-
-                            Context.API.ShowMsg(Localize.plugin_explorer_removefilefoldersuccess(),
-                                Localize.plugin_explorer_removefilefoldersuccess_detail(),
-                                Constants.ExplorerIconImageFullPath);
-
-                            return true;
-                        },
-                        SubTitleToolTip = Localize.plugin_explorer_contextmenu_remove_titletooltip(),
-                        TitleToolTip = Localize.plugin_explorer_contextmenu_remove_titletooltip(),
-                        IcoPath = Constants.RemoveQuickAccessImagePath,
-                        Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\uecc9")
-                    });
-                }
 
                 contextMenus.Add(new Result
                 {

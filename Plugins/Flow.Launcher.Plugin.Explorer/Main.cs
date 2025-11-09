@@ -36,7 +36,6 @@ namespace Flow.Launcher.Plugin.Explorer
             Context = context;
 
             Settings = context.API.LoadSettingJsonStorage<Settings>();
-            FillQuickAccessLinkNames();
 
             viewModel = new SettingsViewModel(context, Settings);
             contextMenu = new ContextMenu(Context, Settings);
@@ -57,29 +56,23 @@ namespace Flow.Launcher.Plugin.Explorer
             {
                 return await searchManager.SearchAsync(query, token);
             }
-            catch (Exception e) when (e is SearchException or EngineNotAvailableException)
+            catch (SearchException e)
             {
-                return new List<Result>
-                {
+                return
+                [
                     new()
                     {
                         Title = e.Message,
-                        SubTitle = e is EngineNotAvailableException { Resolution: { } resolution }
-                            ? resolution
-                            : "Enter to copy the message to clipboard",
+                        SubTitle = "Enter to copy the message to clipboard",
                         Score = 501,
-                        IcoPath = e is EngineNotAvailableException { ErrorIcon: { } iconPath }
-                            ? iconPath
-                            : Constants.GeneralSearchErrorImagePath,
-                        AsyncAction = e is EngineNotAvailableException {Action: { } action}
-                            ? action
-                            : _ =>
-                            {
-                                Context.API.CopyToClipboard(e.ToString());
-                                return new ValueTask<bool>(true);
-                            }
+                        IcoPath = Constants.GeneralSearchErrorImagePath,
+                        AsyncAction =  _ =>
+                        {
+                            Context.API.CopyToClipboard(e.ToString());
+                            return new ValueTask<bool>(true);
+                        }
                     }
-                };
+                ];
             }
         }
 
@@ -91,18 +84,6 @@ namespace Flow.Launcher.Plugin.Explorer
         public string GetTranslatedPluginDescription()
         {
             return Localize.plugin_explorer_plugin_description();
-        }
-
-        private static void FillQuickAccessLinkNames()
-        {
-            // Legacy version does not have names for quick access links, so we fill them with the path name.
-            foreach (var link in Settings.QuickAccessLinks)
-            {
-                if (string.IsNullOrWhiteSpace(link.Name))
-                {
-                    link.Name = link.Path.GetPathName();
-                }
-            }
         }
     }
 }

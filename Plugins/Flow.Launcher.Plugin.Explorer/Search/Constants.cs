@@ -16,13 +16,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
         internal const string ShowContextMenuImagePath = "Images\\context_menu.png";
         internal const string GeneralSearchErrorImagePath = "Images\\robot_error.png";
 
-        internal const string ToolTipOpenDirectory = "Ctrl + Enter to open the directory";
-
-        internal const string ToolTipOpenContainingFolder = "Ctrl + Enter to open the containing folder";
-
         internal const char AllFilesFolderSearchWildcard = '>';
-
-        internal const string DefaultContentSearchActionKeyword = "doc:";
 
         internal const char UnixDirectorySeparator = '/';
 

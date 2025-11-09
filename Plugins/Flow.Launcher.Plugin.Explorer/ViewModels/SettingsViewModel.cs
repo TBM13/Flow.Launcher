@@ -1,17 +1,13 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
 using CommunityToolkit.Mvvm.Input;
-using Flow.Launcher.Plugin.Explorer.Helper;
 using Flow.Launcher.Plugin.Explorer.Search;
-using Flow.Launcher.Plugin.Explorer.Search.QuickAccessLinks;
 using Flow.Launcher.Plugin.Explorer.Views;
 
 namespace Flow.Launcher.Plugin.Explorer.ViewModels
@@ -26,8 +22,6 @@ namespace Flow.Launcher.Plugin.Explorer.ViewModels
         {
             Context = context;
             Settings = settings;
-
-            InitializeActionKeywordModels();
         }
 
         public void Save()
@@ -195,139 +189,6 @@ namespace Flow.Launcher.Plugin.Explorer.ViewModels
             "yyyy-MMM-dd ddd",
             "yyyy-MMM-dd, dddd",
         };
-
-        #endregion
-
-        #region ActionKeyword
-
-        [MemberNotNull(nameof(ActionKeywordsModels))]
-        private void InitializeActionKeywordModels()
-        {
-            ActionKeywordsModels = new List<ActionKeywordModel>
-            {
-                new(Settings.ActionKeyword.SearchActionKeyword,
-                    "plugin_explorer_actionkeywordview_search"),
-                new(Settings.ActionKeyword.PathSearchActionKeyword,
-                    "plugin_explorer_actionkeywordview_pathsearch"),
-                new(Settings.ActionKeyword.QuickAccessActionKeyword,
-                    "plugin_explorer_actionkeywordview_quickaccess")
-            };
-        }
-
-        public IReadOnlyList<ActionKeywordModel> ActionKeywordsModels { get; set; }
-
-        public ActionKeywordModel? SelectedActionKeyword { get; set; }
-
-        [RelayCommand]
-        private void EditActionKeyword(object obj)
-        {
-            if (SelectedActionKeyword is not { } actionKeyword)
-            {
-                ShowUnselectedMessage();
-                return;
-            }
-
-            var actionKeywordWindow = new ActionKeywordSetting(actionKeyword);
-
-            if (!(actionKeywordWindow.ShowDialog() ?? false))
-            {
-                return;
-            }
-
-            switch (actionKeyword.Enabled, actionKeywordWindow.KeywordEnabled)
-            {
-                case (true, false):
-                    Context.API.RemoveActionKeyword(Context.CurrentPluginMetadata.ID, actionKeyword.Keyword);
-                    break;
-                case (true, true):
-                    // same keyword will have dialog result false
-                    Context.API.RemoveActionKeyword(Context.CurrentPluginMetadata.ID, actionKeyword.Keyword);
-                    Context.API.AddActionKeyword(Context.CurrentPluginMetadata.ID, actionKeywordWindow.ActionKeyword);
-                    break;
-                case (false, true):
-                    Context.API.AddActionKeyword(Context.CurrentPluginMetadata.ID, actionKeywordWindow.ActionKeyword);
-                    break;
-                case (false, false):
-                    throw new ArgumentException(
-                        $"Both false in {nameof(actionKeyword)}.{nameof(actionKeyword.Enabled)} and {nameof(actionKeywordWindow)}.{nameof(actionKeywordWindow.KeywordEnabled)} should suggest that the ShowDialog() result is false");
-            }
-
-            (actionKeyword.Keyword, actionKeyword.Enabled) = (actionKeywordWindow.ActionKeyword, actionKeywordWindow.KeywordEnabled);
-
-        }
-
-        #endregion
-
-        #region AccessLinks
-
-        public AccessLink? SelectedQuickAccessLink { get; set; }
-
-        public void AppendLink(string containerName, AccessLink link)
-        {
-            var container = containerName switch
-            {
-                "QuickAccessLink" => Settings.QuickAccessLinks,
-                _ => throw new ArgumentException($"Unknown container name: {containerName}")
-            };
-            container.Add(link);
-        }
-
-        [RelayCommand]
-        private void EditQuickAccessLink()
-        {
-            var selectedLink = SelectedQuickAccessLink;
-            var collection = Settings.QuickAccessLinks;
-
-            if (selectedLink is null)
-            {
-                ShowUnselectedMessage();
-                return;
-            }
-
-            var quickAccessLinkSettings = new QuickAccessLinkSettings(collection, SelectedQuickAccessLink);
-            if (quickAccessLinkSettings.ShowDialog() == true)
-            {
-                Save();
-            }
-        }
-
-        [RelayCommand]
-        private void AddQuickAccessLink()
-        {
-            var quickAccessLinkSettings = new QuickAccessLinkSettings(Settings.QuickAccessLinks);
-            if (quickAccessLinkSettings.ShowDialog() == true)
-            {
-                Save();
-            }
-        }
-
-        [RelayCommand]
-        private void RemoveLink(object commandParameter)
-        {
-            if (commandParameter is not string container) return;
-
-            switch (container)
-            {
-                case "QuickAccessLink":
-                    if (SelectedQuickAccessLink == null) return;
-                    if (Context.API.ShowMsgBox(
-                            Localize.plugin_explorer_delete_quick_access_link(),
-                            Localize.plugin_explorer_delete(),
-                            MessageBoxButton.OKCancel,
-                            MessageBoxImage.Warning)
-                        == MessageBoxResult.Cancel)
-                        return;
-                    Settings.QuickAccessLinks.Remove(SelectedQuickAccessLink);
-                    break;
-            }
-            Save();
-        }
-
-        private void ShowUnselectedMessage()
-        {
-            var warning = Localize.plugin_explorer_make_selection_warning();
-            Context.API.ShowMsgBox(warning);
-        }
 
         #endregion
 

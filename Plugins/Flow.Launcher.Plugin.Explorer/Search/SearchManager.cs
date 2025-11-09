@@ -5,9 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Flow.Launcher.Plugin.Explorer.Exceptions;
 using Flow.Launcher.Plugin.Explorer.Search.DirectoryInfo;
-using Flow.Launcher.Plugin.Explorer.Search.QuickAccessLinks;
 using Flow.Launcher.Plugin.SharedCommands;
-using Path = System.IO.Path;
 
 namespace Flow.Launcher.Plugin.Explorer.Search
 {
@@ -45,65 +43,19 @@ namespace Flow.Launcher.Plugin.Explorer.Search
 
         internal async Task<List<Result>> SearchAsync(Query query, CancellationToken token)
         {
-            var results = new HashSet<Result>(PathEqualityComparator.Instance);
-
-            // This allows the user to type the below action keywords and see/search the list of quick folder links
-            if (ActionKeywordMatch(query, Settings.ActionKeyword.SearchActionKeyword)
-                || ActionKeywordMatch(query, Settings.ActionKeyword.QuickAccessActionKeyword)
-                || ActionKeywordMatch(query, Settings.ActionKeyword.PathSearchActionKeyword))
-            {
-                if (string.IsNullOrEmpty(query.Search) && ActionKeywordMatch(query, Settings.ActionKeyword.QuickAccessActionKeyword))
-                    return QuickAccess.AccessLinkListAll(query, Settings.QuickAccessLinks);
-            }
-            else
-            {
-                // No action keyword matched- plugin should not handle this query, return empty results.
-                return new List<Result>();
-            }
-
             bool isPathSearch = query.Search.IsLocationPathString()
                 || EnvironmentVariables.IsEnvironmentVariableSearch(query.Search)
                 || EnvironmentVariables.HasEnvironmentVar(query.Search);
 
-            switch (isPathSearch)
-            {
-                case true
-                    when ActionKeywordMatch(query, Settings.ActionKeyword.PathSearchActionKeyword)
-                         || ActionKeywordMatch(query, Settings.ActionKeyword.SearchActionKeyword):
+            if (isPathSearch)
+                return await PathSearchAsync(query, token).ConfigureAwait(false);
 
-                    results.UnionWith(await PathSearchAsync(query, token).ConfigureAwait(false));
-
-                    return results.ToList();
-
-                case true or false
-                    when ActionKeywordMatch(query, Settings.ActionKeyword.QuickAccessActionKeyword):
-                    return QuickAccess.AccessLinkListMatched(query, Settings.QuickAccessLinks);
-
-                default:
-                    return results.ToList();
-            }
-        }
-
-        private bool ActionKeywordMatch(Query query, Settings.ActionKeyword allowedActionKeyword)
-        {
-            var keyword = query.ActionKeyword.Length == 0 ? Query.GlobalPluginWildcardSign : query.ActionKeyword;
-
-            return allowedActionKeyword switch
-            {
-                Settings.ActionKeyword.SearchActionKeyword => Settings.SearchActionKeywordEnabled &&
-                                                              keyword == Settings.SearchActionKeyword,
-                Settings.ActionKeyword.PathSearchActionKeyword => Settings.PathSearchKeywordEnabled &&
-                                                                  keyword == Settings.PathSearchActionKeyword,
-                Settings.ActionKeyword.QuickAccessActionKeyword => Settings.QuickAccessKeywordEnabled &&
-                                                                   keyword == Settings.QuickAccessActionKeyword,
-                _ => throw new ArgumentOutOfRangeException(nameof(allowedActionKeyword), allowedActionKeyword, "actionKeyword out of range")
-            };
+            return [];
         }
 
         private async Task<List<Result>> PathSearchAsync(Query query, CancellationToken token = default)
         {
             var querySearch = query.Search;
-
             var results = new HashSet<Result>(PathEqualityComparator.Instance);
 
             if (EnvironmentVariables.IsEnvironmentVariableSearch(querySearch))
@@ -118,25 +70,21 @@ namespace Flow.Launcher.Plugin.Explorer.Search
 
             // Check that actual location exists, otherwise directory search will throw directory not found exception
             if (!FilesFolders.ReturnPreviousDirectoryIfIncompleteString(path).LocationExists())
-                return results.ToList();
+                return [.. results];
 
             var retrievedDirectoryPath = FilesFolders.ReturnPreviousDirectoryIfIncompleteString(path);
 
             results.Add(retrievedDirectoryPath.EndsWith(":\\")
-                ? ResultManager.CreateDriveSpaceDisplayResult(retrievedDirectoryPath, query.ActionKeyword)
-                : ResultManager.CreateOpenCurrentFolderResult(retrievedDirectoryPath, query.ActionKeyword));
+                ? ResultManager.CreateDriveSpaceDisplayResult(retrievedDirectoryPath)
+                : ResultManager.CreateOpenCurrentFolderResult(retrievedDirectoryPath));
 
             if (token.IsCancellationRequested)
-                return new List<Result>();
+                return [];
 
-            IAsyncEnumerable<SearchResult> directoryResult;
-
-            var recursiveIndicatorIndex = path.IndexOf('>');
-
-            directoryResult = DirectoryInfoSearch.TopLevelDirectorySearch(query, path, token).ToAsyncEnumerable();
+            IAsyncEnumerable<SearchResult> directoryResult = DirectoryInfoSearch.TopLevelDirectorySearch(query, path, token).ToAsyncEnumerable();
 
             if (token.IsCancellationRequested)
-                return new List<Result>();
+                return [];
 
             try
             {
@@ -151,15 +99,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             }
 
 
-            return results.ToList();
-        }
-
-        private bool IsExcludedFile(SearchResult result)
-        {
-            string[] excludedFileTypes = Settings.ExcludedFileTypes.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-            string fileExtension = Path.GetExtension(result.FullPath).TrimStart('.');
-
-            return excludedFileTypes.Contains(fileExtension, StringComparer.OrdinalIgnoreCase);
+            return [.. results];
         }
     }
 }
