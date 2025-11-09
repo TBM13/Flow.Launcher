@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Flow.Launcher.Plugin.Explorer.Search.Everything;
 using Flow.Launcher.Plugin.Explorer.Views;
 using Flow.Launcher.Plugin.SharedCommands;
 using Flow.Launcher.Plugin.SharedModels;
@@ -349,20 +348,12 @@ namespace Flow.Launcher.Plugin.Explorer.Search
 
         private static void OpenFile(string filePath, string workingDir = "", bool asAdmin = false)
         {
-            IncrementEverythingRunCounterIfNeeded(filePath);
             FilesFolders.OpenFile(filePath, workingDir, asAdmin, (string str) => Context.API.ShowMsgBox(str));
         }
 
         private static void OpenFolder(string folderPath, string fileNameOrFilePath = null)
         {
-            IncrementEverythingRunCounterIfNeeded(folderPath);
             Context.API.OpenDirectory(folderPath, fileNameOrFilePath);
-        }
-
-        private static void IncrementEverythingRunCounterIfNeeded(string fileOrFolder)
-        {
-            if (Settings.EverythingEnabled && Settings.EverythingEnableRunCount)
-                _ = Task.Run(() => EverythingApi.IncrementRunCounterAsync(fileOrFolder));
         }
 
         private static string GetFileMoreInfoTooltip(string filePath)

@@ -9,7 +9,6 @@ using System.Windows.Controls;
 using Flow.Launcher.Plugin.Explorer.Exceptions;
 using Flow.Launcher.Plugin.Explorer.Helper;
 using Flow.Launcher.Plugin.Explorer.Search;
-using Flow.Launcher.Plugin.Explorer.Search.Everything;
 using Flow.Launcher.Plugin.Explorer.ViewModels;
 using Flow.Launcher.Plugin.Explorer.Views;
 
@@ -44,8 +43,6 @@ namespace Flow.Launcher.Plugin.Explorer
             searchManager = new SearchManager(Settings, Context);
             ResultManager.Init(Context, Settings);
 
-            EverythingApiDllImport.Load(Path.Combine(Context.CurrentPluginMetadata.PluginDirectory, "EverythingSDK",
-                Environment.Is64BitProcess ? "x64" : "x86"));
             return Task.CompletedTask;
         }
 
@@ -94,12 +91,6 @@ namespace Flow.Launcher.Plugin.Explorer
         public string GetTranslatedPluginDescription()
         {
             return Localize.plugin_explorer_plugin_description();
-        }
-
-        public void OnCultureInfoChanged(CultureInfo newCulture)
-        {
-            // Update labels for setting view model
-            EverythingSortOptionLocalized.UpdateLabels(viewModel.AllEverythingSortOptions);
         }
 
         private static void FillQuickAccessLinkNames()

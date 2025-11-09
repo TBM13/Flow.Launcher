@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -33,7 +33,6 @@ namespace Flow.Launcher.Plugin.Explorer.Views
                 GeneralSettingsExpander,
                 ContextMenuExpander,
                 PreviewPanelExpander,
-                EverythingExpander,
                 ActionKeywordsExpander,
                 QuickAccessExpander,
                 ExcludedPathsExpander
@@ -122,7 +121,7 @@ namespace Flow.Launcher.Plugin.Explorer.Views
         private void lbxAccessLinks_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             if (sender is not ListView listView) return;
-            if (listView.View is not GridView gView) return; 
+            if (listView.View is not GridView gView) return;
 
             var workingWidth =
                 listView.ActualWidth - SystemParameters.VerticalScrollBarWidth; // take into account vertical scrollbar

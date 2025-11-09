@@ -1,12 +1,11 @@
-﻿using Flow.Launcher.Plugin.Explorer.Search;
-using Flow.Launcher.Plugin.Explorer.Search.Everything;
-using Flow.Launcher.Plugin.Explorer.Search.QuickAccessLinks;
-using Flow.Launcher.Plugin.Explorer.Search.WindowsIndex;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
+using Flow.Launcher.Plugin.Explorer.Search;
 using Flow.Launcher.Plugin.Explorer.Search.IProvider;
+using Flow.Launcher.Plugin.Explorer.Search.QuickAccessLinks;
+using Flow.Launcher.Plugin.Explorer.Search.WindowsIndex;
 
 namespace Flow.Launcher.Plugin.Explorer
 {
@@ -65,19 +64,17 @@ namespace Flow.Launcher.Plugin.Explorer
         public bool ShowCreatedDateInPreviewPanel { get; set; } = true;
 
         public bool ShowModifiedDateInPreviewPanel { get; set; } = true;
-        
+
         public bool ShowFileAgeInPreviewPanel { get; set; } = false;
 
         public string PreviewPanelDateFormat { get; set; } = "yyyy-MM-dd";
 
         public string PreviewPanelTimeFormat { get; set; } = "HH:mm";
 
-        private EverythingSearchManager _everythingManagerInstance;
         private WindowsIndexSearchManager _windowsIndexSearchManager;
 
         #region SearchEngine
 
-        private EverythingSearchManager EverythingManagerInstance => _everythingManagerInstance ??= new EverythingSearchManager(this);
         private WindowsIndexSearchManager WindowsIndexSearchManager => _windowsIndexSearchManager ??= new WindowsIndexSearchManager(this);
 
         public IndexSearchEngineOption IndexSearchEngine { get; set; } = IndexSearchEngineOption.WindowsIndex;
@@ -85,7 +82,6 @@ namespace Flow.Launcher.Plugin.Explorer
         [JsonIgnore]
         public IIndexProvider IndexProvider => IndexSearchEngine switch
         {
-            IndexSearchEngineOption.Everything => EverythingManagerInstance,
             IndexSearchEngineOption.WindowsIndex => WindowsIndexSearchManager,
             _ => throw new ArgumentOutOfRangeException(nameof(IndexSearchEngine))
         };
@@ -95,7 +91,6 @@ namespace Flow.Launcher.Plugin.Explorer
         [JsonIgnore]
         public IPathIndexProvider PathEnumerator => PathEnumerationEngine switch
         {
-            PathEnumerationEngineOption.Everything => EverythingManagerInstance,
             PathEnumerationEngineOption.WindowsIndex => WindowsIndexSearchManager,
             _ => throw new ArgumentOutOfRangeException(nameof(PathEnumerationEngine))
         };
@@ -104,7 +99,6 @@ namespace Flow.Launcher.Plugin.Explorer
         [JsonIgnore]
         public IContentIndexProvider ContentIndexProvider => ContentSearchEngine switch
         {
-            ContentIndexSearchEngineOption.Everything => EverythingManagerInstance,
             ContentIndexSearchEngineOption.WindowsIndex => WindowsIndexSearchManager,
             _ => throw new ArgumentOutOfRangeException(nameof(ContentSearchEngine))
         };
@@ -113,8 +107,6 @@ namespace Flow.Launcher.Plugin.Explorer
         {
             [Description("plugin_explorer_engine_windows_index")]
             WindowsIndex,
-            [Description("plugin_explorer_engine_everything")]
-            Everything,
             [Description("plugin_explorer_path_enumeration_engine_none")]
             DirectEnumeration
         }
@@ -122,35 +114,14 @@ namespace Flow.Launcher.Plugin.Explorer
         public enum IndexSearchEngineOption
         {
             [Description("plugin_explorer_engine_windows_index")]
-            WindowsIndex,
-            [Description("plugin_explorer_engine_everything")]
-            Everything,
+            WindowsIndex
         }
 
         public enum ContentIndexSearchEngineOption
         {
             [Description("plugin_explorer_engine_windows_index")]
-            WindowsIndex,
-            [Description("plugin_explorer_engine_everything")]
-            Everything,
+            WindowsIndex
         }
-
-        #endregion
-
-        #region Everything Settings
-
-        public string EverythingInstalledPath { get; set; }
-
-        public EverythingSortOption SortOption { get; set; } = EverythingSortOption.NAME_ASCENDING;
-
-        public bool EnableEverythingContentSearch { get; set; } = false;
-
-        public bool EverythingEnabled => IndexSearchEngine == IndexSearchEngineOption.Everything ||
-                                         PathEnumerationEngine == PathEnumerationEngineOption.Everything ||
-                                         ContentSearchEngine == ContentIndexSearchEngineOption.Everything;
-
-        public bool EverythingSearchFullPath { get; set; } = false;
-        public bool EverythingEnableRunCount { get; set; } = true;
 
         #endregion
 

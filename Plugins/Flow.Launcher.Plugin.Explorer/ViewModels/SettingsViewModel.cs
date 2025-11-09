@@ -11,8 +11,6 @@ using System.Windows.Forms;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Plugin.Explorer.Helper;
 using Flow.Launcher.Plugin.Explorer.Search;
-using Flow.Launcher.Plugin.Explorer.Search.Everything;
-using Flow.Launcher.Plugin.Explorer.Search.Everything.Exceptions;
 using Flow.Launcher.Plugin.Explorer.Search.QuickAccessLinks;
 using Flow.Launcher.Plugin.Explorer.Views;
 
@@ -366,7 +364,9 @@ namespace Flow.Launcher.Plugin.Explorer.ViewModels
             collection.Remove(selectedLink);
             collection.Add(new AccessLink
             {
-                Path = path, Type = selectedLink.Type, Name = path.GetPathName()
+                Path = path,
+                Type = selectedLink.Type,
+                Name = path.GetPathName()
             });
             Save();
         }
@@ -377,7 +377,7 @@ namespace Flow.Launcher.Plugin.Explorer.ViewModels
             var container = Settings.IndexSearchExcludedSubdirectoryPaths;
 
             if (container is null) return;
-            
+
             var folderBrowserDialog = new FolderBrowserDialog();
 
             if (folderBrowserDialog.ShowDialog() != DialogResult.OK)
@@ -411,7 +411,7 @@ namespace Flow.Launcher.Plugin.Explorer.ViewModels
                 Save();
             }
         }
-        
+
         [RelayCommand]
         private void AddQuickAccessLink()
         {
@@ -454,7 +454,7 @@ namespace Flow.Launcher.Plugin.Explorer.ViewModels
             }
             Save();
         }
-        
+
         private void ShowUnselectedMessage()
         {
             var warning = Localize.plugin_explorer_make_selection_warning();
@@ -589,78 +589,5 @@ namespace Flow.Launcher.Plugin.Explorer.ViewModels
                 OnPropertyChanged();
             }
         }
-
-        #region Everything FastSortWarning
-
-        public List<EverythingSortOptionLocalized> AllEverythingSortOptions { get; } = EverythingSortOptionLocalized.GetValues();
-
-        public EverythingSortOption SelectedEverythingSortOption
-        {
-            get => Settings.SortOption;
-            set
-            {
-                if (value == Settings.SortOption)
-                    return;
-                Settings.SortOption = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(FastSortWarningVisibility));
-                OnPropertyChanged(nameof(SortOptionWarningMessage));
-            }
-        }
-
-        public Visibility FastSortWarningVisibility
-        {
-            get
-            {
-                try
-                {
-                    return EverythingApi.IsFastSortOption(Settings.SortOption) ? Visibility.Collapsed : Visibility.Visible;
-                }
-                catch (IPCErrorException)
-                {
-                    // this error occurs if the Everything service is not running, in this instance show the warning and
-                    // update the message to let user know in the settings panel.
-                    return Visibility.Visible;
-                }
-                catch (DllNotFoundException)
-                {
-                    return Visibility.Collapsed;
-                }
-            }
-        }
-
-        public string SortOptionWarningMessage
-        {
-            get
-            {
-                try
-                {
-                    // this method is used to determine if Everything service is running because as at Everything v1.4.1
-                    // the sdk does not provide a dedicated interface to determine if it is running.
-                    return EverythingApi.IsFastSortOption(Settings.SortOption) ? string.Empty
-                        : Localize.flowlauncher_plugin_everything_nonfastsort_warning();
-                }
-                catch (IPCErrorException)
-                {
-                    return Localize.flowlauncher_plugin_everything_is_not_running();
-                }
-                catch (DllNotFoundException)
-                {
-                    return Localize.flowlauncher_plugin_everything_sdk_issue();
-                }
-            }
-        }
-
-        public string EverythingInstalledPath
-        {
-            get => Settings.EverythingInstalledPath;
-            set
-            {
-                Settings.EverythingInstalledPath = value;
-                OnPropertyChanged();
-            }
-        }
-
-        #endregion
     }
 }

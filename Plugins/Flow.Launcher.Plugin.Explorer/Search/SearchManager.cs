@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Flow.Launcher.Plugin.Explorer.Exceptions;
 using Flow.Launcher.Plugin.Explorer.Search.DirectoryInfo;
-using Flow.Launcher.Plugin.Explorer.Search.Everything;
 using Flow.Launcher.Plugin.Explorer.Search.QuickAccessLinks;
 using Flow.Launcher.Plugin.SharedCommands;
 using Path = System.IO.Path;
@@ -85,10 +84,6 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 case false
                     when ActionKeywordMatch(query, Settings.ActionKeyword.FileContentSearchActionKeyword):
 
-                    // Intentionally require enabling of Everything's content search due to its slowness
-                    if (Settings.ContentIndexProvider is EverythingSearchManager && !Settings.EnableEverythingContentSearch)
-                        return EverythingContentSearchResult(query);
-
                     searchResults = Settings.ContentIndexProvider.ContentSearchAsync("", query.Search, token);
                     engineName = Enum.GetName(Settings.ContentSearchEngine);
                     break;
@@ -160,25 +155,6 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 Settings.ActionKeyword.QuickAccessActionKeyword => Settings.QuickAccessKeywordEnabled &&
                                                                    keyword == Settings.QuickAccessActionKeyword,
                 _ => throw new ArgumentOutOfRangeException(nameof(allowedActionKeyword), allowedActionKeyword, "actionKeyword out of range")
-            };
-        }
-
-        private List<Result> EverythingContentSearchResult(Query query)
-        {
-            return new List<Result>()
-            {
-                new()
-                {
-                    Title = Localize.flowlauncher_plugin_everything_enable_content_search(),
-                    SubTitle = Localize.flowlauncher_plugin_everything_enable_content_search_tips(),
-                    IcoPath = "Images/index_error.png",
-                    Action = c =>
-                    {
-                        Settings.EnableEverythingContentSearch = true;
-                        Context.API.ChangeQuery(query.RawQuery, true);
-                        return false;
-                    }
-                }
             };
         }
 
