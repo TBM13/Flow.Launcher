@@ -59,6 +59,7 @@ public class ServiceResult
     public bool IsRunning { get; }
 
     private string? _description = null;
+    private string? _imagePath = null;
 
     private ServiceResult(ServiceController serviceController)
     {
@@ -86,6 +87,16 @@ public class ServiceResult
         return null;
     }
 
+    public string? GetImagePath()
+    {
+        if (_imagePath is not null)
+            return _imagePath;
+
+        using var key = Registry.LocalMachine.OpenSubKey($@"SYSTEM\CurrentControlSet\Services\{ServiceName}");
+        _imagePath = key?.GetValue("ImagePath") as string;
+        return _imagePath;
+    }
+
     public string? GetDescription()
     {
         if (_description is not null)
@@ -102,8 +113,7 @@ public class ServiceResult
     private string? GetDescriptionFromRegistry()
     {
         using var key = Registry.LocalMachine.OpenSubKey($@"SYSTEM\CurrentControlSet\Services\{ServiceName}");
-        string? value = key?.GetValue("Description") as string;
-        if (string.IsNullOrEmpty(value))
+        if (key?.GetValue("Description") is not string value)
             return null;
 
         // Indirect string
