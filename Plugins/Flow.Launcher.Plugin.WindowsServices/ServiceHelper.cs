@@ -5,7 +5,12 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.ServiceProcess;
+using System.Windows.Controls;
+using Flow.Launcher.Plugin.WindowsServices.Preview;
 using Microsoft.Win32;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+
 
 namespace Flow.Launcher.Plugin.WindowsServices;
 
@@ -48,18 +53,19 @@ public enum Action
 public class ServiceResult
 {
     public string ServiceName { get; }
-
     public string DisplayName { get; }
-
-    public ServiceStartMode StartMode { get; }
-
+    public ServiceStartMode StartType { get; }
+    public ServiceControllerStatus Status { get; }
     public bool IsRunning { get; }
+
+    private string? _description = null;
 
     private ServiceResult(ServiceController serviceController)
     {
         ServiceName = serviceController.ServiceName;
         DisplayName = serviceController.DisplayName;
-        StartMode = serviceController.StartType;
+        StartType = serviceController.StartType;
+        Status = serviceController.Status;
         IsRunning = serviceController.Status != ServiceControllerStatus.Stopped && serviceController.Status != ServiceControllerStatus.StopPending;
     }
 
@@ -79,6 +85,68 @@ public class ServiceResult
 
         return null;
     }
+
+    public string? GetDescription()
+    {
+        if (_description is not null)
+            return _description;
+
+        // Try registry first since it's way faster than WMI
+        _description = GetDescriptionFromRegistry();
+        // Seems like all descriptions can be read from the registry, WMI is not needed
+        // _description ??= GetDescriptionFromWMI();
+
+        return _description;
+    }
+
+    private string? GetDescriptionFromRegistry()
+    {
+        using var key = Registry.LocalMachine.OpenSubKey($@"SYSTEM\CurrentControlSet\Services\{ServiceName}");
+        string? value = key?.GetValue("Description") as string;
+        if (string.IsNullOrEmpty(value))
+            return null;
+
+        // Indirect string
+        if (value.StartsWith('@'))
+        {
+            char[] buffer = new char[2048];
+            while (true)
+            {
+                int hr = PInvoke.SHLoadIndirectString(value, buffer);
+                if (hr != HRESULT.S_OK)
+                {
+                    if (hr == unchecked((int)0x8007007A)) // ERROR_INSUFFICIENT_BUFFER
+                    {
+                        if (buffer.Length >= 65536) return null;
+                        buffer = new char[buffer.Length * 2];
+                        continue;
+                    }
+
+                    return null;
+                }
+
+                int len = buffer.IndexOf('\0');
+                return new string(buffer, 0, len);
+            }
+        }
+
+        return value;
+    }
+
+    /*private string? GetDescriptionFromWMI()
+    {
+        using var searcher = new ManagementObjectSearcher(
+            $"SELECT Description FROM Win32_Service WHERE Name = '{ServiceName.Replace("'", "''")}'");
+
+        foreach (ManagementBaseObject? obj in searcher.Get())
+        {
+            string? desc = obj["description"]?.ToString();
+            if (!string.IsNullOrEmpty(desc))
+                return desc;
+        }
+
+        return null;
+    }*/
 }
 
 public static class ServiceHelper
@@ -86,17 +154,21 @@ public static class ServiceHelper
     public static IEnumerable<Result?> Search(string search)
     {
         var services = ServiceController.GetServices().OrderBy(s => s.DisplayName);
-        IEnumerable<ServiceController> serviceList = [];
+        IEnumerable<ServiceResult?> serviceList = [];
 
         if (search.StartsWith("Status:", StringComparison.CurrentCultureIgnoreCase))
         {
             // allows queries like 'status:running'
-            serviceList = services.Where(s => GetLocalizedStatus(s.Status).Contains(search.Split(':')[1], StringComparison.CurrentCultureIgnoreCase));
+            serviceList = services
+                .Where(s => GetLocalizedStatus(s.Status).Contains(search.Split(':')[1], StringComparison.CurrentCultureIgnoreCase))
+                .Select(ServiceResult.CreateServiceController);
         }
         else if (search.StartsWith("Startup:", StringComparison.CurrentCultureIgnoreCase))
         {
             // allows queries like 'startup:automatic'
-            serviceList = services.Where(s => GetLocalizedStartType(s.StartType, s.ServiceName).Contains(search.Split(':')[1], StringComparison.CurrentCultureIgnoreCase));
+            serviceList = services
+                .Where(s => GetLocalizedStartType(s.StartType, s.ServiceName).Contains(search.Split(':')[1], StringComparison.CurrentCultureIgnoreCase))
+                .Select(ServiceResult.CreateServiceController);
         }
         else
         {
@@ -105,19 +177,22 @@ public static class ServiceHelper
                 .Where(s => s.DisplayName.StartsWith(search, StringComparison.OrdinalIgnoreCase) || s.ServiceName.StartsWith(search, StringComparison.OrdinalIgnoreCase));
             var servicesContains = services.Except(servicesStartsWith)
                 .Where(s => s.DisplayName.Contains(search, StringComparison.OrdinalIgnoreCase) || s.ServiceName.Contains(search, StringComparison.OrdinalIgnoreCase));
-            serviceList = servicesStartsWith.Concat(servicesContains);
+            serviceList = servicesStartsWith.Concat(servicesContains).Select(ServiceResult.CreateServiceController);
         }
 
-        var result = serviceList.Select(s =>
+        int failed = 0;
+        var result = serviceList.Select(svcResult =>
         {
-            var serviceResult = ServiceResult.CreateServiceController(s);
-            if (serviceResult is null)
+            if (svcResult is null)
+            {
+                failed++;
                 return null;
+            }
 
             GlyphInfo glyph =
-                s.StartType == ServiceStartMode.Disabled && s.Status == ServiceControllerStatus.Stopped
+                svcResult.StartType == ServiceStartMode.Disabled && svcResult.Status == ServiceControllerStatus.Stopped
                     ? new(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xeb90")
-                    : new(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: s.Status switch
+                    : new(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: svcResult.Status switch
                     {
                         ServiceControllerStatus.Stopped => "\xea39",
                         ServiceControllerStatus.Running => "\xe930",
@@ -127,15 +202,16 @@ public static class ServiceHelper
 
             return new Result()
             {
-                Title = s.DisplayName,
-                SubTitle = GetResultSubTitle(s),
-                ContextData = serviceResult,
+                Title = svcResult.DisplayName,
+                SubTitle = GetResultSubTitle(svcResult),
+                ContextData = svcResult,
                 Glyph = glyph,
+                CopyText = svcResult.ServiceName,
                 Action = c =>
                 {
                     try
                     {
-                        Main.Context.API.CopyToClipboard(s.ServiceName, showDefaultNotification: false);
+                        Main.Context.API.CopyToClipboard(svcResult.ServiceName, showDefaultNotification: false);
                         return true;
                     }
                     catch (ExternalException)
@@ -143,9 +219,13 @@ public static class ServiceHelper
                         Main.Context.API.ShowMsgBox("Failed to copy service name to clipboard.");
                         return false;
                     }
-                }
+                },
+                PreviewPanel = new Lazy<UserControl>(() => new PreviewPanel(svcResult)),
             };
         }).Where(s => s is not null);
+
+        if (failed != 0)
+            Main.Context.API.ShowMsgError($"Failed to get information from {failed} service(s)");
 
         return result;
     }
@@ -205,29 +285,25 @@ public static class ServiceHelper
         }
     }
 
-    private static string GetResultSubTitle(ServiceController serviceController)
+    private static string GetResultSubTitle(ServiceResult serviceController)
     {
         return $"Status: {GetLocalizedStatus(serviceController.Status)} - Startup: {GetLocalizedStartType(serviceController.StartType, serviceController.ServiceName)} - Name: {serviceController.ServiceName}";
     }
 
     private static string GetLocalizedStatus(ServiceControllerStatus status)
     {
-        if (status == ServiceControllerStatus.Stopped)
-            return "Stopped";
-        else if (status == ServiceControllerStatus.StartPending)
-            return "Starting";
-        else if (status == ServiceControllerStatus.StopPending)
-            return "Stopping";
-        else if (status == ServiceControllerStatus.Running)
-            return "Running";
-        else
+        return status switch
         {
-            return status == ServiceControllerStatus.ContinuePending
-                ? "Continue"
-                : status == ServiceControllerStatus.PausePending
-                            ? "Pausing"
-                            : status == ServiceControllerStatus.Paused ? "Paused" : status.ToString();
-        }
+            ServiceControllerStatus.StartPending => "Starting",
+            ServiceControllerStatus.Running => "Running",
+            ServiceControllerStatus.StopPending => "Stopping",
+            ServiceControllerStatus.Stopped => "Stopped",
+
+            ServiceControllerStatus.PausePending => "Pausing",
+            ServiceControllerStatus.Paused => "Paused",
+            ServiceControllerStatus.ContinuePending => "Continuing",
+            _ => status.ToString()
+        };
     }
 
     private static string GetLocalizedStartType(ServiceStartMode startMode, string serviceName)

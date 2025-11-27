@@ -84,7 +84,7 @@ public class Main : IPlugin, IContextMenu
 
         if (service.IsRunning)
         {
-            if (service.StartMode != ServiceStartMode.Disabled)
+            if (service.StartType != ServiceStartMode.Disabled)
             {
                 results.Add(new Result()
                 {
@@ -129,7 +129,7 @@ public class Main : IPlugin, IContextMenu
                 }
             });
         }
-        else if (service.StartMode != ServiceStartMode.Disabled)
+        else if (service.StartType != ServiceStartMode.Disabled)
         {
             results.Add(new Result()
             {
@@ -153,7 +153,7 @@ public class Main : IPlugin, IContextMenu
             });
         }
 
-        if (service.StartMode == ServiceStartMode.Disabled)
+        if (service.StartType == ServiceStartMode.Disabled)
         {
             string startServiceStr = service.IsRunning
                 ? string.Empty : " & start the service";
