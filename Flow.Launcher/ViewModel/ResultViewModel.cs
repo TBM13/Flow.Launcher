@@ -166,6 +166,8 @@ namespace Flow.Launcher.ViewModel
             private set => _previewImage = value;
         }
 
+        public string PreviewDescription => Result.Preview.Description ?? Result.SubTitle;
+
         /// <summary>
         /// Determines if to use the full width of the preview panel
         /// </summary>
