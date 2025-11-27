@@ -57,15 +57,13 @@ public class ServiceResult
 
     private ServiceResult(ServiceController serviceController)
     {
-        ArgumentNullException.ThrowIfNull(serviceController);
-
         ServiceName = serviceController.ServiceName;
         DisplayName = serviceController.DisplayName;
         StartMode = serviceController.StartType;
         IsRunning = serviceController.Status != ServiceControllerStatus.Stopped && serviceController.Status != ServiceControllerStatus.StopPending;
     }
 
-    public static ServiceResult CreateServiceController(ServiceController serviceController)
+    public static ServiceResult? CreateServiceController(ServiceController serviceController)
     {
         try
         {
@@ -85,7 +83,7 @@ public class ServiceResult
 
 public static class ServiceHelper
 {
-    public static IEnumerable<Result> Search(string search)
+    public static IEnumerable<Result?> Search(string search)
     {
         var services = ServiceController.GetServices().OrderBy(s => s.DisplayName);
         IEnumerable<ServiceController> serviceList = [];
@@ -113,7 +111,7 @@ public static class ServiceHelper
         var result = serviceList.Select(s =>
         {
             var serviceResult = ServiceResult.CreateServiceController(s);
-            if (serviceResult == null)
+            if (serviceResult is null)
                 return null;
 
             GlyphInfo glyph =
@@ -147,15 +145,13 @@ public static class ServiceHelper
                     }
                 }
             };
-        }).Where(s => s != null);
+        }).Where(s => s is not null);
 
         return result;
     }
 
     public static void ChangeStatus(ServiceResult serviceResult, Action action)
     {
-        ArgumentNullException.ThrowIfNull(serviceResult);
-
         try
         {
             var info = new ProcessStartInfo
@@ -196,10 +192,10 @@ public static class ServiceHelper
                     throw new Exception("Unknown action");
             }
 
-            var process = Process.Start(info);
+            Process? process = Process.Start(info) ?? throw new Exception("Failed to start process");
             process.WaitForExit();
-            var exitCode = process.ExitCode;
 
+            int exitCode = process.ExitCode;
             if (exitCode != 0)
                 throw new Exception($"The command returned {exitCode}");
         }
@@ -209,27 +205,8 @@ public static class ServiceHelper
         }
     }
 
-    public static void OpenServices()
-    {
-        try
-        {
-            var startInfo = new ProcessStartInfo
-            {
-                FileName = "services.msc",
-                UseShellExecute = true,
-            };
-
-            Process.Start(startInfo);
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Failed to open services.msc: {ex.Message}");
-        }
-    }
-
     private static string GetResultSubTitle(ServiceController serviceController)
     {
-        ArgumentNullException.ThrowIfNull(serviceController);
         return $"Status: {GetLocalizedStatus(serviceController.Status)} - Startup: {GetLocalizedStartType(serviceController.StartType, serviceController.ServiceName)} - Name: {serviceController.ServiceName}";
     }
 
@@ -267,24 +244,6 @@ public static class ServiceHelper
                             ? "Manual"
                             : startMode == ServiceStartMode.Disabled ? "Disabled" : startMode.ToString();
         }
-    }
-
-    private static string GetLocalizedMessage(Action action)
-    {
-        return action == Action.Start
-            ? "The service has been started"
-            : action == Action.Stop
-                ? "The service has been stopped"
-                : action == Action.Restart ? "The service has been restarted" : string.Empty;
-    }
-
-    private static string GetLocalizedErrorMessage(Action action)
-    {
-        return action == Action.Start
-            ? "An error occurred while starting the service"
-            : action == Action.Stop
-                ? "An error occurred while stopping the service"
-                : action == Action.Restart ? "An error occurred while restarting the service" : string.Empty;
     }
 
     private static bool IsDelayedStart(string serviceName)

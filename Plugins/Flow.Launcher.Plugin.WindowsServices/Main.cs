@@ -7,14 +7,14 @@ namespace Flow.Launcher.Plugin.WindowsServices;
 
 public class Main : IPlugin, IContextMenu
 {
-    internal static PluginInitContext Context { get; private set; }
+    internal static PluginInitContext Context { get; private set; } = null!;
 
     public void Init(PluginInitContext context)
     {
         Context = context;
     }
 
-    public List<Result> Query(Query query)
+    public List<Result?> Query(Query query)
     {
         return [.. ServiceHelper.Search(query.Search)];
     }
