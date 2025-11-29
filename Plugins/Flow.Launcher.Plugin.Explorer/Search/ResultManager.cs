@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Flow.Launcher.Plugin.Explorer.Helper;
 using Flow.Launcher.Plugin.Explorer.Views;
 using Flow.Launcher.Plugin.SharedCommands;
 using Flow.Launcher.Plugin.SharedModels;
@@ -31,7 +32,14 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 ? string.Empty
                 : query.ActionKeyword + ' ';
 
-            if (resultType != ResultType.File && !path.EndsWith(Constants.DirectorySeparator))
+            if (resultType == ResultType.File)
+            {
+                if (path.EndsWith(".lnk", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    path = ShellLinkHelper.retrieveTargetPath(path);
+                }
+            }
+            else if (!path.EndsWith(Constants.DirectorySeparator))
                 path += Constants.DirectorySeparator;
 
             return actionKeyword + path;
