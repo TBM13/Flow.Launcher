@@ -6,9 +6,6 @@ namespace Flow.Launcher.Plugin.WindowsSettings
 {
     public sealed class Main : IPlugin
     {
-        private const string CONTROL_PANEL_ICON = "Images/ControlPanel_Small.png";
-        private const string WINDOWS_SETTING_ICON = "Images/WindowsSettings.light.png";
-
         private IEnumerable<WindowsSetting>? _settingsList;
 
         internal static PluginInitContext Context { get; private set; } = null!;
@@ -23,7 +20,7 @@ namespace Flow.Launcher.Plugin.WindowsSettings
 
         public List<Result> Query(Query query)
         {
-            var newList = ResultHelper.GetResultList(Context.API, _settingsList!, query, WINDOWS_SETTING_ICON, CONTROL_PANEL_ICON);
+            var newList = ResultHelper.GetResultList(Context.API, _settingsList!, query);
             return newList;
         }
     }

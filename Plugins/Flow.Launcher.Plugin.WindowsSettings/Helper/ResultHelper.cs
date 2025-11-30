@@ -50,15 +50,15 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Helper
         /// </summary>
         private const int NO_GLYPH_PENALTY = -10;
 
-        private static List<Result> GetDefaultResults(
-            IPublicAPI api,
-            in IEnumerable<WindowsSetting> list,
-            string windowsSettingIconPath,
-            string controlPanelIconPath)
+        private const string WINDOWS_SETTINGS_ICON_PATH = "Images/WindowsSettings.light.png";
+        private static readonly string CONTROL_PANEL_ICON_PATH = Environment.ExpandEnvironmentVariables(@"%SystemRoot%\System32\control.exe");
+        private static readonly string MMC_ICON_PATH = Environment.ExpandEnvironmentVariables(@"%SystemRoot%\System32\mmc.exe");
+
+        private static List<Result> GetDefaultResults(IPublicAPI api, in IEnumerable<WindowsSetting> list)
         {
             return [.. list.Select(entry =>
             {
-                var result = NewSettingResult(api, 100, windowsSettingIconPath, controlPanelIconPath, entry);
+                var result = NewSettingResult(api, 100, entry);
                 AddOptionalToolTip(entry, result);
                 return result;
             })];
@@ -70,16 +70,11 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Helper
         /// <param name="list">The original result list to convert.</param>
         /// <param name="query">Query for specific result List</param>
         /// <param name="windowsSettingIconPath">The path to the icon of each entry.</param>
-        internal static List<Result> GetResultList(
-            IPublicAPI api,
-            in IEnumerable<WindowsSetting> list,
-            Query query,
-            string windowsSettingIconPath,
-            string controlPanelIconPath)
+        internal static List<Result> GetResultList(IPublicAPI api, in IEnumerable<WindowsSetting> list, Query query)
         {
             if (string.IsNullOrWhiteSpace(query.Search))
             {
-                return GetDefaultResults(api, list, windowsSettingIconPath, controlPanelIconPath);
+                return GetDefaultResults(api, list);
             }
 
             var resultList = new List<Result>();
@@ -90,7 +85,7 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Helper
                 var nameMatch = api.FuzzySearch(query.Search, entry.Name);
                 if (nameMatch.IsSearchPrecisionScoreMet())
                 {
-                    var settingResult = NewSettingResult(api, nameMatch.Score, windowsSettingIconPath, controlPanelIconPath, entry);
+                    var settingResult = NewSettingResult(api, nameMatch.Score, entry);
                     settingResult.TitleHighlightData = nameMatch.MatchData;
                     result = settingResult;
                 }
@@ -99,14 +94,14 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Helper
                     var areaMatch = api.FuzzySearch(query.Search, entry.JoinedAreaPath);
                     if (areaMatch.IsSearchPrecisionScoreMet())
                     {
-                        result = NewSettingResult(api, areaMatch.Score, windowsSettingIconPath, controlPanelIconPath, entry);
+                        result = NewSettingResult(api, areaMatch.Score, entry);
                     }
                     else
                     {
                         result = entry.AltNames?
                             .Select(altName => api.FuzzySearch(query.Search, altName))
                             .Where(match => match.IsSearchPrecisionScoreMet())
-                            .Select(altNameMatch => NewSettingResult(api, altNameMatch.Score, windowsSettingIconPath, controlPanelIconPath, entry))
+                            .Select(altNameMatch => NewSettingResult(api, altNameMatch.Score, entry))
                             .FirstOrDefault();
                     }
 
@@ -123,16 +118,17 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Helper
             return resultList;
         }
 
-        private static Result NewSettingResult(
-            IPublicAPI api,
-            int score,
-            string windowsSettingIconPath, string controlPanelIconPath,
-            WindowsSetting entry)
+        private static Result NewSettingResult(IPublicAPI api, int score, WindowsSetting entry)
         {
             Result res = new()
             {
                 Action = _ => DoOpenSettingsAction(api, entry),
-                IcoPath = entry.Type == WindowsSettingType.AppSettingsApp ? windowsSettingIconPath : controlPanelIconPath,
+                IcoPath = entry.Type switch
+                {
+                    WindowsSettingType.AppSettingsApp => WINDOWS_SETTINGS_ICON_PATH,
+                    WindowsSettingType.AppMMC => MMC_ICON_PATH,
+                    _ => CONTROL_PANEL_ICON_PATH
+                },
                 Glyph = entry.IconGlyph,
                 SubTitle = entry.JoinedFullSettingsPath,
                 Title = entry.Name,
