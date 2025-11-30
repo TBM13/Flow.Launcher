@@ -429,7 +429,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
             var result = new Result
             {
                 Title = title,
-                AutoCompleteText = Name,
+                AutoCompleteText = Location + '\\',
                 SubTitle = Main._settings.HideAppsPath ? string.Empty : Location,
                 IcoPath = LogoPath,
                 Preview = new Result.PreviewInfo
