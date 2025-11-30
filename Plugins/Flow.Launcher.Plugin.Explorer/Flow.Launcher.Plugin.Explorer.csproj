@@ -37,6 +37,9 @@
   </ItemGroup>
   
   <ItemGroup>
+    <Content Include="Images\*.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <AdditionalFiles Include="NativeMethods.txt" />
   </ItemGroup>
   
