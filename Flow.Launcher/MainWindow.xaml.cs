@@ -208,6 +208,16 @@ namespace Flow.Launcher
                         }
 
                         break;
+
+                    case nameof(MainViewModel.QueryText):
+                        if (QueryTextBox.Text == _viewModel.QueryText)
+                            return;
+
+                        // By using BeginChange and EndChange we allow CTRL + Z to undo this query
+                        QueryTextBox.BeginChange();
+                        QueryTextBox.Text = _viewModel.QueryText;
+                        QueryTextBox.EndChange();
+                        break;
                 }
             };
 
@@ -799,6 +809,9 @@ namespace Flow.Launcher
         private void QueryTextBox_TextChanged1(object sender, TextChangedEventArgs e)
         {
             var textBox = (TextBox)sender;
+            if (_viewModel.QueryText == textBox.Text)
+                return;
+
             _viewModel.QueryText = textBox.Text;
             _viewModel.Query(false);
         }
