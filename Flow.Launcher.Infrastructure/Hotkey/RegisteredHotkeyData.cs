@@ -26,7 +26,7 @@ public record RegisteredHotkeyData
     /// Array of values that will replace <c>{0}</c>, <c>{1}</c>, <c>{2}</c>, etc. in the localized string found via
     /// <see cref="DescriptionResourceKey"/>.
     /// </summary>
-    public object?[] DescriptionFormatVariables { get; } = Array.Empty<object?>();
+    public object?[] DescriptionFormatVariables { get; } = [];
 
     /// <summary>
     /// An action that, when called, will unregister this hotkey. If it's <c>null</c>, it's assumed that
@@ -83,7 +83,7 @@ public record RegisteredHotkeyData
     {
         Hotkey = new HotkeyModel(hotkey);
         DescriptionResourceKey = descriptionResourceKey;
-        DescriptionFormatVariables = new[] { descriptionFormatVariable };
+        DescriptionFormatVariables = [descriptionFormatVariable];
         RemoveHotkey = removeHotkey;
     }
 

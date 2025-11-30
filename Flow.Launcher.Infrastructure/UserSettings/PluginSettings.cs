@@ -9,7 +9,7 @@ namespace Flow.Launcher.Infrastructure.UserSettings
         /// <summary>
         /// Only used for serialization
         /// </summary>
-        public Dictionary<string, Plugin> Plugins { get; set; } = new();
+        public Dictionary<string, Plugin> Plugins { get; set; } = [];
 
         /// <summary>
         /// Update plugin settings with metadata.

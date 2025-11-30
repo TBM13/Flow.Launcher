@@ -134,7 +134,7 @@ namespace Flow.Launcher.Infrastructure.Storage
 
         public void Save()
         {
-            Save(Data.NonNull());
+            Save(Data ?? throw new NullReferenceException());
         }
 
         public void Save(T data)
@@ -148,7 +148,7 @@ namespace Flow.Launcher.Infrastructure.Storage
 
         public async ValueTask SaveAsync()
         {
-            await SaveAsync(Data.NonNull());
+            await SaveAsync(Data ?? throw new NullReferenceException());
         }
 
         public async ValueTask SaveAsync(T data)

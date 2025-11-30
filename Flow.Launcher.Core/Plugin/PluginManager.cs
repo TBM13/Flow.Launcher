@@ -239,12 +239,7 @@ namespace Flow.Launcher.Core.Plugin
 
                 try
                 {
-                    var milliseconds = await PublicApi.Instance.StopwatchLogDebugAsync(ClassName, $"Init method time cost for <{pair.Metadata.Name}>",
-                        () => pair.Plugin.InitAsync(new PluginInitContext(pair.Metadata, PublicApi.Instance)));
-
-                    pair.Metadata.InitTime += milliseconds;
-                    PublicApi.Instance.LogInfo(ClassName,
-                        $"Total init cost for <{pair.Metadata.Name}> is <{pair.Metadata.InitTime}ms>");
+                    await pair.Plugin.InitAsync(new PluginInitContext(pair.Metadata, PublicApi.Instance));
                 }
                 catch (Exception e)
                 {
@@ -383,17 +378,13 @@ namespace Flow.Launcher.Core.Plugin
 
             try
             {
-                var milliseconds = await PublicApi.Instance.StopwatchLogDebugAsync(ClassName, $"Cost for {metadata.Name}",
-                    async () => results = await pair.Plugin.QueryAsync(query, token).ConfigureAwait(false));
+                results = await pair.Plugin.QueryAsync(query, token).ConfigureAwait(false);
 
                 token.ThrowIfCancellationRequested();
                 if (results == null)
                     return null;
                 UpdatePluginMetadata(results, metadata, query);
 
-                metadata.QueryCount += 1;
-                metadata.AvgQueryTime =
-                    metadata.QueryCount == 1 ? milliseconds : (metadata.AvgQueryTime + milliseconds) / 2;
                 token.ThrowIfCancellationRequested();
             }
             catch (OperationCanceledException)
@@ -449,8 +440,7 @@ namespace Flow.Launcher.Core.Plugin
 
             try
             {
-                var milliseconds = await PublicApi.Instance.StopwatchLogDebugAsync(ClassName, $"Cost for {metadata.Name}",
-                    async () => results = await ((IAsyncHomeQuery)pair.Plugin).HomeQueryAsync(token).ConfigureAwait(false));
+                results = await ((IAsyncHomeQuery)pair.Plugin).HomeQueryAsync(token).ConfigureAwait(false);
 
                 token.ThrowIfCancellationRequested();
                 if (results == null)

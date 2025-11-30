@@ -219,91 +219,89 @@ namespace Flow.Launcher.Plugin.Program
 
             var _win32sCount = 0;
             var _uwpsCount = 0;
-            await Context.API.StopwatchLogInfoAsync(ClassName, "Preload programs cost", async () =>
+            var pluginCacheDirectory = Context.CurrentPluginMetadata.PluginCacheDirectoryPath;
+            FilesFolders.ValidateDirectory(pluginCacheDirectory);
+
+            static void MoveFile(string sourcePath, string destinationPath)
             {
-                var pluginCacheDirectory = Context.CurrentPluginMetadata.PluginCacheDirectoryPath;
-                FilesFolders.ValidateDirectory(pluginCacheDirectory);
-
-                static void MoveFile(string sourcePath, string destinationPath)
+                if (!File.Exists(sourcePath))
                 {
-                    if (!File.Exists(sourcePath))
-                    {
-                        return;
-                    }
+                    return;
+                }
 
-                    if (File.Exists(destinationPath))
-                    {
-                        try
-                        {
-                            File.Delete(sourcePath);
-                        }
-                        catch (Exception)
-                        {
-                            // Ignore, we will handle next time we start the plugin
-                        }
-                        return;
-                    }
-
-                    var destinationDirectory = Path.GetDirectoryName(destinationPath);
-                    if (!Directory.Exists(destinationDirectory) && (!string.IsNullOrEmpty(destinationDirectory)))
-                    {
-                        try
-                        {
-                            Directory.CreateDirectory(destinationDirectory);
-                        }
-                        catch (Exception)
-                        {
-                            // Ignore, we will handle next time we start the plugin
-                        }
-                    }
+                if (File.Exists(destinationPath))
+                {
                     try
                     {
-                        File.Move(sourcePath, destinationPath);
+                        File.Delete(sourcePath);
+                    }
+                    catch (Exception)
+                    {
+                        // Ignore, we will handle next time we start the plugin
+                    }
+                    return;
+                }
+
+                var destinationDirectory = Path.GetDirectoryName(destinationPath);
+                if (!Directory.Exists(destinationDirectory) && (!string.IsNullOrEmpty(destinationDirectory)))
+                {
+                    try
+                    {
+                        Directory.CreateDirectory(destinationDirectory);
                     }
                     catch (Exception)
                     {
                         // Ignore, we will handle next time we start the plugin
                     }
                 }
-
-                // If plugin cache directory is this: D:\\Data\\Cache\\Plugins\\Flow.Launcher.Plugin.Program
-                // then the parent directory is: D:\\Data\\Cache
-                // So we can use the parent of the parent directory to get the cache directory path
-                var directoryInfo = new DirectoryInfo(pluginCacheDirectory);
-                var cacheDirectory = directoryInfo.Parent?.Parent?.FullName;
-                // Move old cache files to the new cache directory if cache directory exists
-                if (!string.IsNullOrEmpty(cacheDirectory))
-                {
-                    var oldWin32CacheFile = Path.Combine(cacheDirectory, $"{Win32CacheName}.cache");
-                    var newWin32CacheFile = Path.Combine(pluginCacheDirectory, $"{Win32CacheName}.cache");
-                    MoveFile(oldWin32CacheFile, newWin32CacheFile);
-                    var oldUWPCacheFile = Path.Combine(cacheDirectory, $"{UwpCacheName}.cache");
-                    var newUWPCacheFile = Path.Combine(pluginCacheDirectory, $"{UwpCacheName}.cache");
-                    MoveFile(oldUWPCacheFile, newUWPCacheFile);
-                }
-
-                await _win32sLock.WaitAsync();
                 try
                 {
-                    _win32s = await context.API.LoadCacheBinaryStorageAsync(Win32CacheName, pluginCacheDirectory, new List<Win32>());
-                    _win32sCount = _win32s.Count;
+                    File.Move(sourcePath, destinationPath);
                 }
-                finally
+                catch (Exception)
                 {
-                    _win32sLock.Release();
+                    // Ignore, we will handle next time we start the plugin
                 }
+            }
 
-                await _uwpsLock.WaitAsync();
-                try
-                {
-                    _uwps = await context.API.LoadCacheBinaryStorageAsync(UwpCacheName, pluginCacheDirectory, new List<UWPApp>());
-                    _uwpsCount = _uwps.Count;
-                }
-                finally
-                {
-                    _uwpsLock.Release();
-                }
-            });
+            // If plugin cache directory is this: D:\\Data\\Cache\\Plugins\\Flow.Launcher.Plugin.Program
+            // then the parent directory is: D:\\Data\\Cache
+            // So we can use the parent of the parent directory to get the cache directory path
+            var directoryInfo = new DirectoryInfo(pluginCacheDirectory);
+            var cacheDirectory = directoryInfo.Parent?.Parent?.FullName;
+            // Move old cache files to the new cache directory if cache directory exists
+            if (!string.IsNullOrEmpty(cacheDirectory))
+            {
+                var oldWin32CacheFile = Path.Combine(cacheDirectory, $"{Win32CacheName}.cache");
+                var newWin32CacheFile = Path.Combine(pluginCacheDirectory, $"{Win32CacheName}.cache");
+                MoveFile(oldWin32CacheFile, newWin32CacheFile);
+                var oldUWPCacheFile = Path.Combine(cacheDirectory, $"{UwpCacheName}.cache");
+                var newUWPCacheFile = Path.Combine(pluginCacheDirectory, $"{UwpCacheName}.cache");
+                MoveFile(oldUWPCacheFile, newUWPCacheFile);
+            }
+
+            await _win32sLock.WaitAsync();
+            try
+            {
+                _win32s = await context.API.LoadCacheBinaryStorageAsync(Win32CacheName, pluginCacheDirectory, new List<Win32>());
+                _win32sCount = _win32s.Count;
+            }
+            finally
+            {
+                _win32sLock.Release();
+            }
+
+            await _uwpsLock.WaitAsync();
+            try
+            {
+                _uwps = await context.API.LoadCacheBinaryStorageAsync(UwpCacheName, pluginCacheDirectory, new List<UWPApp>());
+                _uwpsCount = _uwps.Count;
+            }
+            finally
+            {
+                _uwpsLock.Release();
+            }
+
             Context.API.LogInfo(ClassName, $"Number of preload win32 programs <{_win32sCount}>");
             Context.API.LogInfo(ClassName, $"Number of preload uwps <{_uwpsCount}>");
 
@@ -394,12 +392,12 @@ namespace Flow.Launcher.Plugin.Program
         {
             var win32Task = Task.Run(async () =>
             {
-                await Context.API.StopwatchLogInfoAsync(ClassName, "Win32Program index cost", IndexWin32ProgramsAsync);
+                await IndexWin32ProgramsAsync();
             });
 
             var uwpTask = Task.Run(async () =>
             {
-                await Context.API.StopwatchLogInfoAsync(ClassName, "UWPProgram index cost", IndexUwpProgramsAsync);
+                await IndexUwpProgramsAsync();
             });
 
             await Task.WhenAll(win32Task, uwpTask).ConfigureAwait(false);

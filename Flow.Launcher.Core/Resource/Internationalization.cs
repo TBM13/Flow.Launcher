@@ -144,7 +144,7 @@ namespace Flow.Launcher.Core.Resource
         /// <param name="languageCode"></param>
         public void ChangeLanguage(string languageCode)
         {
-            languageCode = languageCode.NonNull();
+            languageCode = languageCode ?? throw new NullReferenceException();
 
             // Get actual language if language code is system
             var isSystem = false;

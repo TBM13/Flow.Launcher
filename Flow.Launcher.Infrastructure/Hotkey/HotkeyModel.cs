@@ -15,7 +15,7 @@ namespace Flow.Launcher.Infrastructure.Hotkey
 
         public Key CharKey { get; set; } = Key.None;
 
-        private static readonly Dictionary<Key, string> specialSymbolDictionary = new Dictionary<Key, string>
+        private static readonly Dictionary<Key, string> specialSymbolDictionary = new()
         {
             { Key.Space, "Space" }, { Key.Oem3, "~" }
         };

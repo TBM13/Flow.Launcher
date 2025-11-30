@@ -3,16 +3,10 @@ using Flow.Launcher.Plugin;
 
 namespace Flow.Launcher.Infrastructure.UserSettings
 {
-    public class CustomPluginHotkey : BaseModel
+    public class CustomPluginHotkey(string hotkey, string actionKeyword) : BaseModel
     {
-        public string Hotkey { get; set; }
-        public string ActionKeyword { get; set; }
-
-        public CustomPluginHotkey(string hotkey, string actionKeyword)
-        {
-            Hotkey = hotkey;
-            ActionKeyword = actionKeyword;
-        }
+        public string Hotkey { get; set; } = hotkey;
+        public string ActionKeyword { get; set; } = actionKeyword;
 
         public override bool Equals(object other)
         {

@@ -23,7 +23,7 @@ namespace Flow.Launcher.Infrastructure
         /// </summary>
         private static string GetDirectoryPath(string path)
         {
-            if (!path.EndsWith("\\"))
+            if (!path.EndsWith('\\'))
             {
                 return path + "\\";
             }
@@ -70,7 +70,7 @@ namespace Flow.Launcher.Infrastructure
         /// <summary>
         /// Gets the z-order for one or more windows atomically with respect to each other. In Windows, smaller z-order is higher. If the window is not top level, the z order is returned as -1. 
         /// </summary>
-        private static IEnumerable<int> GetZOrder(List<dynamic> hWnds)
+        private static int[] GetZOrder(List<dynamic> hWnds)
         {
             var z = new int[hWnds.Count];
             for (var i = 0; i < hWnds.Count; i++) z[i] = -1;

@@ -22,20 +22,7 @@ namespace Flow.Launcher.ViewModel
         private static readonly Thickness SettingPanelMargin = (Thickness)Application.Current.FindResource("SettingPanelMargin");
         private static readonly Thickness SettingPanelItemTopBottomMargin = (Thickness)Application.Current.FindResource("SettingPanelItemTopBottomMargin");
 
-        private readonly PluginPair _pluginPair;
-        public PluginPair PluginPair
-        {
-            get => _pluginPair;
-            init
-            {
-                _pluginPair = value;
-                value.Metadata.PropertyChanged += (_, args) =>
-                {
-                    if (args.PropertyName == nameof(PluginPair.Metadata.AvgQueryTime))
-                        OnPropertyChanged(nameof(QueryTime));
-                };
-            }
-        }
+        public PluginPair PluginPair { get; init; }
 
         private async Task LoadIconAsync()
         {
@@ -147,14 +134,7 @@ namespace Flow.Launcher.ViewModel
 
         public Visibility ActionKeywordsVisibility => PluginPair.Metadata.HideActionKeywordPanel ?
             Visibility.Collapsed : Visibility.Visible;
-        public string InitializeTime => PluginPair.Metadata.InitTime + "ms";
-        public string QueryTime => PluginPair.Metadata.AvgQueryTime + "ms";
         public string Version => Localize.plugin_query_version() + " " + PluginPair.Metadata.Version;
-        public string InitAndQueryTime =>
-            Localize.plugin_init_time() + " " +
-            PluginPair.Metadata.InitTime + "ms, " +
-            Localize.plugin_query_time() + " " +
-            PluginPair.Metadata.AvgQueryTime + "ms";
         public string ActionKeywordsText => string.Join(Query.ActionKeywordSeparator, PluginPair.Metadata.ActionKeywords);
         public Infrastructure.UserSettings.Plugin PluginSettingsObject { get; init; }
         public bool HomeEnabled => Settings.ShowHomePage && PluginManager.IsHomePlugin(PluginPair.Metadata.ID);

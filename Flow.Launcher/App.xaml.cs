@@ -160,71 +160,63 @@ namespace Flow.Launcher
 
         private async void OnStartup(object sender, StartupEventArgs e)
         {
-            await API.StopwatchLogInfoAsync(ClassName, "Startup cost", async () =>
+            // Because new message box api uses MessageBoxEx window,
+            // if it is created and closed before main window is created, it will cause the application to exit.
+            // So set to OnExplicitShutdown to prevent the application from shutting down before main window is created
+            Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
+            // Initialize notification system before any notification api is called
+            Notification.Install();
+
+            // Enable Win32 dark mode if the system is in dark mode before creating all windows
+            Win32Helper.EnableWin32DarkMode(_settings.ColorScheme);
+
+            // Initialize language before portable clean up since it needs translations
+            await _internationalization.InitializeLanguageAsync();
+
+            API.LogInfo(ClassName, "Begin Flow Launcher startup ----------------------------------------------------");
+            API.LogInfo(ClassName, $"Runtime info:{ErrorReporting.RuntimeInfo()}");
+
+            RegisterAppDomainExceptions();
+            RegisterDispatcherUnhandledException();
+            RegisterTaskSchedulerUnhandledException();
+
+            await ImageLoader.InitializeAsync();
+
+            _mainWindow = new MainWindow();
+
+            Current.MainWindow = _mainWindow;
+            Current.MainWindow.Title = Constant.FlowLauncher;
+
+            // Initialize hotkey mapper instantly after main window is created because
+            // it will steal focus from main window which causes window hide
+            HotKeyMapper.Initialize();
+
+            // Initialize theme for main window
+            Ioc.Default.GetRequiredService<Theme>().ChangeTheme();
+
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+            RegisterExitEvents();
+
+            API.SaveAppAllSettings();
+            API.LogInfo(ClassName, "End Flow Launcher startup ------------------------------------------------------");
+
+            API.LogInfo(ClassName, "Begin plugin initialization ----------------------------------------------------");
+            PluginManager.LoadPlugins(_settings.PluginSettings);
+            await PluginManager.InitializePluginsAsync(_mainVM);
+
+            // Refresh home page after plugins are initialized because users may open main window during plugin initialization
+            // And home page is created without full plugin list
+            if (_settings.ShowHomePage && _mainVM.QueryResultsSelected() && string.IsNullOrEmpty(_mainVM.QueryText))
             {
-                // Because new message box api uses MessageBoxEx window,
-                // if it is created and closed before main window is created, it will cause the application to exit.
-                // So set to OnExplicitShutdown to prevent the application from shutting down before main window is created
-                Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+                _mainVM.QueryResults();
+            }
 
-                // Initialize notification system before any notification api is called
-                Notification.Install();
+            // Save all settings since we possibly update the plugin environment paths
+            API.SaveAppAllSettings();
 
-                // Enable Win32 dark mode if the system is in dark mode before creating all windows
-                Win32Helper.EnableWin32DarkMode(_settings.ColorScheme);
-
-                // Initialize language before portable clean up since it needs translations
-                await _internationalization.InitializeLanguageAsync();
-
-                API.LogInfo(ClassName, "Begin Flow Launcher startup ----------------------------------------------------");
-                API.LogInfo(ClassName, $"Runtime info:{ErrorReporting.RuntimeInfo()}");
-
-                RegisterAppDomainExceptions();
-                RegisterDispatcherUnhandledException();
-                RegisterTaskSchedulerUnhandledException();
-
-                await ImageLoader.InitializeAsync();
-
-                _mainWindow = new MainWindow();
-
-                Current.MainWindow = _mainWindow;
-                Current.MainWindow.Title = Constant.FlowLauncher;
-
-                // Initialize hotkey mapper instantly after main window is created because
-                // it will steal focus from main window which causes window hide
-                HotKeyMapper.Initialize();
-
-                // Initialize theme for main window
-                Ioc.Default.GetRequiredService<Theme>().ChangeTheme();
-
-                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
-                RegisterExitEvents();
-
-                API.SaveAppAllSettings();
-                API.LogInfo(ClassName, "End Flow Launcher startup ------------------------------------------------------");
-
-                _ = API.StopwatchLogInfoAsync(ClassName, "Startup cost", async () =>
-                {
-                    API.LogInfo(ClassName, "Begin plugin initialization ----------------------------------------------------");
-
-                    PluginManager.LoadPlugins(_settings.PluginSettings);
-
-                    await PluginManager.InitializePluginsAsync(_mainVM);
-
-                    // Refresh home page after plugins are initialized because users may open main window during plugin initialization
-                    // And home page is created without full plugin list
-                    if (_settings.ShowHomePage && _mainVM.QueryResultsSelected() && string.IsNullOrEmpty(_mainVM.QueryText))
-                    {
-                        _mainVM.QueryResults();
-                    }
-
-                    // Save all settings since we possibly update the plugin environment paths
-                    API.SaveAppAllSettings();
-
-                    API.LogInfo(ClassName, "End plugin initialization ------------------------------------------------------");
-                });
-            });
+            API.LogInfo(ClassName, "End plugin initialization ------------------------------------------------------");
         }
 
 #pragma warning restore VSTHRD100 // Avoid async void methods
@@ -310,21 +302,16 @@ namespace Flow.Launcher
                 _disposed = true;
             }
 
-            API.StopwatchLogInfo(ClassName, "Dispose cost", () =>
+            API.LogInfo(ClassName, "Begin Flow Launcher dispose ----------------------------------------------------");
+            if (disposing)
             {
-                API.LogInfo(ClassName, "Begin Flow Launcher dispose ----------------------------------------------------");
-
-                if (disposing)
-                {
-                    // Dispose needs to be called on the main Windows thread,
-                    // since some resources owned by the thread need to be disposed.
-                    _mainWindow?.Dispatcher.Invoke(_mainWindow.Dispose);
-                    _mainVM?.Dispose();
-                    _internationalization.Dispose();
-                }
-
-                API.LogInfo(ClassName, "End Flow Launcher dispose ----------------------------------------------------");
-            });
+                // Dispose needs to be called on the main Windows thread,
+                // since some resources owned by the thread need to be disposed.
+                _mainWindow?.Dispatcher.Invoke(_mainWindow.Dispose);
+                _mainVM?.Dispose();
+                _internationalization.Dispose();
+            }
+            API.LogInfo(ClassName, "End Flow Launcher dispose ----------------------------------------------------");
         }
 
         public void Dispose()

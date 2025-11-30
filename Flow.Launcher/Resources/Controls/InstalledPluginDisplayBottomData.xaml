@@ -40,9 +40,7 @@
                 VerticalAlignment="Center"
                 FontSize="11"
                 Foreground="{DynamicResource PluginInfoColor}"
-                Text="{Binding Version}"
-                ToolTip="{Binding InitAndQueryTime}"
-                ToolTipService.InitialShowDelay="500" />
+                Text="{Binding Version}"/>
             <TextBlock
                 Margin="5 0"
                 VerticalAlignment="Center"

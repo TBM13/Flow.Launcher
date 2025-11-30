@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -29,9 +29,8 @@ using Flow.Launcher.Plugin;
 using Flow.Launcher.Plugin.SharedCommands;
 using Flow.Launcher.Plugin.SharedModels;
 using Flow.Launcher.ViewModel;
-using JetBrains.Annotations;
 using iNKORE.UI.WPF.Modern;
-using Stopwatch = Flow.Launcher.Infrastructure.Stopwatch;
+using JetBrains.Annotations;
 
 namespace Flow.Launcher
 {
@@ -168,7 +167,7 @@ namespace Flow.Launcher
                     if (showDefaultNotification)
                     {
                         ShowMsg(
-                            $"{Localize.copy()} {(isFile ? Localize.fileTitle(): Localize.folderTitle())}",
+                            $"{Localize.copy()} {(isFile ? Localize.fileTitle() : Localize.folderTitle())}",
                             Localize.completedSuccessfully());
                     }
                 }
@@ -551,18 +550,6 @@ namespace Flow.Launcher
 
         public ValueTask<ImageSource> LoadImageAsync(string path, bool loadFullImage = false, bool cacheImage = true) =>
             ImageLoader.LoadAsync(path, loadFullImage, cacheImage);
-
-        public long StopwatchLogDebug(string className, string message, Action action, [CallerMemberName] string methodName = "") =>
-            Stopwatch.Debug(className, message, action, methodName);
-
-        public Task<long> StopwatchLogDebugAsync(string className, string message, Func<Task> action, [CallerMemberName] string methodName = "") =>
-            Stopwatch.DebugAsync(className, message, action, methodName);
-
-        public long StopwatchLogInfo(string className, string message, Action action, [CallerMemberName] string methodName = "") =>
-            Stopwatch.Info(className, message, action, methodName);
-
-        public Task<long> StopwatchLogInfoAsync(string className, string message, Func<Task> action, [CallerMemberName] string methodName = "") =>
-            Stopwatch.InfoAsync(className, message, action, methodName);
 
         public bool IsApplicationDarkTheme()
         {

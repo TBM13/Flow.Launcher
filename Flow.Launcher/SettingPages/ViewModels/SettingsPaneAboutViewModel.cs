@@ -25,12 +25,6 @@ public partial class SettingsPaneAboutViewModel : BaseModel
         }
     }
 
-    public string Website => Constant.Website;
-    public string SponsorPage => Constant.SponsorPage;
-    public string Documentation => Constant.Documentation;
-    public string Docs => Constant.Docs;
-    public string Github => Constant.GitHub;
-
     public string Version => Constant.Version switch
     {
         "1.0.0" => Constant.Dev,

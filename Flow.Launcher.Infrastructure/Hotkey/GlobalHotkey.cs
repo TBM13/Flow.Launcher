@@ -13,7 +13,7 @@ namespace Flow.Launcher.Infrastructure.Hotkey
     /// Listens keyboard globally.
     /// <remarks>Uses WH_KEYBOARD_LL.</remarks>
     /// </summary>
-    public unsafe class GlobalHotkey : IDisposable
+    public class GlobalHotkey : IDisposable
     {
         private static readonly HOOKPROC _procKeyboard = HookKeyboardCallback;
         private static readonly UnhookWindowsHookExSafeHandle hookId;

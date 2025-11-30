@@ -23,29 +23,9 @@ namespace Flow.Launcher
             SetException(exception);
         }
 
-        private static string GetIssuesUrl(string website)
-        {
-            if (!website.StartsWith("https://github.com"))
-            {
-                return website;
-            }
-            if (website.Contains("Flow-Launcher/Flow.Launcher"))
-            {
-                return Constant.IssuesUrl;
-            }
-            var treeIndex = website.IndexOf("tree", StringComparison.Ordinal);
-            return treeIndex == -1 ? $"{website}/issues" : $"{website[..treeIndex]}/issues";
-        }
-
         private void SetException(Exception exception)
         {
-            var websiteUrl = exception switch
-            {
-                FlowPluginException pluginException => GetIssuesUrl(pluginException.Metadata.Website),
-                _ => Constant.IssuesUrl
-            };
-
-            var paragraph = Hyperlink(Localize.reportWindow_please_open_issue(), websiteUrl);
+            var paragraph = Hyperlink(Localize.reportWindow_please_open_issue(), Constant.IssuesUrl);
             paragraph.Inlines.Add(Localize.reportWindow_upload_log(string.Empty));
             paragraph.Inlines.Add("\n");
             paragraph.Inlines.Add(Localize.reportWindow_copy_below());

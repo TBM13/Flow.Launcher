@@ -270,8 +270,6 @@ public partial class SettingsPaneThemeViewModel : BaseModel
         }
     }
 
-    public string ThemeImage => Constant.QueryTextBoxIconImagePath;
-
     public SettingsPaneThemeViewModel(Settings settings, Theme theme)
     {
         Settings = settings;

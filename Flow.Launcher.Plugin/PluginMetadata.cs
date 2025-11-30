@@ -115,24 +115,6 @@ namespace Flow.Launcher.Plugin
         public int Priority { get; set; }
 
         /// <summary>
-        /// Init time include both plugin load time and init time.
-        /// </summary>
-        [JsonIgnore]
-        public long InitTime { get; set; }
-
-        /// <summary>
-        /// Average query time.
-        /// </summary>
-        [JsonIgnore]
-        public long AvgQueryTime { get; set; }
-
-        /// <summary>
-        /// Query count.
-        /// </summary>
-        [JsonIgnore]
-        public int QueryCount { get; set; }
-
-        /// <summary>
         /// The path to the plugin settings directory which is not validated.
         /// It is used to store plugin settings files and data files.
         /// When plugin is deleted, FL will ask users whether to keep its settings.

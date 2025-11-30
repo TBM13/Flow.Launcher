@@ -89,7 +89,7 @@ namespace Flow.Launcher.Infrastructure.Storage
                 Data = await LoadBackupOrDefaultAsync();
             }
 
-            return Data.NonNull();
+            return Data ?? throw new NullReferenceException();
         }
 
         private async ValueTask<T> LoadBackupOrDefaultAsync()
@@ -155,7 +155,7 @@ namespace Flow.Launcher.Infrastructure.Storage
                 Data = TryLoadBackup() ?? LoadDefault();
             }
 
-            return Data.NonNull();
+            return Data ?? throw new NullReferenceException();
         }
 
         private T LoadDefault()
@@ -191,7 +191,7 @@ namespace Flow.Launcher.Infrastructure.Storage
         private void BackupOriginFile()
         {
             var timestamp = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fffffff", CultureInfo.CurrentUICulture);
-            var directory = Path.GetDirectoryName(FilePath).NonNull();
+            var directory = Path.GetDirectoryName(FilePath) ?? throw new NullReferenceException();
             var originName = Path.GetFileNameWithoutExtension(FilePath);
             var backupName = $"{originName}-{timestamp}{FileSuffix}";
             var backupPath = Path.Combine(directory, backupName);

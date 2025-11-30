@@ -3,7 +3,6 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Infrastructure.Exception;
 using Flow.Launcher.Infrastructure.Logger;
 
 namespace Flow.Launcher.Helper;
@@ -56,7 +55,6 @@ public static class ErrorReporting
             $"""
 
              Flow Launcher version: {Constant.Version}
-             OS Version: {ExceptionFormatter.GetWindowsFullVersionFromRegistry()}
              IntPtr Length: {IntPtr.Size}
              x64: {Environment.Is64BitOperatingSystem}
              """;
