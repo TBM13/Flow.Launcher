@@ -109,9 +109,6 @@ namespace Flow.Launcher
                 // Set First Launch to false
                 _settings.FirstLaunch = false;
 
-                // Update release notes version
-                _settings.ReleaseNotesVersion = Constant.Version;
-
                 // Save settings
                 App.API.SaveAppAllSettings();
             }

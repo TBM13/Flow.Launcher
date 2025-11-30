@@ -2,10 +2,8 @@
 using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 using System.Windows;
-using System.Windows.Media;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Infrastructure.Hotkey;
-using Flow.Launcher.Infrastructure.Logger;
 using Flow.Launcher.Infrastructure.Storage;
 using Flow.Launcher.Plugin;
 using Flow.Launcher.Plugin.SharedModels;
@@ -92,7 +90,6 @@ namespace Flow.Launcher.Infrastructure.UserSettings
             }
         }
         public bool UseDropShadowEffect { get; set; } = true;
-        public string ReleaseNotesVersion { get; set; } = string.Empty;
 
         /* Appearance Settings. It should be separated from the setting later.*/
         public double WindowHeightSize { get; set; } = 42;
@@ -145,8 +142,8 @@ namespace Flow.Launcher.Infrastructure.UserSettings
             set => CustomExplorerList[CustomExplorerIndex] = value;
         }
 
-        public List<CustomExplorerViewModel> CustomExplorerList { get; set; } = new()
-        {
+        public List<CustomExplorerViewModel> CustomExplorerList { get; set; } =
+        [
             new()
             {
                 Name = "Explorer",
@@ -177,7 +174,7 @@ namespace Flow.Launcher.Infrastructure.UserSettings
                 DirectoryArgument = "\"%d\"",
                 FileArgument = "-select \"%f\""
             }
-        };
+        ];
 
         public int CustomBrowserIndex { get; set; } = 0;
 
@@ -188,8 +185,8 @@ namespace Flow.Launcher.Infrastructure.UserSettings
             set => CustomBrowserList[CustomBrowserIndex] = value;
         }
 
-        public List<CustomBrowserViewModel> CustomBrowserList { get; set; } = new()
-        {
+        public List<CustomBrowserViewModel> CustomBrowserList { get; set; } =
+        [
             new()
             {
                 Name = "Default",
@@ -222,7 +219,7 @@ namespace Flow.Launcher.Infrastructure.UserSettings
                 EnablePrivate = false,
                 Editable = false
             }
-        };
+        ];
 
         public bool AlwaysPreview { get; set; } = false;
 
@@ -236,8 +233,7 @@ namespace Flow.Launcher.Infrastructure.UserSettings
                 if (_querySearchPrecision != value)
                 {
                     _querySearchPrecision = value;
-                    if (_stringMatcher != null)
-                        _stringMatcher.UserSettingSearchPrecision = value;
+                    _stringMatcher?.UserSettingSearchPrecision = value;
                 }
             }
         }
@@ -246,8 +242,6 @@ namespace Flow.Launcher.Infrastructure.UserSettings
         public double WindowTop { get; set; }
         public double PreviousScreenWidth { get; set; }
         public double PreviousScreenHeight { get; set; }
-        public double PreviousDpiX { get; set; }
-        public double PreviousDpiY { get; set; }
 
         /// <summary>
         /// Custom left position on selected monitor
@@ -278,22 +272,18 @@ namespace Flow.Launcher.Infrastructure.UserSettings
 
         public int MaxResultsToShow { get; set; } = 5;
 
-        public ObservableCollection<CustomPluginHotkey> CustomPluginHotkeys { get; set; } = new ObservableCollection<CustomPluginHotkey>();
+        public ObservableCollection<CustomPluginHotkey> CustomPluginHotkeys { get; set; } = [];
 
-        public ObservableCollection<CustomShortcutModel> CustomShortcuts { get; set; } = new ObservableCollection<CustomShortcutModel>();
+        public ObservableCollection<CustomShortcutModel> CustomShortcuts { get; set; } = [];
 
         [JsonIgnore]
-        public ObservableCollection<BaseBuiltinShortcutModel> BuiltinShortcuts { get; set; } = new()
-        {
+        public ObservableCollection<BaseBuiltinShortcutModel> BuiltinShortcuts { get; set; } =
+        [
             new AsyncBuiltinShortcutModel("{clipboard}", "shortcut_clipboard_description", () => Win32Helper.StartSTATaskAsync(Clipboard.GetText)),
             new BuiltinShortcutModel("{active_explorer_path}", "shortcut_active_explorer_path", FileExplorerHelper.GetActiveExplorerPath)
-        };
-
-        public bool DontPromptUpdateMsg { get; set; }
-        public bool EnableUpdateLog { get; set; }
+        ];
 
         public bool HideOnStartup { get; set; } = true;
-        public bool LeaveCmdOpen { get; set; }
         public bool HideWhenDeactivated { get; set; } = true;
 
         private bool _showAtTopmost = false;
@@ -374,8 +364,8 @@ namespace Flow.Launcher.Infrastructure.UserSettings
 
         private List<RegisteredHotkeyData> FixedHotkeys()
         {
-            return new List<RegisteredHotkeyData>
-            {
+            return
+            [
                 new("Up", "HotkeyLeftRightDesc"),
                 new("Down", "HotkeyLeftRightDesc"),
                 new("Left", "HotkeyUpDownDesc"),
@@ -407,7 +397,7 @@ namespace Flow.Launcher.Infrastructure.UserSettings
                 new($"{OpenResultModifiers}+D8", "HotkeyOpenResultN", 8),
                 new($"{OpenResultModifiers}+D9", "HotkeyOpenResultN", 9),
                 new($"{OpenResultModifiers}+D0", "HotkeyOpenResultN", 10)
-            };
+            ];
         }
     }
 
