@@ -809,9 +809,6 @@ namespace Flow.Launcher
         private void QueryTextBox_TextChanged1(object sender, TextChangedEventArgs e)
         {
             var textBox = (TextBox)sender;
-            if (_viewModel.QueryText == textBox.Text)
-                return;
-
             _viewModel.QueryText = textBox.Text;
             _viewModel.Query(false);
         }
