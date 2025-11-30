@@ -2,55 +2,24 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using System.Windows;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Security;
 using Windows.Win32.System.Shutdown;
-using Control = System.Windows.Controls.Control;
 
 namespace Flow.Launcher.Plugin.Sys
 {
-    public class Main : IPlugin, ISettingProvider, IPluginI18n
+    public class Main : IPlugin, IPluginI18n
     {
-        private static readonly string ClassName = nameof(Main);
-
-        private readonly Dictionary<string, string> KeywordTitleMappings = new()
-        {
-            {"Shutdown", "flowlauncher_plugin_sys_shutdown_computer_cmd"},
-            {"Restart", "flowlauncher_plugin_sys_restart_computer_cmd"},
-            {"Restart With Advanced Boot Options", "flowlauncher_plugin_sys_restart_advanced_cmd"},
-            {"Log Off/Sign Out", "flowlauncher_plugin_sys_log_off_cmd"},
-            {"Lock", "flowlauncher_plugin_sys_lock_cmd"},
-            {"Sleep", "flowlauncher_plugin_sys_sleep_cmd"},
-            {"Hibernate", "flowlauncher_plugin_sys_hibernate_cmd"},
-
-            {"Empty Recycle Bin", "flowlauncher_plugin_sys_emptyrecyclebin_cmd"},
-            {"Open Recycle Bin", "flowlauncher_plugin_sys_openrecyclebin_cmd"},
-            {"Settings", "flowlauncher_plugin_sys_setting_cmd"},
-            {"Exit", "flowlauncher_plugin_sys_exit_cmd"},
-            {"Toggle Game Mode", "flowlauncher_plugin_sys_toggle_game_mode_cmd"},
-        };
-        private readonly Dictionary<string, string> KeywordDescriptionMappings = [];
-
         // SHTDN_REASON_MAJOR_OTHER indicates a generic shutdown reason that isn't categorized under hardware failure,
         // software updates, or other predefined reasons.
         // SHTDN_REASON_FLAG_PLANNED marks the shutdown as planned rather than an unexpected shutdown or failure
         private const SHUTDOWN_REASON REASON = SHUTDOWN_REASON.SHTDN_REASON_MAJOR_OTHER |
             SHUTDOWN_REASON.SHTDN_REASON_FLAG_PLANNED;
 
-        internal static PluginInitContext Context { get; private set; }
-        private Settings _settings;
-        private SettingsViewModel _viewModel;
-
-        public Control CreateSettingPanel()
-        {
-            UpdateLocalizedNameDescription(false);
-            return new SysSettings(_viewModel);
-        }
+        internal static PluginInitContext Context { get; private set; } = null!;
 
         public List<Result> Query(Query query)
         {
@@ -59,9 +28,6 @@ namespace Flow.Launcher.Plugin.Sys
             var isEmptyQuery = string.IsNullOrWhiteSpace(query.Search);
             foreach (var c in commands)
             {
-                var command = _settings.Commands.First(x => x.Key == c.Title);
-                c.Title = command.Name;
-                c.SubTitle = command.Description;
                 if (isEmptyQuery)
                 {
                     results.Add(c);
@@ -71,21 +37,12 @@ namespace Flow.Launcher.Plugin.Sys
                 // Match from localized title & localized subtitle & keyword
                 var titleMatch = Context.API.FuzzySearch(query.Search, c.Title);
                 var subTitleMatch = Context.API.FuzzySearch(query.Search, c.SubTitle);
-                var keywordMatch = Context.API.FuzzySearch(query.Search, command.Keyword);
 
                 // Get the largest score from them
                 var score = Math.Max(titleMatch.Score, subTitleMatch.Score);
-                var finalScore = Math.Max(score, keywordMatch.Score);
-                if (finalScore > 0)
+                if (score > 0)
                 {
-                    c.Score = finalScore;
-
-                    // If title match has the highest score, highlight title
-                    if (finalScore == titleMatch.Score)
-                    {
-                        c.TitleHighlightData = titleMatch.MatchData;
-                    }
-
+                    c.Score = score;
                     results.Add(c);
                 }
             }
@@ -93,50 +50,9 @@ namespace Flow.Launcher.Plugin.Sys
             return results;
         }
 
-        private string GetTitle(string key)
-        {
-            if (!KeywordTitleMappings.TryGetValue(key, out var translationKey))
-            {
-                Context.API.LogError(ClassName, $"Title not found for: {key}");
-                return "Title Not Found";
-            }
-
-            return Context.API.GetTranslation(translationKey);
-        }
-
-        private string GetDescription(string key)
-        {
-            if (!KeywordDescriptionMappings.TryGetValue(key, out var translationKey))
-            {
-                Context.API.LogError(ClassName, $"Description not found for: {key}");
-                return "Description Not Found";
-            }
-
-            return Context.API.GetTranslation(translationKey);
-        }
-
         public void Init(PluginInitContext context)
         {
             Context = context;
-            _settings = context.API.LoadSettingJsonStorage<Settings>();
-            _viewModel = new SettingsViewModel(_settings);
-            foreach (string key in KeywordTitleMappings.Keys)
-            {
-                // Remove _cmd in the last of the strings
-                KeywordDescriptionMappings[key] = KeywordTitleMappings[key][..^4];
-            }
-        }
-
-        private void UpdateLocalizedNameDescription(bool force)
-        {
-            if (string.IsNullOrEmpty(_settings.Commands[0].Name) || force)
-            {
-                foreach (var c in _settings.Commands)
-                {
-                    c.Name = GetTitle(c.Key);
-                    c.Description = GetDescription(c.Key);
-                }
-            }
         }
 
         private static unsafe bool EnableShutdownPrivilege()
@@ -185,7 +101,8 @@ namespace Flow.Launcher.Plugin.Sys
             [
                 new Result
                 {
-                    Title = "Shutdown",
+                    Title = Localize.flowlauncher_plugin_sys_shutdown_computer_cmd(),
+                    SubTitle = Localize.flowlauncher_plugin_sys_shutdown_computer(),
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe7e8"),
                     Action = c =>
                     {
@@ -210,7 +127,8 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = "Restart",
+                    Title = Localize.flowlauncher_plugin_sys_restart_computer_cmd(),
+                    SubTitle = Localize.flowlauncher_plugin_sys_restart_computer(),
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe777"),
                     Action = c =>
                     {
@@ -235,7 +153,8 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = "Restart With Advanced Boot Options",
+                    Title = Localize.flowlauncher_plugin_sys_restart_advanced_cmd(),
+                    SubTitle = Localize.flowlauncher_plugin_sys_restart_advanced(),
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xecc5"),
                     Action = c =>
                     {
@@ -260,7 +179,8 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = "Log Off/Sign Out",
+                    Title = Localize.flowlauncher_plugin_sys_log_off_cmd(),
+                    SubTitle = Localize.flowlauncher_plugin_sys_log_off(),
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe77b"),
                     Action = c =>
                     {
@@ -275,7 +195,8 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = "Lock",
+                    Title = Localize.flowlauncher_plugin_sys_lock_cmd(),
+                    SubTitle = Localize.flowlauncher_plugin_sys_lock(),
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe72e"),
                     Action = c =>
                     {
@@ -285,7 +206,8 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = "Sleep",
+                    Title = Localize.flowlauncher_plugin_sys_sleep_cmd(),
+                    SubTitle = Localize.flowlauncher_plugin_sys_sleep(),
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xec46"),
                     Action = c =>
                     {
@@ -295,7 +217,8 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = "Hibernate",
+                    Title = Localize.flowlauncher_plugin_sys_hibernate_cmd(),
+                    SubTitle = Localize.flowlauncher_plugin_sys_hibernate(),
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe8be"),
                     Action= c =>
                     {
@@ -305,27 +228,8 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = "Empty Recycle Bin",
-                    Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xea99"),
-                    Action = c =>
-                    {
-                        // http://www.pinvoke.net/default.aspx/shell32/SHEmptyRecycleBin.html
-                        // FYI, couldn't find documentation for this but if the recycle bin is already empty, it will return -2147418113 (0x8000FFFF (E_UNEXPECTED))
-                        // 0 for nothing
-                        var result = PInvoke.SHEmptyRecycleBin(new(), string.Empty, 0);
-                        if (result != HRESULT.S_OK && result != HRESULT.E_UNEXPECTED)
-                        {
-                            Context.API.ShowMsgBox(
-                                Localize.flowlauncher_plugin_sys_dlgtext_empty_recycle_bin_failed(Environment.NewLine),
-                                Localize.flowlauncher_plugin_sys_dlgtitle_error(),
-                                MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
-                        return true;
-                    }
-                },
-                new Result
-                {
-                    Title = "Open Recycle Bin",
+                    Title = Localize.flowlauncher_plugin_sys_openrecyclebin_cmd(),
+                    SubTitle = Localize.flowlauncher_plugin_sys_openrecyclebin(),
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe74d"),
                     CopyText = recycleBinFolder,
                     Action = c =>
@@ -336,7 +240,8 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = "Exit",
+                    Title = Localize.flowlauncher_plugin_sys_exit_cmd(),
+                    SubTitle = Localize.flowlauncher_plugin_sys_exit(),
                     IcoPath = "Images\\app.png",
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe89f"),
                     Action = c =>
@@ -348,22 +253,13 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = "Settings",
+                    Title = Localize.flowlauncher_plugin_sys_setting_cmd(),
+                    SubTitle = Localize.flowlauncher_plugin_sys_setting(),
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xf210"),
                     IcoPath = "Images\\app.png",
                     Action = c =>
                     {
                         Context.API.OpenSettingDialog();
-                        return true;
-                    }
-                },
-                new Result
-                {
-                    Title = "Toggle Game Mode",
-                    Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\ue7fc"),
-                    Action = c =>
-                    {
-                        Context.API.ToggleGameMode();
                         return true;
                     }
                 }
@@ -384,7 +280,7 @@ namespace Flow.Launcher.Plugin.Sys
 
         public void OnCultureInfoChanged(CultureInfo _)
         {
-            UpdateLocalizedNameDescription(true);
+
         }
     }
 }

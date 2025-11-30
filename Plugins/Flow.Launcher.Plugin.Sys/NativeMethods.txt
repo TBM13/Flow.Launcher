@@ -1,8 +1,6 @@
 ﻿ExitWindowsEx
 LockWorkStation
-SHEmptyRecycleBin
 S_OK
-E_UNEXPECTED
 SetSuspendState
 OpenProcessToken
 WIN32_ERROR
