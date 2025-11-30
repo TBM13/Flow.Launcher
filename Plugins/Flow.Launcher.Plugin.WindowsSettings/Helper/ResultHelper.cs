@@ -1,4 +1,26 @@
-﻿using System;
+﻿/*The MIT License
+
+Copyright (c) Microsoft Corporation. All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE. */
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -11,6 +33,23 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Helper
 {
     internal static class ResultHelper
     {
+        /// <summary>
+        /// Score penalty given to results where the query matched with the area/alternative names but not the setting's name.
+        /// </summary>
+        private const int NON_NAME_MATCH_PENALTY = -25;
+        /// <summary>
+        /// Score penalty given to results of type <see cref="WindowsSettingType.AppMMC"/>.
+        /// </summary>
+        private const int MMC_PENALTY = -25;
+        /// <summary>
+        /// Score penalty given to results of type <see cref="WindowsSettingType.AppControlPanel"/>.
+        /// </summary>
+        private const int CONTROL_PANEL_PENALTY = -25;
+        /// <summary>
+        /// Score penalty given to results without a glyph. We assume results with glyphs are more common and thus more important.
+        /// </summary>
+        private const int NO_GLYPH_PENALTY = -10;
+
         private static List<Result> GetDefaultResults(
             IPublicAPI api,
             in IEnumerable<WindowsSetting> list,
@@ -19,7 +58,7 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Helper
         {
             return [.. list.Select(entry =>
             {
-                var result = NewSettingResult(api, 100, entry.Type, windowsSettingIconPath, controlPanelIconPath, entry);
+                var result = NewSettingResult(api, 100, windowsSettingIconPath, controlPanelIconPath, entry);
                 AddOptionalToolTip(entry, result);
                 return result;
             })];
@@ -46,47 +85,32 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Helper
             var resultList = new List<Result>();
             foreach (var entry in list)
             {
-                // Adjust the score to lower the order of many irrelevant matches from area strings
-                // that may only be for description.
-                const int nonNameMatchScoreAdj = 10;
                 Result? result;
 
                 var nameMatch = api.FuzzySearch(query.Search, entry.Name);
                 if (nameMatch.IsSearchPrecisionScoreMet())
                 {
-                    var settingResult = NewSettingResult(api, nameMatch.Score, entry.Type, windowsSettingIconPath, controlPanelIconPath, entry);
+                    var settingResult = NewSettingResult(api, nameMatch.Score, windowsSettingIconPath, controlPanelIconPath, entry);
                     settingResult.TitleHighlightData = nameMatch.MatchData;
                     result = settingResult;
                 }
                 else
                 {
-                    var areaMatch = api.FuzzySearch(query.Search, entry.Area);
+                    var areaMatch = api.FuzzySearch(query.Search, entry.JoinedAreaPath);
                     if (areaMatch.IsSearchPrecisionScoreMet())
                     {
-                        var settingResult = NewSettingResult(api, areaMatch.Score - nonNameMatchScoreAdj, entry.Type, windowsSettingIconPath, controlPanelIconPath, entry);
-                        result = settingResult;
+                        result = NewSettingResult(api, areaMatch.Score, windowsSettingIconPath, controlPanelIconPath, entry);
                     }
                     else
                     {
                         result = entry.AltNames?
                             .Select(altName => api.FuzzySearch(query.Search, altName))
                             .Where(match => match.IsSearchPrecisionScoreMet())
-                            .Select(altNameMatch => NewSettingResult(api, altNameMatch.Score - nonNameMatchScoreAdj, entry.Type, windowsSettingIconPath, controlPanelIconPath, entry))
+                            .Select(altNameMatch => NewSettingResult(api, altNameMatch.Score, windowsSettingIconPath, controlPanelIconPath, entry))
                             .FirstOrDefault();
                     }
 
-                    if (result is null && entry.Keywords is not null)
-                    {
-                        string[] searchKeywords = query.SearchTerms;
-
-                        if (searchKeywords
-                            .All(x => entry
-                                .Keywords
-                                .SelectMany(x => x)
-                                .Contains(x, StringComparer.CurrentCultureIgnoreCase))
-                        )
-                            result = NewSettingResult(api, nonNameMatchScoreAdj, entry.Type, windowsSettingIconPath, controlPanelIconPath, entry);
-                    }
+                    result?.Score += NON_NAME_MATCH_PENALTY;
                 }
 
                 if (result is null)
@@ -99,40 +123,40 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Helper
             return resultList;
         }
 
-        private const int TaskLinkScorePenalty = 50;
-
         private static Result NewSettingResult(
             IPublicAPI api,
-            int score, string type,
+            int score,
             string windowsSettingIconPath, string controlPanelIconPath,
-            WindowsSetting entry) => new()
+            WindowsSetting entry)
+        {
+            Result res = new()
             {
                 Action = _ => DoOpenSettingsAction(api, entry),
-                IcoPath = type == "AppSettingsApp" ? windowsSettingIconPath : controlPanelIconPath,
+                IcoPath = entry.Type == WindowsSettingType.AppSettingsApp ? windowsSettingIconPath : controlPanelIconPath,
                 Glyph = entry.IconGlyph,
-                SubTitle = GetSubtitle(entry.Area, type),
+                SubTitle = entry.JoinedFullSettingsPath,
                 Title = entry.Name,
                 ContextData = entry,
-                Score = score - (type == "TaskLink" ? TaskLinkScorePenalty : 0),
+                Score = entry.Type switch
+                {
+                    WindowsSettingType.AppControlPanel => score + CONTROL_PANEL_PENALTY,
+                    WindowsSettingType.AppMMC => score + MMC_PENALTY,
+                    _ => score,
+                },
             };
 
-        private static string GetSubtitle(string section, string entryType)
-        {
-            var settingType = entryType == "AppSettingsApp" ? Resources.AppSettingsApp : Resources.AppControlPanel;
-            return $"{settingType} > {section}";
+            if (entry.IconGlyph is null)
+                res.Score += NO_GLYPH_PENALTY;
+
+            return res;
         }
 
-        /// <summary>
-        /// Adds a tooltip to the given <see cref="Result"/>, based on the given <see cref="WindowsSetting"/>.
-        /// </summary>
         private static void AddOptionalToolTip(WindowsSetting entry, Result result)
         {
             var toolTipText = new StringBuilder();
 
-            var settingType = entry.Type == "AppSettingsApp" ? Resources.AppSettingsApp : Resources.AppControlPanel;
-
-            toolTipText.AppendLine($"{Resources.Application}: {settingType}");
-            toolTipText.AppendLine($"{Resources.Area}: {entry.Area}");
+            toolTipText.AppendLine($"{Resources.Application}: {entry.DisplayType}");
+            toolTipText.AppendLine($"{Resources.Area}: {entry.JoinedAreaPath}");
 
             if (entry.AltNames != null && entry.AltNames.Any())
             {

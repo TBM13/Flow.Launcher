@@ -157,12 +157,15 @@
     <value>Activity history</value>
     <comment>Area Privacy</comment>
   </data>
+  <data name="AddDevices" xml:space="preserve">
+    <value>Add devices</value>
+  </data>
   <data name="AddHardware" xml:space="preserve">
     <value>Add Hardware</value>
     <comment>Area Control Panel (legacy settings)</comment>
   </data>
   <data name="AddRemovePrograms" xml:space="preserve">
-    <value>Add/Remove Programs</value>
+    <value>Add or remove programs</value>
     <comment>Area Control Panel (legacy settings)</comment>
   </data>
   <data name="AddYourPhone" xml:space="preserve">
@@ -201,6 +204,10 @@
   <data name="AppColor" xml:space="preserve">
     <value>App color</value>
   </data>
+  <data name="AppControlPanel" xml:space="preserve">
+    <value>Control Panel</value>
+    <comment>Type of the setting is a "(legacy) Control Panel setting"</comment>
+  </data>
   <data name="AppDiagnostics" xml:space="preserve">
     <value>App diagnostics</value>
     <comment>Area Privacy</comment>
@@ -213,12 +220,15 @@
     <value>App</value>
     <comment>Short/modern name for application</comment>
   </data>
+  <data name="AppMMC" xml:space="preserve">
+    <value>Microsoft Management Console</value>
+  </data>
   <data name="AppsAndFeatures" xml:space="preserve">
-    <value>Apps and Features</value>
+    <value>Apps &amp; Features</value>
     <comment>Area Apps</comment>
   </data>
   <data name="AppSettingsApp" xml:space="preserve">
-    <value>System settings</value>
+    <value>Settings app</value>
     <comment>Type of the setting is a "Modern Windows settings". We use the same term as used in start menu search at the moment. </comment>
   </data>
   <data name="AppsForWebsites" xml:space="preserve">
@@ -250,17 +260,18 @@
   <data name="AreaApps" xml:space="preserve">
     <value>Apps</value>
   </data>
+  <data name="AreaBluetoothAndDevices11" xml:space="preserve">
+    <value>Bluetooth &amp; devices</value>
+    <comment>Area Bluetooth&amp;Devices in Win11 Settings app</comment>
+  </data>
   <data name="AreaClockAndRegion" xml:space="preserve">
     <value>Clock and Region</value>
-  </data>
-  <data name="AreaControlPanel" xml:space="preserve">
-    <value>Control Panel</value>
   </data>
   <data name="AreaCortana" xml:space="preserve">
     <value>Cortana</value>
   </data>
   <data name="AreaDevices" xml:space="preserve">
-    <value>BT &amp; Devices</value>
+    <value>Devices</value>
   </data>
   <data name="AreaEaseOfAccess" xml:space="preserve">
     <value>Ease of access</value>
@@ -273,9 +284,6 @@
   </data>
   <data name="AreaHardwareAndSound" xml:space="preserve">
     <value>Hardware and Sound</value>
-  </data>
-  <data name="AreaHomePage" xml:space="preserve">
-    <value>Home page</value>
   </data>
   <data name="AreaMixedReality" xml:space="preserve">
     <value>Mixed reality</value>
@@ -295,6 +303,10 @@
   <data name="AreaPrograms" xml:space="preserve">
     <value>Programs</value>
   </data>
+  <data name="AreaSecurityAndMaintenance" xml:space="preserve">
+    <value>Security and Maintenance</value>
+    <comment>Area Security and Maintenance in legacy Control Panel app.</comment>
+  </data>
   <data name="AreaSurfaceHub" xml:space="preserve">
     <value>SurfaceHub</value>
   </data>
@@ -303,6 +315,10 @@
   </data>
   <data name="AreaSystemAndSecurity" xml:space="preserve">
     <value>System and Security</value>
+  </data>
+  <data name="AreaSystemPropertiesAdvanced" xml:space="preserve">
+    <value>System Properties</value>
+    <comment>System Properties dialog sysdm.cpl</comment>
   </data>
   <data name="AreaTimeAndLanguage" xml:space="preserve">
     <value>Time and language</value>
@@ -326,6 +342,10 @@
   <data name="AudioAndSpeech" xml:space="preserve">
     <value>Audio and speech</value>
     <comment>Area MixedReality, only available if the Mixed Reality Portal app is installed.</comment>
+  </data>
+  <data name="AuthorizationManager" xml:space="preserve">
+    <value>Authorization Manager</value>
+    <comment>Name of MMC Snap-In.</comment>
   </data>
   <data name="AutomaticFileDownloads" xml:space="preserve">
     <value>Automatic file downloads</value>
@@ -381,6 +401,10 @@
     <value>Bluetooth</value>
     <comment>Area Device</comment>
   </data>
+  <data name="BluetoothAndDevices10" xml:space="preserve">
+    <value>Bluetooth and other devices</value>
+    <comment>Page Bluetooth and devices in Win10 Settings app</comment>
+  </data>
   <data name="BluetoothDevices" xml:space="preserve">
     <value>Bluetooth devices</value>
     <comment>Area Control Panel (legacy settings)</comment>
@@ -399,6 +423,9 @@
   <data name="Broadcasting" xml:space="preserve">
     <value>Broadcasting</value>
     <comment>Area Gaming</comment>
+  </data>
+  <data name="bthprops.cpl" xml:space="preserve">
+    <value>bthprops.cpl</value>
   </data>
   <data name="Calendar" xml:space="preserve">
     <value>Calendar</value>
@@ -427,6 +454,23 @@
     <value>Cellular and SIM</value>
     <comment>Area NetworkAndInternet</comment>
   </data>
+  <data name="CertificatesCurrentUser" xml:space="preserve">
+    <value>Certificates - Current User</value>
+    <comment>Name of MMC Snap-In.</comment>
+  </data>
+  <data name="CertificatesLocalComputer" xml:space="preserve">
+    <value>Certificates - Local Computer</value>
+    <comment>Name of MMC Snap-In.</comment>
+  </data>
+  <data name="ChangePrograms" xml:space="preserve">
+    <value>Change programs</value>
+  </data>
+  <data name="ChangeScreenSaver" xml:space="preserve">
+    <value>Change screen saver</value>
+  </data>
+  <data name="ChangeUACSettings" xml:space="preserve">
+    <value>Change User Account Control settings</value>
+  </data>
   <data name="ChooseWhichFoldersAppearOnStart" xml:space="preserve">
     <value>Choose which folders appear on Start</value>
     <comment>Area Personalization</comment>
@@ -442,6 +486,9 @@
   <data name="ClosedCaptions" xml:space="preserve">
     <value>Closed captions</value>
     <comment>Area EaseOfAccess</comment>
+  </data>
+  <data name="collab.cpl" xml:space="preserve">
+    <value>collab.cpl</value>
   </data>
   <data name="ColorFilters" xml:space="preserve">
     <value>Color filters</value>
@@ -459,17 +506,36 @@
     <value>Command</value>
     <comment>The command to direct start a setting</comment>
   </data>
+  <data name="ComObjects" xml:space="preserve">
+    <value>COM-Objects</value>
+  </data>
+  <data name="ComponentServices" xml:space="preserve">
+    <value>Component Services</value>
+    <comment>Name of MMC Snap-In.</comment>
+  </data>
+  <data name="ComputerManagement" xml:space="preserve">
+    <value>Computer Management</value>
+    <comment>Name of MMC Snap-In.</comment>
+  </data>
+  <data name="ConnectableDevices" xml:space="preserve">
+    <value>Connectable devices</value>
+  </data>
   <data name="ConnectedDevices" xml:space="preserve">
     <value>Connected Devices</value>
     <comment>Area Device</comment>
   </data>
+  <data name="ConnectPanel" xml:space="preserve">
+    <value>Connect panel</value>
+  </data>
+  <data name="ConnectWirelessAudio" xml:space="preserve">
+    <value>Connect to a wireless audio device</value>
+  </data>
+  <data name="ConnectWirelessDisplay" xml:space="preserve">
+    <value>Connect to a wireless display</value>
+  </data>
   <data name="Contacts" xml:space="preserve">
     <value>Contacts</value>
     <comment>Area Privacy</comment>
-  </data>
-  <data name="ControlPanel" xml:space="preserve">
-    <value>Control Panel</value>
-    <comment>Type of the setting is a "(legacy) Control Panel setting"</comment>
   </data>
   <data name="CopyCommand" xml:space="preserve">
     <value>Copy command</value>
@@ -489,6 +555,9 @@
   <data name="CortanaLanguage" xml:space="preserve">
     <value>Cortana - Language</value>
     <comment>Area Cortana</comment>
+  </data>
+  <data name="CreateAndFormatHardDiskPartitions" xml:space="preserve">
+    <value>Create and format hard disk partitions</value>
   </data>
   <data name="CredentialManager" xml:space="preserve">
     <value>Credential manager</value>
@@ -515,7 +584,7 @@
     <comment>Area TimeAndLanguage</comment>
   </data>
   <data name="DefaultApps" xml:space="preserve">
-    <value>Default apps/programs</value>
+    <value>Default apps</value>
     <comment>Area Apps</comment>
   </data>
   <data name="DefaultCamera" xml:space="preserve">
@@ -534,6 +603,10 @@
     <value>Default Save Locations</value>
     <comment>Area System</comment>
   </data>
+  <data name="DefenderFirewallAdvancedSecurity" xml:space="preserve">
+    <value>Windows Defender Firewall with Advanced Security</value>
+    <comment>Name of MMC Snap-In.</comment>
+  </data>
   <data name="DeliveryOptimization" xml:space="preserve">
     <value>Delivery Optimization</value>
     <comment>Area UpdateAndSecurity</comment>
@@ -550,9 +623,19 @@
     <value>deuteranopia</value>
     <comment>Medical: Mean you don't can see red colors</comment>
   </data>
+  <data name="DeviceDiscovery" xml:space="preserve">
+    <value>Device discovery</value>
+  </data>
   <data name="DeviceManager" xml:space="preserve">
     <value>Device manager</value>
     <comment>Area Control Panel (legacy settings)</comment>
+  </data>
+  <data name="DeviceManagerSnapIn" xml:space="preserve">
+    <value>Device Manager</value>
+    <comment>Name of MMC Snap-In.</comment>
+  </data>
+  <data name="Devices" xml:space="preserve">
+    <value>Devices</value>
   </data>
   <data name="DevicesAndPrinters" xml:space="preserve">
     <value>Devices and printers</value>
@@ -573,6 +656,10 @@
   <data name="DirectOpenYourPhone" xml:space="preserve">
     <value>Direct open your phone</value>
     <comment>Area EaseOfAccess</comment>
+  </data>
+  <data name="DiskManagement" xml:space="preserve">
+    <value>Disk Management</value>
+    <comment>Name of MMC Snap-In.</comment>
   </data>
   <data name="Display" xml:space="preserve">
     <value>Display</value>
@@ -602,9 +689,19 @@
     <value>Ease of access center</value>
     <comment>Area Control Panel (legacy settings)</comment>
   </data>
+  <data name="EditEnvironmentVariables" xml:space="preserve">
+    <value>Edit environment variables</value>
+    <comment>Used as AltName on EditSystemEnvironmentVars settings to make both entries available via 'Edit environment variables'.</comment>
+  </data>
   <data name="Edition" xml:space="preserve">
     <value>Edition</value>
     <comment>Means the "Windows Edition"</comment>
+  </data>
+  <data name="EditSystemEnvironmentVariables" xml:space="preserve">
+    <value>Edit the system environment variables</value>
+  </data>
+  <data name="EditUserEnvironmentVariables" xml:space="preserve">
+    <value>Edit environment variables for your account</value>
   </data>
   <data name="Email" xml:space="preserve">
     <value>Email</value>
@@ -622,9 +719,17 @@
     <value>Environment</value>
     <comment>Area MixedReality, only available if the Mixed Reality Portal app is installed.</comment>
   </data>
+  <data name="EnvVars" xml:space="preserve">
+    <value>Env vars</value>
+    <comment>Short english form. Don't translate!</comment>
+  </data>
   <data name="Ethernet" xml:space="preserve">
     <value>Ethernet</value>
     <comment>Area NetworkAndInternet</comment>
+  </data>
+  <data name="EventViewer" xml:space="preserve">
+    <value>Event Viewer</value>
+    <comment>Name of MMC Snap-In.</comment>
   </data>
   <data name="ExploitProtection" xml:space="preserve">
     <value>Exploit Protection</value>
@@ -667,6 +772,9 @@
   </data>
   <data name="Firewall" xml:space="preserve">
     <value>Firewall</value>
+  </data>
+  <data name="Firewall.cpl" xml:space="preserve">
+    <value>Firewall.cpl</value>
   </data>
   <data name="FocusAssistQuietHours" xml:space="preserve">
     <value>Focus assist - Quiet hours</value>
@@ -724,6 +832,9 @@
     <value>Glance</value>
     <comment>Area Personalization, Deprecated in Windows 10, version 1809 and later</comment>
   </data>
+  <data name="GPT" xml:space="preserve">
+    <value>GPT</value>
+  </data>
   <data name="GraphicsSettings" xml:space="preserve">
     <value>Graphics settings</value>
     <comment>Area System</comment>
@@ -734,6 +845,12 @@
   <data name="GreenWeek" xml:space="preserve">
     <value>Green week</value>
     <comment>Mean you don't can see green colors</comment>
+  </data>
+  <data name="GroupPolicy" xml:space="preserve">
+    <value>Group Policy</value>
+  </data>
+  <data name="hdwwiz.cpl" xml:space="preserve">
+    <value>hdwwiz.cpl</value>
   </data>
   <data name="HeadsetDisplay" xml:space="preserve">
     <value>Headset display</value>
@@ -797,6 +914,17 @@
     <value>IP</value>
     <comment>Should not translated</comment>
   </data>
+  <data name="IpSecurityMonitor" xml:space="preserve">
+    <value>IP Security Monitor</value>
+    <comment>Name of MMC Snap-In.</comment>
+  </data>
+  <data name="IpSecurityPoliciesOnLocalComputer" xml:space="preserve">
+    <value>IP Security Policies on Local Computer</value>
+    <comment>Name of MMC Snap-In.</comment>
+  </data>
+  <data name="irprops.cpl" xml:space="preserve">
+    <value>irprops.cpl</value>
+  </data>
   <data name="IsolatedBrowsing" xml:space="preserve">
     <value>Isolated Browsing</value>
   </data>
@@ -836,6 +964,14 @@
   <data name="LightMode" xml:space="preserve">
     <value>Light mode</value>
   </data>
+  <data name="LocalGroupPolicy" xml:space="preserve">
+    <value>Local Computer Policy</value>
+    <comment>Name of MMC Snap-In.</comment>
+  </data>
+  <data name="LocalUsersAndGroups" xml:space="preserve">
+    <value>Local Users and Groups</value>
+    <comment>Name of MMC Snap-In.</comment>
+  </data>
   <data name="Location" xml:space="preserve">
     <value>Location</value>
     <comment>Area Privacy</comment>
@@ -856,6 +992,9 @@
     <value>main.cpl</value>
     <comment>File name, Should not translated</comment>
   </data>
+  <data name="ManageDevices" xml:space="preserve">
+    <value>Manage devices</value>
+  </data>
   <data name="ManageKnownNetworks" xml:space="preserve">
     <value>Manage known networks</value>
     <comment>Area NetworkAndInternet</comment>
@@ -863,6 +1002,9 @@
   <data name="ManageOptionalFeatures" xml:space="preserve">
     <value>Manage optional features</value>
     <comment>Area Apps</comment>
+  </data>
+  <data name="MBR" xml:space="preserve">
+    <value>MBR</value>
   </data>
   <data name="Messaging" xml:space="preserve">
     <value>Messaging</value>
@@ -882,6 +1024,69 @@
   <data name="mlcfg32.cpl" xml:space="preserve">
     <value>mlcfg32.cpl</value>
     <comment>File name, Should not translated</comment>
+  </data>
+  <data name="MMC_azman" xml:space="preserve">
+    <value>azman.msc</value>
+  </data>
+  <data name="MMC_certlm" xml:space="preserve">
+    <value>certlm.msc</value>
+  </data>
+  <data name="MMC_certmgr" xml:space="preserve">
+    <value>certmgr.msc</value>
+  </data>
+  <data name="MMC_comexp" xml:space="preserve">
+    <value>comexp.msc</value>
+  </data>
+  <data name="MMC_compmgmt" xml:space="preserve">
+    <value>compmgmt.msc</value>
+  </data>
+  <data name="MMC_devmgmt" xml:space="preserve">
+    <value>devmgmt.msc</value>
+  </data>
+  <data name="MMC_diskmgmt" xml:space="preserve">
+    <value>diskmgmt.msc</value>
+  </data>
+  <data name="MMC_eventvwr" xml:space="preserve">
+    <value>eventvwr.msc</value>
+  </data>
+  <data name="MMC_fsmgmt" xml:space="preserve">
+    <value>fsmgmt.msc</value>
+  </data>
+  <data name="MMC_gpedit" xml:space="preserve">
+    <value>gpedit.msc</value>
+  </data>
+  <data name="MMC_lusrmgr" xml:space="preserve">
+    <value>lusrmgr.msc</value>
+  </data>
+  <data name="MMC_mmcexe" xml:space="preserve">
+    <value>mmc.exe</value>
+  </data>
+  <data name="MMC_perfmon" xml:space="preserve">
+    <value>perfmon.msc</value>
+  </data>
+  <data name="MMC_printmanagement" xml:space="preserve">
+    <value>printmanagement.msc</value>
+  </data>
+  <data name="MMC_rsop" xml:space="preserve">
+    <value>rsop.msc</value>
+  </data>
+  <data name="MMC_secpol" xml:space="preserve">
+    <value>secpol.msc</value>
+  </data>
+  <data name="MMC_services" xml:space="preserve">
+    <value>services.msc</value>
+  </data>
+  <data name="MMC_taskschd" xml:space="preserve">
+    <value>taskschd.msc</value>
+  </data>
+  <data name="MMC_tpm" xml:space="preserve">
+    <value>tpm.msc</value>
+  </data>
+  <data name="MMC_wf" xml:space="preserve">
+    <value>WF.msc</value>
+  </data>
+  <data name="MMC_wmimgmt" xml:space="preserve">
+    <value>WmiMgmt.msc</value>
   </data>
   <data name="mmsys.cpl" xml:space="preserve">
     <value>mmsys.cpl</value>
@@ -909,8 +1114,8 @@
     <value>Motion</value>
     <comment>Area Privacy</comment>
   </data>
-  <data name="MouseProperties" xml:space="preserve">
-    <value>Mouse Properties</value>
+  <data name="Mouse" xml:space="preserve">
+    <value>Mouse</value>
     <comment>Area EaseOfAccess</comment>
   </data>
   <data name="MouseAndTouchpad" xml:space="preserve">
@@ -941,6 +1146,13 @@
     <value>Navigation bar</value>
     <comment>Area Personalization</comment>
   </data>
+  <data name="ncpa.cpl" xml:space="preserve">
+    <value>ncpa.cpl</value>
+  </data>
+  <data name="NearbyShareSettings" xml:space="preserve">
+    <value>Nearby sharing settings</value>
+    <comment>Area System</comment>
+  </data>
   <data name="netcpl.cpl" xml:space="preserve">
     <value>netcpl.cpl</value>
     <comment>File name, Should not translated</comment>
@@ -964,6 +1176,9 @@
   <data name="NetworkProperties" xml:space="preserve">
     <value>Network properties</value>
     <comment>Area Control Panel (legacy settings)</comment>
+  </data>
+  <data name="NetworkSessions" xml:space="preserve">
+    <value>Network sessions</value>
   </data>
   <data name="NetworkSetupWizard" xml:space="preserve">
     <value>Network Setup Wizard</value>
@@ -1012,6 +1227,9 @@
   <data name="NoteDisplayGraphics" xml:space="preserve">
     <value>Only available on devices that support advanced display options.</value>
   </data>
+  <data name="NoteEditingRequireAdminPrivileges" xml:space="preserve">
+    <value>Editing this setting may require administrative privileges.</value>
+  </data>
   <data name="NoteEnrolledWIP" xml:space="preserve">
     <value>Only present if user is enrolled in WIP.</value>
   </data>
@@ -1032,6 +1250,9 @@
   </data>
   <data name="NoteMobileProvisioning" xml:space="preserve">
     <value>Only available on mobile and if the enterprise has deployed a provisioning package.</value>
+  </data>
+  <data name="NoteNoMscFileExist" xml:space="preserve">
+    <value>You have to add this snap-in manually.</value>
   </data>
   <data name="NoteSince18362" xml:space="preserve">
     <value>Added in Windows 10, version 1903 (build 18362).</value>
@@ -1097,6 +1318,14 @@
   <data name="OnScreen" xml:space="preserve">
     <value>On-Screen</value>
   </data>
+  <data name="OpenControlPanel" xml:space="preserve">
+    <value>Open Control Panel</value>
+    <comment>'Control Panel' is here the name of the legacy settings app.</comment>
+  </data>
+  <data name="OpenSettingsApp" xml:space="preserve">
+    <value>Open Settings app</value>
+    <comment>'Settings' is here the name of the modern settings app.</comment>
+  </data>
   <data name="Os" xml:space="preserve">
     <value>OS</value>
     <comment>Means the "Operating System"</comment>
@@ -1147,6 +1376,10 @@
     <value>Performance information and tools</value>
     <comment>Area Control Panel (legacy settings)</comment>
   </data>
+  <data name="PerformanceMonitor" xml:space="preserve">
+    <value>Performance Monitor</value>
+    <comment>Name of MMC Snap-In.</comment>
+  </data>
   <data name="PermissionsAndHistory" xml:space="preserve">
     <value>Permissions and history</value>
     <comment>Area Cortana</comment>
@@ -1174,6 +1407,9 @@
   <data name="PhoneDefaultApps" xml:space="preserve">
     <value>Phone - Default apps</value>
     <comment>Area System</comment>
+  </data>
+  <data name="PhoneLink" xml:space="preserve">
+    <value>Phone Link</value>
   </data>
   <data name="Picture" xml:space="preserve">
     <value>Picture</value>
@@ -1203,10 +1439,14 @@
     <comment>Area Gaming</comment>
   </data>
   <data name="PluginDescription" xml:space="preserve">
-    <value>Plugin to search for Windows settings</value>
+    <value>Searches Windows settings</value>
+    <comment>{Locked="Windows"}</comment>
   </data>
   <data name="PluginTitle" xml:space="preserve">
-    <value>Windows Settings</value>
+    <value>Windows settings</value>
+  </data>
+  <data name="PnpDevice" xml:space="preserve">
+    <value>PNP Device</value>
   </data>
   <data name="PowerAndSleep" xml:space="preserve">
     <value>Power and sleep</value>
@@ -1230,6 +1470,13 @@
   <data name="PrintersAndScanners" xml:space="preserve">
     <value>Printers and scanners</value>
     <comment>Area Device</comment>
+  </data>
+  <data name="PrinterSpooler" xml:space="preserve">
+    <value>Printer Spooler</value>
+  </data>
+  <data name="PrintManagement" xml:space="preserve">
+    <value>Print Management</value>
+    <comment>Name of MMC Snap-In.</comment>
   </data>
   <data name="PrintScreen" xml:space="preserve">
     <value>Print screen</value>
@@ -1327,6 +1574,16 @@
     <value>Remote Desktop</value>
     <comment>Area System</comment>
   </data>
+  <data name="RemovePrograms" xml:space="preserve">
+    <value>Remove programs</value>
+  </data>
+  <data name="RepairPrograms" xml:space="preserve">
+    <value>Repair programs</value>
+  </data>
+  <data name="ResultantSetOfPolicy" xml:space="preserve">
+    <value>Resultant Set of Policy</value>
+    <comment>Name of MMC Snap-In.</comment>
+  </data>
   <data name="ScannersAndCameras" xml:space="preserve">
     <value>Scanners and cameras</value>
     <comment>Area Control Panel (legacy settings)</comment>
@@ -1345,6 +1602,9 @@
   <data name="ScreenRotation" xml:space="preserve">
     <value>Screen rotation</value>
     <comment>Area System</comment>
+  </data>
+  <data name="ScreenSaver" xml:space="preserve">
+    <value>Screen saver</value>
   </data>
   <data name="ScrollBars" xml:space="preserve">
     <value>Scroll bars</value>
@@ -1369,24 +1629,43 @@
     <value>Security Center</value>
     <comment>Area Control Panel (legacy settings)</comment>
   </data>
+  <data name="SecurityConfigurationAndAnalysis" xml:space="preserve">
+    <value>Security Configuration and Analysis</value>
+    <comment>Name of MMC Snap-In.</comment>
+  </data>
   <data name="SecurityProcessor" xml:space="preserve">
     <value>Security Processor</value>
+  </data>
+  <data name="SecurityTemplates" xml:space="preserve">
+    <value>Security Templates</value>
+    <comment>Name of MMC Snap-In.</comment>
+  </data>
+  <data name="ServicesSnapIn" xml:space="preserve">
+    <value>Services</value>
+    <comment>Name of MMC Snap-In.</comment>
   </data>
   <data name="SessionCleanup" xml:space="preserve">
     <value>Session cleanup</value>
     <comment>Area SurfaceHub</comment>
   </data>
-  <data name="SettingsHomePage" xml:space="preserve">
-    <value>Settings home page</value>
-    <comment>Area Home, Overview-page for all areas of settings </comment>
+  <data name="SettingsApp" xml:space="preserve">
+    <value>Settings app</value>
   </data>
   <data name="SetUpKiosk" xml:space="preserve">
     <value>Set up a kiosk</value>
     <comment>Area UserAccounts</comment>
   </data>
-  <data name="SharedExperiences" xml:space="preserve">
-    <value>Shared experiences</value>
+  <data name="ShareAcrossDevices" xml:space="preserve">
+    <value>Share across devices</value>
     <comment>Area System</comment>
+  </data>
+  <data name="SharedExperiences" xml:space="preserve">
+    <value>Shared experience settings</value>
+    <comment>Area System</comment>
+  </data>
+  <data name="SharedFolders" xml:space="preserve">
+    <value>Shared Folders</value>
+    <comment>Name of MMC Snap-In.</comment>
   </data>
   <data name="Shortcuts" xml:space="preserve">
     <value>Shortcuts</value>
@@ -1406,6 +1685,9 @@
   <data name="Size" xml:space="preserve">
     <value>Size</value>
     <comment>Size for text and symbols</comment>
+  </data>
+  <data name="SMB" xml:space="preserve">
+    <value>SMB</value>
   </data>
   <data name="Sound" xml:space="preserve">
     <value>Sound</value>
@@ -1449,10 +1731,6 @@
     <value>Storage Sense</value>
     <comment>Area System</comment>
   </data>
-  <data name="SubtitlePreposition" xml:space="preserve">
-    <value>in</value>
-    <comment>Example: Area "System" in System settings</comment>
-  </data>
   <data name="SyncCenter" xml:space="preserve">
     <value>Sync center</value>
     <comment>Area Control Panel (legacy settings)</comment>
@@ -1465,13 +1743,23 @@
     <value>sysdm.cpl</value>
     <comment>File name, Should not translated</comment>
   </data>
-  <data name="SystemProperties" xml:space="preserve">
-    <value>System Properties</value>
+  <data name="System" xml:space="preserve">
+    <value>System</value>
     <comment>Area Control Panel (legacy settings)</comment>
+  </data>
+  <data name="SystemEnvVars" xml:space="preserve">
+    <value>System env vars</value>
+    <comment>Short english form. Don't translate!</comment>
   </data>
   <data name="SystemPropertiesAndAddNewHardwareWizard" xml:space="preserve">
     <value>System properties and Add New Hardware wizard</value>
     <comment>Area Control Panel (legacy settings)</comment>
+  </data>
+  <data name="SystemTools" xml:space="preserve">
+    <value>System Tools</value>
+  </data>
+  <data name="SystemVariables" xml:space="preserve">
+    <value>System variables</value>
   </data>
   <data name="Tab" xml:space="preserve">
     <value>Tab</value>
@@ -1480,6 +1768,9 @@
   <data name="TabletMode" xml:space="preserve">
     <value>Tablet mode</value>
     <comment>Area System</comment>
+  </data>
+  <data name="TabletPC.cpl" xml:space="preserve">
+    <value>TabletPC.cpl</value>
   </data>
   <data name="TabletPcSettings" xml:space="preserve">
     <value>Tablet PC settings</value>
@@ -1503,6 +1794,10 @@
     <value>Tasks</value>
     <comment>Area Privacy</comment>
   </data>
+  <data name="TaskScheduler" xml:space="preserve">
+    <value>Task Scheduler</value>
+    <comment>Name of MMC Snap-In.</comment>
+  </data>
   <data name="TeamConferencing" xml:space="preserve">
     <value>Team Conferencing</value>
     <comment>Area SurfaceHub</comment>
@@ -1510,6 +1805,9 @@
   <data name="TeamDeviceManagement" xml:space="preserve">
     <value>Team device management</value>
     <comment>Area SurfaceHub</comment>
+  </data>
+  <data name="telephon.cpl" xml:space="preserve">
+    <value>telephon.cpl</value>
   </data>
   <data name="TextToSpeech" xml:space="preserve">
     <value>Text to speech</value>
@@ -1530,6 +1828,9 @@
   <data name="Timeline" xml:space="preserve">
     <value>Timeline</value>
   </data>
+  <data name="Timeout" xml:space="preserve">
+    <value>Timeout</value>
+  </data>
   <data name="Touch" xml:space="preserve">
     <value>Touch</value>
   </data>
@@ -1539,6 +1840,10 @@
   <data name="Touchpad" xml:space="preserve">
     <value>Touchpad</value>
     <comment>Area Device</comment>
+  </data>
+  <data name="TpmManagement" xml:space="preserve">
+    <value>TPM Management</value>
+    <comment>Name of MMC Snap-In.</comment>
   </data>
   <data name="Transparency" xml:space="preserve">
     <value>Transparency</value>
@@ -1555,21 +1860,45 @@
     <value>TruePlay</value>
     <comment>Area Gaming</comment>
   </data>
+  <data name="TurnScreenSaverOnOff" xml:space="preserve">
+    <value>Turn screen saver on or off</value>
+  </data>
   <data name="Typing" xml:space="preserve">
     <value>Typing</value>
     <comment>Area Device</comment>
+  </data>
+  <data name="UAC" xml:space="preserve">
+    <value>UAC</value>
+    <comment>Short version of 'User account control'</comment>
   </data>
   <data name="Uninstall" xml:space="preserve">
     <value>Uninstall</value>
     <comment>Area MixedReality, only available if the Mixed Reality Portal app is installed.</comment>
   </data>
+  <data name="UninstallPrograms" xml:space="preserve">
+    <value>Uninstall programs</value>
+  </data>
   <data name="Usb" xml:space="preserve">
     <value>USB</value>
     <comment>Area Device</comment>
   </data>
+  <data name="UserAccountControlSettings.exe" xml:space="preserve">
+    <value>UserAccountControlSettings.exe</value>
+    <comment>Name of the executable</comment>
+  </data>
   <data name="UserAccounts" xml:space="preserve">
     <value>User accounts</value>
     <comment>Area Control Panel (legacy settings)</comment>
+  </data>
+  <data name="UserEnvironmentVariables" xml:space="preserve">
+    <value>User environment variables</value>
+  </data>
+  <data name="UserEnvVars" xml:space="preserve">
+    <value>User env vars</value>
+    <comment>Short english form. Don't translate!</comment>
+  </data>
+  <data name="UserVariables" xml:space="preserve">
+    <value>User variables</value>
   </data>
   <data name="Version" xml:space="preserve">
     <value>Version</value>
@@ -1670,12 +1999,19 @@
     <value>Windows Insider Program</value>
     <comment>Area UpdateAndSecurity</comment>
   </data>
+  <data name="WindowsManagementInstrumentation" xml:space="preserve">
+    <value>Windows Management Instrumentation</value>
+  </data>
   <data name="WindowsMobilityCenter" xml:space="preserve">
     <value>Windows Mobility Center</value>
     <comment>Area Control Panel (legacy settings)</comment>
   </data>
   <data name="WindowsSearch" xml:space="preserve">
     <value>Windows search</value>
+    <comment>Area Cortana</comment>
+  </data>
+  <data name="WindowsSearchSettings" xml:space="preserve">
+    <value>Windows search settings</value>
     <comment>Area Cortana</comment>
   </data>
   <data name="WindowsSecurity" xml:space="preserve">
@@ -1709,12 +2045,19 @@
   <data name="Wireless" xml:space="preserve">
     <value>Wireless</value>
   </data>
+  <data name="WmiControl" xml:space="preserve">
+    <value>WMI Control</value>
+    <comment>Name of MMC Snap-In.</comment>
+  </data>
   <data name="Workplace" xml:space="preserve">
     <value>Workplace</value>
   </data>
   <data name="WorkplaceProvisioning" xml:space="preserve">
     <value>Workplace provisioning</value>
     <comment>Area UserAccounts</comment>
+  </data>
+  <data name="wscui.cpl" xml:space="preserve">
+    <value>wscui.cpl</value>
   </data>
   <data name="WubiImeSettings" xml:space="preserve">
     <value>Wubi IME settings</value>
@@ -1736,779 +2079,32 @@
     <value>Zoom</value>
     <comment>Mean zooming of things via a magnifier</comment>
   </data>
-  <data name="ChangeDeviceInstallationSettings" xml:space="preserve">
-    <value>Change device installation settings</value>
+  <data name="OpenSettings" xml:space="preserve">
+    <value>Open</value>
+    <comment>Open 'the setting' in Settings app, Control Panel or MMC.</comment>
   </data>
-  <data name="TurnOffBackgroundImages" xml:space="preserve">
-    <value>Turn off background images</value>
+  <data name="WindowsSettingsProvider_DisplayName" xml:space="preserve">
+    <value>Windows Settings</value>
   </data>
-  <data name="NavigationProperties" xml:space="preserve">
-    <value>Navigation properties</value>
+  <data name="settings_title" xml:space="preserve">
+    <value>Windows Settings</value>
   </data>
-  <data name="MediaStreamingOptions" xml:space="preserve">
-    <value>Media streaming options</value>
+  <data name="settings_subtitle" xml:space="preserve">
+    <value>Navigate to specific Windows settings</value>
   </data>
-  <data name="MakeAFileTypeAlwaysOpenInASpecificProgram" xml:space="preserve">
-    <value>Make a file type always open in a specific program</value>
+  <data name="settings_fallback_title" xml:space="preserve">
+    <value>Search for "{0}" in Windows settings</value>
   </data>
-  <data name="ChangeTheNarratorSVoice" xml:space="preserve">
-    <value>Change the Narrator’s voice</value>
+  <data name="settings_fallback_subtitle" xml:space="preserve">
+    <value>Search Windows settings for this device</value>
   </data>
-  <data name="FindAndFixKeyboardProblems" xml:space="preserve">
-    <value>Find and fix keyboard problems</value>
+  <data name="PluginNoResultsMessageHelp" xml:space="preserve">
+    <value>Tip: Use ':'  to search for setting categories (e.g., Update:), and &gt; to search by setting path (e.g., Settings app&gt;Apps).</value>
   </data>
-  <data name="UseScreenReader" xml:space="preserve">
-    <value>Use screen reader</value>
+  <data name="PluginNoResultsMessage" xml:space="preserve">
+    <value>No settings found</value>
   </data>
-  <data name="ShowWhichWorkgroupThisComputerIsOn" xml:space="preserve">
-    <value>Show which workgroup this computer is on</value>
-  </data>
-  <data name="ChangeMouseWheelSettings" xml:space="preserve">
-    <value>Change mouse wheel settings</value>
-  </data>
-  <data name="ManageComputerCertificates" xml:space="preserve">
-    <value>Manage computer certificates</value>
-  </data>
-  <data name="FindAndFixProblems" xml:space="preserve">
-    <value>Find and fix problems</value>
-  </data>
-  <data name="ChangeSettingsForContentReceivedUsingTapAndSend" xml:space="preserve">
-    <value>Change settings for content received using Tap and send</value>
-  </data>
-  <data name="ChangeDefaultSettingsForMediaOrDevices" xml:space="preserve">
-    <value>Change default settings for media or devices</value>
-  </data>
-  <data name="PrintTheSpeechReferenceCard" xml:space="preserve">
-    <value>Print the speech reference card</value>
-  </data>
-  <data name="CalibrateDisplayColour" xml:space="preserve">
-    <value>Calibrate display colour</value>
-  </data>
-  <data name="ManageFileEncryptionCertificates" xml:space="preserve">
-    <value>Manage file encryption certificates</value>
-  </data>
-  <data name="ViewRecentMessagesAboutYourComputer" xml:space="preserve">
-    <value>View recent messages about your computer</value>
-  </data>
-  <data name="GiveOtherUsersAccessToThisComputer" xml:space="preserve">
-    <value>Give other users access to this computer</value>
-  </data>
-  <data name="ShowHiddenFilesAndFolders" xml:space="preserve">
-    <value>Show hidden files and folders</value>
-  </data>
-  <data name="ChangeWindowsToGoStartUpOptions" xml:space="preserve">
-    <value>Change Windows To Go start-up options</value>
-  </data>
-  <data name="SeeWhichProcessesStartUpAutomaticallyWhenYouStartWindows" xml:space="preserve">
-    <value>See which processes start up automatically when you start Windows</value>
-  </data>
-  <data name="TellIfAnRSSFeedIsAvailableOnAWebsite" xml:space="preserve">
-    <value>Tell if an RSS feed is available on a website</value>
-  </data>
-  <data name="AddClocksForDifferentTimeZones" xml:space="preserve">
-    <value>Add clocks for different time zones</value>
-  </data>
-  <data name="AddABluetoothDevice" xml:space="preserve">
-    <value>Add a Bluetooth device</value>
-  </data>
-  <data name="CustomiseTheMouseButtons" xml:space="preserve">
-    <value>Customise the mouse buttons</value>
-  </data>
-  <data name="SetTabletButtonsToPerformCertainTasks" xml:space="preserve">
-    <value>Set tablet buttons to perform certain tasks</value>
-  </data>
-  <data name="ViewInstalledFonts" xml:space="preserve">
-    <value>View installed fonts</value>
-  </data>
-  <data name="ChangeTheWayCurrencyIsDisplayed" xml:space="preserve">
-    <value>Change the way currency is displayed</value>
-  </data>
-  <data name="EditGroupPolicy" xml:space="preserve">
-    <value>Edit group policy</value>
-  </data>
-  <data name="ManageBrowserAddOns" xml:space="preserve">
-    <value>Manage browser add-ons</value>
-  </data>
-  <data name="CheckProcessorSpeed" xml:space="preserve">
-    <value>Check processor speed</value>
-  </data>
-  <data name="CheckFirewallStatus" xml:space="preserve">
-    <value>Check firewall status</value>
-  </data>
-  <data name="SendOrReceiveAFile" xml:space="preserve">
-    <value>Send or receive a file</value>
-  </data>
-  <data name="AddOrRemoveUserAccounts" xml:space="preserve">
-    <value>Add or remove user accounts</value>
-  </data>
-  <data name="EditTheSystemEnvironmentVariables" xml:space="preserve">
-    <value>Edit the system environment variables</value>
-  </data>
-  <data name="ManageBitlocker" xml:space="preserve">
-    <value>Manage BitLocker</value>
-  </data>
-  <data name="AutoHideTheTaskbar" xml:space="preserve">
-    <value>Auto-hide the taskbar</value>
-  </data>
-  <data name="ChangeSoundCardSettings" xml:space="preserve">
-    <value>Change sound card settings</value>
-  </data>
-  <data name="MakeChangesToAccounts" xml:space="preserve">
-    <value>Make changes to accounts</value>
-  </data>
-  <data name="EditLocalUsersAndGroups" xml:space="preserve">
-    <value>Edit local users and groups</value>
-  </data>
-  <data name="ViewNetworkComputersAndDevices" xml:space="preserve">
-    <value>View network computers and devices</value>
-  </data>
-  <data name="InstallAProgramFromTheNetwork" xml:space="preserve">
-    <value>Install a program from the network</value>
-  </data>
-  <data name="ViewScannersAndCameras" xml:space="preserve">
-    <value>View scanners and cameras</value>
-  </data>
-  <data name="MicrosoftIMERegisterWordJapanese" xml:space="preserve">
-    <value>Microsoft IME Register Word (Japanese)</value>
-  </data>
-  <data name="FileHistory" xml:space="preserve">
-    <value>File History</value>
-  </data>
-  <data name="TurnOnScreenKeyboardOnOrOff" xml:space="preserve">
-    <value>Turn On-Screen keyboard on or off</value>
-  </data>
-  <data name="BlockOrAllowThirdPartyCookies" xml:space="preserve">
-    <value>Block or allow third-party cookies</value>
-  </data>
-  <data name="FindAndFixAudioRecordingProblems" xml:space="preserve">
-    <value>Find and fix audio recording problems</value>
-  </data>
-  <data name="CreateARecoveryDrive" xml:space="preserve">
-    <value>Create a recovery drive</value>
-  </data>
-  <data name="MicrosoftNewPhoneticSettings" xml:space="preserve">
-    <value>Microsoft New Phonetic Settings</value>
-  </data>
-  <data name="GenerateASystemHealthReport" xml:space="preserve">
-    <value>Generate a system health report</value>
-  </data>
-  <data name="FixProblemsWithYourComputer" xml:space="preserve">
-    <value>Fix problems with your computer</value>
-  </data>
-  <data name="BackUpAndRestoreWindows7" xml:space="preserve">
-    <value>Back up and Restore (Windows 7)</value>
-  </data>
-  <data name="PreviewDeleteShowOrHideFonts" xml:space="preserve">
-    <value>Preview, delete, show or hide fonts</value>
-  </data>
-  <data name="MicrosoftQuickSettings" xml:space="preserve">
-    <value>Microsoft Quick Settings</value>
-  </data>
-  <data name="ViewReliabilityHistory" xml:space="preserve">
-    <value>View reliability history</value>
-  </data>
-  <data name="AccessRemoteappAndDesktops" xml:space="preserve">
-    <value>Access RemoteApp and desktops</value>
-  </data>
-  <data name="SetUpODBCDataSources" xml:space="preserve">
-    <value>Set up ODBC data sources</value>
-  </data>
-  <data name="ResetSecurityPolicies" xml:space="preserve">
-    <value>Reset Security Policies</value>
-  </data>
-  <data name="BlockOrAllowPopUps" xml:space="preserve">
-    <value>Block or allow pop-ups</value>
-  </data>
-  <data name="TurnAutocompleteInInternetExplorerOnOrOff" xml:space="preserve">
-    <value>Turn autocomplete in Internet Explorer on or off</value>
-  </data>
-  <data name="MicrosoftPinyinSimplefastOptions" xml:space="preserve">
-    <value>Microsoft Pinyin SimpleFast Options</value>
-  </data>
-  <data name="ChangeWhatClosingTheLidDoes" xml:space="preserve">
-    <value>Change what closing the lid does</value>
-  </data>
-  <data name="TurnOffUnnecessaryAnimations" xml:space="preserve">
-    <value>Turn off unnecessary animations</value>
-  </data>
-  <data name="CreateARestorePoint" xml:space="preserve">
-    <value>Create a restore point</value>
-  </data>
-  <data name="TurnOffAutomaticWindowArrangement" xml:space="preserve">
-    <value>Turn off automatic window arrangement</value>
-  </data>
-  <data name="TroubleshootingHistory" xml:space="preserve">
-    <value>Troubleshooting History</value>
-  </data>
-  <data name="DiagnoseYourComputersMemoryProblems" xml:space="preserve">
-    <value>Diagnose your computer's memory problems</value>
-  </data>
-  <data name="ViewRecommendedActionsToKeepWindowsRunningSmoothly" xml:space="preserve">
-    <value>View recommended actions to keep Windows running smoothly</value>
-  </data>
-  <data name="ChangeCursorBlinkRate" xml:space="preserve">
-    <value>Change cursor blink rate</value>
-  </data>
-  <data name="AddOrRemovePrograms" xml:space="preserve">
-    <value>Add or remove programs</value>
-  </data>
-  <data name="CreateAPasswordResetDisk" xml:space="preserve">
-    <value>Create a password reset disk</value>
-  </data>
-  <data name="ConfigureAdvancedUserProfileProperties" xml:space="preserve">
-    <value>Configure advanced user profile properties</value>
-  </data>
-  <data name="StartOrStopUsingAutoplayForAllMediaAndDevices" xml:space="preserve">
-    <value>Start or stop using AutoPlay for all media and devices</value>
-  </data>
-  <data name="ChangeAutomaticMaintenanceSettings" xml:space="preserve">
-    <value>Change Automatic Maintenance settings</value>
-  </data>
-  <data name="SpecifySingleOrDoubleClickToOpen" xml:space="preserve">
-    <value>Specify single- or double-click to open</value>
-  </data>
-  <data name="SelectUsersWhoCanUseRemoteDesktop" xml:space="preserve">
-    <value>Select users who can use remote desktop</value>
-  </data>
-  <data name="ShowWhichProgramsAreInstalledOnYourComputer" xml:space="preserve">
-    <value>Show which programs are installed on your computer</value>
-  </data>
-  <data name="AllowRemoteAccessToYourComputer" xml:space="preserve">
-    <value>Allow remote access to your computer</value>
-  </data>
-  <data name="ViewAdvancedSystemSettings" xml:space="preserve">
-    <value>View advanced system settings</value>
-  </data>
-  <data name="HowToInstallAProgram" xml:space="preserve">
-    <value>How to install a program</value>
-  </data>
-  <data name="ChangeHowYourKeyboardWorks" xml:space="preserve">
-    <value>Change how your keyboard works</value>
-  </data>
-  <data name="AutomaticallyAdjustForDaylightSavingTime" xml:space="preserve">
-    <value>Automatically adjust for daylight saving time</value>
-  </data>
-  <data name="ChangeTheOrderOfWindowsSideshowGadgets" xml:space="preserve">
-    <value>Change the order of Windows SideShow gadgets</value>
-  </data>
-  <data name="KeyboardProperties" xml:space="preserve">
-    <value>Keyboard Properties</value>
-  </data>
-  <data name="ControlTheComputerWithoutTheMouseOrKeyboard" xml:space="preserve">
-    <value>Control the computer without the mouse or keyboard</value>
-  </data>
-  <data name="ChangeOrRemoveAProgram" xml:space="preserve">
-    <value>Change or remove a program</value>
-  </data>
-  <data name="ChangeMultiTouchGestureSettings" xml:space="preserve">
-    <value>Change multi-touch gesture settings</value>
-  </data>
-  <data name="SetUpODBCDataSources64Bit" xml:space="preserve">
-    <value>Set up ODBC data sources (64-bit)</value>
-  </data>
-  <data name="ConfigureProxyServer" xml:space="preserve">
-    <value>Configure proxy server</value>
-  </data>
-  <data name="ChangeYourHomepage" xml:space="preserve">
-    <value>Change your homepage</value>
-  </data>
-  <data name="GroupSimilarWindowsOnTheTaskbar" xml:space="preserve">
-    <value>Group similar windows on the taskbar</value>
-  </data>
-  <data name="ChangeWindowsSideshowSettings" xml:space="preserve">
-    <value>Change Windows SideShow settings</value>
-  </data>
-  <data name="UseAudioDescriptionForVideo" xml:space="preserve">
-    <value>Use audio description for video</value>
-  </data>
-  <data name="ChangeWorkgroupName" xml:space="preserve">
-    <value>Change workgroup name</value>
-  </data>
-  <data name="FindAndFixPrintingProblems" xml:space="preserve">
-    <value>Find and fix printing problems</value>
-  </data>
-  <data name="ChangeWhenTheComputerSleeps" xml:space="preserve">
-    <value>Change when the computer sleeps</value>
-  </data>
-  <data name="SetUpAVirtualPrivateNetworkVPNConnection" xml:space="preserve">
-    <value>Set up a virtual private network (VPN) connection</value>
-  </data>
-  <data name="AccommodateLearningAbilities" xml:space="preserve">
-    <value>Accommodate learning abilities</value>
-  </data>
-  <data name="SetUpADialUpConnection" xml:space="preserve">
-    <value>Set up a dial-up connection</value>
-  </data>
-  <data name="SetUpAConnectionOrNetwork" xml:space="preserve">
-    <value>Set up a connection or network</value>
-  </data>
-  <data name="HowToChangeYourWindowsPassword" xml:space="preserve">
-    <value>How to change your Windows password</value>
-  </data>
-  <data name="MakeItEasierToSeeTheMousePointer" xml:space="preserve">
-    <value>Make it easier to see the mouse pointer</value>
-  </data>
-  <data name="SetUpIscsiInitiator" xml:space="preserve">
-    <value>Set up iSCSI initiator</value>
-  </data>
-  <data name="AccommodateLowVision" xml:space="preserve">
-    <value>Accommodate low vision</value>
-  </data>
-  <data name="ManageOfflineFiles" xml:space="preserve">
-    <value>Manage offline files</value>
-  </data>
-  <data name="ReviewYourComputersStatusAndResolveIssues" xml:space="preserve">
-    <value>Review your computer's status and resolve issues</value>
-  </data>
-  <data name="MicrosoftChangjieSettings" xml:space="preserve">
-    <value>Microsoft ChangJie Settings</value>
-  </data>
-  <data name="ReplaceSoundsWithVisualCues" xml:space="preserve">
-    <value>Replace sounds with visual cues</value>
-  </data>
-  <data name="ChangeTemporaryInternetFileSettings" xml:space="preserve">
-    <value>Change temporary Internet file settings</value>
-  </data>
-  <data name="ConnectToTheInternet" xml:space="preserve">
-    <value>Connect to the Internet</value>
-  </data>
-  <data name="FindAndFixAudioPlaybackProblems" xml:space="preserve">
-    <value>Find and fix audio playback problems</value>
-  </data>
-  <data name="ChangeTheMousePointerDisplayOrSpeed" xml:space="preserve">
-    <value>Change the mouse pointer display or speed</value>
-  </data>
-  <data name="BackUpYourRecoveryKey" xml:space="preserve">
-    <value>Back up your recovery key</value>
-  </data>
-  <data name="SaveBackupCopiesOfYourFilesWithFileHistory" xml:space="preserve">
-    <value>Save backup copies of your files with File History</value>
-  </data>
-  <data name="ViewCurrentAccessibilitySettings" xml:space="preserve">
-    <value>View current accessibility settings</value>
-  </data>
-  <data name="ChangeTabletPenSettings" xml:space="preserve">
-    <value>Change tablet pen settings</value>
-  </data>
-  <data name="ChangeHowYourMouseWorks" xml:space="preserve">
-    <value>Change how your mouse works</value>
-  </data>
-  <data name="ShowHowMuchRAMIsOnThisComputer" xml:space="preserve">
-    <value>Show how much RAM is on this computer</value>
-  </data>
-  <data name="EditPowerPlan" xml:space="preserve">
-    <value>Edit power plan</value>
-  </data>
-  <data name="AdjustSystemVolume" xml:space="preserve">
-    <value>Adjust system volume</value>
-  </data>
-  <data name="DefragmentAndOptimiseYourDrives" xml:space="preserve">
-    <value>Defragment and optimise your drives</value>
-  </data>
-  <data name="SetUpODBCDataSources32Bit" xml:space="preserve">
-    <value>Set up ODBC data sources (32-bit)</value>
-  </data>
-  <data name="ChangeFontSettings" xml:space="preserve">
-    <value>Change Font Settings</value>
-  </data>
-  <data name="MagnifyPortionsOfTheScreenUsingMagnifier" xml:space="preserve">
-    <value>Magnify portions of the screen using Magnifier</value>
-  </data>
-  <data name="ChangeTheFileTypeAssociatedWithAFileExtension" xml:space="preserve">
-    <value>Change the file type associated with a file extension</value>
-  </data>
-  <data name="ViewEventLogs" xml:space="preserve">
-    <value>View event logs</value>
-  </data>
-  <data name="ManageWindowsCredentials" xml:space="preserve">
-    <value>Manage Windows Credentials</value>
-  </data>
-  <data name="SetUpAMicrophone" xml:space="preserve">
-    <value>Set up a microphone</value>
-  </data>
-  <data name="ChangeHowTheMousePointerLooks" xml:space="preserve">
-    <value>Change how the mouse pointer looks</value>
-  </data>
-  <data name="ChangePowerSavingSettings" xml:space="preserve">
-    <value>Change power-saving settings</value>
-  </data>
-  <data name="OptimiseForBlindness" xml:space="preserve">
-    <value>Optimise for blindness</value>
-  </data>
-  <data name="null" xml:space="preserve">
-    <value>
-    </value>
-  </data>
-  <data name="TurnWindowsFeaturesOnOrOff" xml:space="preserve">
-    <value>Turn Windows features on or off</value>
-  </data>
-  <data name="ShowWhichOperatingSystemYourComputerIsRunning" xml:space="preserve">
-    <value>Show which operating system your computer is running</value>
-  </data>
-  <data name="ViewLocalServices" xml:space="preserve">
-    <value>View local services</value>
-  </data>
-  <data name="ManageWorkFolders" xml:space="preserve">
-    <value>Manage Work Folders</value>
-  </data>
-  <data name="EncryptYourOfflineFiles" xml:space="preserve">
-    <value>Encrypt your offline files</value>
-  </data>
-  <data name="TrainTheComputerToRecogniseYourVoice" xml:space="preserve">
-    <value>Train the computer to recognise your voice</value>
-  </data>
-  <data name="AdvancedPrinterSetup" xml:space="preserve">
-    <value>Advanced printer setup</value>
-  </data>
-  <data name="ChangeDefaultPrinter" xml:space="preserve">
-    <value>Change default printer</value>
-  </data>
-  <data name="EditEnvironmentVariablesForYourAccount" xml:space="preserve">
-    <value>Edit environment variables for your account</value>
-  </data>
-  <data name="OptimiseVisualDisplay" xml:space="preserve">
-    <value>Optimise visual display</value>
-  </data>
-  <data name="ChangeMouseClickSettings" xml:space="preserve">
-    <value>Change mouse click settings</value>
-  </data>
-  <data name="ChangeAdvancedColourManagementSettingsForDisplaysScannersAndPrinters" xml:space="preserve">
-    <value>Change advanced colour management settings for displays, scanners and printers</value>
-  </data>
-  <data name="LetWindowsSuggestEaseOfAccessSettings" xml:space="preserve">
-    <value>Let Windows suggest Ease of Access settings</value>
-  </data>
-  <data name="ClearDiskSpaceByDeletingUnnecessaryFiles" xml:space="preserve">
-    <value>Clear disk space by deleting unnecessary files</value>
-  </data>
-  <data name="ViewDevicesAndPrinters" xml:space="preserve">
-    <value>View devices and printers</value>
-  </data>
-  <data name="PrivateCharacterEditor" xml:space="preserve">
-    <value>Private Character Editor</value>
-  </data>
-  <data name="RecordStepsToReproduceAProblem" xml:space="preserve">
-    <value>Record steps to reproduce a problem</value>
-  </data>
-  <data name="AdjustTheAppearanceAndPerformanceOfWindows" xml:space="preserve">
-    <value>Adjust the appearance and performance of Windows</value>
-  </data>
-  <data name="SettingsForMicrosoftIMEJapanese" xml:space="preserve">
-    <value>Settings for Microsoft IME (Japanese)</value>
-  </data>
-  <data name="InviteSomeoneToConnectToYourPCAndHelpYouOrOfferToHelpSomeoneElse" xml:space="preserve">
-    <value>Invite someone to connect to your PC and help you, or offer to help someone else</value>
-  </data>
-  <data name="RunProgramsMadeForPreviousVersionsOfWindows" xml:space="preserve">
-    <value>Run programs made for previous versions of Windows</value>
-  </data>
-  <data name="ChooseTheOrderOfHowYourScreenRotates" xml:space="preserve">
-    <value>Choose the order of how your screen rotates</value>
-  </data>
-  <data name="ChangeHowWindowsSearches" xml:space="preserve">
-    <value>Change how Windows searches</value>
-  </data>
-  <data name="SetFlicksToPerformCertainTasks" xml:space="preserve">
-    <value>Set flicks to perform certain tasks</value>
-  </data>
-  <data name="ChangeAccountType" xml:space="preserve">
-    <value>Change account type</value>
-  </data>
-  <data name="ChangeScreenSaver" xml:space="preserve">
-    <value>Change screen saver</value>
-  </data>
-  <data name="ChangeUserAccountControlSettings" xml:space="preserve">
-    <value>Change User Account Control settings</value>
-  </data>
-  <data name="TurnOnEasyAccessKeys" xml:space="preserve">
-    <value>Turn on easy access keys</value>
-  </data>
-  <data name="IdentifyAndRepairNetworkProblems" xml:space="preserve">
-    <value>Identify and repair network problems</value>
-  </data>
-  <data name="FindAndFixNetworkingAndConnectionProblems" xml:space="preserve">
-    <value>Find and fix networking and connection problems</value>
-  </data>
-  <data name="PlayCdsOrOtherMediaAutomatically" xml:space="preserve">
-    <value>Play CDs or other media automatically</value>
-  </data>
-  <data name="ViewBasicInformationAboutYourComputer" xml:space="preserve">
-    <value>View basic information about your computer</value>
-  </data>
-  <data name="ChooseHowYouOpenLinks" xml:space="preserve">
-    <value>Choose how you open links</value>
-  </data>
-  <data name="AllowRemoteAssistanceInvitationsToBeSentFromThisComputer" xml:space="preserve">
-    <value>Allow Remote Assistance invitations to be sent from this computer</value>
-  </data>
-  <data name="TaskManager" xml:space="preserve">
-    <value>Task Manager</value>
-  </data>
-  <data name="TurnFlicksOnOrOff" xml:space="preserve">
-    <value>Turn flicks on or off</value>
-  </data>
-  <data name="AddALanguage" xml:space="preserve">
-    <value>Add a language</value>
-  </data>
-  <data name="ViewNetworkStatusAndTasks" xml:space="preserve">
-    <value>View network status and tasks</value>
-  </data>
-  <data name="TurnMagnifierOnOrOff" xml:space="preserve">
-    <value>Turn Magnifier on or off</value>
-  </data>
-  <data name="SeeTheNameOfThisComputer" xml:space="preserve">
-    <value>See the name of this computer</value>
-  </data>
-  <data name="ViewNetworkConnections" xml:space="preserve">
-    <value>View network connections</value>
-  </data>
-  <data name="PerformRecommendedMaintenanceTasksAutomatically" xml:space="preserve">
-    <value>Perform recommended maintenance tasks automatically</value>
-  </data>
-  <data name="ManageDiskSpaceUsedByYourOfflineFiles" xml:space="preserve">
-    <value>Manage disk space used by your offline files</value>
-  </data>
-  <data name="TurnHighContrastOnOrOff" xml:space="preserve">
-    <value>Turn High Contrast on or off</value>
-  </data>
-  <data name="ChangeTheWayTimeIsDisplayed" xml:space="preserve">
-    <value>Change the way time is displayed</value>
-  </data>
-  <data name="ChangeHowWebPagesAreDisplayedInTabs" xml:space="preserve">
-    <value>Change how web pages are displayed in tabs</value>
-  </data>
-  <data name="ChangeTheWayDatesAndListsAreDisplayed" xml:space="preserve">
-    <value>Change the way dates and lists are displayed</value>
-  </data>
-  <data name="ManageAudioDevices" xml:space="preserve">
-    <value>Manage audio devices</value>
-  </data>
-  <data name="ChangeSecuritySettings" xml:space="preserve">
-    <value>Change security settings</value>
-  </data>
-  <data name="CheckSecurityStatus" xml:space="preserve">
-    <value>Check security status</value>
-  </data>
-  <data name="DeleteCookiesOrTemporaryFiles" xml:space="preserve">
-    <value>Delete cookies or temporary files</value>
-  </data>
-  <data name="SpecifyWhichHandYouWriteWith" xml:space="preserve">
-    <value>Specify which hand you write with</value>
-  </data>
-  <data name="ChangeTouchInputSettings" xml:space="preserve">
-    <value>Change touch input settings</value>
-  </data>
-  <data name="HowToChangeTheSizeOfVirtualMemory" xml:space="preserve">
-    <value>How to change the size of virtual memory</value>
-  </data>
-  <data name="HearTextReadAloudWithNarrator" xml:space="preserve">
-    <value>Hear text read aloud with Narrator</value>
-  </data>
-  <data name="SetUpUSBGameControllers" xml:space="preserve">
-    <value>Set up USB game controllers</value>
-  </data>
-  <data name="ShowWhichDomainYourComputerIsOn" xml:space="preserve">
-    <value>Show which domain your computer is on</value>
-  </data>
-  <data name="ViewAllProblemReports" xml:space="preserve">
-    <value>View all problem reports</value>
-  </data>
-  <data name="16BitApplicationSupport" xml:space="preserve">
-    <value>16-Bit Application Support</value>
-  </data>
-  <data name="SetUpDiallingRules" xml:space="preserve">
-    <value>Set up dialling rules</value>
-  </data>
-  <data name="EnableOrDisableSessionCookies" xml:space="preserve">
-    <value>Enable or disable session cookies</value>
-  </data>
-  <data name="GiveAdministrativeRightsToADomainUser" xml:space="preserve">
-    <value>Give administrative rights to a domain user</value>
-  </data>
-  <data name="ChooseWhenToTurnOffDisplay" xml:space="preserve">
-    <value>Choose when to turn off display</value>
-  </data>
-  <data name="MoveThePointerWithTheKeypadUsingMousekeys" xml:space="preserve">
-    <value>Move the pointer with the keypad using MouseKeys</value>
-  </data>
-  <data name="ChangeWindowsSideshowCompatibleDeviceSettings" xml:space="preserve">
-    <value>Change Windows SideShow-compatible device settings</value>
-  </data>
-  <data name="AdjustCommonlyUsedMobilitySettings" xml:space="preserve">
-    <value>Adjust commonly used mobility settings</value>
-  </data>
-  <data name="ChangeTextToSpeechSettings" xml:space="preserve">
-    <value>Change text-to-speech settings</value>
-  </data>
-  <data name="SetTheTimeAndDate" xml:space="preserve">
-    <value>Set the time and date</value>
-  </data>
-  <data name="ChangeLocationSettings" xml:space="preserve">
-    <value>Change location settings</value>
-  </data>
-  <data name="ChangeMouseSettings" xml:space="preserve">
-    <value>Change mouse settings</value>
-  </data>
-  <data name="ManageStorageSpaces" xml:space="preserve">
-    <value>Manage Storage Spaces</value>
-  </data>
-  <data name="ShowOrHideFileExtensions" xml:space="preserve">
-    <value>Show or hide file extensions</value>
-  </data>
-  <data name="AllowAnAppThroughWindowsFirewall" xml:space="preserve">
-    <value>Allow an app through Windows Firewall</value>
-  </data>
-  <data name="ChangeSystemSounds" xml:space="preserve">
-    <value>Change system sounds</value>
-  </data>
-  <data name="AdjustCleartypeText" xml:space="preserve">
-    <value>Adjust ClearType text</value>
-  </data>
-  <data name="TurnScreenSaverOnOrOff" xml:space="preserve">
-    <value>Turn screen saver on or off</value>
-  </data>
-  <data name="FindAndFixWindowsUpdateProblems" xml:space="preserve">
-    <value>Find and fix windows update problems</value>
-  </data>
-  <data name="ChangeBluetoothSettings" xml:space="preserve">
-    <value>Change Bluetooth settings</value>
-  </data>
-  <data name="ConnectToANetwork" xml:space="preserve">
-    <value>Connect to a network</value>
-  </data>
-  <data name="ChangeTheSearchProviderInInternetExplorer" xml:space="preserve">
-    <value>Change the search provider in Internet Explorer</value>
-  </data>
-  <data name="JoinADomain" xml:space="preserve">
-    <value>Join a domain</value>
-  </data>
-  <data name="AddADevice" xml:space="preserve">
-    <value>Add a device</value>
-  </data>
-  <data name="FindAndFixProblemsWithWindowsSearch" xml:space="preserve">
-    <value>Find and fix problems with Windows Search</value>
-  </data>
-  <data name="ChooseAPowerPlan" xml:space="preserve">
-    <value>Choose a power plan</value>
-  </data>
-  <data name="ChangeHowTheMousePointerLooksWhenItSMoving" xml:space="preserve">
-    <value>Change how the mouse pointer looks when it’s moving</value>
-  </data>
-  <data name="UninstallAProgram" xml:space="preserve">
-    <value>Uninstall a program</value>
-  </data>
-  <data name="CreateAndFormatHardDiskPartitions" xml:space="preserve">
-    <value>Create and format hard disk partitions</value>
-  </data>
-  <data name="ChangeDateTimeOrNumberFormats" xml:space="preserve">
-    <value>Change date, time or number formats</value>
-  </data>
-  <data name="ChangePCWakeUpSettings" xml:space="preserve">
-    <value>Change PC wake-up settings</value>
-  </data>
-  <data name="ManageNetworkPasswords" xml:space="preserve">
-    <value>Manage network passwords</value>
-  </data>
-  <data name="ChangeInputMethods" xml:space="preserve">
-    <value>Change input methods</value>
-  </data>
-  <data name="ManageAdvancedSharingSettings" xml:space="preserve">
-    <value>Manage advanced sharing settings</value>
-  </data>
-  <data name="ChangeBatterySettings" xml:space="preserve">
-    <value>Change battery settings</value>
-  </data>
-  <data name="RenameThisComputer" xml:space="preserve">
-    <value>Rename this computer</value>
-  </data>
-  <data name="LockOrUnlockTheTaskbar" xml:space="preserve">
-    <value>Lock or unlock the taskbar</value>
-  </data>
-  <data name="ManageWebCredentials" xml:space="preserve">
-    <value>Manage Web Credentials</value>
-  </data>
-  <data name="ChangeTheTimeZone" xml:space="preserve">
-    <value>Change the time zone</value>
-  </data>
-  <data name="StartSpeechRecognition" xml:space="preserve">
-    <value>Start speech recognition</value>
-  </data>
-  <data name="ViewInstalledUpdates" xml:space="preserve">
-    <value>View installed updates</value>
-  </data>
-  <data name="WhatsHappenedToTheQuickLaunchToolbar" xml:space="preserve">
-    <value>What's happened to the Quick Launch toolbar?</value>
-  </data>
-  <data name="ChangeSearchOptionsForFilesAndFolders" xml:space="preserve">
-    <value>Change search options for files and folders</value>
-  </data>
-  <data name="AdjustSettingsBeforeGivingAPresentation" xml:space="preserve">
-    <value>Adjust settings before giving a presentation</value>
-  </data>
-  <data name="ScanADocumentOrPicture" xml:space="preserve">
-    <value>Scan a document or picture</value>
-  </data>
-  <data name="ChangeTheWayMeasurementsAreDisplayed" xml:space="preserve">
-    <value>Change the way measurements are displayed</value>
-  </data>
-  <data name="PressKeyCombinationsOneAtATime" xml:space="preserve">
-    <value>Press key combinations one at a time</value>
-  </data>
-  <data name="RestoreDataFilesOrComputerFromBackupWindows7" xml:space="preserve">
-    <value>Restore data, files or computer from backup (Windows 7)</value>
-  </data>
-  <data name="SetYourDefaultPrograms" xml:space="preserve">
-    <value>Set your default programs</value>
-  </data>
-  <data name="SetUpABroadbandConnection" xml:space="preserve">
-    <value>Set up a broadband connection</value>
-  </data>
-  <data name="CalibrateTheScreenForPenOrTouchInput" xml:space="preserve">
-    <value>Calibrate the screen for pen or touch input</value>
-  </data>
-  <data name="ManageUserCertificates" xml:space="preserve">
-    <value>Manage user certificates</value>
-  </data>
-  <data name="ScheduleTasks" xml:space="preserve">
-    <value>Schedule tasks</value>
-  </data>
-  <data name="IgnoreRepeatedKeystrokesUsingFilterkeys" xml:space="preserve">
-    <value>Ignore repeated keystrokes using FilterKeys</value>
-  </data>
-  <data name="FindAndFixBluescreenProblems" xml:space="preserve">
-    <value>Find and fix bluescreen problems</value>
-  </data>
-  <data name="HearAToneWhenKeysArePressed" xml:space="preserve">
-    <value>Hear a tone when keys are pressed</value>
-  </data>
-  <data name="DeleteBrowsingHistory" xml:space="preserve">
-    <value>Delete browsing history</value>
-  </data>
-  <data name="ChangeWhatThePowerButtonsDo" xml:space="preserve">
-    <value>Change what the power buttons do</value>
-  </data>
-  <data name="CreateStandardUserAccount" xml:space="preserve">
-    <value>Create standard user account</value>
-  </data>
-  <data name="TakeSpeechTutorials" xml:space="preserve">
-    <value>Take speech tutorials</value>
-  </data>
-  <data name="ViewSystemResourceUsageInTaskManager" xml:space="preserve">
-    <value>View system resource usage in Task Manager</value>
-  </data>
-  <data name="CreateAnAccount" xml:space="preserve">
-    <value>Create an account</value>
-  </data>
-  <data name="GetMoreFeaturesWithANewEditionOfWindows" xml:space="preserve">
-    <value>Get more features with a new edition of Windows</value>
-  </data>
-  <data name="AppControlPanel" xml:space="preserve">
-    <value>Control Panel</value>
-  </data>
-  <data name="TaskLink" xml:space="preserve">
-    <value>TaskLink</value>
-  </data>
-  <data name="AreaUnknown" xml:space="preserve">
-    <value>Unknown</value>
+  <data name="OpenMMC" xml:space="preserve">
+    <value>Open Microsoft Management Console</value>
   </data>
 </root>

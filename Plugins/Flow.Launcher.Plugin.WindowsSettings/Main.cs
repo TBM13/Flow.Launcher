@@ -18,7 +18,7 @@ namespace Flow.Launcher.Plugin.WindowsSettings
             Context = context;
             _settingsList = JsonSettingsListHelper.ReadAllPossibleSettings();
             _settingsList = UnsupportedSettingsHelper.FilterByBuild(Context.API, _settingsList);
-            _settingsList = TranslationHelper.TranslateAllSettings(Context.API, _settingsList);
+            TranslationHelper.TranslateAllSettings(_settingsList);
         }
 
         public List<Result> Query(Query query)
