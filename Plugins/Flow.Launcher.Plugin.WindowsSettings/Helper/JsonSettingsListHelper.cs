@@ -10,49 +10,30 @@ using Flow.Launcher.Plugin.WindowsSettings.Classes;
 namespace Flow.Launcher.Plugin.WindowsSettings.Helper
 {
     /// <summary>
-    /// Helper class to easier work with the JSON file that contains all Windows settings
+    /// Helper for the JSON file that contains all Windows settings.
     /// </summary>
     internal static class JsonSettingsListHelper
     {
-        /// <summary>
-        /// The name of the file that contains all settings for the query
-        /// </summary>
-        private const string _settingsFile = "WindowsSettings.json";
+        private const string SETTINGS_FILE = "WindowsSettings.json";
+        private static readonly JsonSerializerOptions _options = new()
+        {
+            Converters =
+            {
+                new JsonStringEnumConverter()
+            }
+        };
 
-        /// <summary>
-        /// Read all possible Windows settings.
-        /// </summary>
-        /// <returns>A list with all possible windows settings.</returns>
         internal static IEnumerable<WindowsSetting> ReadAllPossibleSettings()
         {
             var assembly = Assembly.GetExecutingAssembly();
             var type = assembly.GetTypes().FirstOrDefault(x => x.Name == nameof(Main));
 
-            IEnumerable<WindowsSetting>? settingsList = null;
+            var resourceName = $"{type?.Namespace}.{SETTINGS_FILE}";
+            using var stream = assembly.GetManifestResourceStream(resourceName) ?? throw new Exception("stream is null");
+            using var reader = new StreamReader(stream);
+            var text = reader.ReadToEnd();
 
-            try
-            {
-                var resourceName = $"{type?.Namespace}.{_settingsFile}";
-                using var stream = assembly.GetManifestResourceStream(resourceName);
-                if (stream is null)
-                {
-                    throw new Exception("stream is null");
-                }
-
-                var options = new JsonSerializerOptions();
-                options.Converters.Add(new JsonStringEnumConverter());
-
-                using var reader = new StreamReader(stream);
-                var text = reader.ReadToEnd();
-
-                settingsList = JsonSerializer.Deserialize<IEnumerable<WindowsSetting>>(text, options);
-            }
-            catch (Exception exception)
-            {
-                Log.Exception("Error loading settings JSON file", exception, typeof(Main));
-            }
-
-            return settingsList ?? Enumerable.Empty<WindowsSetting>();
+            return JsonSerializer.Deserialize<IEnumerable<WindowsSetting>>(text, _options) ?? [];
         }
     }
 }

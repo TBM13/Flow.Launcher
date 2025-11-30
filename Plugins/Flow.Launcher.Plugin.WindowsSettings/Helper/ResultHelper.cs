@@ -1,6 +1,6 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -9,35 +9,30 @@ using Flow.Launcher.Plugin.WindowsSettings.Properties;
 
 namespace Flow.Launcher.Plugin.WindowsSettings.Helper
 {
-    /// <summary>
-    /// Helper class to easier work with results
-    /// </summary>
     internal static class ResultHelper
     {
-        private static IPublicAPI? _api;
-
-        public static void Init(IPublicAPI api) => _api = api;
-
-        private static List<Result> GetDefaultResults(in IEnumerable<WindowsSetting> list,
+        private static List<Result> GetDefaultResults(
+            IPublicAPI api,
+            in IEnumerable<WindowsSetting> list,
             string windowsSettingIconPath,
             string controlPanelIconPath)
         {
-            return list.Select(entry =>
+            return [.. list.Select(entry =>
             {
-                var result = NewSettingResult(100, entry.Type, windowsSettingIconPath, controlPanelIconPath, entry);
+                var result = NewSettingResult(api, 100, entry.Type, windowsSettingIconPath, controlPanelIconPath, entry);
                 AddOptionalToolTip(entry, result);
                 return result;
-            }).ToList();
+            })];
         }
 
         /// <summary>
-        /// Return a list with <see cref="Result"/>s, based on the given list.
+        /// Returns a list with <see cref="Result"/>(s), based on the given list.
         /// </summary>
         /// <param name="list">The original result list to convert.</param>
         /// <param name="query">Query for specific result List</param>
         /// <param name="windowsSettingIconPath">The path to the icon of each entry.</param>
-        /// <returns>A list with <see cref="Result"/>.</returns>
         internal static List<Result> GetResultList(
+            IPublicAPI api,
             in IEnumerable<WindowsSetting> list,
             Query query,
             string windowsSettingIconPath,
@@ -45,43 +40,38 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Helper
         {
             if (string.IsNullOrWhiteSpace(query.Search))
             {
-                return GetDefaultResults(list, windowsSettingIconPath, controlPanelIconPath);
+                return GetDefaultResults(api, list, windowsSettingIconPath, controlPanelIconPath);
             }
 
             var resultList = new List<Result>();
-
             foreach (var entry in list)
             {
                 // Adjust the score to lower the order of many irrelevant matches from area strings
                 // that may only be for description.
                 const int nonNameMatchScoreAdj = 10;
-
-
                 Result? result;
-                Debug.Assert(_api != null, nameof(_api) + " != null");
 
-                var nameMatch = _api.FuzzySearch(query.Search, entry.Name);
-
+                var nameMatch = api.FuzzySearch(query.Search, entry.Name);
                 if (nameMatch.IsSearchPrecisionScoreMet())
                 {
-                    var settingResult = NewSettingResult(nameMatch.Score, entry.Type, windowsSettingIconPath, controlPanelIconPath, entry);
+                    var settingResult = NewSettingResult(api, nameMatch.Score, entry.Type, windowsSettingIconPath, controlPanelIconPath, entry);
                     settingResult.TitleHighlightData = nameMatch.MatchData;
                     result = settingResult;
                 }
                 else
                 {
-                    var areaMatch = _api.FuzzySearch(query.Search, entry.Area);
+                    var areaMatch = api.FuzzySearch(query.Search, entry.Area);
                     if (areaMatch.IsSearchPrecisionScoreMet())
                     {
-                        var settingResult = NewSettingResult(areaMatch.Score - nonNameMatchScoreAdj, entry.Type, windowsSettingIconPath, controlPanelIconPath, entry);
+                        var settingResult = NewSettingResult(api, areaMatch.Score - nonNameMatchScoreAdj, entry.Type, windowsSettingIconPath, controlPanelIconPath, entry);
                         result = settingResult;
                     }
                     else
                     {
                         result = entry.AltNames?
-                            .Select(altName => _api.FuzzySearch(query.Search, altName))
+                            .Select(altName => api.FuzzySearch(query.Search, altName))
                             .Where(match => match.IsSearchPrecisionScoreMet())
-                            .Select(altNameMatch => NewSettingResult(altNameMatch.Score - nonNameMatchScoreAdj, entry.Type, windowsSettingIconPath, controlPanelIconPath, entry))
+                            .Select(altNameMatch => NewSettingResult(api, altNameMatch.Score - nonNameMatchScoreAdj, entry.Type, windowsSettingIconPath, controlPanelIconPath, entry))
                             .FirstOrDefault();
                     }
 
@@ -95,7 +85,7 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Helper
                                 .SelectMany(x => x)
                                 .Contains(x, StringComparer.CurrentCultureIgnoreCase))
                         )
-                            result = NewSettingResult(nonNameMatchScoreAdj, entry.Type, windowsSettingIconPath, controlPanelIconPath, entry);
+                            result = NewSettingResult(api, nonNameMatchScoreAdj, entry.Type, windowsSettingIconPath, controlPanelIconPath, entry);
                     }
                 }
 
@@ -103,7 +93,6 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Helper
                     continue;
 
                 AddOptionalToolTip(entry, result);
-
                 resultList.Add(result);
             }
 
@@ -112,29 +101,30 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Helper
 
         private const int TaskLinkScorePenalty = 50;
 
-        private static Result NewSettingResult(int score, string type, string windowsSettingIconPath, string controlPanelIconPath, WindowsSetting entry) => new()
-        {
-            Action = _ => DoOpenSettingsAction(entry),
-            IcoPath = type == "AppSettingsApp" ? windowsSettingIconPath : controlPanelIconPath,
-            Glyph = entry.IconGlyph,
-            SubTitle = GetSubtitle(entry.Area, type),
-            Title = entry.Name,
-            ContextData = entry,
-            Score = score - (type == "TaskLink" ? TaskLinkScorePenalty : 0),
-        };
+        private static Result NewSettingResult(
+            IPublicAPI api,
+            int score, string type,
+            string windowsSettingIconPath, string controlPanelIconPath,
+            WindowsSetting entry) => new()
+            {
+                Action = _ => DoOpenSettingsAction(api, entry),
+                IcoPath = type == "AppSettingsApp" ? windowsSettingIconPath : controlPanelIconPath,
+                Glyph = entry.IconGlyph,
+                SubTitle = GetSubtitle(entry.Area, type),
+                Title = entry.Name,
+                ContextData = entry,
+                Score = score - (type == "TaskLink" ? TaskLinkScorePenalty : 0),
+            };
 
         private static string GetSubtitle(string section, string entryType)
         {
             var settingType = entryType == "AppSettingsApp" ? Resources.AppSettingsApp : Resources.AppControlPanel;
-
             return $"{settingType} > {section}";
         }
 
         /// <summary>
-        /// Add a tool-tip to the given <see cref="Result"/>, based o the given <see cref="IWindowsSetting"/>.
+        /// Adds a tooltip to the given <see cref="Result"/>, based on the given <see cref="WindowsSetting"/>.
         /// </summary>
-        /// <param name="entry">The <see cref="WindowsSetting"/> that contain informations for the tool-tip.</param>
-        /// <param name="result">The <see cref="Result"/> that need a tool-tip.</param>
         private static void AddOptionalToolTip(WindowsSetting entry, Result result)
         {
             var toolTipText = new StringBuilder();
@@ -165,18 +155,15 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Helper
         }
 
         /// <summary>
-        /// Open the settings page of the given <see cref="IWindowsSetting"/>.
+        /// Open the settings page of the given <see cref="WindowsSetting"/>.
         /// </summary>
-        /// <param name="entry">The <see cref="WindowsSetting"/> that contain the information to open the setting on command level.</param>
-        /// <returns><see langword="true"/> if the settings could be opened, otherwise <see langword="false"/>.</returns>
-        private static bool DoOpenSettingsAction(WindowsSetting entry)
+        /// <returns><see langword="true"/> if the page could be opened, otherwise <see langword="false"/>.</returns>
+        private static bool DoOpenSettingsAction(IPublicAPI api, WindowsSetting entry)
         {
             ProcessStartInfo processStartInfo;
 
             var command = entry.Command;
-
             command = Environment.ExpandEnvironmentVariables(command);
-
             if (command.Contains(' '))
             {
                 var commandSplit = command.Split(' ');
@@ -212,13 +199,13 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Helper
                 }
                 catch (Exception exception)
                 {
-                    Log.Exception("can't open settings on elevated permission", exception, typeof(ResultHelper));
+                    api.ShowMsgError("Failed to open settings app", exception.ToString());
                     return false;
                 }
             }
             catch (Exception exception)
             {
-                Log.Exception("can't open settings", exception, typeof(ResultHelper));
+                api.ShowMsgError("Failed to open settings app", exception.ToString());
                 return false;
             }
         }
