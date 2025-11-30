@@ -175,7 +175,11 @@
         "Command": "ms-settings:network-airplanemode",
         "Areas": [
             "AreaNetworkAndInternet"
-        ]
+        ],
+        "IconGlyph": {
+            "Glyph": "\ue709",
+            "FontFamily": "/Resources/#Segoe Fluent Icons"
+        }
     },
     {
         "Name": "AppDiagnostics",
@@ -247,7 +251,11 @@
             "AutoPlay",
             "Usb"
         ],
-        "IntroducedInBuild": 22000
+        "IntroducedInBuild": 22000,
+        "IconGlyph": {
+            "Glyph": "\ue702",
+            "FontFamily": "/Resources/#Segoe Fluent Icons"
+        }
     },
     {
         "Name": "Audio",
@@ -609,7 +617,11 @@
             "deuteranopia",
             "protanopia",
             "tritanopia"
-        ]
+        ],
+        "IconGlyph": {
+            "Glyph": "\ue790",
+            "FontFamily": "/Resources/#Segoe Fluent Icons"
+        }
     },
     {
         "Name": "ColorManagement",
@@ -888,7 +900,11 @@
             "AddDevices",
             "BluetoothDevices"
         ],
-        "IntroducedInBuild": 22000
+        "IntroducedInBuild": 22000,
+        "IconGlyph": {
+            "Glyph": "\ue772",
+            "FontFamily": "/Resources/#Segoe Fluent Icons"
+        }
     },
     {
         "Name": "DevicesAndPrinters",
@@ -963,7 +979,11 @@
             "BlueLight",
             "WarmerColor",
             "RedEye"
-        ]
+        ],
+        "IconGlyph": {
+            "Glyph": "\ue7f4",
+            "FontFamily": "/Resources/#Segoe Fluent Icons"
+        }
     },
     {
         "Name": "Display",
@@ -977,7 +997,11 @@
             "Animations",
             "ScrollBars",
             "Size"
-        ]
+        ],
+        "IconGlyph": {
+            "Glyph": "\ue8e9",
+            "FontFamily": "/Resources/#Segoe Fluent Icons"
+        }
     },
     {
         "Name": "DisplayProperties",
@@ -1079,7 +1103,11 @@
         "Command": "ms-settings:emailandaccounts",
         "Areas": [
             "AreaAccounts"
-        ]
+        ],
+        "IconGlyph": {
+            "Glyph": "\ue715",
+            "FontFamily": "/Resources/#Segoe Fluent Icons"
+        }
     },
     {
         "Name": "Encryption",
@@ -1306,7 +1334,7 @@
             "AreaGaming"
         ],
         "IconGlyph": {
-            "Glyph": "\uec4a",
+            "Glyph": "\ue7fc",
             "FontFamily": "/Resources/#Segoe Fluent Icons"
         }
     },
@@ -1380,7 +1408,7 @@
             "AreaEaseOfAccess"
         ],
         "IconGlyph": {
-            "Glyph": "\ue706",
+            "Glyph": "\ue7a1",
             "FontFamily": "/Resources/#Segoe Fluent Icons"
         }
     },
@@ -1552,7 +1580,11 @@
         "AltNames": [
             "Image",
             "Picture"
-        ]
+        ],
+        "IconGlyph": {
+            "Glyph": "\uee3f",
+            "FontFamily": "/Resources/#Segoe Fluent Icons"
+        }
     },
     {
         "Name": "Magnifier",
@@ -1565,7 +1597,7 @@
             "Zoom"
         ],
         "IconGlyph": {
-            "Glyph": "\uf19d",
+            "Glyph": "\ue8a3",
             "FontFamily": "/Resources/#Segoe Fluent Icons"
         }
     },
@@ -1625,7 +1657,7 @@
             "AreaPrivacy"
         ],
         "IconGlyph": {
-            "Glyph": "\uebdb",
+            "Glyph": "\ue8bd",
             "FontFamily": "/Resources/#Segoe Fluent Icons"
         }
     },
@@ -1658,7 +1690,11 @@
         "Command": "ms-settings:network-mobilehotspot",
         "Areas": [
             "AreaNetworkAndInternet"
-        ]
+        ],
+        "IconGlyph": {
+            "Glyph": "\ue88a",
+            "FontFamily": "/Resources/#Segoe Fluent Icons"
+        }
     },
     {
         "Name": "MoreDetails",
@@ -1774,7 +1810,11 @@
         "Command": "ms-settings:easeofaccess-narrator",
         "Areas": [
             "AreaEaseOfAccess"
-        ]
+        ],
+        "IconGlyph": {
+            "Glyph": "\uf83b",
+            "FontFamily": "/Resources/#Segoe Fluent Icons"
+        }
     },
     {
         "Name": "NavigationBar",
@@ -1887,7 +1927,7 @@
             "AreaSystem"
         ],
         "IconGlyph": {
-            "Glyph": "\uec8a",
+            "Glyph": "\uf08c",
             "FontFamily": "/Resources/#Segoe Fluent Icons"
         }
     },
@@ -1913,7 +1953,11 @@
         "Command": "ms-settings:notifications",
         "Areas": [
             "AreaSystem"
-        ]
+        ],
+        "IconGlyph": {
+            "Glyph": "\uf2a3",
+            "FontFamily": "/Resources/#Segoe Fluent Icons"
+        }
     },
     {
         "Name": "OdbcDataSourceAdministrator32Bit",
@@ -2222,7 +2266,7 @@
             "AreaSystem"
         ],
         "IconGlyph": {
-            "Glyph": "\uf83d",
+            "Glyph": "\ue7e8",
             "FontFamily": "/Resources/#Segoe Fluent Icons"
         }
     },
@@ -2326,7 +2370,7 @@
             "AreaNetworkAndInternet"
         ],
         "IconGlyph": {
-            "Glyph": "\ue774",
+            "Glyph": "\ue968",
             "FontFamily": "/Resources/#Segoe Fluent Icons"
         }
     },
@@ -2422,7 +2466,11 @@
         "Command": "ms-settings:remotedesktop",
         "Areas": [
             "AreaSystem"
-        ]
+        ],
+        "IconGlyph": {
+            "Glyph": "\ue8af",
+            "FontFamily": "/Resources/#Segoe Fluent Icons"
+        }
     },
     {
         "Name": "ResultantSetOfPolicy",
@@ -2545,7 +2593,7 @@
             "Crossdevice"
         ],
         "IconGlyph": {
-            "Glyph": "\uf22c",
+            "Glyph": "\ue72d",
             "FontFamily": "/Resources/#Segoe Fluent Icons"
         }
     },
@@ -2615,7 +2663,11 @@
         "AltNames": [
             "Recognition",
             "Talk"
-        ]
+        ],
+        "IconGlyph": {
+            "Glyph": "\ue720",
+            "FontFamily": "/Resources/#Segoe Fluent Icons"
+        }
     },
     {
         "Name": "Speech",
@@ -2647,7 +2699,11 @@
         "Command": "ms-settings:personalization-start",
         "Areas": [
             "AreaPersonalization"
-        ]
+        ],
+        "IconGlyph": {
+            "Glyph": "\ue8fc",
+            "FontFamily": "/Resources/#Segoe Fluent Icons"
+        }
     },
     {
         "Name": "StartupApps",
@@ -2829,7 +2885,11 @@
         "Areas": [
             "AreaDevices"
         ],
-        "Note": "NoteTouchpad"
+        "Note": "NoteTouchpad",
+        "IconGlyph": {
+            "Glyph": "\uefa5",
+            "FontFamily": "/Resources/#Segoe Fluent Icons"
+        }
     },
     {
         "Name": "TpmManagement",
