@@ -388,12 +388,6 @@
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
     <Style x:Key="BasePreviewItemSubTitleStyle" TargetType="{x:Type TextBlock}">
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding ElementName=PreviewSubTitle, UpdateSourceTrigger=PropertyChanged, Path=Text.Length}" Value="0">
-                <Setter Property="Visibility" Value="Collapsed" />
-            </DataTrigger>
-        </Style.Triggers>
-
         <Setter Property="Foreground" Value="#8f8f8f" />
         <Setter Property="FontSize" Value="12" />
         <Setter Property="FontWeight" Value="Normal" />
