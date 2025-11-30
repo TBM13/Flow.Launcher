@@ -86,7 +86,6 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Helper
                 if (nameMatch.IsSearchPrecisionScoreMet())
                 {
                     var settingResult = NewSettingResult(api, nameMatch.Score, entry);
-                    settingResult.TitleHighlightData = nameMatch.MatchData;
                     result = settingResult;
                 }
                 else

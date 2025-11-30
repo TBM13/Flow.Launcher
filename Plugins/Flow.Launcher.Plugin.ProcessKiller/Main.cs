@@ -169,7 +169,6 @@ namespace Flow.Launcher.Plugin.ProcessKiller
                     Title = pr.Title,
                     TitleToolTip = pr.Tooltip,
                     SubTitle = path,
-                    TitleHighlightData = pr.TitleMatch?.MatchData,
                     Score = pr.Score,
                     ContextData = p.ProcessName,
                     AutoCompleteText = $"{Context.CurrentPluginMetadata.ActionKeyword}{Plugin.Query.TermSeparator}{p.ProcessName}",

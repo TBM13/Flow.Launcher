@@ -261,38 +261,6 @@ namespace Flow.Launcher.ViewModel
         }
         #endregion
 
-        #region FormattedText Dependency Property
-
-        public static readonly DependencyProperty FormattedTextProperty = DependencyProperty.RegisterAttached(
-            "FormattedText",
-            typeof(Inline),
-            typeof(ResultsViewModel),
-            new PropertyMetadata(null, FormattedTextPropertyChanged));
-
-        public static void SetFormattedText(DependencyObject textBlock, IList<int> value)
-        {
-            textBlock.SetValue(FormattedTextProperty, value);
-        }
-
-        public static Inline GetFormattedText(DependencyObject textBlock)
-        {
-            return (Inline)textBlock.GetValue(FormattedTextProperty);
-        }
-
-        private static void FormattedTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is not TextBlock textBlock) return;
-
-            var inline = (Inline)e.NewValue;
-
-            textBlock.Inlines.Clear();
-            if (inline == null) return;
-
-            textBlock.Inlines.Add(inline);
-        }
-
-        #endregion
-
         public class ResultCollection : List<ResultViewModel>, INotifyCollectionChanged
         {
             private long editTime = 0;

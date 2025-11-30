@@ -42,9 +42,6 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 UseLayoutRounding="False">
-                <DockPanel.Resources>
-                    <converter:HighlightTextConverter x:Key="HighlightTextConverter" />
-                </DockPanel.Resources>
 
                 <Image
                     DockPanel.Dock="Left"
@@ -85,12 +82,6 @@
                         TextTrimming="CharacterEllipsis"
                         ToolTip="{Binding ShowTitleToolTip}"
                         ToolTipService.ShowOnDisabled="True">
-                        <vm:ResultsViewModel.FormattedText>
-                            <MultiBinding Converter="{StaticResource HighlightTextConverter}">
-                                <Binding Path="Result.Title" />
-                                <Binding Path="Result.TitleHighlightData" />
-                            </MultiBinding>
-                        </vm:ResultsViewModel.FormattedText>
                     </TextBlock>
                     <TextBlock
                         x:Name="SubTitle"

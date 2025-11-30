@@ -110,9 +110,6 @@
         TargetType="{x:Type Image}">
         <Setter Property="Cursor" Value="Arrow" />
     </Style>
-    <Style x:Key="HighlightStyle">
-        <Setter Property="Inline.FontWeight" Value="SemiBold" />
-    </Style>
     <!--  button style in the middle of the scrollbar  -->
     <Style
         x:Key="ThumbStyle"

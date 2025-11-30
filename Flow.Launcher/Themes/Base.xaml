@@ -293,9 +293,6 @@
         </Setter>
     </Style>
     <Style x:Key="BaseSeparatorStyle" TargetType="Rectangle" />
-    <Style x:Key="HighlightStyle">
-        <Setter Property="Inline.FontWeight" Value="Bold" />
-    </Style>
 
     <Style x:Key="BasePreviewBorderStyle" TargetType="{x:Type Border}">
         <Setter Property="BorderThickness" Value="1 0 0 0" />

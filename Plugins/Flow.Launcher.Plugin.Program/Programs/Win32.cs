@@ -180,7 +180,6 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 SubTitle = subtitle,
                 IcoPath = IcoPath,
                 Score = matchResult.Score,
-                TitleHighlightData = matchResult.MatchData,
                 ContextData = this,
                 TitleToolTip = $"{title}\n{ExecutablePath}",
                 Action = c =>

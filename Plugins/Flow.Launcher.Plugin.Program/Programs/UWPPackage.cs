@@ -439,7 +439,6 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     Description = Description
                 },
                 Score = matchResult.Score,
-                TitleHighlightData = matchResult.MatchData,
                 ContextData = this,
                 Action = e =>
                 {
