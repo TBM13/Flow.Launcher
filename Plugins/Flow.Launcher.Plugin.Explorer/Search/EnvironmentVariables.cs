@@ -24,7 +24,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
 
         internal static bool IsEnvironmentVariableSearch(string search)
         {
-            return search.StartsWith("%")
+            return search.StartsWith('%')
                     && search != "%%"
                     && !search.Contains('\\')
                     && EnvStringPaths.Count > 0;
@@ -34,7 +34,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
         {
             // "c:\foo %appdata%\" returns false
             var splited = search.Split(Path.DirectorySeparatorChar);
-            return splited.Any(dir => dir.StartsWith('%') && 
+            return splited.Any(dir => dir.StartsWith('%') &&
                                         dir.EndsWith('%') &&
                                         dir.Length > 2 &&
                                         dir.Split('%').Length == 3);
@@ -72,17 +72,14 @@ namespace Flow.Launcher.Plugin.Explorer.Search
 
             var search = querySearch;
 
-            if (querySearch.EndsWith("%") && search.Length > 1)
+            if (querySearch.EndsWith('%') && search.Length > 1)
             {
                 // query starts and ends with a %, find an exact match from env-string paths
                 search = querySearch.Substring(1, search.Length - 2);
 
-                if (EnvStringPaths.ContainsKey(search))
+                if (EnvStringPaths.TryGetValue(search, out var expandedPath))
                 {
-                    var expandedPath = EnvStringPaths[search];
-
                     results.Add(ResultManager.CreateFolderResult($"%{search}%", expandedPath, expandedPath, query));
-
                     return results;
                 }
             }

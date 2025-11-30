@@ -11,17 +11,21 @@ namespace Flow.Launcher.Plugin.Explorer.Search.DirectoryInfo
     {
         private static readonly string ClassName = nameof(DirectoryInfoSearch);
 
-        internal static IEnumerable<SearchResult> TopLevelDirectorySearch(Query query, string search, CancellationToken token)
+        internal static IEnumerable<SearchResult> TopLevelDirectorySearch(Query query, string search, CancellationToken token, out bool isRecursive)
         {
             var criteria = ConstructSearchCriteria(search);
+            int wildcardPos = search.LastIndexOf(Constants.AllFilesFolderSearchWildcard);
 
-            if (search.LastIndexOf(Constants.AllFilesFolderSearchWildcard) >
-                search.LastIndexOf(Constants.DirectorySeparator))
+            if (wildcardPos > 0 && search[wildcardPos - 1] == Constants.DirectorySeparator)
+            {
+                isRecursive = true;
                 return DirectorySearch(new EnumerationOptions
                 {
                     RecurseSubdirectories = true
                 }, search, criteria, token);
+            }
 
+            isRecursive = false;
             return DirectorySearch(new EnumerationOptions(), search, criteria,
                 token); // null will be passed as default
         }

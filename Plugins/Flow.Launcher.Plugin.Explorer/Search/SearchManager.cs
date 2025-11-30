@@ -82,7 +82,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             if (token.IsCancellationRequested)
                 return [];
 
-            IAsyncEnumerable<SearchResult> directoryResult = DirectoryInfoSearch.TopLevelDirectorySearch(query, path, token).ToAsyncEnumerable();
+            IAsyncEnumerable<SearchResult> directoryResult = DirectoryInfoSearch.TopLevelDirectorySearch(query, path, token, out bool isRecursive).ToAsyncEnumerable();
 
             if (token.IsCancellationRequested)
                 return [];
@@ -91,7 +91,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             {
                 await foreach (var directory in directoryResult.WithCancellation(token).ConfigureAwait(false))
                 {
-                    results.Add(ResultManager.CreateResult(query, directory));
+                    results.Add(ResultManager.CreateResult(query, directory, isRecursive));
                 }
             }
             catch (Exception e)

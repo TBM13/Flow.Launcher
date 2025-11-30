@@ -37,6 +37,8 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 if (path.EndsWith(".lnk", StringComparison.InvariantCultureIgnoreCase))
                 {
                     path = ShellLinkHelper.retrieveTargetPath(path);
+                    if (!path.EndsWith(Constants.DirectorySeparator) && Directory.Exists(path))
+                        path += Constants.DirectorySeparator;
                 }
             }
             else if (!path.EndsWith(Constants.DirectorySeparator))
@@ -45,14 +47,14 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             return actionKeyword + path;
         }
 
-        public static Result CreateResult(Query query, SearchResult result)
+        public static Result CreateResult(Query query, SearchResult result, bool isRecursive)
         {
             return result.Type switch
             {
                 ResultType.Folder or ResultType.Volume =>
-                    CreateFolderResult(Path.GetFileName(result.FullPath), result.FullPath, result.FullPath, query, result.Score),
+                    CreateFolderResult(Path.GetFileName(result.FullPath), isRecursive ? result.FullPath : string.Empty, result.FullPath, query, result.Score),
                 ResultType.File =>
-                    CreateFileResult(result.FullPath, query, result.Score),
+                    CreateFileResult(result.FullPath, query, isRecursive, result.Score),
                 _ => throw new ArgumentOutOfRangeException(null)
             };
         }
@@ -234,18 +236,20 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             };
         }
 
-        internal static Result CreateFileResult(string filePath, Query query, int score = 0)
+        internal static Result CreateFileResult(string filePath, Query query, bool isRecursiveSearch, int score = 0)
         {
+            var isShellLink = filePath.EndsWith(".lnk", StringComparison.InvariantCultureIgnoreCase);
             var isMedia = IsMedia(Path.GetExtension(filePath));
             var title = Path.GetFileName(filePath) ?? string.Empty;
             var directory = Path.GetDirectoryName(filePath) ?? string.Empty;
 
-            /* Preview Detail */
-
             var result = new Result
             {
                 Title = title,
-                SubTitle = directory,
+                SubTitle =
+                    isRecursiveSearch ? filePath :
+                    isShellLink ? ShellLinkHelper.retrieveTargetPath(filePath) :
+                    string.Empty,
                 IcoPath = filePath,
                 Preview = new Result.PreviewInfo
                 {
@@ -291,6 +295,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 SubTitleToolTip = filePath,
                 ContextData = new SearchResult { Type = ResultType.File, FullPath = filePath }
             };
+
             return result;
         }
 
