@@ -54,7 +54,7 @@
   
   <ItemGroup>
     <PackageReference Include="Flow.Launcher.Localization" Version="0.0.6" />
-    <PackageReference Include="Meziantou.Framework.Win32.Jobs" Version="3.4.8" />
+    <PackageReference Include="Meziantou.Framework.Win32.Jobs" Version="3.4.12" />
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
     <PackageReference Include="StreamJsonRpc" Version="2.22.23" />
     <PackageReference Include="YamlDotNet" Version="16.3.0" />
