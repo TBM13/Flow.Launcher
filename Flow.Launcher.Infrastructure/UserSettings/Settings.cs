@@ -51,11 +51,11 @@ namespace Flow.Launcher.Infrastructure.UserSettings
 
         public double WindowSize { get; set; } = 580;
         public string PreviewHotkey { get; set; } = $"F1";
-        public string AutoCompleteHotkey { get; set; } = $"{KeyConstant.Ctrl} + Tab";
+        public string AutoCompleteHotkey { get; set; } = $"Tab";
         public string AutoCompleteHotkey2 { get; set; } = $"";
-        public string SelectNextItemHotkey { get; set; } = $"Tab";
+        public string SelectNextItemHotkey { get; set; } = $"";
         public string SelectNextItemHotkey2 { get; set; } = $"";
-        public string SelectPrevItemHotkey { get; set; } = $"Shift + Tab";
+        public string SelectPrevItemHotkey { get; set; } = $"";
         public string SelectPrevItemHotkey2 { get; set; } = $"";
         public string SelectNextPageHotkey { get; set; } = $"PageUp";
         public string SelectPrevPageHotkey { get; set; } = $"PageDown";
@@ -119,7 +119,7 @@ namespace Flow.Launcher.Infrastructure.UserSettings
         public double? SettingWindowLeft { get; set; } = null;
         public WindowState SettingWindowState { get; set; } = WindowState.Normal;
 
-        private bool _showHomePage { get; set; } = true;
+        private bool _showHomePage { get; set; } = false;
         public bool ShowHomePage
         {
             get => _showHomePage;
