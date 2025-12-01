@@ -11,6 +11,7 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -26,7 +27,6 @@
     <PackageTags>flowlauncher</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <PackageReadmeFile>Readme.md</PackageReadmeFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
@@ -62,7 +62,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <None Include="Readme.md" Pack="true" PackagePath="\" />
     <None Include="FodyWeavers.xml" />
   </ItemGroup>
 

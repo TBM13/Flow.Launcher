@@ -8,12 +8,12 @@
         /// <summary>
         /// Plugin instance
         /// </summary>
-        public IAsyncPlugin Plugin { get; internal set; }
+        public required IAsyncPlugin Plugin { get; init; }
 
         /// <summary>
         /// Plugin metadata
         /// </summary>
-        public PluginMetadata Metadata { get; internal set; }
+        public required PluginMetadata Metadata { get; init; }
 
         /// <summary>
         /// Convert to string
@@ -29,16 +29,12 @@
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is PluginPair r)
-            {
                 return string.Equals(r.Metadata.ID, Metadata.ID);
-            }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
 
         /// <summary>

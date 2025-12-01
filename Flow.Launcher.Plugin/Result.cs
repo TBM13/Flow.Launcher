@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -10,23 +9,17 @@ namespace Flow.Launcher.Plugin
     /// <summary>
     /// Describes a result of a <see cref="Query"/> executed by a plugin
     /// </summary>
-    public class Result
+    public record Result
     {
         /// <summary>
         /// Maximum score. This can be useful when set one result to the top by default. This is the score for the results set to the topmost by users.
         /// </summary>
         public const int MaxScore = int.MaxValue;
 
-        private string _pluginDirectory;
-
-        private string _icoPath;
-
-        private string _copyText = string.Empty;
-
         /// <summary>
         /// The title of the result. This is always required.
         /// </summary>
-        public string Title { get; set; }
+        public required string Title { get; set; }
 
         /// <summary>
         /// Provides additional details for the result. This is optional
@@ -34,10 +27,10 @@ namespace Flow.Launcher.Plugin
         public string SubTitle { get; set; } = string.Empty;
 
         /// <summary>
-        /// This holds the action keyword that triggered the result.
-        /// If result is triggered by global keyword: *, this should be empty.
+        /// Holds the action keyword that triggered the result.
+        /// If result is triggered by global keyword: *, this should be null.
         /// </summary>
-        public string ActionKeywordAssigned { get; set; }
+        public string? ActionKeywordAssigned { get; set; }
 
         /// <summary>
         /// This holds the text which can be provided by plugin to be copied to the
@@ -46,8 +39,8 @@ namespace Flow.Launcher.Plugin
         /// </summary>
         public string CopyText
         {
-            get => string.IsNullOrEmpty(_copyText) ? SubTitle : _copyText;
-            set => _copyText = value;
+            get => string.IsNullOrEmpty(field) ? SubTitle : field;
+            set => field = value;
         }
 
         /// <summary>
@@ -59,7 +52,7 @@ namespace Flow.Launcher.Plugin
         /// When a value is not set, the <see cref="Title"/> will be used.
         /// Please include the action keyword prefix when necessary because Flow does not prepend it automatically.
         /// </remarks>
-        public string AutoCompleteText { get; set; }
+        public string? AutoCompleteText { get; set; }
 
         /// <summary>
         /// The image to be displayed for the result.
@@ -68,7 +61,7 @@ namespace Flow.Launcher.Plugin
         /// <remarks>GlyphInfo is prioritized if not null</remarks>
         public string IcoPath
         {
-            get => _icoPath;
+            get => field;
             set
             {
                 // As a standard this property will handle prepping and converting to absolute local path for icon image processing
@@ -79,11 +72,11 @@ namespace Flow.Launcher.Plugin
                     && !value.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
                     && !value.StartsWith("data:image", StringComparison.OrdinalIgnoreCase))
                 {
-                    _icoPath = Path.Combine(PluginDirectory, value);
+                    field = Path.Combine(PluginDirectory, value);
                 }
                 else
                 {
-                    _icoPath = value;
+                    field = value;
                 }
             }
         }
@@ -97,12 +90,12 @@ namespace Flow.Launcher.Plugin
         /// <summary>
         /// Delegate to load an icon for this result.
         /// </summary>
-        public IconDelegate Icon = null;
+        public IconDelegate? Icon = null;
 
         /// <summary>
         /// Information for Glyph Icon (Prioritized than IcoPath/Icon if user enable Glyph Icons)
         /// </summary>
-        public GlyphInfo Glyph { get; init; }
+        public GlyphInfo? Glyph { get; set; }
 
         /// <summary>
         /// An action to take in the form of a function call when the result has been selected.
@@ -112,7 +105,7 @@ namespace Flow.Launcher.Plugin
         /// Its result determines what happens to Flow Launcher's query form:
         /// when true, the form will be hidden; when false, it will stay in focus.
         /// </remarks>
-        public Func<ActionContext, bool> Action { get; set; }
+        public Func<ActionContext, bool>? Action { get; set; }
 
         /// <summary>
         /// An async action to take in the form of a function call when the result has been selected.
@@ -122,7 +115,7 @@ namespace Flow.Launcher.Plugin
         /// Its result determines what happens to Flow Launcher's query form:
         /// when true, the form will be hidden; when false, it will stay in focus.
         /// </remarks>
-        public Func<ActionContext, ValueTask<bool>> AsyncAction { get; set; }
+        public Func<ActionContext, ValueTask<bool>>? AsyncAction { get; set; }
 
         /// <summary>
         /// Priority of the current result
@@ -133,22 +126,24 @@ namespace Flow.Launcher.Plugin
         /// <summary>
         /// Query information associated with the result
         /// </summary>
-        internal Query OriginQuery { get; set; }
+        internal Query? OriginQuery { get; set; }
 
         /// <summary>
         /// Plugin directory
         /// </summary>
-        public string PluginDirectory
+        public string? PluginDirectory
         {
-            get => _pluginDirectory;
+            get => field;
             set
             {
-                _pluginDirectory = value;
+                field = value;
 
                 // When the Result object is returned from the query call, PluginDirectory is not provided until
                 // UpdatePluginMetadata call is made at PluginManager.cs L196. Once the PluginDirectory becomes available
                 // we need to update (only if not Uri path) the IcoPath with the full absolute path so the image can be loaded.
-                IcoPath = _icoPath;
+#pragma warning disable CA2245
+                IcoPath = IcoPath;
+#pragma warning restore CA2245
             }
         }
 
@@ -158,27 +153,27 @@ namespace Flow.Launcher.Plugin
         /// <example>
         /// As external information for ContextMenu
         /// </example>
-        public object ContextData { get; set; }
+        public object? ContextData { get; set; }
 
         /// <summary>
         /// Plugin ID that generated this result
         /// </summary>
-        public string PluginID { get; internal set; }
+        public string? PluginID { get; internal set; }
 
         /// <summary>
         /// Show message as ToolTip on result Title hover over
         /// </summary>
-        public string TitleToolTip { get; set; }
+        public string? TitleToolTip { get; set; }
 
         /// <summary>
         /// Show message as ToolTip on result SubTitle hover over
         /// </summary>
-        public string SubTitleToolTip { get; set; }
+        public string? SubTitleToolTip { get; set; }
 
         /// <summary>
         /// Customized Preview Panel
         /// </summary>
-        public Lazy<UserControl> PreviewPanel { get; set; }
+        public Lazy<UserControl>? PreviewPanel { get; set; }
 
         /// <summary>
         /// Contains data used to populate the preview section of this result.
@@ -196,7 +191,7 @@ namespace Flow.Launcher.Plugin
         /// If the plugin does not specific this, FL just uses Title and SubTitle to identify this result.
         /// Note: Because old data does not have this key, we should use null as the default value for consistency.
         /// </summary>
-        public string RecordKey { get; set; } = null;
+        public string? RecordKey { get; set; } = null;
 
         /// <summary>
         /// This holds the text which can be shown as a query suggestion.
@@ -207,7 +202,7 @@ namespace Flow.Launcher.Plugin
         /// If the it does not start with the query text, it will not be shown as a suggestion.
         /// So make sure to set this value to start with the query text.
         /// </remarks>
-        public string QuerySuggestionText { get; set; }
+        public string? QuerySuggestionText { get; set; }
 
         /// <summary>
         /// Run this result, asynchronously
@@ -226,38 +221,6 @@ namespace Flow.Launcher.Plugin
         }
 
         /// <summary>
-        /// Clones the current result
-        /// </summary>
-        public Result Clone()
-        {
-            return new Result
-            {
-                Title = Title,
-                SubTitle = SubTitle,
-                ActionKeywordAssigned = ActionKeywordAssigned,
-                CopyText = CopyText,
-                AutoCompleteText = AutoCompleteText,
-                IcoPath = IcoPath,
-                Icon = Icon,
-                Glyph = Glyph,
-                Action = Action,
-                AsyncAction = AsyncAction,
-                Score = Score,
-                OriginQuery = OriginQuery,
-                PluginDirectory = PluginDirectory,
-                ContextData = ContextData,
-                PluginID = PluginID,
-                TitleToolTip = TitleToolTip,
-                SubTitleToolTip = SubTitleToolTip,
-                PreviewPanel = PreviewPanel,
-                Preview = Preview,
-                AddSelectedCount = AddSelectedCount,
-                RecordKey = RecordKey,
-                QuerySuggestionText = QuerySuggestionText
-            };
-        }
-
-        /// <summary>
         /// Info of the preview section of a <see cref="Result"/>
         /// </summary>
         public record PreviewInfo
@@ -265,7 +228,7 @@ namespace Flow.Launcher.Plugin
             /// <summary>
             /// Full image used for preview panel
             /// </summary>
-            public string PreviewImagePath { get; set; } = null;
+            public string? PreviewImagePath { get; set; } = null;
 
             /// <summary>
             /// Determines if the preview image should occupy the full width of the preview panel.
@@ -278,17 +241,17 @@ namespace Flow.Launcher.Plugin
             /// <remarks>
             /// When a value is not set, the <see cref="SubTitle"/> will be used.
             /// </remarks>
-            public string Description { get; set; } = null;
+            public string? Description { get; set; } = null;
 
             /// <summary>
             /// Delegate to get the preview panel's image
             /// </summary>
-            public IconDelegate PreviewDelegate { get; set; } = null;
+            public IconDelegate? PreviewDelegate { get; set; } = null;
 
             /// <summary>
             /// File path of the result. For third-party programs providing external preview.
             /// </summary>
-            public string FilePath { get; set; } = null;
+            public string? FilePath { get; set; } = null;
 
             /// <summary>
             /// Default instance of <see cref="PreviewInfo"/>

@@ -1,29 +1,30 @@
-﻿using System;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Flow.Launcher.Plugin
 {
     /// <summary>
     /// Represents a query that is sent to a plugin.
     /// </summary>
-    public class Query
+    public record Query
     {
+        /// <summary>
+        /// Query can be splited into multiple terms by whitespace
+        /// </summary>
+        public const string TermSeparator = " ";
+        /// <summary>
+        /// User can set multiple action keywords seperated by whitespace
+        /// </summary>
+        public const string ActionKeywordSeparator = TermSeparator;
+        /// <summary>
+        /// Wildcard action keyword. Plugins using this value will be queried on every search.
+        /// </summary>
+        public const string GlobalPluginWildcardSign = "*";
+
         /// <summary>
         /// Original query, exactly how the user has typed into the search box.
         /// We don't recommend using this property directly. You should always use Search property.
         /// </summary>
-        public string OriginalQuery { get; internal init; }
-
-        /// <summary>
-        /// Raw query, this includes action keyword if it has.
-        /// It has handled built-in custom query hotkeys and built-in shortcuts, and it trims the whitespace.
-        /// We don't recommend using this property directly. You should always use Search property.
-        /// </summary>
-        [Obsolete("RawQuery is renamed to TrimmedQuery. This property will be removed. Update the code to use TrimmedQuery instead.")]
-        public string RawQuery {
-            get => TrimmedQuery;
-            internal init { TrimmedQuery = value; }
-        }
+        public required string OriginalQuery { get; init; }
 
         /// <summary>
         /// Original query but with trimmed whitespace. Includes action keyword.
@@ -31,7 +32,7 @@ namespace Flow.Launcher.Plugin
         /// If you need the exact original query from the search box, use OriginalQuery property instead.
         /// We don't recommend using this property directly. You should always use Search property.
         /// </summary>
-        public string TrimmedQuery { get; internal init; }
+        public required string TrimmedQuery { get; init; }
 
         /// <summary>
         /// Determines whether the query was forced to execute again.
@@ -43,7 +44,7 @@ namespace Flow.Launcher.Plugin
         /// <summary>
         /// Determines whether the query is a home query.
         /// </summary>
-        public bool IsHomeQuery { get; internal init; } = false;
+        public bool IsHomeQuery { get; init; } = false;
 
         /// <summary>
         /// Search part of a query.
@@ -51,34 +52,19 @@ namespace Flow.Launcher.Plugin
         /// Since we allow user to switch a exclusive plugin to generic plugin,
         /// so this property will always give you the "real" query part of the query
         /// </summary>
-        public string Search { get; internal init; }
+        public required string Search { get; init; }
 
         /// <summary>
         /// The search string split into a string array.
         /// Does not include the <see cref="ActionKeyword"/>.
         /// </summary>
-        public string[] SearchTerms { get; init; }
-
-        /// <summary>
-        /// Query can be splited into multiple terms by whitespace
-        /// </summary>
-        public const string TermSeparator = " ";
-
-        /// <summary>
-        /// User can set multiple action keywords seperated by whitespace
-        /// </summary>
-        public const string ActionKeywordSeparator = TermSeparator;
-
-        /// <summary>
-        /// Wildcard action keyword. Plugins using this value will be queried on every search.
-        /// </summary>
-        public const string GlobalPluginWildcardSign = "*";
+        public required string[] SearchTerms { get; init; }
 
         /// <summary>
         /// The action keyword part of this query.
         /// For global plugins this value will be empty.
         /// </summary>
-        public string ActionKeyword { get; init; }
+        public required string ActionKeyword { get; init; }
 
         /// <summary>
         /// Splits <see cref="SearchTerms"/> by spaces and returns the first item.
@@ -89,14 +75,11 @@ namespace Flow.Launcher.Plugin
         [JsonIgnore]
         public string FirstSearch => SplitSearch(0);
 
-        [JsonIgnore]
-        private string _secondToEndSearch;
-
         /// <summary>
         /// strings from second search (including) to last search
         /// </summary>
         [JsonIgnore]
-        public string SecondToEndSearch => SearchTerms.Length > 1 ? (_secondToEndSearch ??= string.Join(' ', SearchTerms[1..])) : "";
+        public string SecondToEndSearch => SearchTerms.Length > 1 ? (field ??= string.Join(' ', SearchTerms[1..])) : "";
 
         /// <summary>
         /// Splits <see cref="SearchTerms"/> by spaces and returns the second item.

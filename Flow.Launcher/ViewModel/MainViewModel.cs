@@ -62,7 +62,7 @@ namespace Flow.Launcher.ViewModel
         {
             _queryTextBeforeLeaveResults = "";
             _queryText = "";
-            _lastQuery = new Query();
+            _lastQuery = null;
             _ignoredQueryText = null; // null as invalid value
 
             Settings = Ioc.Default.GetRequiredService<Settings>();
@@ -401,7 +401,7 @@ namespace Flow.Launcher.ViewModel
             _userSelectedRecord.Add(result);
         }
 
-        private static IReadOnlyList<Result> DeepCloneResults(IReadOnlyList<Result> results, CancellationToken token = default)
+        private static List<Result> DeepCloneResults(IReadOnlyList<Result> results, CancellationToken token = default)
         {
             var resultsCopy = new List<Result>();
             foreach (var result in results.ToList())
@@ -411,8 +411,7 @@ namespace Flow.Launcher.ViewModel
                     break;
                 }
 
-                var resultCopy = result.Clone();
-                resultsCopy.Add(resultCopy);
+                resultsCopy.Add(result with { });
             }
             return resultsCopy;
         }
@@ -1070,7 +1069,7 @@ namespace Flow.Launcher.ViewModel
 
                 if (!string.IsNullOrEmpty(query))
                 {
-                    var filtered = results.Select(x => x.Clone()).Where
+                    var filtered = results.Select(x => x with { }).Where
                     (
                         r =>
                         {

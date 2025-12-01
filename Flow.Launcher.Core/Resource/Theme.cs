@@ -591,26 +591,14 @@ namespace Flow.Launcher.Core.Resource
 
         private void AutoDropShadow(bool useDropShadowEffect)
         {
-            SetWindowCornerPreference("Default");
-            RemoveDropShadowEffectFromCurrentTheme();
             if (useDropShadowEffect)
             {
-                SetWindowCornerPreference("Default");
                 AddDropShadowEffectToCurrentTheme();
             }
             else
             {
                 RemoveDropShadowEffectFromCurrentTheme();
             }
-        }
-
-        private static void SetWindowCornerPreference(string cornerType)
-        {
-            Window mainWindow = Application.Current.MainWindow;
-            if (mainWindow == null)
-                return;
-
-            Win32Helper.DWMSetCornerPreferenceForWindow(mainWindow, cornerType);
         }
 
         private void CopyStyle(Style originalStyle, Style targetStyle)

@@ -17,15 +17,7 @@ namespace Flow.Launcher.Core.Plugin
         public static List<PluginPair> Plugins(List<PluginMetadata> metadatas, PluginsSettings settings)
         {
             var dotnetPlugins = DotNetPlugins(metadatas);
-
-            var executablePlugins = ExecutablePlugins(metadatas);
-            var executableV2Plugins = ExecutableV2Plugins(metadatas);
-
-            var plugins = dotnetPlugins
-                .Concat(executablePlugins)
-                .Concat(executableV2Plugins)
-                .ToList();
-            return plugins;
+            return dotnetPlugins;
         }
 
         private static List<PluginPair> DotNetPlugins(List<PluginMetadata> source)
@@ -99,34 +91,6 @@ namespace Flow.Launcher.Core.Plugin
             }
 
             return plugins;
-        }
-
-        private static IEnumerable<PluginPair> ExecutablePlugins(IEnumerable<PluginMetadata> source)
-        {
-            return source
-                .Where(o => o.Language.Equals(AllowedLanguage.Executable, StringComparison.OrdinalIgnoreCase))
-                .Select(metadata =>
-                {
-                    return new PluginPair
-                    {
-                        Plugin = new ExecutablePlugin(metadata.ExecuteFilePath),
-                        Metadata = metadata
-                    };
-                });
-        }
-
-        private static IEnumerable<PluginPair> ExecutableV2Plugins(IEnumerable<PluginMetadata> source)
-        {
-            return source
-                .Where(o => o.Language.Equals(AllowedLanguage.ExecutableV2, StringComparison.OrdinalIgnoreCase))
-                .Select(metadata =>
-                {
-                    return new PluginPair
-                    {
-                        Plugin = new ExecutablePlugin(metadata.ExecuteFilePath),
-                        Metadata = metadata
-                    };
-                });
         }
     }
 }

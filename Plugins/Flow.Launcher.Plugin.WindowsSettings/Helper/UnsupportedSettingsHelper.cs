@@ -33,6 +33,8 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Helper
         private const string KEY_BUILD = "CurrentBuild";
         private const string KEY_BUILD_NUMBER = "CurrentBuildNumber";
 
+        private static readonly string CLASS = typeof(UnsupportedSettingsHelper).FullName ?? nameof(UnsupportedSettingsHelper);
+
         /// <summary>
         /// Removes all the <see cref="WindowsSetting"/>(s) not available on the current Windows build.
         /// </summary>
@@ -49,7 +51,7 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Helper
                     + $" result ({KEY_BUILD}={currentBuild}, {KEY_BUILD_NUMBER}={currentBuildNumber})!"
                     + $" For resolving the conflict we use the value of '{usedValueName}'.";
 
-                api.LogWarn(typeof(UnsupportedSettingsHelper).FullName, warningMessage);
+                api.LogWarn(CLASS, warningMessage);
             }
 
             var currentWindowsBuild = currentBuild != uint.MinValue

@@ -92,7 +92,7 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Classes
         /// The value with the generated full settings path (App and areas) as string.
         /// This Property IS NOT part of the JSON data.
         /// </summary>
-        public string? JoinedFullSettingsPath
+        public string JoinedFullSettingsPath
         {
             get
             {

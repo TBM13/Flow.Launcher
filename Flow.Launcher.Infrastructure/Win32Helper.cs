@@ -37,46 +37,6 @@ namespace Flow.Launcher.Infrastructure
                 &cloaked,
                 (uint)Marshal.SizeOf<int>()).Succeeded;
         }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="window"></param>
-        /// <param name="cornerType">DoNotRound, Round, RoundSmall, Default</param>
-        /// <returns></returns>
-        public static unsafe bool DWMSetCornerPreferenceForWindow(Window window, string cornerType)
-        {
-            var preference = cornerType switch
-            {
-                "DoNotRound" => DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_DONOTROUND,
-                "Round" => DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND,
-                "RoundSmall" => DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUNDSMALL,
-                "Default" => DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_DEFAULT,
-                _ => throw new InvalidOperationException("Invalid corner type")
-            };
-
-            return PInvoke.DwmSetWindowAttribute(
-                GetWindowHandle(window),
-                DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE,
-                &preference,
-                (uint)Marshal.SizeOf<int>()).Succeeded;
-        }
-
-        #endregion
-
-        #region Wallpaper
-
-        public static unsafe string GetWallpaperPath()
-        {
-            var wallpaperPtr = stackalloc char[(int)PInvoke.MAX_PATH];
-            PInvoke.SystemParametersInfo(SYSTEM_PARAMETERS_INFO_ACTION.SPI_GETDESKWALLPAPER, PInvoke.MAX_PATH,
-                wallpaperPtr,
-                0);
-            var wallpaper = MemoryMarshal.CreateReadOnlySpanFromNullTerminated(wallpaperPtr);
-
-            return wallpaper.ToString();
-        }
-
         #endregion
 
         #region Window Foreground

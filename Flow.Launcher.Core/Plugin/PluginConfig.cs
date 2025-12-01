@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
-using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Plugin;
+using System.Linq;
 using System.Text.Json;
+using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.UserSettings;
+using Flow.Launcher.Plugin;
 
 namespace Flow.Launcher.Core.Plugin
 {
@@ -51,7 +51,7 @@ namespace Flow.Launcher.Core.Plugin
 
             duplicateList
                 .ForEach(
-                    x => PublicApi.Instance.LogWarn(ClassName, 
+                    x => PublicApi.Instance.LogWarn(ClassName,
                         string.Format("Duplicate plugin name: {0}, id: {1}, version: {2} " +
                             "not loaded due to version not the highest of the duplicates",
                             x.Name, x.ID, x.Version),
@@ -78,7 +78,7 @@ namespace Flow.Launcher.Core.Plugin
 
                         // If metadata's version greater than each duplicate's version, CompareTo > 0
                         var count = group.Where(x => metadata.Version.CompareTo(x.Version) > 0).Count();
-                        
+
                         // Only add if the meatadata's version is the highest of all duplicates in the group
                         if (count == group.Count() - 1)
                         {
@@ -90,7 +90,7 @@ namespace Flow.Launcher.Core.Plugin
                         }
                     }
                 }
-                
+
                 if (!duplicatesExist)
                     unique_list.Add(metadata);
             }
@@ -113,7 +113,7 @@ namespace Flow.Launcher.Core.Plugin
                 metadata = JsonSerializer.Deserialize<PluginMetadata>(File.ReadAllText(configPath));
                 metadata.PluginDirectory = pluginDirectory;
                 // for plugins which doesn't has ActionKeywords key
-                metadata.ActionKeywords ??= new List<string> { metadata.ActionKeyword };
+                metadata.ActionKeywords ??= [metadata.ActionKeyword];
                 // for plugin still use old ActionKeyword
                 metadata.ActionKeyword = metadata.ActionKeywords?[0];
             }
