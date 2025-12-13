@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.ServiceProcess;
 using System.Windows.Controls;
+using Flow.Launcher.Plugin.SharedModels;
 using Flow.Launcher.Plugin.WindowsServices.Preview;
 using Microsoft.Win32;
 using Windows.Win32;
@@ -52,6 +52,8 @@ public enum Action
 
 public class ServiceResult
 {
+    private static readonly string ClassName = typeof(ServiceResult).FullName ?? nameof(ServiceResult);
+
     public string ServiceName { get; }
     public string DisplayName { get; }
     public ServiceStartMode StartType { get; }
@@ -70,21 +72,26 @@ public class ServiceResult
         IsRunning = serviceController.Status != ServiceControllerStatus.Stopped && serviceController.Status != ServiceControllerStatus.StopPending;
     }
 
-    public static ServiceResult? CreateServiceController(ServiceController serviceController)
+    public static ServiceResult? CreateServiceResult(ServiceController serviceController)
     {
         try
         {
             var result = new ServiceResult(serviceController);
-
             return result;
         }
         catch (Exception ex)
         {
-            // retrieve properties from serviceController will throw exception. Such as PlatformNotSupportedException.
-            Debug.WriteLine($"Failed to create ServiceController: {ex.GetType().Name} - {ex.Message}");
+            // Retrieving properties from ServiceController may throw exceptions like PlatformNotSupportedException
+            Main.Context.API.LogException(ClassName, $"Failed to create {nameof(ServiceResult)}", ex);
         }
 
         return null;
+    }
+
+    public bool IsDelayedAutoStart()
+    {
+        RegistryKey? key = Registry.LocalMachine.OpenSubKey($@"SYSTEM\CurrentControlSet\Services\{ServiceName}", false);
+        return (int?)key?.GetValue("DelayedAutostart", 0) == 1;
     }
 
     public string? GetImagePath()
@@ -116,7 +123,7 @@ public class ServiceResult
         if (key?.GetValue("Description") is not string value)
             return null;
 
-        // Indirect string
+        // Check if the description is an indirect string and try to resolve it
         if (value.StartsWith('@'))
         {
             char[] buffer = new char[2048];
@@ -135,7 +142,7 @@ public class ServiceResult
                     return null;
                 }
 
-                int len = buffer.IndexOf('\0');
+                int len = Array.IndexOf(buffer, '\0');
                 return new string(buffer, 0, len);
             }
         }
@@ -161,83 +168,65 @@ public class ServiceResult
 
 public static class ServiceHelper
 {
-    public static IEnumerable<Result?> Search(string search)
-    {
-        var services = ServiceController.GetServices().OrderBy(s => s.DisplayName);
-        IEnumerable<ServiceResult?> serviceList = [];
+    private static readonly string ClassName = typeof(ServiceHelper).FullName ?? nameof(ServiceHelper);
 
-        if (search.StartsWith("Status:", StringComparison.CurrentCultureIgnoreCase))
-        {
-            // allows queries like 'status:running'
-            serviceList = services
-                .Where(s => GetLocalizedStatus(s.Status).Contains(search.Split(':')[1], StringComparison.CurrentCultureIgnoreCase))
-                .Select(ServiceResult.CreateServiceController);
-        }
-        else if (search.StartsWith("Startup:", StringComparison.CurrentCultureIgnoreCase))
-        {
-            // allows queries like 'startup:automatic'
-            serviceList = services
-                .Where(s => GetLocalizedStartType(s.StartType, s.ServiceName).Contains(search.Split(':')[1], StringComparison.CurrentCultureIgnoreCase))
-                .Select(ServiceResult.CreateServiceController);
-        }
-        else
-        {
-            // To show 'starts with' results first, we split the search into two steps and then concatenating the lists.
-            var servicesStartsWith = services
-                .Where(s => s.DisplayName.StartsWith(search, StringComparison.OrdinalIgnoreCase) || s.ServiceName.StartsWith(search, StringComparison.OrdinalIgnoreCase));
-            var servicesContains = services.Except(servicesStartsWith)
-                .Where(s => s.DisplayName.Contains(search, StringComparison.OrdinalIgnoreCase) || s.ServiceName.Contains(search, StringComparison.OrdinalIgnoreCase));
-            serviceList = servicesStartsWith.Concat(servicesContains).Select(ServiceResult.CreateServiceController);
-        }
+    public static IEnumerable<Result> Search(string search)
+    {
+        ServiceController[] services = ServiceController.GetServices();
 
         int failed = 0;
-        var result = serviceList.Select(svcResult =>
+        IEnumerable<Result?> results = services.Select(svc =>
         {
+            ServiceResult? svcResult = ServiceResult.CreateServiceResult(svc);
             if (svcResult is null)
             {
                 failed++;
                 return null;
             }
 
-            GlyphInfo glyph =
-                svcResult.StartType == ServiceStartMode.Disabled && svcResult.Status == ServiceControllerStatus.Stopped
-                    ? new(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xeb90")
-                    : new(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: svcResult.Status switch
-                    {
-                        ServiceControllerStatus.Stopped => "\xea39",
-                        ServiceControllerStatus.Running => "\xe930",
-                        ServiceControllerStatus.Paused => "\xe769",
-                        _ => "\xe9ce" // Unknown
-                    });
+            int score = 0;
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                (MatchResult match, bool isHighPriority)[] matches = [
+                    (Main.Context.API.FuzzySearch(search, svcResult.DisplayName), true),
+                    (Main.Context.API.FuzzySearch(search, svcResult.ServiceName), true),
+                    (Main.Context.API.FuzzySearch(search, GetLocalizedStartType(svcResult)), false),
+                    (Main.Context.API.FuzzySearch(search, GetLocalizedStatus(svcResult.Status)), false)
+                ];
+                (MatchResult bestMatch, bool isHighPriority) = matches.OrderByDescending(r => r.match.Score).First();
+
+                if (!bestMatch.IsSearchPrecisionScoreMet())
+                    return null;
+
+                score = isHighPriority ? bestMatch.Score + 1000 : bestMatch.Score;
+            }
 
             return new Result()
             {
                 Title = svcResult.DisplayName,
                 SubTitle = GetResultSubTitle(svcResult),
+                Glyph = GetResultGlyph(svcResult),
+                IcoPath = Main.PLUGIN_ICON,
                 ContextData = svcResult,
-                Glyph = glyph,
                 CopyText = svcResult.ServiceName,
+                Score = score,
                 Action = c =>
                 {
-                    try
-                    {
-                        Main.Context.API.CopyToClipboard(svcResult.ServiceName, showDefaultNotification: false);
-                        return true;
-                    }
-                    catch (ExternalException)
-                    {
-                        Main.Context.API.ShowMsgBox("Failed to copy service name to clipboard.");
-                        return false;
-                    }
+                    Main.Context.API.CopyToClipboard(svcResult.ServiceName);
+                    return true;
                 },
                 PreviewPanel = new Lazy<UserControl>(() => new PreviewPanel(svcResult)),
             };
-        }).Where(s => s is not null);
+        });
 
+        // Warn if we failed to create a ServiceResult for one or more services
         if (failed != 0)
-            Main.Context.API.ShowMsgError($"Failed to get information from {failed} service(s)");
+        {
+            Main.Context.API.LogError(ClassName, $"Failed to create {failed} ServiceResult(s)");
+            Main.Context.API.ShowMsgError(Localize.plugin_windowsservices_error_getInformationFail(failed));
+        }
 
-        return result;
+        return results.Where(r => r is not null)!;
     }
 
     public static void ChangeStatus(ServiceResult serviceResult, Action action)
@@ -295,43 +284,54 @@ public static class ServiceHelper
         }
     }
 
-    private static string GetResultSubTitle(ServiceResult serviceController)
+    private static GlyphInfo GetResultGlyph(ServiceResult svc)
     {
-        return $"Status: {GetLocalizedStatus(serviceController.Status)} - Startup: {GetLocalizedStartType(serviceController.StartType, serviceController.ServiceName)} - Name: {serviceController.ServiceName}";
+        if (svc.StartType == ServiceStartMode.Disabled && svc.Status == ServiceControllerStatus.Stopped)
+            return new(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xeb90");
+
+        return new(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: svc.Status switch
+        {
+            ServiceControllerStatus.Stopped => "\xea39",
+            ServiceControllerStatus.Running => "\xe930",
+            ServiceControllerStatus.Paused => "\xe769",
+            _ => "\xe9ce" // Unknown
+        });
+    }
+
+    private static string GetResultSubTitle(ServiceResult svc)
+    {
+        return Localize.plugin_windowsservices_info_status() + ": " + GetLocalizedStatus(svc.Status)
+            + " - " + Localize.plugin_windowsservices_info_startupType() + ": " + GetLocalizedStartType(svc)
+            + " - " + Localize.plugin_windowsservices_info_name() + ": " + svc.ServiceName;
     }
 
     private static string GetLocalizedStatus(ServiceControllerStatus status)
     {
         return status switch
         {
-            ServiceControllerStatus.StartPending => "Starting",
-            ServiceControllerStatus.Running => "Running",
-            ServiceControllerStatus.StopPending => "Stopping",
-            ServiceControllerStatus.Stopped => "Stopped",
-
-            ServiceControllerStatus.PausePending => "Pausing",
-            ServiceControllerStatus.Paused => "Paused",
-            ServiceControllerStatus.ContinuePending => "Continuing",
+            ServiceControllerStatus.StartPending => Localize.plugin_windowsservices_info_status_startPending(),
+            ServiceControllerStatus.Running => Localize.plugin_windowsservices_info_status_running(),
+            ServiceControllerStatus.StopPending => Localize.plugin_windowsservices_info_status_stopPending(),
+            ServiceControllerStatus.Stopped => Localize.plugin_windowsservices_info_status_stopped(),
+            ServiceControllerStatus.PausePending => Localize.plugin_windowsservices_info_status_pausePending(),
+            ServiceControllerStatus.Paused => Localize.plugin_windowsservices_info_status_paused(),
+            ServiceControllerStatus.ContinuePending => Localize.plugin_windowsservices_info_status_continuePending(),
             _ => status.ToString()
         };
     }
 
-    private static string GetLocalizedStartType(ServiceStartMode startMode, string serviceName)
+    private static string GetLocalizedStartType(ServiceResult svc)
     {
-        if (startMode == ServiceStartMode.Boot)
-            return "Boot";
-        else if (startMode == ServiceStartMode.System)
-            return "System";
-        else
+        ServiceStartMode startMode = svc.StartType;
+        return startMode switch
         {
-            return startMode == ServiceStartMode.Automatic
-                ? !IsDelayedStart(serviceName) ? "Automatic" : "Automatic (Delayed Start)"
-                : startMode == ServiceStartMode.Manual
-                            ? "Manual"
-                            : startMode == ServiceStartMode.Disabled ? "Disabled" : startMode.ToString();
-        }
+            ServiceStartMode.Boot => Localize.plugin_windowsservices_info_startupType_boot(),
+            ServiceStartMode.System => Localize.plugin_windowsservices_info_startupType_system(),
+            ServiceStartMode.Automatic when svc.IsDelayedAutoStart() => Localize.plugin_windowsservices_info_startupType_automaticDelayed(),
+            ServiceStartMode.Automatic => Localize.plugin_windowsservices_info_startupType_automatic(),
+            ServiceStartMode.Manual => Localize.plugin_windowsservices_info_startupType_manual(),
+            ServiceStartMode.Disabled => Localize.plugin_windowsservices_info_startupType_disabled(),
+            _ => startMode.ToString()
+        };
     }
-
-    private static bool IsDelayedStart(string serviceName)
-        => (int?)Registry.LocalMachine.OpenSubKey(@"System\CurrentControlSet\Services\" + serviceName, false)?.GetValue("DelayedAutostart", 0, RegistryValueOptions.None) == 1;
 }

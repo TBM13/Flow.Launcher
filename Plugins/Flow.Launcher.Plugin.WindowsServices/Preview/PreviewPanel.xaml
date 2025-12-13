@@ -36,5 +36,5 @@
                 Text="Service Path"
                 TextTrimming="CharacterEllipsis"
                 Style="{DynamicResource PreviewItemSubTitleStyle}"/>
-        </Grid>
+    </Grid>
 </UserControl>

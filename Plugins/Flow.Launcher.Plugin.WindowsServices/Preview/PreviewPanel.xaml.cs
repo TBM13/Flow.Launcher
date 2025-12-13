@@ -9,8 +9,8 @@ public partial class PreviewPanel : UserControl
         InitializeComponent();
 
         TitleTextblock.Text = svcResult.DisplayName;
-        DescriptionTextblock.Text = svcResult.GetDescription() ?? "<Failed to get description>";
-        PathTextblock.Text = svcResult.GetImagePath() ?? "<Failed to get path>";
+        DescriptionTextblock.Text = svcResult.GetDescription() ?? Localize.plugin_windowsservices_error_getDescriptionFail();
+        PathTextblock.Text = svcResult.GetImagePath() ?? Localize.plugin_windowsservices_error_getPathFail();
         PathTextblock.ToolTip = PathTextblock.Text;
     }
 }

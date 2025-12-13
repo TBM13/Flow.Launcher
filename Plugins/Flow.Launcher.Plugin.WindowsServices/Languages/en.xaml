@@ -1,0 +1,53 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <system:String x:Key="plugin_windowsservices_plugin_name">Windows Services Manager</system:String>
+    <system:String x:Key="plugin_windowsservices_plugin_description">Manage Windows services from Flow Launcher</system:String>
+
+    <!-- Info -->
+    <system:String x:Key="plugin_windowsservices_info_name">Name</system:String>
+    <system:String x:Key="plugin_windowsservices_info_status">Status</system:String>
+    <system:String x:Key="plugin_windowsservices_info_status_startPending">Starting</system:String>
+    <system:String x:Key="plugin_windowsservices_info_status_running">Running</system:String>
+    <system:String x:Key="plugin_windowsservices_info_status_stopPending">Stopping</system:String>
+    <system:String x:Key="plugin_windowsservices_info_status_stopped">Stopped</system:String>
+    <system:String x:Key="plugin_windowsservices_info_status_pausePending">Pausing</system:String>
+    <system:String x:Key="plugin_windowsservices_info_status_paused">Paused</system:String>
+    <system:String x:Key="plugin_windowsservices_info_status_continuePending">Resuming</system:String>
+    <system:String x:Key="plugin_windowsservices_info_startupType">Startup</system:String>
+    <system:String x:Key="plugin_windowsservices_info_startupType_boot">Boot</system:String>
+    <system:String x:Key="plugin_windowsservices_info_startupType_system">System</system:String>
+    <system:String x:Key="plugin_windowsservices_info_startupType_automatic">Automatic</system:String>
+    <system:String x:Key="plugin_windowsservices_info_startupType_automaticDelayed">Automatic (Delayed Start)</system:String>
+    <system:String x:Key="plugin_windowsservices_info_startupType_manual">Manual</system:String>
+    <system:String x:Key="plugin_windowsservices_info_startupType_disabled">Disabled</system:String>
+
+    <!-- Actions -->
+    <system:String x:Key="plugin_windowsservices_action_startService">Start</system:String>
+    <system:String x:Key="plugin_windowsservices_action_stopService">Stop</system:String>
+    <system:String x:Key="plugin_windowsservices_action_restartService">Restart</system:String>
+    <system:String x:Key="plugin_windowsservices_action_disable">Disable</system:String>
+    <system:String x:Key="plugin_windowsservices_action_disable_description">Set startup type to disabled</system:String>
+    <system:String x:Key="plugin_windowsservices_action_disableAndStop_description">Set startup type to disabled &amp; stop the service</system:String>
+    <system:String x:Key="plugin_windowsservices_action_enableManual">Enable (manual)</system:String>
+    <system:String x:Key="plugin_windowsservices_action_enableManual_description">Set startup type to manual</system:String>
+    <system:String x:Key="plugin_windowsservices_action_enableManualAndStart_description">Set startup type to manual &amp; start the service</system:String>
+    <system:String x:Key="plugin_windowsservices_action_enableAutomatic">Enable (automatic)</system:String>
+    <system:String x:Key="plugin_windowsservices_action_enableAutomatic_description">Set startup type to automatic</system:String>
+    <system:String x:Key="plugin_windowsservices_action_enableAutomaticAndStart_description">Set startup type to automatic &amp; start the service</system:String>
+    <system:String x:Key="plugin_windowsservices_action_enableAutomaticDelayed">Enable (automatic delayed)</system:String>
+    <system:String x:Key="plugin_windowsservices_action_enableAutomaticDelayed_description">Set startup type to automatic delayed</system:String>
+    <system:String x:Key="plugin_windowsservices_action_enableAutomaticDelayedAndStart_description">Set startup type to automatic delayed &amp; start the service</system:String>
+
+    <!-- Errors -->
+    <system:String x:Key="plugin_windowsservices_error_getInformationFail">Failed to get information from {0} service(s)</system:String>
+    <system:String x:Key="plugin_windowsservices_error_startServiceFail">Failed to start service</system:String>
+    <system:String x:Key="plugin_windowsservices_error_stopServiceFail">Failed to stop service</system:String>
+    <system:String x:Key="plugin_windowsservices_error_restartServiceFail">Failed to restart service</system:String>
+    <system:String x:Key="plugin_windowsservices_error_changeStartupTypeFail">Failed to change startup type</system:String>
+    <system:String x:Key="plugin_windowsservices_error_getDescriptionFail">The service doesn't have a description or we failed to read it.</system:String>
+    <system:String x:Key="plugin_windowsservices_error_getPathFail">Failed to get the service's path</system:String>
+
+</ResourceDictionary>
