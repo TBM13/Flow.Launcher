@@ -1,14 +1,12 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Windows;
 using System.Windows.Forms;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Plugin.Explorer.Search;
-using Flow.Launcher.Plugin.Explorer.Views;
 
 namespace Flow.Launcher.Plugin.Explorer.ViewModels
 {
@@ -28,40 +26,6 @@ namespace Flow.Launcher.Plugin.Explorer.ViewModels
         {
             Context.API.SaveSettingJsonStorage<Settings>();
         }
-
-        #region Native Context Menu
-
-        public bool ShowWindowsContextMenu
-        {
-            get => Settings.ShowInlinedWindowsContextMenu;
-            set
-            {
-                Settings.ShowInlinedWindowsContextMenu = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string WindowsContextMenuIncludedItems
-        {
-            get => Settings.WindowsContextMenuIncludedItems;
-            set
-            {
-                Settings.WindowsContextMenuIncludedItems = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string WindowsContextMenuExcludedItems
-        {
-            get => Settings.WindowsContextMenuExcludedItems;
-            set
-            {
-                Settings.WindowsContextMenuExcludedItems = value;
-                OnPropertyChanged();
-            }
-        }
-
-        #endregion
 
         #region Preview Panel
 

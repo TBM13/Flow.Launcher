@@ -7,7 +7,6 @@ using Flow.Launcher.Plugin.Explorer.Helper;
 using Flow.Launcher.Plugin.Explorer.Views;
 using Flow.Launcher.Plugin.SharedCommands;
 using Flow.Launcher.Plugin.SharedModels;
-using Peter;
 using Path = System.IO.Path;
 
 namespace Flow.Launcher.Plugin.Explorer.Search

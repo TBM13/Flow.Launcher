@@ -104,45 +104,6 @@ namespace Flow.Launcher.Plugin.Explorer
                         },
                         Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue748"),
                     });
-
-                if (record.Type is ResultType.File or ResultType.Folder && Settings.ShowInlinedWindowsContextMenu)
-                {
-                    var includedItems = Settings
-                        .WindowsContextMenuIncludedItems
-                        .Replace("\r", "")
-                        .Split("\n")
-                        .Where(v => !string.IsNullOrWhiteSpace(v))
-                        .ToArray();
-                    var excludedItems = Settings
-                        .WindowsContextMenuExcludedItems
-                        .Replace("\r", "")
-                        .Split("\n")
-                        .Where(v => !string.IsNullOrWhiteSpace(v))
-                        .ToArray();
-                    var menuItems = ShellContextMenuDisplayHelper
-                        .GetContextMenuWithIcons(record.FullPath)
-                        .Where(contextMenuItem =>
-                            (includedItems.Length == 0 || includedItems.Any(filter =>
-                                contextMenuItem.Label.Contains(filter, StringComparison.OrdinalIgnoreCase)
-                            )) &&
-                            (excludedItems.Length == 0 || !excludedItems.Any(filter =>
-                                contextMenuItem.Label.Contains(filter, StringComparison.OrdinalIgnoreCase)
-                            ))
-                        );
-                    foreach (var menuItem in menuItems)
-                    {
-                        contextMenus.Add(new Result
-                        {
-                            Title = menuItem.Label,
-                            Icon = () => menuItem.Icon,
-                            Action = _ =>
-                            {
-                                ShellContextMenuDisplayHelper.ExecuteContextMenuItem(record.FullPath, menuItem.CommandId);
-                                return true;
-                            }
-                        });
-                    }
-                }
             }
 
             return contextMenus;

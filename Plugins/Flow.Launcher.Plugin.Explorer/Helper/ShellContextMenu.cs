@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Text;
-using System.Runtime.InteropServices;
 using System.Drawing;
-using System.Windows.Forms;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Windows.Forms;
 
-namespace Peter
+namespace Flow.Launcher.Plugin.Explorer.Helper
 {
     //  Code from https://www.codeproject.com/Articles/22012/Explorer-Shell-Context-Menu:
     /// <summary>
@@ -1590,10 +1590,10 @@ namespace Peter
         /// <returns>The unsigned integer for the High Word</returns>
         public static nint HiWord(IntPtr ptr)
         {
-            if (((nint)ptr & 0x80000000) == 0x80000000)
-                return ((nint)ptr >> 16);
+            if ((ptr & 0x80000000) == 0x80000000)
+                return (ptr >> 16);
             else
-                return (((nint)ptr >> 16) & 0xffff);
+                return ((ptr >> 16) & 0xffff);
         }
 
         /// <summary>
@@ -1603,7 +1603,7 @@ namespace Peter
         /// <returns>The unsigned integer for the Low Word</returns>
         public static nint LoWord(IntPtr ptr)
         {
-            return (nint)ptr & 0xffff;
+            return ptr & 0xffff;
         }
 
         #endregion

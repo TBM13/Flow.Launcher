@@ -13,12 +13,6 @@
 
         public bool UseLocationAsWorkingDir { get; set; } = false;
 
-        public bool ShowInlinedWindowsContextMenu { get; set; } = false;
-
-        public string WindowsContextMenuIncludedItems { get; set; } = string.Empty;
-
-        public string WindowsContextMenuExcludedItems { get; set; } = string.Empty;
-
         public bool ShowFileSizeInPreviewPanel { get; set; } = true;
 
         public bool ShowCreatedDateInPreviewPanel { get; set; } = true;
