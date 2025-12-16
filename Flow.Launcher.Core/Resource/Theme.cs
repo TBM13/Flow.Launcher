@@ -142,8 +142,7 @@ namespace Flow.Launcher.Core.Resource
         /// </summary>
         private void ApplyFontSettings(ResourceDictionary dict)
         {
-            if (dict["QueryBoxStyle"] is Style queryBoxStyle &&
-                dict["QuerySuggestionBoxStyle"] is Style querySuggestionBoxStyle)
+            if (dict["QueryBoxStyle"] is Style queryBoxStyle)
             {
                 var fontFamily = new FontFamily(_settings.QueryBoxFont);
                 var fontStyle = FontHelper.GetFontStyleFromInvariantStringOrNormal(_settings.QueryBoxFontStyle);
@@ -151,7 +150,6 @@ namespace Flow.Launcher.Core.Resource
                 var fontStretch = FontHelper.GetFontStretchFromInvariantStringOrNormal(_settings.QueryBoxFontStretch);
 
                 SetFontProperties(queryBoxStyle, fontFamily, fontStyle, fontWeight, fontStretch, true);
-                SetFontProperties(querySuggestionBoxStyle, fontFamily, fontStyle, fontWeight, fontStretch, false);
             }
 
             if (dict["ItemTitleStyle"] is Style resultItemStyle &&
@@ -254,8 +252,7 @@ namespace Flow.Launcher.Core.Resource
         {
             var dict = GetThemeResourceDictionary(theme);
 
-            if (dict["QueryBoxStyle"] is Style queryBoxStyle &&
-                dict["QuerySuggestionBoxStyle"] is Style querySuggestionBoxStyle)
+            if (dict["QueryBoxStyle"] is Style queryBoxStyle)
             {
                 var fontFamily = new FontFamily(_settings.QueryBoxFont);
                 var fontStyle = FontHelper.GetFontStyleFromInvariantStringOrNormal(_settings.QueryBoxFontStyle);
@@ -272,12 +269,6 @@ namespace Flow.Launcher.Core.Resource
                     .Select(x => x.Value).FirstOrDefault();
                 if (!caretBrushPropertyValue && foregroundPropertyValue != null) //otherwise BaseQueryBoxStyle will handle styling
                     queryBoxStyle.Setters.Add(new Setter(TextBoxBase.CaretBrushProperty, foregroundPropertyValue));
-
-                // Query suggestion box's font style is aligned with query box
-                querySuggestionBoxStyle.Setters.Add(new Setter(Control.FontFamilyProperty, fontFamily));
-                querySuggestionBoxStyle.Setters.Add(new Setter(Control.FontStyleProperty, fontStyle));
-                querySuggestionBoxStyle.Setters.Add(new Setter(Control.FontWeightProperty, fontWeight));
-                querySuggestionBoxStyle.Setters.Add(new Setter(Control.FontStretchProperty, fontStretch));
             }
 
             if (dict["ItemTitleStyle"] is Style resultItemStyle &&

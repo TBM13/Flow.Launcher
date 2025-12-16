@@ -67,19 +67,6 @@
         x:Key="QueryBoxBgStyle"
         BasedOn="{StaticResource BaseQueryBoxBgStyle}"
         TargetType="{x:Type Border}" />
-    <Style
-        x:Key="BaseQuerySuggestionBoxStyle"
-        BasedOn="{StaticResource BaseQueryBoxStyle}"
-        TargetType="{x:Type TextBox}">
-        <Setter Property="Foreground" Value="DarkGray" />
-        <Setter Property="Height" Value="48" />
-        <Setter Property="Margin" Value="16 7 0 7" />
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Padding" Value="0 0 68 0" />
-        <Setter Property="HorizontalAlignment" Value="Stretch" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-    </Style>
 
     <Style x:Key="BaseWindowBorderStyle" TargetType="{x:Type Border}">
         <Setter Property="BorderThickness" Value="0" />

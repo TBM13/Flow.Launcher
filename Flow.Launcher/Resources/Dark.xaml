@@ -7,7 +7,6 @@
     xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
     <SolidColorBrush x:Key="SystemThemeBorder" Color="#3f3f3f" />
-    <SolidColorBrush x:Key="QuerySuggestionBoxForeground" Color="#33FFFFFF" />
     <SolidColorBrush x:Key="QuerySelectionBrush" Color="#4a5459" />
     <SolidColorBrush x:Key="SubTitleForeground" Color="#33FFFFFF" />
     <SolidColorBrush x:Key="SubTitleSelectedForeground" Color="#33FFFFFF" />

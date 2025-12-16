@@ -40,15 +40,6 @@
         <Setter Property="Height" Value="42" />
     </Style>
     <Style
-        x:Key="QuerySuggestionBoxStyle"
-        BasedOn="{StaticResource BaseQuerySuggestionBoxStyle}"
-        TargetType="{x:Type TextBox}">
-        <Setter Property="Foreground" Value="{DynamicResource QuerySuggestionBoxForeground}" />
-        <Setter Property="FontSize" Value="22" />
-        <Setter Property="Padding" Value="0 0 66 0" />
-        <Setter Property="Height" Value="42" />
-    </Style>
-    <Style
         x:Key="WindowBorderStyle"
         BasedOn="{StaticResource BaseWindowBorderStyle}"
         TargetType="{x:Type Border}">

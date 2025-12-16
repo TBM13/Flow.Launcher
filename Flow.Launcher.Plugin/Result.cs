@@ -194,17 +194,6 @@ namespace Flow.Launcher.Plugin
         public string? RecordKey { get; set; } = null;
 
         /// <summary>
-        /// This holds the text which can be shown as a query suggestion.
-        /// </summary>
-        /// <remarks>
-        /// When a value is not set, the <see cref="Title"/> will be used.
-        /// Do not include the action keyword prefix because Flow prepends it automatically.
-        /// If the it does not start with the query text, it will not be shown as a suggestion.
-        /// So make sure to set this value to start with the query text.
-        /// </remarks>
-        public string? QuerySuggestionText { get; set; }
-
-        /// <summary>
         /// Run this result, asynchronously
         /// </summary>
         /// <param name="context"></param>

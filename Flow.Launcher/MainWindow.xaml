@@ -41,7 +41,6 @@
         <WindowChrome CaptionHeight="9" />
     </WindowChrome.WindowChrome>
     <Window.Resources>
-        <converters:QuerySuggestionBoxConverter x:Key="QuerySuggestionBoxConverter" />
         <converters:BorderClipConverter x:Key="BorderClipConverter" />
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:SplitterConverter x:Key="SplitterConverter" />
@@ -203,20 +202,6 @@
         <StackPanel Orientation="Vertical">
             <Border MinHeight="30" Style="{DynamicResource QueryBoxBgStyle}">
                 <Grid>
-                    <TextBox
-                        x:Name="QueryTextSuggestionBox"
-                        Height="{Binding MainWindowHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        FontSize="{Binding QueryBoxFontSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        IsEnabled="False"
-                        Style="{DynamicResource QuerySuggestionBoxStyle}">
-                        <TextBox.Text>
-                            <MultiBinding Converter="{StaticResource QuerySuggestionBoxConverter}">
-                                <Binding ElementName="QueryTextBox" Mode="OneTime" />
-                                <Binding ElementName="ResultListBox" Path="SelectedItem" />
-                                <Binding ElementName="QueryTextBox" Path="Text" />
-                            </MultiBinding>
-                        </TextBox.Text>
-                    </TextBox>
                     <TextBox
                         x:Name="QueryTextBox"
                         Height="{Binding MainWindowHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
