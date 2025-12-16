@@ -18,4 +18,8 @@
     <system:String x:Key="plugin_windowstasks_lastRunTime">Last run: {0}</system:String>
     <system:String x:Key="plugin_windowstasks_nextRunTime">Next run: {0}</system:String>
 
+    <!-- Task Actions -->
+    <system:String x:Key="plugin_windowstasks_taskAction_enable">Enable</system:String>
+    <system:String x:Key="plugin_windowstasks_taskAction_disable">Disable</system:String>
+
 </ResourceDictionary>

@@ -4,8 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Windows.Controls;
-using System.Windows.Threading;
 using Microsoft.Win32.TaskScheduler;
 
 namespace Flow.Launcher.Plugin.WindowsTasks;
@@ -13,6 +11,7 @@ namespace Flow.Launcher.Plugin.WindowsTasks;
 public class Main : IPlugin, IContextMenu, IPluginI18n
 {
     public const string PLUGIN_ICON = "Images\\app.png";
+    public const string TASK_DISABLED_ICON = "Images\\task_disabled.png";
     public const string GLYPH_FONT = "/Resources/#Segoe Fluent Icons";
 
     internal static PluginInitContext Context { get; private set; } = null!;
@@ -29,6 +28,8 @@ public class Main : IPlugin, IContextMenu, IPluginI18n
         query = query with { Search = query.Search.Replace('/', '\\') };
 
         // TODO: Support global searches
+        // TODO: Support recursive and wildcard searching
+        // TODO: Figure out how to edit tasks since it requires admin privileges
 
         // On empty queries we should show all the folders and tasks in the root folder
         if (string.IsNullOrWhiteSpace(query.Search))
@@ -85,20 +86,57 @@ public class Main : IPlugin, IContextMenu, IPluginI18n
 
     public List<Result> LoadContextMenus(Result result)
     {
-        return [];
+        List<Result> res = [];
+        if (result.ContextData is Task task)
+        {
+            if (task.Enabled)
+            {
+                res.Add(new()
+                {
+                    Title = Localize.plugin_windowstasks_taskAction_disable(),
+                    Glyph = new GlyphInfo(FontFamily: GLYPH_FONT, Glyph: "\xEB4A"),
+                    Action = c =>
+                    {
+                        task.Enabled = false;
+                        return true;
+                    }
+                });
+            }
+            else
+            {
+                res.Add(new()
+                {
+                    Title = Localize.plugin_windowstasks_taskAction_enable(),
+                    Glyph = new GlyphInfo(FontFamily: GLYPH_FONT, Glyph: "\xEB49"),
+                    Action = c =>
+                    {
+                        task.Enabled = true;
+                        return true;
+                    }
+                });
+            }
+        }
+
+        return res;
     }
 
     private static Result CreateResult(Query query, TaskFolder folder)
     {
+        string navigateQuery = AddActionKeyword(query, folder.Path + '\\');
+
         return new Result
         {
             Title = folder.Name,
-            SubTitle = folder.Path,
-            AutoCompleteText = AddActionKeyword(query, folder.Path + '\\'),
+            AutoCompleteText = navigateQuery,
             Glyph = new GlyphInfo(FontFamily: GLYPH_FONT, Glyph: "\uF12B"),
             IcoPath = PLUGIN_ICON,
             ContextData = folder,
-            CopyText = folder.Path
+            CopyText = folder.Path,
+            Action = c =>
+            {
+                Context.API.ChangeQuery(navigateQuery);
+                return false;
+            }
         };
     }
 
@@ -109,7 +147,7 @@ public class Main : IPlugin, IContextMenu, IPluginI18n
             Title = task.Name,
             SubTitle = GetLocalizedSubtitle(task),
             AutoCompleteText = AddActionKeyword(query, task.Path),
-            IcoPath = PLUGIN_ICON,
+            IcoPath = task.Enabled ? PLUGIN_ICON : TASK_DISABLED_ICON,
             ContextData = task,
             CopyText = task.Path,
             Action = c =>
@@ -164,10 +202,14 @@ public class Main : IPlugin, IContextMenu, IPluginI18n
         // A 0001 date usually means there is no next run time scheduled
         if (task.NextRunTime.Year != 1)
         {
-            sb.Append(" - ");
+            // It doesn't make sense to show the next run for disabled tasks
+            if (task.Enabled)
+            {
+                sb.Append(" - ");
 
-            string nextRunTime = task.NextRunTime.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.CurrentCulture);
-            sb.Append(Localize.plugin_windowstasks_nextRunTime(nextRunTime));
+                string nextRunTime = task.NextRunTime.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.CurrentCulture);
+                sb.Append(Localize.plugin_windowstasks_nextRunTime(nextRunTime));
+            }
         }
 
         return sb.ToString();
