@@ -171,7 +171,7 @@ namespace Flow.Launcher.Plugin.ProcessKiller
                     SubTitle = path,
                     Score = pr.Score,
                     ContextData = p.ProcessName,
-                    AutoCompleteText = $"{Context.CurrentPluginMetadata.ActionKeyword}{Plugin.Query.TermSeparator}{p.ProcessName}",
+                    AutoCompleteText = $"{query.ActionKeyword}{Plugin.Query.TermSeparator}{p.ProcessName}",
                     Action = (c) =>
                     {
                         ProcessHelper.TryKill(p);

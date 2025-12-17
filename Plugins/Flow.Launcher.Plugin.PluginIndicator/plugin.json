@@ -1,6 +1,6 @@
 {
   "ID": "6A122269676E40EB86EB543B945932B9",
-  "ActionKeyword": "?",
+  "ActionKeywords": [ "?" ],
   "Name": "Plugin Indicator",
   "Description": "Provides plugin action keyword suggestions",
   "Author": "qianlifeng",

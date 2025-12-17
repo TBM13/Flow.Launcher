@@ -57,14 +57,9 @@ namespace Flow.Launcher.Plugin
         }
 
         /// <summary>
-        /// The first action keyword of plugin.
+        /// All action keywords of the plugin.
         /// </summary>
-        public string ActionKeyword { get; set; }
-
-        /// <summary>
-        /// All action keywords of plugin.
-        /// </summary>
-        public List<string> ActionKeywords { get; set; }
+        public required List<string> ActionKeywords { get; set; }
 
         /// <summary>
         /// Plugin icon path.

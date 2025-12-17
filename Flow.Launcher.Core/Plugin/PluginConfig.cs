@@ -112,10 +112,7 @@ namespace Flow.Launcher.Core.Plugin
             {
                 metadata = JsonSerializer.Deserialize<PluginMetadata>(File.ReadAllText(configPath));
                 metadata.PluginDirectory = pluginDirectory;
-                // for plugins which doesn't has ActionKeywords key
-                metadata.ActionKeywords ??= [metadata.ActionKeyword];
-                // for plugin still use old ActionKeyword
-                metadata.ActionKeyword = metadata.ActionKeywords?[0];
+
             }
             catch (Exception e)
             {

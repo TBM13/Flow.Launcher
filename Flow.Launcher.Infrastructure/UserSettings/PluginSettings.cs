@@ -32,15 +32,8 @@ namespace Flow.Launcher.Infrastructure.UserSettings
 
                     // update metadata values with settings
                     if (settings.ActionKeywords?.Count > 0)
-                    {
                         metadata.ActionKeywords = settings.ActionKeywords;
-                        metadata.ActionKeyword = settings.ActionKeywords[0];
-                    }
-                    else
-                    {
-                        metadata.ActionKeywords = new List<string>();
-                        metadata.ActionKeyword = string.Empty;
-                    }
+
                     metadata.Disabled = settings.Disabled;
                     metadata.Priority = settings.Priority;
                     metadata.HomeDisabled = settings.HomeDisabled;
