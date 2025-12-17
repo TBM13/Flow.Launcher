@@ -1400,7 +1400,6 @@ namespace Flow.Launcher.ViewModel
                 menu = new Result
                 {
                     Title = Localize.cancelTopMostInThisQuery(),
-                    IcoPath = "Images\\down.png",
                     PluginDirectory = Constant.ProgramDirectory,
                     Action = _ =>
                     {
@@ -1418,7 +1417,6 @@ namespace Flow.Launcher.ViewModel
                 menu = new Result
                 {
                     Title = Localize.setAsTopMostInThisQuery(),
-                    IcoPath = "Images\\up.png",
                     PluginDirectory = Constant.ProgramDirectory,
                     Action = _ =>
                     {

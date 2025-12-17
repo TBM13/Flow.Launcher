@@ -43,16 +43,6 @@ namespace Flow.Launcher.Infrastructure.Storage
             FilePath = Path.Combine(DirectoryPath, $"{filename}{FileSuffix}");
         }
 
-        // Let the old Program plugin get this constructor
-        [Obsolete("This constructor is obsolete. Use BinaryStorage(string filename) instead.")]
-        public BinaryStorage(string filename, string directoryPath = null!)
-        {
-            DirectoryPath = directoryPath ?? DataLocation.CacheDirectory;
-            FilesFolders.ValidateDirectory(DirectoryPath);
-
-            FilePath = Path.Combine(DirectoryPath, $"{filename}{FileSuffix}");
-        }
-
         public T TryLoad(T defaultData)
         {
             if (Data != null) return Data;
