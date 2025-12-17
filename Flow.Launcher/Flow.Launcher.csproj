@@ -92,11 +92,7 @@
   <ItemGroup>
     <Page Include="App.xaml" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <Page Remove="Themes\ThemeBuilder\Template.xaml" />
-  </ItemGroup>
-  
+
   <ItemGroup>
     <Compile Include="..\SolutionAssemblyInfo.cs" Link="Properties\SolutionAssemblyInfo.cs" />
   </ItemGroup>

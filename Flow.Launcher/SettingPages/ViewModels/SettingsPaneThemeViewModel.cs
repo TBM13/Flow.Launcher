@@ -1,43 +1,18 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Plugin;
-using Flow.Launcher.Plugin.SharedModels;
-using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
 
-public partial class SettingsPaneThemeViewModel : BaseModel
+public partial class SettingsPaneThemeViewModel(Settings settings, Theme theme) : BaseModel
 {
-    public Settings Settings { get; }
+    public Settings Settings { get; } = settings;
 
-    private readonly Theme _theme;
-
-
-    private List<ThemeData> _themes;
-    public List<ThemeData> Themes => _themes ??= App.API.GetAvailableThemes();
-
-    private ThemeData _selectedTheme;
-    public ThemeData SelectedTheme
-    {
-        get => _selectedTheme ??= Themes.Find(v => v == App.API.GetCurrentTheme());
-        set
-        {
-            _selectedTheme = value;
-            if (!App.API.SetCurrentTheme(value))
-            {
-                // Revert selection if failed to set theme
-                OnPropertyChanged();
-            }
-
-            // Update UI state
-            OnPropertyChanged(nameof(DropShadowEffect));
-        }
-    }
+    private readonly Theme _theme = theme;
 
     public bool DropShadowEffect
     {
@@ -91,47 +66,5 @@ public partial class SettingsPaneThemeViewModel : BaseModel
     {
         get => Settings.UseGlyphIcons;
         set => Settings.UseGlyphIcons = value;
-    }
-
-    public ResultsViewModel PreviewResults { get; }
-
-    public SettingsPaneThemeViewModel(Settings settings, Theme theme)
-    {
-        Settings = settings;
-        _theme = theme;
-        var results = new List<Result>
-            {
-                new()
-                {
-                    Title = Localize.SampleTitleExplorer(),
-                    SubTitle = Localize.SampleSubTitleExplorer(),
-                    IcoPath = Path.Combine(
-                        Constant.ProgramDirectory,
-                        @"Plugins\Flow.Launcher.Plugin.Explorer\Images\explorer.png"
-                    )
-                },
-                new()
-                {
-                    Title = Localize.SampleTitleProgram(),
-                    SubTitle = Localize.SampleSubTitleProgram(),
-                    IcoPath = Path.Combine(
-                        Constant.ProgramDirectory,
-                        @"Plugins\Flow.Launcher.Plugin.Program\Images\program.png"
-                    )
-                },
-                new()
-                {
-                    Title = Localize.SampleTitleProcessKiller(),
-                    SubTitle = Localize.SampleSubTitleProcessKiller(),
-                    IcoPath = Path.Combine(
-                        Constant.ProgramDirectory,
-                        @"Plugins\Flow.Launcher.Plugin.ProcessKiller\Images\app.png"
-                    )
-                }
-            };
-        // Set main view model to null because the results are for preview only
-        var vm = new ResultsViewModel(Settings, null);
-        vm.AddResults(results, "PREVIEW");
-        PreviewResults = vm;
     }
 }
