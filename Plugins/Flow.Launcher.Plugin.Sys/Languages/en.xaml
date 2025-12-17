@@ -13,6 +13,7 @@
     <system:String x:Key="flowlauncher_plugin_sys_openrecyclebin_cmd">Open Recycle Bin</system:String>
     <system:String x:Key="flowlauncher_plugin_sys_exit_cmd">Exit</system:String>
     <system:String x:Key="flowlauncher_plugin_sys_setting_cmd">Settings</system:String>
+    <system:String x:Key="flowlauncher_plugin_sys_toggleDarkMode_cmd">Toggle Dark Mode</system:String>
 
     <!--  Command Descriptions  -->
     <system:String x:Key="flowlauncher_plugin_sys_shutdown_computer">Shutdown Computer</system:String>

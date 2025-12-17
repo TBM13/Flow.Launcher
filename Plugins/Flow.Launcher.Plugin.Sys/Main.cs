@@ -4,10 +4,12 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Windows;
+using Microsoft.Win32;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Security;
 using Windows.Win32.System.Shutdown;
+using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Flow.Launcher.Plugin.Sys
 {
@@ -260,6 +262,43 @@ namespace Flow.Launcher.Plugin.Sys
                     Action = c =>
                     {
                         Context.API.OpenSettingDialog();
+                        return true;
+                    }
+                },
+                new Result
+                {
+                    Title = Localize.flowlauncher_plugin_sys_toggleDarkMode_cmd(),
+                    Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe7a1"),
+                    IcoPath = "Images\\app.png",
+                    Action = c =>
+                    {
+                        using var key = Registry.CurrentUser.OpenSubKey($@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", true);
+                        if (key is null)
+                        {
+                            Context.API.ShowMsgError("Failed to open registry key");
+                            return false;
+                        }
+
+                        bool lightMode = (int)key.GetValue("SystemUsesLightTheme", 0) == 1;
+                        key.SetValue("SystemUsesLightTheme", lightMode ? 0 : 1, RegistryValueKind.DWord);
+                        key.SetValue("AppsUseLightTheme", lightMode ? 0 : 1, RegistryValueKind.DWord);
+
+                        unsafe
+                        {
+                            fixed (char* pMessage = "ImmersiveColorSet")
+                            {
+                                // Without this, the taskbar's color doesn't update
+                                PInvoke.SendMessageTimeout(
+                                    HWND.HWND_BROADCAST,
+                                    PInvoke.WM_SETTINGCHANGE,
+                                    (WPARAM)0,
+                                    (LPARAM)(nint)pMessage,
+                                    SEND_MESSAGE_TIMEOUT_FLAGS.SMTO_ABORTIFHUNG,
+                                    2000, // Wait up to 2 seconds per window to avoid hanging
+                                    null);
+                            }
+                        }
+
                         return true;
                     }
                 }

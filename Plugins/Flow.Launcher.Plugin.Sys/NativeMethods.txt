@@ -8,3 +8,6 @@ LookupPrivilegeValue
 AdjustTokenPrivileges
 TOKEN_PRIVILEGES
 SE_SHUTDOWN_NAME
+WM_SETTINGCHANGE
+SendMessageTimeout
+HWND_BROADCAST
