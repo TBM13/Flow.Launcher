@@ -93,18 +93,6 @@ public partial class SettingsPaneThemeViewModel : BaseModel
         set => Settings.UseGlyphIcons = value;
     }
 
-    public double WindowHeightSize
-    {
-        get => Settings.WindowHeightSize;
-        set => Settings.WindowHeightSize = value;
-    }
-
-    public double QueryBoxFontSize
-    {
-        get => Settings.QueryBoxFontSize;
-        set => Settings.QueryBoxFontSize = value;
-    }
-
     public ResultsViewModel PreviewResults { get; }
 
     public SettingsPaneThemeViewModel(Settings settings, Theme theme)

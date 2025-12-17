@@ -30,71 +30,13 @@
         VirtualizingStackPanel.IsVirtualizing="True"
         VirtualizingStackPanel.ScrollUnit="Pixel">
         <StackPanel>
-
             <!--  Page title  -->
             <TextBlock
                 Margin="5 23 0 5"
                 FontSize="30"
                 Style="{StaticResource PageTitle}"
                 Text="{DynamicResource appearance}"
-                TextAlignment="left"
-                Visibility="Collapsed" />
-
-            <!--  Theme preview  -->
-            <Border
-                Grid.Column="0"
-                SnapsToDevicePixels="True"
-                UseLayoutRounding="True">
-                <DockPanel LastChildFill="True">
-                    <StackPanel VerticalAlignment="Center" DockPanel.Dock="Left">
-                        <Border
-                            Width="400"
-                            Margin="40 30 0 10"
-                            SnapsToDevicePixels="True"
-                            Background="{DynamicResource Color01B}"
-                            BorderBrush="{DynamicResource SystemThemeBorder}"
-                            BorderThickness="1"
-                            Style="{DynamicResource PreviewWindowBorderStyle}">
-                            <Border BorderThickness="0" Style="{DynamicResource WindowRadius}">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition />
-                                        <RowDefinition />
-                                    </Grid.RowDefinitions>
-                                    <Border Grid.Row="0">
-                                        <TextBox
-                                            x:Name="QueryTextBox"
-                                            Height="{Binding WindowHeightSize, Mode=TwoWay}"
-                                            FontSize="{Binding QueryBoxFontSize, Mode=TwoWay}"
-                                            IsHitTestVisible="False"
-                                            IsReadOnly="True"
-                                            Style="{DynamicResource QueryBoxStyle}"
-                                            Text="{DynamicResource hiThere}" />
-                                    </Border>
-
-                                    <Border Grid.Row="1" Margin="0 0 0 0">
-                                        <Rectangle
-                                            Width="Auto"
-                                            HorizontalAlignment="Stretch"
-                                            Style="{DynamicResource SeparatorStyle}"
-                                            Visibility="Visible" />
-                                    </Border>
-
-                                    <ContentControl Grid.Row="2">
-                                        <flowlauncher:ResultListBox
-                                            x:Name="ResultListBox"
-                                            DataContext="{Binding PreviewResults, Mode=OneTime}"
-                                            IsHitTestVisible="False"
-                                            Visibility="Visible" />
-                                    </ContentControl>
-                                    <Border x:Name="ResultContextMenu" Visibility="Collapsed" />
-                                </Grid>
-                            </Border>
-                        </Border>
-                    </StackPanel>
-                </DockPanel>
-            </Border>
+                TextAlignment="left" />
 
             <!--  Theme  -->
             <ui:SettingsExpander
