@@ -2,7 +2,6 @@
 using System.Windows;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Helper;
-using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Hotkey;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Plugin;
@@ -15,13 +14,6 @@ public partial class SettingsPaneHotkeyViewModel : BaseModel
 
     public CustomPluginHotkey SelectedCustomPluginHotkey { get; set; }
     public CustomShortcutModel SelectedCustomShortcut { get; set; }
-
-    public string[] OpenResultModifiersList => new[]
-    {
-        KeyConstant.Alt,
-        KeyConstant.Ctrl,
-        $"{KeyConstant.Ctrl}+{KeyConstant.Alt}"
-    };
 
     public SettingsPaneHotkeyViewModel(Settings settings)
     {

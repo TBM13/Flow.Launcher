@@ -88,9 +88,6 @@ namespace Flow.Launcher.ViewModel
                     case nameof(Settings.ResultSubItemFontSize):
                         OnPropertyChanged(nameof(ResultSubItemFontSize));
                         break;
-                    case nameof(Settings.OpenResultModifiers):
-                        OnPropertyChanged(nameof(OpenResultCommandModifiers));
-                        break;
                     case nameof(Settings.PreviewHotkey):
                         OnPropertyChanged(nameof(PreviewHotkey));
                         break;
@@ -752,8 +749,6 @@ namespace Flow.Launcher.ViewModel
         public ImageSource PluginIconSource { get; private set; } = null;
 
         public string PluginIconPath { get; set; } = null;
-
-        public string OpenResultCommandModifiers => Settings.OpenResultModifiers;
 
         private static string VerifyOrSetDefaultHotkey(string hotkey, string defaultHotkey)
         {

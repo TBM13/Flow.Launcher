@@ -33,20 +33,6 @@ namespace Flow.Launcher.Infrastructure.UserSettings
 
         public string Hotkey { get; set; } = $"{KeyConstant.Alt} + {KeyConstant.Space}";
 
-        private string _openResultModifiers = KeyConstant.Alt;
-        public string OpenResultModifiers
-        {
-            get => _openResultModifiers;
-            set
-            {
-                if (_openResultModifiers != value)
-                {
-                    _openResultModifiers = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
         public string ColorScheme { get; set; } = "System";
 
         public double WindowSize { get; set; } = 580;
@@ -372,18 +358,7 @@ namespace Flow.Launcher.Infrastructure.UserSettings
                 new("Ctrl+Enter", "OpenContainFolderHotkey"),
                 new("Alt+Enter", "HotkeyOpenResult"),
                 new("Ctrl+F12", "ToggleGameModeHotkey"),
-                new("Ctrl+Shift+C", "CopyFilePathHotkey"),
-
-                new($"{OpenResultModifiers}+D1", "HotkeyOpenResultN", 1),
-                new($"{OpenResultModifiers}+D2", "HotkeyOpenResultN", 2),
-                new($"{OpenResultModifiers}+D3", "HotkeyOpenResultN", 3),
-                new($"{OpenResultModifiers}+D4", "HotkeyOpenResultN", 4),
-                new($"{OpenResultModifiers}+D5", "HotkeyOpenResultN", 5),
-                new($"{OpenResultModifiers}+D6", "HotkeyOpenResultN", 6),
-                new($"{OpenResultModifiers}+D7", "HotkeyOpenResultN", 7),
-                new($"{OpenResultModifiers}+D8", "HotkeyOpenResultN", 8),
-                new($"{OpenResultModifiers}+D9", "HotkeyOpenResultN", 9),
-                new($"{OpenResultModifiers}+D0", "HotkeyOpenResultN", 10)
+                new("Ctrl+Shift+C", "CopyFilePathHotkey")
             ];
         }
     }

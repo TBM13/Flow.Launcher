@@ -95,56 +95,6 @@
             Command="{Binding OpenResultCommand}"
             Modifiers="Alt" />
         <KeyBinding
-            Key="D1"
-            Command="{Binding OpenResultCommand}"
-            CommandParameter="0"
-            Modifiers="{Binding OpenResultCommandModifiers}" />
-        <KeyBinding
-            Key="D2"
-            Command="{Binding OpenResultCommand}"
-            CommandParameter="1"
-            Modifiers="{Binding OpenResultCommandModifiers}" />
-        <KeyBinding
-            Key="D3"
-            Command="{Binding OpenResultCommand}"
-            CommandParameter="2"
-            Modifiers="{Binding OpenResultCommandModifiers}" />
-        <KeyBinding
-            Key="D4"
-            Command="{Binding OpenResultCommand}"
-            CommandParameter="3"
-            Modifiers="{Binding OpenResultCommandModifiers}" />
-        <KeyBinding
-            Key="D5"
-            Command="{Binding OpenResultCommand}"
-            CommandParameter="4"
-            Modifiers="{Binding OpenResultCommandModifiers}" />
-        <KeyBinding
-            Key="D6"
-            Command="{Binding OpenResultCommand}"
-            CommandParameter="5"
-            Modifiers="{Binding OpenResultCommandModifiers}" />
-        <KeyBinding
-            Key="D7"
-            Command="{Binding OpenResultCommand}"
-            CommandParameter="6"
-            Modifiers="{Binding OpenResultCommandModifiers}" />
-        <KeyBinding
-            Key="D8"
-            Command="{Binding OpenResultCommand}"
-            CommandParameter="7"
-            Modifiers="{Binding OpenResultCommandModifiers}" />
-        <KeyBinding
-            Key="D9"
-            Command="{Binding OpenResultCommand}"
-            CommandParameter="8"
-            Modifiers="{Binding OpenResultCommandModifiers}" />
-        <KeyBinding
-            Key="D0"
-            Command="{Binding OpenResultCommand}"
-            CommandParameter="9"
-            Modifiers="{Binding OpenResultCommandModifiers}" />
-        <KeyBinding
             Key="F12"
             Command="{Binding ToggleGameModeCommand}"
             Modifiers="Ctrl" />

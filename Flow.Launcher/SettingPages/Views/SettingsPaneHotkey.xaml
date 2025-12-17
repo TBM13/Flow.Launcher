@@ -59,17 +59,6 @@
                     WindowTitle="{DynamicResource previewHotkey}" />
             </ui:SettingsCard>
 
-            <ui:SettingsCard
-                Margin="0 14 0 0"
-                Description="{DynamicResource openResultModifiersToolTip}"
-                Header="{DynamicResource openResultModifiers}">
-                <ComboBox
-                    Width="120"
-                    FontSize="14"
-                    ItemsSource="{Binding OpenResultModifiersList}"
-                    SelectedValue="{Binding Settings.OpenResultModifiers}" />
-            </ui:SettingsCard>
-
             <ui:SettingsExpander
                 Margin="0 14 0 0"
                 Description="{DynamicResource hotkeyPresetsToolTip}"
