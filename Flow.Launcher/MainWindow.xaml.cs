@@ -357,10 +357,7 @@ namespace Flow.Launcher
                             && QueryTextBox.Text.Length > 0
                             && QueryTextBox.CaretIndex == QueryTextBox.Text.Length)
                         {
-                            var queryWithoutActionKeyword =
-                                QueryBuilder.Build(QueryTextBox.Text, QueryTextBox.Text.Trim(), PluginManager.GetNonGlobalPlugins())?.Search;
-
-                            if (FilesFolders.IsLocationPathString(queryWithoutActionKeyword))
+                            if (QueryTextBox.Text.Contains('\\') || QueryTextBox.Text.Contains('/'))
                             {
                                 _viewModel.BackspaceCommand.Execute(null);
                                 e.Handled = true;

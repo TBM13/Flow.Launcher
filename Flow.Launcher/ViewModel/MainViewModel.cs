@@ -328,13 +328,16 @@ namespace Flow.Launcher.ViewModel
         private void Backspace(object index)
         {
             var query = QueryBuilder.Build(QueryText, QueryText.Trim(), PluginManager.GetNonGlobalPlugins());
-
-            // GetPreviousExistingDirectory does not require trailing '\', otherwise will return empty string
-            var path = FilesFolders.GetPreviousExistingDirectory((_) => true, query.Search.TrimEnd('\\'));
-
             var actionKeyword = string.IsNullOrEmpty(query.ActionKeyword) ? string.Empty : $"{query.ActionKeyword} ";
 
-            ChangeQueryText($"{actionKeyword}{path}");
+            string search = query.Search;
+            if (search.EndsWith('\\') || search.EndsWith('/'))
+                search = search[..^1];
+
+            var lastSeparatorIndex = Math.Max(search.LastIndexOf('\\'), search.LastIndexOf('/'));
+            search = lastSeparatorIndex >= 0 ? search[..(lastSeparatorIndex + 1)] : string.Empty;
+
+            ChangeQueryText($"{actionKeyword}{search}");
         }
 
         [RelayCommand]
