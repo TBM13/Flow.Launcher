@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Flow.Launcher.Plugin
+﻿namespace Flow.Launcher.Plugin
 {
     /// <summary>
     /// Represents a query that is sent to a plugin.
@@ -55,54 +53,10 @@ namespace Flow.Launcher.Plugin
         public required string Search { get; init; }
 
         /// <summary>
-        /// The search string split into a string array.
-        /// Does not include the <see cref="ActionKeyword"/>.
-        /// </summary>
-        public required string[] SearchTerms { get; init; }
-
-        /// <summary>
         /// The action keyword part of this query.
         /// For global plugins this value will be empty.
         /// </summary>
         public required string ActionKeyword { get; init; }
-
-        /// <summary>
-        /// Splits <see cref="SearchTerms"/> by spaces and returns the first item.
-        /// </summary>
-        /// <remarks>
-        /// returns an empty string when <see cref="SearchTerms"/> does not have enough items.
-        /// </remarks>
-        [JsonIgnore]
-        public string FirstSearch => SplitSearch(0);
-
-        /// <summary>
-        /// strings from second search (including) to last search
-        /// </summary>
-        [JsonIgnore]
-        public string SecondToEndSearch => SearchTerms.Length > 1 ? (field ??= string.Join(' ', SearchTerms[1..])) : "";
-
-        /// <summary>
-        /// Splits <see cref="SearchTerms"/> by spaces and returns the second item.
-        /// </summary>
-        /// <remarks>
-        /// returns an empty string when <see cref="SearchTerms"/> does not have enough items.
-        /// </remarks>
-        [JsonIgnore]
-        public string SecondSearch => SplitSearch(1);
-
-        /// <summary>
-        /// Splits <see cref="SearchTerms"/> by spaces and returns the third item.
-        /// </summary>
-        /// <remarks>
-        /// returns an empty string when <see cref="SearchTerms"/> does not have enough items.
-        /// </remarks>
-        [JsonIgnore]
-        public string ThirdSearch => SplitSearch(2);
-
-        private string SplitSearch(int index)
-        {
-            return index < SearchTerms.Length ? SearchTerms[index] : string.Empty;
-        }
 
         /// <inheritdoc />
         public override string ToString() => TrimmedQuery;

@@ -4,54 +4,25 @@ using System.Text.Json.Serialization;
 
 namespace Flow.Launcher.Plugin
 {
-    /// <summary>
-    /// Plugin metadata
-    /// </summary>
-    public class PluginMetadata : BaseModel
+    public record PluginMetadata
     {
+        public required string ID { get; init; }
+        public required string Name { get; set; }
+        public required string Author { get; init; }
+        public required string Version { get; init; }
         /// <summary>
-        /// Plugin ID.
+        /// See <see cref="AllowedLanguage"/>.
         /// </summary>
-        public string ID { get; set; }
+        public required string Language { get; init; }
+        public required string Description { get; set; }
+        public required string Website { get; init; }
 
         /// <summary>
-        /// Plugin name.
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Plugin author.
-        /// </summary>
-        public string Author { get; set; }
-
-        /// <summary>
-        /// Plugin version.
-        /// </summary>
-        public string Version { get; set; }
-
-        /// <summary>
-        /// Plugin language.
-        /// See <see cref="AllowedLanguage"/>
-        /// </summary>
-        public string Language { get; set; }
-
-        /// <summary>
-        /// Plugin description.
-        /// </summary>
-        public string Description { get; set; }
-
-        /// <summary>
-        /// Plugin website.
-        /// </summary>
-        public string Website { get; set; }
-
-        /// <summary>
-        /// Whether plugin is disabled.
+        /// Whether the plugin is disabled.
         /// </summary>
         public bool Disabled { get; set; }
-
         /// <summary>
-        /// Whether plugin is disabled in home query.
+        /// Whether the plugin is disabled in home query.
         /// </summary>
         public bool HomeDisabled { get; set; }
 
@@ -59,7 +30,6 @@ namespace Flow.Launcher.Plugin
         /// Plugin execute file path.
         /// </summary>
         public string ExecuteFilePath { get; private set; }
-
         /// <summary>
         /// Plugin execute file name.
         /// </summary>
@@ -72,17 +42,15 @@ namespace Flow.Launcher.Plugin
         [JsonIgnore]
         public string AssemblyName { get; internal set; }
 
-        private string _pluginDirectory;
-
         /// <summary>
         /// Plugin source directory.
         /// </summary>
         public string PluginDirectory
         {
-            get => _pluginDirectory;
+            get => field;
             internal set
             {
-                _pluginDirectory = value;
+                field = value;
                 ExecuteFilePath = Path.Combine(value, ExecuteFileName);
                 IcoPath = Path.Combine(value, IcoPath);
             }
@@ -99,18 +67,10 @@ namespace Flow.Launcher.Plugin
         public List<string> ActionKeywords { get; set; }
 
         /// <summary>
-        /// Hide plugin keyword setting panel.
-        /// </summary>
-        public bool HideActionKeywordPanel { get; set; }
-
-        /// <summary>
         /// Plugin icon path.
         /// </summary>
-        public string IcoPath { get; set; }
+        public required string IcoPath { get; set; }
 
-        /// <summary>
-        /// Plugin priority.
-        /// </summary>
         [JsonIgnore]
         public int Priority { get; set; }
 
@@ -129,10 +89,6 @@ namespace Flow.Launcher.Plugin
         /// </summary>
         public string PluginCacheDirectoryPath { get; internal set; }
 
-        /// <summary>
-        /// Convert <see cref="PluginMetadata"/> to string.
-        /// </summary>
-        /// <returns></returns>
         public override string ToString()
         {
             return Name;

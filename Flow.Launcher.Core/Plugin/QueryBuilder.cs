@@ -16,7 +16,6 @@ namespace Flow.Launcher.Core.Plugin
                     Search = string.Empty,
                     OriginalQuery = string.Empty,
                     TrimmedQuery = string.Empty,
-                    SearchTerms = Array.Empty<string>(),
                     ActionKeyword = string.Empty,
                     IsHomeQuery = true
                 };
@@ -54,7 +53,6 @@ namespace Flow.Launcher.Core.Plugin
                 Search = search,
                 OriginalQuery = originalQuery,
                 TrimmedQuery = trimmedQuery,
-                SearchTerms = searchTerms,
                 ActionKeyword = actionKeyword,
                 IsHomeQuery = false
             };

@@ -130,8 +130,6 @@ namespace Flow.Launcher.ViewModel
             }
         }
 
-        public Visibility ActionKeywordsVisibility => PluginPair.Metadata.HideActionKeywordPanel ?
-            Visibility.Collapsed : Visibility.Visible;
         public string Version => Localize.plugin_query_version() + " " + PluginPair.Metadata.Version;
         public string ActionKeywordsText => string.Join(Query.ActionKeywordSeparator, PluginPair.Metadata.ActionKeywords);
         public Infrastructure.UserSettings.Plugin PluginSettingsObject { get; init; }

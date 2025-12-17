@@ -16,8 +16,7 @@
         Padding="0"
         BorderThickness="0 1 0 0"
         CornerRadius="0"
-        Style="{DynamicResource SettingGroupBox}"
-        Visibility="{Binding ActionKeywordsVisibility}">
+        Style="{DynamicResource SettingGroupBox}">
         <DockPanel Margin="{StaticResource SettingPanelMargin}">
             <TextBlock
                 Margin="{StaticResource SettingPanelItemRightMargin}"

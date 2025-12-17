@@ -59,7 +59,7 @@ namespace Flow.Launcher.Plugin
         /// </summary>
         /// <value>Can be a local file path or a URL.</value>
         /// <remarks>GlyphInfo is prioritized if not null</remarks>
-        public string IcoPath
+        public string? IcoPath
         {
             get => field;
             set
@@ -178,7 +178,7 @@ namespace Flow.Launcher.Plugin
         /// <summary>
         /// Contains data used to populate the preview section of this result.
         /// </summary>
-        public PreviewInfo Preview { get; set; } = PreviewInfo.Default;
+        public PreviewInfo Preview { get; set; } = new();
 
         /// <summary>
         /// Determines if the user selection count should be added to the score. This can be useful when set to false to allow the result sequence order to be the same everytime instead of changing based on selection.
@@ -241,18 +241,6 @@ namespace Flow.Launcher.Plugin
             /// File path of the result. For third-party programs providing external preview.
             /// </summary>
             public string? FilePath { get; set; } = null;
-
-            /// <summary>
-            /// Default instance of <see cref="PreviewInfo"/>
-            /// </summary>
-            public static PreviewInfo Default { get; } = new()
-            {
-                PreviewImagePath = null,
-                Description = null,
-                IsMedia = false,
-                PreviewDelegate = null,
-                FilePath = null,
-            };
         }
     }
 }
