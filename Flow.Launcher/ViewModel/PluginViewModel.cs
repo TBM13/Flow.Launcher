@@ -151,7 +151,7 @@ namespace Flow.Launcher.ViewModel
         [RelayCommand]
         private void OpenSourceCodeLink()
         {
-            App.API.OpenUrl(PluginPair.Metadata.Website);
+            App.API.OpenWebUrl(new(PluginPair.Metadata.Website));
         }
 
         [RelayCommand]

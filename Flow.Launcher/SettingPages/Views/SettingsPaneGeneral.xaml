@@ -213,22 +213,6 @@
                     Command="{Binding SelectFileManagerCommand}"
                     Content="{Binding Settings.CustomExplorer.DisplayName}" />
             </ui:SettingsCard>
-
-            <ui:SettingsCard
-                Margin="0 4 0 0"
-                Description="{DynamicResource defaultBrowserToolTip}"
-                Header="{DynamicResource defaultBrowser}">
-                <ui:SettingsCard.HeaderIcon>
-                    <ui:FontIcon Glyph="&#xf6fa;" />
-                </ui:SettingsCard.HeaderIcon>
-
-                <Button
-                    Width="160"
-                    MaxWidth="250"
-                    Margin="10 0 0 0"
-                    Command="{Binding SelectBrowserCommand}"
-                    Content="{Binding Settings.CustomBrowser.DisplayName}" />
-            </ui:SettingsCard>
         </VirtualizingStackPanel>
     </ui:ScrollViewerEx>
 </ui:Page>

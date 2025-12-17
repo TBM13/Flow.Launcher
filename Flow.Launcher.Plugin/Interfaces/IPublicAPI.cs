@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -314,42 +313,19 @@ namespace Flow.Launcher.Plugin
 
         /// <summary>
         /// Opens the URL using the browser with the given Uri object, even if the URL is a local file.
-        /// The browser and mode used is based on what's configured in Flow's default browser settings.
         /// </summary>
-        public void OpenWebUrl(Uri url, bool? inPrivate = null);
-
-        /// <summary>
-        /// Opens the URL using the browser with the given string, even if the URL is a local file.
-        /// The browser and mode used is based on what's configured in Flow's default browser settings.
-        /// Non-C# plugins should use this method.
-        /// </summary>
-        public void OpenWebUrl(string url, bool? inPrivate = null);
+        public void OpenWebUrl(Uri url, bool inPrivate = false, bool inTab = true);
 
         /// <summary>
         /// Opens the URL with the given Uri object in browser if scheme is Http or Https.
         /// If the URL is a local file, it will instead be opened with the default application for that file type.
-        /// The browser and mode used is based on what's configured in Flow's default browser settings.
         /// </summary>
-        public void OpenUrl(Uri url, bool? inPrivate = null);
-
-        /// <summary>
-        /// Opens the URL with the given string in browser if scheme is Http or Https.
-        /// If the URL is a local file, it will instead be opened with the default application for that file type.
-        /// The browser and mode used is based on what's configured in Flow's default browser settings.
-        /// Non-C# plugins should use this method.
-        /// </summary>
-        public void OpenUrl(string url, bool? inPrivate = null);
+        public void OpenUrl(Uri url, bool inPrivate = false, bool inTab = true);
 
         /// <summary>
         /// Opens the application URI with the given Uri object, e.g. obsidian://search-query-example
         /// </summary>
         public void OpenAppUri(Uri appUri);
-
-        /// <summary>
-        /// Opens the application URI with the given string, e.g. obsidian://search-query-example
-        /// Non-C# plugins should use this method
-        /// </summary>
-        public void OpenAppUri(string appUri);
 
         /// <summary>
         /// Toggles Game Mode. off -> on and backwards

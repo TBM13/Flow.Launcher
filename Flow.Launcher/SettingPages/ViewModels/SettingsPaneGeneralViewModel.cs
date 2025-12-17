@@ -61,7 +61,6 @@ public partial class SettingsPaneGeneralViewModel : BaseModel
         // Since we are using Binding instead of DynamicResource, we need to manually trigger the update
         OnPropertyChanged(nameof(AlwaysPreviewToolTip));
         Settings.CustomExplorer.OnDisplayNameChanged();
-        Settings.CustomBrowser.OnDisplayNameChanged();
     }
 
     public string AlwaysPreviewToolTip => Localize.AlwaysPreviewToolTip(Settings.PreviewHotkey);
@@ -71,12 +70,5 @@ public partial class SettingsPaneGeneralViewModel : BaseModel
     {
         var fileManagerChangeWindow = new SelectFileManagerWindow();
         fileManagerChangeWindow.ShowDialog();
-    }
-
-    [RelayCommand]
-    private void SelectBrowser()
-    {
-        var browserWindow = new SelectBrowserWindow();
-        browserWindow.ShowDialog();
     }
 }

@@ -416,12 +416,6 @@ namespace Flow.Launcher.ViewModel
         }
 
         [RelayCommand]
-        private void SelectHelp()
-        {
-            App.API.OpenUrl("https://www.flowlauncher.com/docs/#/usage-tips");
-        }
-
-        [RelayCommand]
         private void SelectFirstResult()
         {
             SelectedResults.SelectFirstResult();

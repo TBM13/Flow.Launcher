@@ -137,51 +137,6 @@ namespace Flow.Launcher.Infrastructure.UserSettings
             }
         ];
 
-        public int CustomBrowserIndex { get; set; } = 0;
-
-        [JsonIgnore]
-        public CustomBrowserViewModel CustomBrowser
-        {
-            get => CustomBrowserList[CustomBrowserIndex];
-            set => CustomBrowserList[CustomBrowserIndex] = value;
-        }
-
-        public List<CustomBrowserViewModel> CustomBrowserList { get; set; } =
-        [
-            new()
-            {
-                Name = "Default",
-                Path = "*",
-                PrivateArg = "",
-                EnablePrivate = false,
-                Editable = false
-            },
-            new()
-            {
-                Name = "Google Chrome",
-                Path = "chrome",
-                PrivateArg = "-incognito",
-                EnablePrivate = false,
-                Editable = false
-            },
-            new()
-            {
-                Name = "Mozilla Firefox",
-                Path = "firefox",
-                PrivateArg = "-private",
-                EnablePrivate = false,
-                Editable = false
-            },
-            new()
-            {
-                Name = "MS Edge",
-                Path = "msedge",
-                PrivateArg = "-inPrivate",
-                EnablePrivate = false,
-                Editable = false
-            }
-        ];
-
         public bool AlwaysPreview { get; set; } = false;
 
         private SearchPrecisionScore _querySearchPrecision = SearchPrecisionScore.Regular;

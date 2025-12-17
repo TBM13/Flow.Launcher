@@ -381,7 +381,7 @@ namespace Flow.Launcher
             }
         }
 
-        private void OpenUri(Uri uri, bool? inPrivate = null, bool forceBrowser = false)
+        private void OpenUri(Uri uri, bool inPrivate = false, bool forceBrowser = false, bool openInTab = true)
         {
             if (uri.IsFile && !FilesFolders.FileOrLocationExists(uri.LocalPath))
             {
@@ -391,25 +391,21 @@ namespace Flow.Launcher
 
             if (forceBrowser || uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)
             {
-                var browserInfo = _settings.CustomBrowser;
-
-                var path = browserInfo.Path == "*" ? "" : browserInfo.Path;
-
                 try
                 {
-                    if (browserInfo.OpenInTab)
+                    if (openInTab)
                     {
-                        uri.AbsoluteUri.OpenInBrowserTab(path, inPrivate ?? browserInfo.EnablePrivate, browserInfo.PrivateArg);
+                        uri.AbsoluteUri.OpenInBrowserTab(string.Empty, inPrivate);
                     }
                     else
                     {
-                        uri.AbsoluteUri.OpenInBrowserWindow(path, inPrivate ?? browserInfo.EnablePrivate, browserInfo.PrivateArg);
+                        uri.AbsoluteUri.OpenInBrowserWindow(string.Empty, inPrivate);
                     }
                 }
                 catch (Exception e)
                 {
-                    var tabOrWindow = browserInfo.OpenInTab ? "tab" : "window";
-                    LogException(ClassName, $"Failed to open URL in browser {tabOrWindow}: {path}, {inPrivate ?? browserInfo.EnablePrivate}, {browserInfo.PrivateArg}", e);
+                    var tabOrWindow = openInTab ? "tab" : "window";
+                    LogException(ClassName, $"Failed to open URL in browser {tabOrWindow}: {inPrivate}", e);
                     ShowMsgError(
                         Localize.errorTitle(),
                         Localize.browserOpenError()
@@ -434,29 +430,14 @@ namespace Flow.Launcher
             }
         }
 
-        public void OpenWebUrl(string url, bool? inPrivate = null)
+        public void OpenWebUrl(Uri url, bool inPrivate = false, bool inTab = true)
         {
-            OpenUri(new Uri(url), inPrivate, true);
+            OpenUri(url, inPrivate, forceBrowser: true, openInTab: inTab);
         }
 
-        public void OpenWebUrl(Uri url, bool? inPrivate = null)
+        public void OpenUrl(Uri url, bool inPrivate = false, bool inTab = true)
         {
-            OpenUri(url, inPrivate, true);
-        }
-
-        public void OpenUrl(string url, bool? inPrivate = null)
-        {
-            OpenUri(new Uri(url), inPrivate);
-        }
-
-        public void OpenUrl(Uri url, bool? inPrivate = null)
-        {
-            OpenUri(url, inPrivate);
-        }
-
-        public void OpenAppUri(string appUri)
-        {
-            OpenUri(new Uri(appUri));
+            OpenUri(url, inPrivate, openInTab: inTab);
         }
 
         public void OpenAppUri(Uri appUri)
