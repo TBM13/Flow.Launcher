@@ -11,7 +11,7 @@
     /// or <see cref="IPublicAPI.SaveCacheBinaryStorageAsync{T}(string, string)"/>.
     /// Once called, those settings and caches will be automatically saved by Flow.
     /// </remarks>
-    public interface ISavable : IFeatures
+    public interface ISavable
     {
         /// <summary>
         /// Save additional plugin data.

@@ -15,7 +15,7 @@
     /// If requiring reloading data asynchronously, please use the IAsyncReloadable interface
     /// </para>
     /// </summary>
-    public interface IReloadable : IFeatures
+    public interface IReloadable
     {
         /// <summary>
         /// Synchronously reload plugin data 

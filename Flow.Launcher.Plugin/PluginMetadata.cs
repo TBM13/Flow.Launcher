@@ -16,6 +16,7 @@ namespace Flow.Launcher.Plugin
         public required string Language { get; init; }
         public required string Description { get; set; }
         public required string Website { get; init; }
+        public required List<string> ActionKeywords { get; set; }
 
         /// <summary>
         /// Whether the plugin is disabled.
@@ -26,19 +27,8 @@ namespace Flow.Launcher.Plugin
         /// </summary>
         public bool HomeDisabled { get; set; }
 
-        /// <summary>
-        /// Plugin execute file path.
-        /// </summary>
         public string ExecuteFilePath { get; private set; }
-        /// <summary>
-        /// Plugin execute file name.
-        /// </summary>
         public string ExecuteFileName { get; set; }
-
-        /// <summary>
-        /// Plugin assembly name.
-        /// Only available for .Net plugins.
-        /// </summary>
         [JsonIgnore]
         public string AssemblyName { get; internal set; }
 
@@ -55,11 +45,6 @@ namespace Flow.Launcher.Plugin
                 IcoPath = Path.Combine(value, IcoPath);
             }
         }
-
-        /// <summary>
-        /// All action keywords of the plugin.
-        /// </summary>
-        public required List<string> ActionKeywords { get; set; }
 
         /// <summary>
         /// Plugin icon path.
@@ -84,9 +69,6 @@ namespace Flow.Launcher.Plugin
         /// </summary>
         public string PluginCacheDirectoryPath { get; internal set; }
 
-        public override string ToString()
-        {
-            return Name;
-        }
+        public override string ToString() => Name;
     }
 }

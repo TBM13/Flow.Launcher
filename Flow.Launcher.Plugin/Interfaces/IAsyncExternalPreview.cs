@@ -6,7 +6,7 @@ namespace Flow.Launcher.Plugin
     /// This interface is for plugins that wish to provide file preview (external preview) 
     /// via a third party app instead of the default preview.
     /// </summary>
-    public interface IAsyncExternalPreview : IFeatures
+    public interface IAsyncExternalPreview
     {
         /// <summary>
         /// Method for opening/showing the preview.

@@ -7,7 +7,7 @@ namespace Flow.Launcher.Plugin
     /// <summary>
     /// Interface for plugins that want to manually update their results
     /// </summary>
-    public interface IResultUpdated : IFeatures
+    public interface IResultUpdated
     {
         /// <summary>
         /// Event that is triggered when the results are updated

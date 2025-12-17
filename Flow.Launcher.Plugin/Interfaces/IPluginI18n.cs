@@ -1,11 +1,11 @@
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace Flow.Launcher.Plugin
 {
     /// <summary>
     /// Represent plugins that support internationalization
     /// </summary>
-    public interface IPluginI18n : IFeatures
+    public interface IPluginI18n
     {
         /// <summary>
         /// Get a localised version of the plugin's title

@@ -1,11 +1,11 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Flow.Launcher.Plugin
 {
     /// <summary>
     /// Adds support for presenting additional options for a given <see cref="Result"/> from a context menu.
     /// </summary>
-    public interface IContextMenu : IFeatures
+    public interface IContextMenu
     {
         /// <summary>
         /// Load context menu items for the given result.

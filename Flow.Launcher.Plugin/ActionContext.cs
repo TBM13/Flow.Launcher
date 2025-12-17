@@ -6,18 +6,18 @@ namespace Flow.Launcher.Plugin
     /// Context provided as a parameter when invoking a
     /// <see cref="Result.Action"/> or <see cref="Result.AsyncAction"/>
     /// </summary>
-    public class ActionContext
+    public record ActionContext
     {
         /// <summary>
         /// Contains the press state of certain special keys.
         /// </summary>
-        public SpecialKeyState SpecialKeyState { get; set; }
+        public required SpecialKeyState SpecialKeyState { get; init; }
     }
 
     /// <summary>
     /// Contains the press state of certain special keys.
     /// </summary>
-    public class SpecialKeyState
+    public record SpecialKeyState
     {
         /// <summary>
         /// True if the Ctrl key is pressed.
@@ -50,15 +50,5 @@ namespace Flow.Launcher.Plugin
                    (AltPressed ? ModifierKeys.Alt : ModifierKeys.None) |
                    (WinPressed ? ModifierKeys.Windows : ModifierKeys.None);
         }
-
-        /// <summary>
-        /// Default <see cref="SpecialKeyState"/> object with all keys not pressed.
-        /// </summary>
-        public static readonly SpecialKeyState Default = new () {
-            CtrlPressed = false,
-            ShiftPressed = false,
-            AltPressed = false,
-            WinPressed = false
-        };
     }
 }

@@ -7,7 +7,7 @@ namespace Flow.Launcher.Plugin
     /// <summary>
     /// Asynchronous Query Model for Flow Launcher When Query Text is Empty
     /// </summary>
-    public interface IAsyncHomeQuery : IFeatures
+    public interface IAsyncHomeQuery
     {
         /// <summary>
         /// Asynchronous Querying When Query Text is Empty
