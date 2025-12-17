@@ -406,27 +406,6 @@ namespace Flow.Launcher.Plugin
         public Task ShowProgressBoxAsync(string caption, Func<Action<double>, Task> reportProgressAsync, Action cancelProgress = null);
 
         /// <summary>
-        /// Get all available themes
-        /// </summary>
-        /// <returns></returns>
-        public List<ThemeData> GetAvailableThemes();
-
-        /// <summary>
-        /// Get the current theme
-        /// </summary>
-        /// <returns></returns>
-        public ThemeData GetCurrentTheme();
-
-        /// <summary>
-        /// Set the current theme
-        /// </summary>
-        /// <param name="theme"></param>
-        /// <returns>
-        /// True if the theme is set successfully, false otherwise.
-        /// </returns>
-        public bool SetCurrentTheme(ThemeData theme);
-
-        /// <summary>
         /// Save all Flow's plugins caches
         /// </summary>
         void SavePluginCaches();

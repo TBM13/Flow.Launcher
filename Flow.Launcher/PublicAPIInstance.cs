@@ -499,13 +499,6 @@ namespace Flow.Launcher
         public Task ShowProgressBoxAsync(string caption, Func<Action<double>, Task> reportProgressAsync,
             Action cancelProgress = null) => ProgressBoxEx.ShowAsync(caption, reportProgressAsync, cancelProgress);
 
-        public List<ThemeData> GetAvailableThemes() => Theme.GetAvailableThemes();
-
-        public ThemeData GetCurrentTheme() => Theme.GetCurrentTheme();
-
-        public bool SetCurrentTheme(ThemeData theme) =>
-            Theme.ChangeTheme(theme.FileNameWithoutExtension);
-
         private readonly ConcurrentDictionary<(string, string, Type), ISavable> _pluginBinaryStorages = new();
 
         public void RemovePluginCaches(string cacheDirectory)

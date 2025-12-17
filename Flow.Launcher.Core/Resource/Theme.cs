@@ -8,11 +8,9 @@ using System.Windows.Markup;
 using System.Windows.Media.Effects;
 using System.Windows.Shell;
 using System.Windows.Threading;
-using System.Xml;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Plugin;
-using Flow.Launcher.Plugin.SharedModels;
 
 namespace Flow.Launcher.Core.Resource
 {
@@ -22,14 +20,11 @@ namespace Flow.Launcher.Core.Resource
 
         private readonly string ClassName = nameof(Theme);
 
-        private const string ThemeMetadataNamePrefix = "Name:";
-        private const string ThemeMetadataIsDarkPrefix = "IsDark:";
-
         private const int ShadowExtraMargin = 32;
 
         private readonly IPublicAPI _api;
         private readonly Settings _settings;
-        private readonly List<string> _themeDirectories = new();
+        private readonly List<string> _themeDirectories = [];
         private ResourceDictionary _oldResource;
         private string _oldTheme;
         private const string Folder = Constant.Themes;
@@ -136,35 +131,6 @@ namespace Flow.Launcher.Core.Resource
             return GetResourceDictionary(_settings.Theme);
         }
 
-        private ThemeData GetThemeDataFromPath(string path)
-        {
-            using var reader = XmlReader.Create(path);
-            reader.Read();
-
-            var extensionlessName = Path.GetFileNameWithoutExtension(path);
-
-            if (reader.NodeType is not XmlNodeType.Comment)
-                return new ThemeData(extensionlessName, extensionlessName);
-
-            var commentLines = reader.Value.Trim().Split('\n').Select(v => v.Trim());
-
-            var name = extensionlessName;
-            bool? isDark = null;
-            foreach (var line in commentLines)
-            {
-                if (line.StartsWith(ThemeMetadataNamePrefix, StringComparison.OrdinalIgnoreCase))
-                {
-                    name = line[ThemeMetadataNamePrefix.Length..].Trim();
-                }
-                else if (line.StartsWith(ThemeMetadataIsDarkPrefix, StringComparison.OrdinalIgnoreCase))
-                {
-                    isDark = bool.Parse(line[ThemeMetadataIsDarkPrefix.Length..].Trim());
-                }
-            }
-
-            return new ThemeData(extensionlessName, name, isDark);
-        }
-
         private string GetThemePath(string themeName)
         {
             foreach (string themeDirectory in _themeDirectories)
@@ -181,34 +147,7 @@ namespace Flow.Launcher.Core.Resource
 
         #endregion
 
-        #region Get & Change Theme
-
-        public ThemeData GetCurrentTheme()
-        {
-            var themes = GetAvailableThemes();
-            var matchingTheme = themes.FirstOrDefault(t => t.FileNameWithoutExtension == _settings.Theme);
-            if (matchingTheme == null)
-            {
-                _api.LogWarn(ClassName, $"No matching theme found for '{_settings.Theme}'. Falling back to the first available theme.");
-            }
-            return matchingTheme ?? themes.FirstOrDefault();
-        }
-
-        public List<ThemeData> GetAvailableThemes()
-        {
-            List<ThemeData> themes = new List<ThemeData>();
-            foreach (var themeDirectory in _themeDirectories)
-            {
-                var filePaths = Directory
-                    .GetFiles(themeDirectory)
-                    .Where(filePath => filePath.EndsWith(Extension) && !filePath.EndsWith("Base.xaml"))
-                    .Select(GetThemeDataFromPath);
-                themes.AddRange(filePaths);
-            }
-
-            return themes.OrderBy(o => o.Name).ToList();
-        }
-
+        #region Change Theme
         public bool ChangeTheme(string theme = null)
         {
             if (string.IsNullOrEmpty(theme))
