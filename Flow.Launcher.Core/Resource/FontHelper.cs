@@ -7,21 +7,22 @@ namespace Flow.Launcher.Core.Resource
 {
     public static class FontHelper
     {
-        static FontWeightConverter fontWeightConverter = new FontWeightConverter();
+        private static readonly FontWeightConverter fontWeightConverter = new();
         public static FontWeight GetFontWeightFromInvariantStringOrNormal(string value)
         {
             if (value == null) return FontWeights.Normal;
 
             try
             {
-                return (FontWeight) fontWeightConverter.ConvertFromInvariantString(value);
+                return (FontWeight)fontWeightConverter.ConvertFromInvariantString(value);
             }
-            catch {
+            catch
+            {
                 return FontWeights.Normal;
             }
         }
 
-        static FontStyleConverter fontStyleConverter = new FontStyleConverter();
+        private static readonly FontStyleConverter fontStyleConverter = new();
         public static FontStyle GetFontStyleFromInvariantStringOrNormal(string value)
         {
             if (value == null) return FontStyles.Normal;
@@ -36,7 +37,7 @@ namespace Flow.Launcher.Core.Resource
             }
         }
 
-        static FontStretchConverter fontStretchConverter = new FontStretchConverter();
+        private static readonly FontStretchConverter fontStretchConverter = new();
         public static FontStretch GetFontStretchFromInvariantStringOrNormal(string value)
         {
             if (value == null) return FontStretches.Normal;

@@ -62,19 +62,6 @@ namespace Flow.Launcher.Infrastructure.UserSettings
         public string OpenContextMenuHotkey { get; set; } = $"Ctrl+O";
         public string SettingWindowHotkey { get; set; } = $"Ctrl+I";
 
-        private string _language = Constant.SystemLanguageCode;
-        public string Language
-        {
-            get => _language;
-            set
-            {
-                if (_language != value)
-                {
-                    _language = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
         private string _theme = Constant.DefaultTheme;
         public string Theme
         {

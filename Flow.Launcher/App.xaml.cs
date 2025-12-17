@@ -121,15 +121,6 @@ namespace Flow.Launcher
                 return;
             }
 
-            // Initialize system language before changing culture info
-            Internationalization.InitSystemLanguageCode();
-
-            // Change culture info before application creation to localize WinForm windows
-            if (_settings.Language != Constant.SystemLanguageCode)
-            {
-                Internationalization.ChangeCultureInfo(_settings.Language);
-            }
-
             // Start the application as a single instance
             if (SingleInstance<App>.InitializeAsFirstInstance())
             {
@@ -309,7 +300,6 @@ namespace Flow.Launcher
                 // since some resources owned by the thread need to be disposed.
                 _mainWindow?.Dispatcher.Invoke(_mainWindow.Dispose);
                 _mainVM?.Dispose();
-                _internationalization.Dispose();
             }
             API.LogInfo(ClassName, "End Flow Launcher dispose ----------------------------------------------------");
         }

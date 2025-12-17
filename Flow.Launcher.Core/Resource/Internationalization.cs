@@ -3,17 +3,15 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Plugin;
 
 namespace Flow.Launcher.Core.Resource
 {
-    public class Internationalization : IDisposable
+    public class Internationalization
     {
         private static readonly string ClassName = nameof(Internationalization);
 
@@ -21,65 +19,15 @@ namespace Flow.Launcher.Core.Resource
         private const string DefaultLanguageCode = "en";
         private const string DefaultFile = "en.xaml";
         private const string Extension = ".xaml";
-        private readonly Settings _settings;
         private readonly List<string> _languageDirectories = [];
-        private readonly List<ResourceDictionary> _oldResources = [];
-        private static string SystemLanguageCode;
-        private readonly SemaphoreSlim _langChangeLock = new(1, 1);
-
-        public Internationalization(Settings settings)
-        {
-            _settings = settings;
-        }
 
         #region Initialization
-
-        /// <summary>
-        /// Initialize the system language code based on the current culture.
-        /// </summary>
-        public static void InitSystemLanguageCode()
-        {
-            var availableLanguages = AvailableLanguages.GetAvailableLanguages();
-
-            // Retrieve the language identifiers for the current culture.
-            // ChangeLanguage method overrides the CultureInfo.CurrentCulture, so this needs to
-            // be called at startup in order to get the correct lang code of system. 
-            var currentCulture = CultureInfo.CurrentCulture;
-            var twoLetterCode = currentCulture.TwoLetterISOLanguageName;
-            var threeLetterCode = currentCulture.ThreeLetterISOLanguageName;
-            var fullName = currentCulture.Name;
-
-            // Try to find a match in the available languages list
-            foreach (var language in availableLanguages)
-            {
-                var languageCode = language.LanguageCode;
-
-                if (string.Equals(languageCode, twoLetterCode, StringComparison.OrdinalIgnoreCase) ||
-                    string.Equals(languageCode, threeLetterCode, StringComparison.OrdinalIgnoreCase) ||
-                    string.Equals(languageCode, fullName, StringComparison.OrdinalIgnoreCase))
-                {
-                    SystemLanguageCode = languageCode;
-                }
-            }
-
-            SystemLanguageCode = DefaultLanguageCode;
-        }
 
         /// <summary>
         /// Initialize language. Will change app language and plugin language based on settings.
         /// </summary>
         public async Task InitializeLanguageAsync()
         {
-            // Get actual language
-            var languageCode = _settings.Language;
-            if (languageCode == Constant.SystemLanguageCode)
-            {
-                languageCode = SystemLanguageCode;
-            }
-
-            // Get language by language code and change language
-            var language = GetLanguageByLanguageCode(languageCode);
-
             // Add Flow Launcher language directory
             AddFlowLauncherLanguageDirectory();
 
@@ -88,9 +36,6 @@ namespace Flow.Launcher.Core.Resource
 
             // Load default language resources
             LoadDefaultLanguage();
-
-            // Change language
-            await ChangeLanguageAsync(language, false);
         }
 
         private void AddFlowLauncherLanguageDirectory()
@@ -127,129 +72,18 @@ namespace Flow.Launcher.Core.Resource
 
         private void LoadDefaultLanguage()
         {
-            // Removes language files loaded before any plugins were loaded.
-            // Prevents the language Flow started in from overwriting English if the user switches back to English
-            RemoveOldLanguageFiles();
-            LoadLanguage(AvailableLanguages.English);
-            _oldResources.Clear();
-        }
-
-        #endregion
-
-        #region Change Language
-
-        /// <summary>
-        /// Change language during runtime. Will change app language and plugin language & save settings.
-        /// </summary>
-        /// <param name="languageCode"></param>
-        public void ChangeLanguage(string languageCode)
-        {
-            languageCode = languageCode ?? throw new NullReferenceException();
-
-            // Get actual language if language code is system
-            var isSystem = false;
-            if (languageCode == Constant.SystemLanguageCode)
-            {
-                languageCode = SystemLanguageCode;
-                isSystem = true;
-            }
-
-            // Get language by language code and change language
-            var language = GetLanguageByLanguageCode(languageCode);
-
-            // Change language
-            _ = ChangeLanguageAsync(language);
-
-            // Save settings
-            _settings.Language = isSystem ? Constant.SystemLanguageCode : language.LanguageCode;
-        }
-
-        private static Language GetLanguageByLanguageCode(string languageCode)
-        {
-            var language = AvailableLanguages.GetAvailableLanguages().
-                FirstOrDefault(o => o.LanguageCode.Equals(languageCode, StringComparison.OrdinalIgnoreCase));
-            if (language == null)
-            {
-                PublicApi.Instance.LogError(ClassName, $"Language code can't be found <{languageCode}>");
-                return AvailableLanguages.English;
-            }
-            else
-            {
-                return language;
-            }
-        }
-
-        private async Task ChangeLanguageAsync(Language language, bool updateMetadata = true)
-        {
-            await _langChangeLock.WaitAsync();
-
-            try
-            {
-                // Remove old language files and load language
-                RemoveOldLanguageFiles();
-                if (language != AvailableLanguages.English)
-                {
-                    LoadLanguage(language);
-                }
-
-                // Change culture info
-                ChangeCultureInfo(language.LanguageCode);
-
-                if (updateMetadata)
-                {
-                    // Raise event for plugins after culture is set
-                    await Task.Run(UpdatePluginMetadataTranslations);
-                }
-            }
-            catch (Exception e)
-            {
-                PublicApi.Instance.LogException(ClassName, $"Failed to change language to <{language.LanguageCode}>", e);
-            }
-            finally
-            {
-                _langChangeLock.Release();
-            }
-        }
-
-        public static void ChangeCultureInfo(string languageCode)
-        {
-            // Culture of main thread
-            // Use CreateSpecificCulture to preserve possible user-override settings in Windows, if Flow's language culture is the same as Windows's
-            CultureInfo currentCulture;
-            try
-            {
-                currentCulture = CultureInfo.CreateSpecificCulture(languageCode);
-            }
-            catch (CultureNotFoundException)
-            {
-                currentCulture = CultureInfo.CreateSpecificCulture(SystemLanguageCode);
-            }
-            CultureInfo.CurrentCulture = currentCulture;
-            CultureInfo.CurrentUICulture = currentCulture;
-            var thread = Thread.CurrentThread;
-            thread.CurrentCulture = currentCulture;
-            thread.CurrentUICulture = currentCulture;
+            LoadLanguage(DefaultLanguageCode);
         }
 
         #endregion
 
         #region Language Resources Management
 
-        private void RemoveOldLanguageFiles()
-        {
-            var dicts = Application.Current.Resources.MergedDictionaries;
-            foreach (var r in _oldResources)
-            {
-                dicts.Remove(r);
-            }
-            _oldResources.Clear();
-        }
-
-        private void LoadLanguage(Language language)
+        private void LoadLanguage(string languageCode)
         {
             var flowEnglishFile = Path.Combine(Constant.ProgramDirectory, Folder, DefaultFile);
             var dicts = Application.Current.Resources.MergedDictionaries;
-            var filename = $"{language.LanguageCode}{Extension}";
+            var filename = $"{languageCode}{Extension}";
             var files = _languageDirectories
                 .Select(d => LanguageFile(d, filename))
                 // Exclude Flow's English language file since it's built into the binary, and there's no need to load
@@ -266,7 +100,6 @@ namespace Flow.Launcher.Core.Resource
                         Source = new Uri(f, UriKind.Absolute)
                     };
                     dicts.Add(r);
-                    _oldResources.Add(r);
                 }
             }
         }
@@ -303,15 +136,6 @@ namespace Flow.Launcher.Core.Resource
 
         #endregion
 
-        #region Available Languages
-
-        public List<Language> LoadAvailableLanguages()
-        {
-            return AvailableLanguages.GetAvailableLanguages();
-        }
-
-        #endregion
-
         #region Get Translations
 
         public static string GetTranslation(string key)
@@ -331,26 +155,6 @@ namespace Flow.Launcher.Core.Resource
         #endregion
 
         #region Update Metadata
-
-        public static void UpdatePluginMetadataTranslations()
-        {
-            // Update plugin metadata name & description
-            foreach (var p in PluginManager.GetTranslationPlugins())
-            {
-                if (p.Plugin is not IPluginI18n pluginI18N) return;
-                try
-                {
-                    p.Metadata.Name = pluginI18N.GetTranslatedPluginTitle();
-                    p.Metadata.Description = pluginI18N.GetTranslatedPluginDescription();
-                    pluginI18N.OnCultureInfoChanged(CultureInfo.CurrentCulture);
-                }
-                catch (Exception e)
-                {
-                    PublicApi.Instance.LogException(ClassName, $"Failed for <{p.Metadata.Name}>", e);
-                }
-            }
-        }
-
         public static void UpdatePluginMetadataTranslation(PluginPair p)
         {
             // Update plugin metadata name & description
@@ -365,16 +169,6 @@ namespace Flow.Launcher.Core.Resource
             {
                 PublicApi.Instance.LogException(ClassName, $"Failed for <{p.Metadata.Name}>", e);
             }
-        }
-
-        #endregion
-
-        #region IDisposable
-
-        public void Dispose()
-        {
-            RemoveOldLanguageFiles();
-            _langChangeLock.Dispose();
         }
 
         #endregion

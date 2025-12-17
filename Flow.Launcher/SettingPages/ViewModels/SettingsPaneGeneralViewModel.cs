@@ -64,17 +64,6 @@ public partial class SettingsPaneGeneralViewModel : BaseModel
         Settings.CustomBrowser.OnDisplayNameChanged();
     }
 
-    public string Language
-    {
-        get => Settings.Language;
-        set
-        {
-            _translater.ChangeLanguage(value);
-
-            UpdateEnumDropdownLocalizations();
-        }
-    }
-
     public string AlwaysPreviewToolTip => Localize.AlwaysPreviewToolTip(Settings.PreviewHotkey);
 
     [RelayCommand]

@@ -223,12 +223,6 @@ namespace Flow.Launcher
             {
                 switch (e.PropertyName)
                 {
-                    case nameof(Settings.Language):
-                        if (_settings.ShowHomePage && _viewModel.QueryResultsSelected() && string.IsNullOrEmpty(_viewModel.QueryText))
-                        {
-                            _viewModel.QueryResults();
-                        }
-                        break;
                     case nameof(Settings.WindowLeft):
                         Left = _settings.WindowLeft;
                         break;
