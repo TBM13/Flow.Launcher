@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using Flow.Launcher.Plugin.SharedModels;
-using JetBrains.Annotations;
 
 namespace Flow.Launcher.Plugin
 {

@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using JetBrains.Annotations;
 
 namespace Flow.Launcher.Plugin
 {
@@ -18,10 +17,9 @@ namespace Flow.Launcher.Plugin
         /// Invoked when a property changes
         /// </summary>
         /// <param name="propertyName"></param>
-        [NotifyPropertyChangedInvocator]
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));  
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

@@ -30,7 +30,6 @@ using Flow.Launcher.Plugin.SharedCommands;
 using Flow.Launcher.Plugin.SharedModels;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern;
-using JetBrains.Annotations;
 
 namespace Flow.Launcher
 {
