@@ -70,18 +70,6 @@ namespace Flow.Launcher.Infrastructure.UserSettings
         public double QueryBoxFontSize { get; set; } = 16;
         public double ResultItemFontSize { get; set; } = 16;
         public double ResultSubItemFontSize { get; set; } = 13;
-        public string QueryBoxFont { get; set; } = Win32Helper.GetSystemDefaultFont();
-        public string QueryBoxFontStyle { get; set; }
-        public string QueryBoxFontWeight { get; set; }
-        public string QueryBoxFontStretch { get; set; }
-        public string ResultFont { get; set; } = Win32Helper.GetSystemDefaultFont();
-        public string ResultFontStyle { get; set; }
-        public string ResultFontWeight { get; set; }
-        public string ResultFontStretch { get; set; }
-        public string ResultSubFont { get; set; } = Win32Helper.GetSystemDefaultFont();
-        public string ResultSubFontStyle { get; set; }
-        public string ResultSubFontWeight { get; set; }
-        public string ResultSubFontStretch { get; set; }
         public bool UseGlyphIcons { get; set; } = true;
 
         public bool FirstLaunch { get; set; } = true;

@@ -4,10 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Markup;
-using System.Windows.Media;
 using System.Windows.Media.Effects;
 using System.Windows.Shell;
 using System.Windows.Threading;
@@ -16,7 +13,6 @@ using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Plugin;
 using Flow.Launcher.Plugin.SharedModels;
-using Microsoft.Win32;
 
 namespace Flow.Launcher.Core.Resource
 {
@@ -113,130 +109,6 @@ namespace Flow.Launcher.Core.Resource
             _oldResource = dictionaryToUpdate;
         }
 
-        /// <summary>
-        /// Updates only the font settings and refreshes the UI.
-        /// </summary>
-        public void UpdateFonts()
-        {
-            try
-            {
-                // Load a ResourceDictionary for the specified theme.
-                var themeName = _settings.Theme;
-                var dict = GetThemeResourceDictionary(themeName);
-
-                // Apply font settings to the theme resource.
-                ApplyFontSettings(dict);
-                UpdateResourceDictionary(dict);
-
-                // Must apply drop shadow effects
-                _ = RefreshFrameAsync();
-            }
-            catch (Exception e)
-            {
-                _api.LogException(ClassName, "Error occurred while updating theme fonts", e);
-            }
-        }
-
-        /// <summary>
-        /// Loads and applies font settings to the theme resource.
-        /// </summary>
-        private void ApplyFontSettings(ResourceDictionary dict)
-        {
-            if (dict["QueryBoxStyle"] is Style queryBoxStyle)
-            {
-                var fontFamily = new FontFamily(_settings.QueryBoxFont);
-                var fontStyle = FontHelper.GetFontStyleFromInvariantStringOrNormal(_settings.QueryBoxFontStyle);
-                var fontWeight = FontHelper.GetFontWeightFromInvariantStringOrNormal(_settings.QueryBoxFontWeight);
-                var fontStretch = FontHelper.GetFontStretchFromInvariantStringOrNormal(_settings.QueryBoxFontStretch);
-
-                SetFontProperties(queryBoxStyle, fontFamily, fontStyle, fontWeight, fontStretch, true);
-            }
-
-            if (dict["ItemTitleStyle"] is Style resultItemStyle &&
-                dict["ItemTitleSelectedStyle"] is Style resultItemSelectedStyle)
-            {
-                var fontFamily = new FontFamily(_settings.ResultFont);
-                var fontStyle = FontHelper.GetFontStyleFromInvariantStringOrNormal(_settings.ResultFontStyle);
-                var fontWeight = FontHelper.GetFontWeightFromInvariantStringOrNormal(_settings.ResultFontWeight);
-                var fontStretch = FontHelper.GetFontStretchFromInvariantStringOrNormal(_settings.ResultFontStretch);
-
-                SetFontProperties(resultItemStyle, fontFamily, fontStyle, fontWeight, fontStretch, false);
-                SetFontProperties(resultItemSelectedStyle, fontFamily, fontStyle, fontWeight, fontStretch, false);
-            }
-
-            if (dict["ItemSubTitleStyle"] is Style resultSubItemStyle &&
-                dict["ItemSubTitleSelectedStyle"] is Style resultSubItemSelectedStyle)
-            {
-                var fontFamily = new FontFamily(_settings.ResultSubFont);
-                var fontStyle = FontHelper.GetFontStyleFromInvariantStringOrNormal(_settings.ResultSubFontStyle);
-                var fontWeight = FontHelper.GetFontWeightFromInvariantStringOrNormal(_settings.ResultSubFontWeight);
-                var fontStretch = FontHelper.GetFontStretchFromInvariantStringOrNormal(_settings.ResultSubFontStretch);
-
-                SetFontProperties(resultSubItemStyle, fontFamily, fontStyle, fontWeight, fontStretch, false);
-                SetFontProperties(resultSubItemSelectedStyle, fontFamily, fontStyle, fontWeight, fontStretch, false);
-            }
-        }
-
-        /// <summary>
-        /// Applies font properties to a Style.
-        /// </summary>
-        private static void SetFontProperties(Style style, FontFamily fontFamily, FontStyle fontStyle, FontWeight fontWeight, FontStretch fontStretch, bool isTextBox)
-        {
-            // Remove existing font-related setters  
-            if (isTextBox)
-            {
-                //  First, find the setters to remove and store them in a list  
-                var settersToRemove = style.Setters
-                    .OfType<Setter>()
-                    .Where(setter =>
-                        setter.Property == Control.FontFamilyProperty ||
-                        setter.Property == Control.FontStyleProperty ||
-                        setter.Property == Control.FontWeightProperty ||
-                        setter.Property == Control.FontStretchProperty)
-                    .ToList();
-
-                // Remove each found setter one by one  
-                foreach (var setter in settersToRemove)
-                {
-                    style.Setters.Remove(setter);
-                }
-
-                // Add New font setter
-                style.Setters.Add(new Setter(Control.FontFamilyProperty, fontFamily));
-                style.Setters.Add(new Setter(Control.FontStyleProperty, fontStyle));
-                style.Setters.Add(new Setter(Control.FontWeightProperty, fontWeight));
-                style.Setters.Add(new Setter(Control.FontStretchProperty, fontStretch));
-
-                //  Set caret brush (retain existing logic)
-                var caretBrushPropertyValue = style.Setters.OfType<Setter>().Any(x => x.Property.Name == "CaretBrush");
-                var foregroundPropertyValue = style.Setters.OfType<Setter>().Where(x => x.Property.Name == "Foreground")
-                    .Select(x => x.Value).FirstOrDefault();
-                if (!caretBrushPropertyValue && foregroundPropertyValue != null)
-                    style.Setters.Add(new Setter(TextBoxBase.CaretBrushProperty, foregroundPropertyValue));
-            }
-            else
-            {
-                var settersToRemove = style.Setters
-                    .OfType<Setter>()
-                    .Where(setter =>
-                        setter.Property == TextBlock.FontFamilyProperty ||
-                        setter.Property == TextBlock.FontStyleProperty ||
-                        setter.Property == TextBlock.FontWeightProperty ||
-                        setter.Property == TextBlock.FontStretchProperty)
-                    .ToList();
-
-                foreach (var setter in settersToRemove)
-                {
-                    style.Setters.Remove(setter);
-                }
-
-                style.Setters.Add(new Setter(TextBlock.FontFamilyProperty, fontFamily));
-                style.Setters.Add(new Setter(TextBlock.FontStyleProperty, fontStyle));
-                style.Setters.Add(new Setter(TextBlock.FontWeightProperty, fontWeight));
-                style.Setters.Add(new Setter(TextBlock.FontStretchProperty, fontStretch));
-            }
-        }
-
         private ResourceDictionary GetThemeResourceDictionary(string theme)
         {
             var uri = GetThemePath(theme);
@@ -251,54 +123,6 @@ namespace Flow.Launcher.Core.Resource
         private ResourceDictionary GetResourceDictionary(string theme)
         {
             var dict = GetThemeResourceDictionary(theme);
-
-            if (dict["QueryBoxStyle"] is Style queryBoxStyle)
-            {
-                var fontFamily = new FontFamily(_settings.QueryBoxFont);
-                var fontStyle = FontHelper.GetFontStyleFromInvariantStringOrNormal(_settings.QueryBoxFontStyle);
-                var fontWeight = FontHelper.GetFontWeightFromInvariantStringOrNormal(_settings.QueryBoxFontWeight);
-                var fontStretch = FontHelper.GetFontStretchFromInvariantStringOrNormal(_settings.QueryBoxFontStretch);
-
-                queryBoxStyle.Setters.Add(new Setter(Control.FontFamilyProperty, fontFamily));
-                queryBoxStyle.Setters.Add(new Setter(Control.FontStyleProperty, fontStyle));
-                queryBoxStyle.Setters.Add(new Setter(Control.FontWeightProperty, fontWeight));
-                queryBoxStyle.Setters.Add(new Setter(Control.FontStretchProperty, fontStretch));
-
-                var caretBrushPropertyValue = queryBoxStyle.Setters.OfType<Setter>().Any(x => x.Property.Name == "CaretBrush");
-                var foregroundPropertyValue = queryBoxStyle.Setters.OfType<Setter>().Where(x => x.Property.Name == "Foreground")
-                    .Select(x => x.Value).FirstOrDefault();
-                if (!caretBrushPropertyValue && foregroundPropertyValue != null) //otherwise BaseQueryBoxStyle will handle styling
-                    queryBoxStyle.Setters.Add(new Setter(TextBoxBase.CaretBrushProperty, foregroundPropertyValue));
-            }
-
-            if (dict["ItemTitleStyle"] is Style resultItemStyle &&
-                dict["ItemTitleSelectedStyle"] is Style resultItemSelectedStyle)
-            {
-                Setter fontFamily = new Setter(TextBlock.FontFamilyProperty, new FontFamily(_settings.ResultFont));
-                Setter fontStyle = new Setter(TextBlock.FontStyleProperty, FontHelper.GetFontStyleFromInvariantStringOrNormal(_settings.ResultFontStyle));
-                Setter fontWeight = new Setter(TextBlock.FontWeightProperty, FontHelper.GetFontWeightFromInvariantStringOrNormal(_settings.ResultFontWeight));
-                Setter fontStretch = new Setter(TextBlock.FontStretchProperty, FontHelper.GetFontStretchFromInvariantStringOrNormal(_settings.ResultFontStretch));
-
-                Setter[] setters = { fontFamily, fontStyle, fontWeight, fontStretch };
-                Array.ForEach(
-                    new[] { resultItemStyle, resultItemSelectedStyle }, o
-                    => Array.ForEach(setters, p => o.Setters.Add(p)));
-            }
-
-            if (
-                dict["ItemSubTitleStyle"] is Style resultSubItemStyle &&
-                dict["ItemSubTitleSelectedStyle"] is Style resultSubItemSelectedStyle)
-            {
-                Setter fontFamily = new Setter(TextBlock.FontFamilyProperty, new FontFamily(_settings.ResultSubFont));
-                Setter fontStyle = new Setter(TextBlock.FontStyleProperty, FontHelper.GetFontStyleFromInvariantStringOrNormal(_settings.ResultSubFontStyle));
-                Setter fontWeight = new Setter(TextBlock.FontWeightProperty, FontHelper.GetFontWeightFromInvariantStringOrNormal(_settings.ResultSubFontWeight));
-                Setter fontStretch = new Setter(TextBlock.FontStretchProperty, FontHelper.GetFontStretchFromInvariantStringOrNormal(_settings.ResultSubFontStretch));
-
-                Setter[] setters = { fontFamily, fontStyle, fontWeight, fontStretch };
-                Array.ForEach(
-                    new[] { resultSubItemStyle, resultSubItemSelectedStyle }, o
-                    => Array.ForEach(setters, p => o.Setters.Add(p)));
-            }
 
             /* Ignore Theme Window Width and use setting */
             var windowStyle = dict["WindowStyle"] as Style;
