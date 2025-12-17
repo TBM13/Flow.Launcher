@@ -502,25 +502,6 @@
                     SelectedValue="{Binding ColorScheme, Mode=TwoWay}"
                     SelectedValuePath="Value" />
             </ui:SettingsCard>
-
-            <!--  Theme folder  -->
-            <ui:SettingsCard Margin="0 14 0 0" Header="{DynamicResource ThemeFolder}">
-                <ui:SettingsCard.HeaderIcon>
-                    <ui:FontIcon Glyph="&#xe838;" />
-                </ui:SettingsCard.HeaderIcon>
-
-                <Button
-                    MinWidth="180"
-                    Command="{Binding OpenThemesFolderCommand}"
-                    Content="{DynamicResource OpenThemeFolder}" />
-            </ui:SettingsCard>
-
-            <!--  How to create theme link  -->
-            <ui:HyperlinkButton
-                Margin="10 10 0 28"
-                HorizontalAlignment="Right"
-                Content="{DynamicResource howToCreateTheme}"
-                NavigateUri="{Binding LinkHowToCreateTheme}" />
         </StackPanel>
     </ui:ScrollViewerEx>
 </ui:Page>

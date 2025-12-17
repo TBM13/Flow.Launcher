@@ -26,8 +26,6 @@ public partial class SettingsPaneThemeViewModel : BaseModel
 
     private readonly string DefaultFont = Win32Helper.GetSystemDefaultFont();
 
-    public static string LinkHowToCreateTheme => @"https://www.flowlauncher.com/theme-builder/";
-    public static string LinkThemeGallery => "https://github.com/Flow-Launcher/Flow.Launcher/discussions/1438";
 
     private List<ThemeData> _themes;
     public List<ThemeData> Themes => _themes ??= App.API.GetAvailableThemes();
@@ -308,12 +306,6 @@ public partial class SettingsPaneThemeViewModel : BaseModel
         var vm = new ResultsViewModel(Settings, null);
         vm.AddResults(results, "PREVIEW");
         PreviewResults = vm;
-    }
-
-    [RelayCommand]
-    private void OpenThemesFolder()
-    {
-        App.API.OpenDirectory(DataLocation.ThemesDirectory);
     }
 
     [RelayCommand]
