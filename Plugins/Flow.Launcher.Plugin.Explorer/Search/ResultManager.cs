@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Plugin.Explorer.Helper;
 using Flow.Launcher.Plugin.Explorer.Views;
 using Flow.Launcher.Plugin.SharedCommands;
@@ -35,7 +36,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             {
                 if (path.EndsWith(".lnk", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    path = ShellLinkHelper.retrieveTargetPath(path);
+                    path = ShellLinkHelper.RetrieveTargetPath(path);
                     if (!path.EndsWith(Constants.DirectorySeparator) && Directory.Exists(path))
                         path += Constants.DirectorySeparator;
                 }
@@ -246,7 +247,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 Title = title,
                 SubTitle =
                     isRecursiveSearch ? filePath :
-                    isShellLink ? ShellLinkHelper.retrieveTargetPath(filePath) :
+                    isShellLink ? ShellLinkHelper.RetrieveTargetPath(filePath) :
                     string.Empty,
                 IcoPath = filePath,
                 Preview = new Result.PreviewInfo

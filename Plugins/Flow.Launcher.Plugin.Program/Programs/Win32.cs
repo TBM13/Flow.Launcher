@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Logger;
 using Flow.Launcher.Plugin.Program.Views.Models;
 using Flow.Launcher.Plugin.SharedCommands;
@@ -334,21 +335,19 @@ namespace Flow.Launcher.Plugin.Program.Programs
             {
                 const int MAX_PATH = 260;
                 StringBuilder buffer = new StringBuilder(MAX_PATH);
-                ShellLinkHelper _helper = new ShellLinkHelper();
-                string target = _helper.retrieveTargetPath(path);
+                string target = ShellLinkHelper.RetrieveTargetPath(path);
+                (string description, string args) = ShellLinkHelper.RetrieveDescriptionAndArgs(path);
 
                 if (!string.IsNullOrEmpty(target) && File.Exists(target))
                 {
                     program.LnkResolvedPath = Path.GetFullPath(target);
                     program.ExecutableName = Path.GetFileNameWithoutExtension(target);
 
-                    var args = _helper.arguments;
                     if (!string.IsNullOrEmpty(args))
                     {
                         program.Args = args;
                     }
 
-                    var description = _helper.description;
                     if (!string.IsNullOrEmpty(description))
                     {
                         program.Description = description;

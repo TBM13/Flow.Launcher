@@ -49,3 +49,8 @@ GetWindowThreadProcessId
 SHParseDisplayName
 SHOpenFolderAndSelectItems
 CoTaskMemFree
+
+IShellLinkW
+SLR_FLAGS
+SLGP_FLAGS
+WIN32_FIND_DATAW
