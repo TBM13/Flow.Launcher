@@ -122,11 +122,6 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 var descriptionMatch = Main.Context.API.FuzzySearch(query, Description);
                 if (descriptionMatch.Score > nameMatch.Score)
                 {
-                    for (int i = 0; i < descriptionMatch.MatchData.Count; i++)
-                    {
-                        descriptionMatch.MatchData[i] += resultName.Length + 2; // 2 is ": "
-                    }
-
                     matchResult = descriptionMatch;
                 }
                 else
@@ -153,11 +148,6 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 if (matchResult == null)
                 {
                     return null;
-                }
-                else
-                {
-                    // Nothing to highlight in title in this case
-                    matchResult.MatchData.Clear();
                 }
             }
 

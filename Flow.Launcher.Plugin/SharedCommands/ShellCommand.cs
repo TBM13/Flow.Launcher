@@ -28,7 +28,7 @@ namespace Flow.Launcher.Plugin.SharedCommands
         /// </summary>
         /// <param name="processStartInfo"></param>
         /// <returns></returns>
-        public static Process RunAsDifferentUser(ProcessStartInfo processStartInfo)
+        public static Process? RunAsDifferentUser(ProcessStartInfo processStartInfo)
         {
             processStartInfo.Verb = "RunAsUser";
             var process = Process.Start(processStartInfo);
@@ -120,7 +120,7 @@ namespace Flow.Launcher.Plugin.SharedCommands
         /// <param name="info">allows you to pass in the info that will be passed to startProcess</param>
         /// <exception cref="FileNotFoundException">Thrown when unable to find the file specified in the command </exception>
         /// <exception cref="Win32Exception">Thrown when error occurs during the execution of the command </exception>
-        public static void Execute(Func<ProcessStartInfo, Process> startProcess, ProcessStartInfo info)
+        public static void Execute(Func<ProcessStartInfo, Process?> startProcess, ProcessStartInfo info)
         {
             startProcess(info);
         }

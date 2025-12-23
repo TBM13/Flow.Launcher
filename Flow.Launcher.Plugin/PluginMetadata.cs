@@ -27,15 +27,21 @@ namespace Flow.Launcher.Plugin
         /// </summary>
         public bool HomeDisabled { get; set; }
 
+#pragma warning disable CS8618
         public string ExecuteFilePath { get; private set; }
-        public string ExecuteFileName { get; set; }
+#pragma warning restore CS8618
+        public required string ExecuteFileName { get; set; }
+#pragma warning disable CS8618
         [JsonIgnore]
         public string AssemblyName { get; internal set; }
+#pragma warning restore CS8618
 
         /// <summary>
         /// Plugin source directory.
         /// </summary>
+#pragma warning disable CS9264
         public string PluginDirectory
+#pragma warning restore CS9264
         {
             get => field;
             internal set
@@ -54,6 +60,7 @@ namespace Flow.Launcher.Plugin
         [JsonIgnore]
         public int Priority { get; set; }
 
+#pragma warning disable CS8618
         /// <summary>
         /// The path to the plugin settings directory which is not validated.
         /// It is used to store plugin settings files and data files.
@@ -68,6 +75,7 @@ namespace Flow.Launcher.Plugin
         /// When plugin is deleted, this directory will be deleted as well.
         /// </summary>
         public string PluginCacheDirectoryPath { get; internal set; }
+#pragma warning restore CS8618
 
         public override string ToString() => Name;
     }

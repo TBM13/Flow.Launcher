@@ -12,18 +12,18 @@ namespace Flow.Launcher.Plugin.SharedCommands
     /// </summary>
     public static class SearchWeb
     {
-        private static string GetDefaultBrowserPath()
+        private static string? GetDefaultBrowserPath()
         {
             var name = string.Empty;
             try
             {
-                using var regDefault = Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\Shell\\Associations\\UrlAssociations\\http\\UserChoice", false);
-                var stringDefault = regDefault.GetValue("ProgId");
+                using RegistryKey? regDefault = Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\Shell\\Associations\\UrlAssociations\\http\\UserChoice", false);
+                string? stringDefault = (string?)regDefault?.GetValue("ProgId");
 
-                using var regKey = Registry.ClassesRoot.OpenSubKey(stringDefault + "\\shell\\open\\command", false);
-                name = regKey.GetValue(null).ToString().ToLower().Replace("\"", "");
+                using RegistryKey? regKey = Registry.ClassesRoot.OpenSubKey(stringDefault + "\\shell\\open\\command", false);
+                name = regKey?.GetValue(null)?.ToString()?.ToLower().Replace("\"", "");
 
-                if (!name.EndsWith("exe"))
+                if (name is not null && !name.EndsWith("exe"))
                     name = name[..(name.LastIndexOf(".exe") + 4)];
             }
             catch
@@ -38,15 +38,12 @@ namespace Flow.Launcher.Plugin.SharedCommands
         /// Opens search in a new browser. If no browser path is passed in then Chrome is used. 
         /// Leave browser path blank to use Chrome.
         /// </summary>
-        public static void OpenInBrowserWindow(this string url, string browserPath = "", bool inPrivate = false, string privateArg = "")
+        public static void OpenInBrowserWindow(this string url, string? browserPath = null, bool inPrivate = false, string privateArg = "")
         {
             browserPath = string.IsNullOrEmpty(browserPath) ? GetDefaultBrowserPath() : browserPath;
 
             var browserExecutableName = browserPath?
-                .Split(new[]
-                {
-                    Path.DirectorySeparatorChar
-                }, StringSplitOptions.None)
+                .Split([Path.DirectorySeparatorChar], StringSplitOptions.None)
                 .Last();
 
             var browser = string.IsNullOrEmpty(browserExecutableName) ? "chrome" : browserPath;
@@ -86,7 +83,7 @@ namespace Flow.Launcher.Plugin.SharedCommands
         /// <summary> 
         /// Opens search as a tab in the default browser chosen in Windows settings.
         /// </summary>
-        public static void OpenInBrowserTab(this string url, string browserPath = "", bool inPrivate = false, string privateArg = "")
+        public static void OpenInBrowserTab(this string url, string? browserPath = null, bool inPrivate = false, string privateArg = "")
         {
             browserPath = string.IsNullOrEmpty(browserPath) ? GetDefaultBrowserPath() : browserPath;
 

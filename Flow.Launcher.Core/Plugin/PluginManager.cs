@@ -228,7 +228,7 @@ namespace Flow.Launcher.Core.Plugin
         /// </summary>
         /// <param name="register">The register to register results updated event for each plugin.</param>
         /// <returns>return the list of failed to init plugins or null for none</returns>
-        public static async Task InitializePluginsAsync(IResultUpdateRegister register)
+        public static async Task InitializePluginsAsync()
         {
             var initTasks = _allLoadedPlugins.Select(x => Task.Run(async () =>
             {
@@ -263,9 +263,6 @@ namespace Flow.Launcher.Core.Plugin
                     _initFailedPlugins.TryAdd(pair.Metadata.ID, pair);
                     return;
                 }
-
-                // Register ResultsUpdated event so that plugin query can use results updated interface
-                register.RegisterResultsUpdatedEvent(pair);
 
                 // Update plugin metadata translation after the plugin is initialized with IPublicAPI instance
                 Internationalization.UpdatePluginMetadataTranslation(pair);

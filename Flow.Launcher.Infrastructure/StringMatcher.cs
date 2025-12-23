@@ -65,7 +65,6 @@ namespace Flow.Launcher.Infrastructure
             query = query.Trim();
 
             var currentAcronymQueryIndex = 0;
-            var acronymMatchData = new List<int>();
             int acronymsTotalCount = 0;
             int acronymsMatched = 0;
 
@@ -85,7 +84,7 @@ namespace Flow.Launcher.Infrastructure
             bool allSubstringsContainedInCompareString = true;
 
             var indexList = new List<int>();
-            List<int> spaceIndices = new List<int>();
+            List<int> spaceIndices = [];
 
             for (var compareStringIndex = 0; compareStringIndex < fullStringToCompareWithoutCase.Length; compareStringIndex++)
             {
@@ -112,7 +111,6 @@ namespace Flow.Launcher.Infrastructure
                     if (fullStringToCompareWithoutCase[compareStringIndex] ==
                         queryWithoutCase[currentAcronymQueryIndex])
                     {
-                        acronymMatchData.Add(compareStringIndex);
                         acronymsMatched++;
 
                         currentAcronymQueryIndex++;
@@ -193,10 +191,7 @@ namespace Flow.Launcher.Infrastructure
                 int acronymScore = acronymsMatched * 100 / acronymsTotalCount;
 
                 if (acronymScore >= (int)UserSettingSearchPrecision)
-                {
-                    acronymMatchData = acronymMatchData.Distinct().ToList();
-                    return new MatchResult(true, UserSettingSearchPrecision, acronymMatchData, acronymScore);
-                }
+                    return new MatchResult(true, UserSettingSearchPrecision, acronymScore);
             }
 
             // proceed to calculate score if every char or substring without whitespaces matched
@@ -210,8 +205,7 @@ namespace Flow.Launcher.Infrastructure
                 var score = CalculateSearchScore(query, stringToCompare, firstMatchIndex - nearestSpaceIndex - 1, spaceIndices,
                     lastMatchIndex - firstMatchIndex, allSubstringsContainedInCompareString);
 
-                var resultList = indexList.Distinct().ToList();
-                return new MatchResult(true, UserSettingSearchPrecision, resultList, score);
+                return new MatchResult(true, UserSettingSearchPrecision, score);
             }
 
             return new MatchResult(false, UserSettingSearchPrecision);

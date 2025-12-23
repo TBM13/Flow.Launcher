@@ -28,7 +28,7 @@ using Microsoft.VisualStudio.Threading;
 
 namespace Flow.Launcher.ViewModel
 {
-    public partial class MainViewModel : BaseModel, ISavable, IDisposable, IResultUpdateRegister
+    public partial class MainViewModel : BaseModel, ISavable, IDisposable
     {
         #region Private Fields
 
@@ -238,44 +238,6 @@ namespace Flow.Launcher.ViewModel
                     Task.Run(UpdateActionAsync).ContinueWith(continueAction, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.Default);
 #endif
             }
-        }
-
-        public void RegisterResultsUpdatedEvent(PluginPair pair)
-        {
-            if (pair.Plugin is not IResultUpdated plugin) return;
-
-            plugin.ResultsUpdated += (s, e) =>
-            {
-                if (_updateQuery == null || e.Query.OriginalQuery != _updateQuery.OriginalQuery || e.Token.IsCancellationRequested)
-                {
-                    return;
-                }
-
-                var token = e.Token == default ? _updateToken : e.Token;
-
-                IReadOnlyList<Result> resultsCopy;
-                if (e.Results == null)
-                {
-                    resultsCopy = _emptyResult;
-                }
-                else
-                {
-                    // make a clone to avoid possible issue that plugin will also change the list and items when updating view model
-                    resultsCopy = DeepCloneResults(e.Results, token);
-                }
-
-                PluginManager.UpdatePluginMetadata(resultsCopy, pair.Metadata, e.Query);
-
-                if (token.IsCancellationRequested) return;
-
-                App.API.LogDebug(ClassName, $"Update results for plugin <{pair.Metadata.Name}>");
-
-                if (!_resultsUpdateChannelWriter.TryWrite(new ResultsForUpdate(resultsCopy, pair.Metadata, e.Query,
-                    token)))
-                {
-                    App.API.LogError(ClassName, "Unable to add item to Result Update Queue");
-                }
-            };
         }
 
         [RelayCommand]

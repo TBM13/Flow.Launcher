@@ -194,7 +194,7 @@ namespace Flow.Launcher
 
             API.LogInfo(ClassName, "Begin plugin initialization ----------------------------------------------------");
             PluginManager.LoadPlugins(_settings.PluginSettings);
-            await PluginManager.InitializePluginsAsync(_mainVM);
+            await PluginManager.InitializePluginsAsync();
 
             // Refresh home page after plugins are initialized because users may open main window during plugin initialization
             // And home page is created without full plugin list

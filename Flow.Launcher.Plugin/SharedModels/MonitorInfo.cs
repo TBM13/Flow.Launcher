@@ -45,10 +45,10 @@ public class MonitorInfo
     /// </summary>
     /// <param name="hwnd">Window handle</param>
     /// <returns>The display monitor that is nearest to a given window, or null if no monitor is found.</returns>
-    public static unsafe MonitorInfo GetNearestDisplayMonitor(nint hwnd)
+    public static unsafe MonitorInfo? GetNearestDisplayMonitor(nint hwnd)
     {
         var nearestMonitor = PInvoke.MonitorFromWindow(new(hwnd), MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
-        MonitorInfo nearestMonitorInfo = null;
+        MonitorInfo? nearestMonitorInfo = null;
         var callback = new MONITORENUMPROC((monitor, deviceContext, rect, data) =>
         {
             if (monitor == nearestMonitor)
@@ -72,10 +72,10 @@ public class MonitorInfo
     /// Gets the primary display monitor (the one that contains the taskbar).
     /// </summary>
     /// <returns>The primary display monitor, or null if no monitor is found.</returns>
-    public static unsafe MonitorInfo GetPrimaryDisplayMonitor()
+    public static unsafe MonitorInfo? GetPrimaryDisplayMonitor()
     {
         var primaryMonitor = PInvoke.MonitorFromWindow(new HWND(nint.Zero), MONITOR_FROM_FLAGS.MONITOR_DEFAULTTOPRIMARY);
-        MonitorInfo primaryMonitorInfo = null;
+        MonitorInfo? primaryMonitorInfo = null;
         var callback = new MONITORENUMPROC((monitor, deviceContext, rect, data) =>
         {
             if (monitor == primaryMonitor)
@@ -99,14 +99,14 @@ public class MonitorInfo
     /// Gets the display monitor that contains the cursor.
     /// </summary>
     /// <returns>The display monitor that contains the cursor, or null if no monitor is found.</returns>
-    public static unsafe MonitorInfo GetCursorDisplayMonitor()
+    public static unsafe MonitorInfo? GetCursorDisplayMonitor()
     {
         if (!PInvoke.GetCursorPos(out var pt))
         {
             Marshal.ThrowExceptionForHR(Marshal.GetLastWin32Error());
         }
         var cursorMonitor = PInvoke.MonitorFromPoint(pt, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
-        MonitorInfo cursorMonitorInfo = null;
+        MonitorInfo? cursorMonitorInfo = null;
         var callback = new MONITORENUMPROC((monitor, deviceContext, rect, data) =>
         {
             if (monitor == cursorMonitor)

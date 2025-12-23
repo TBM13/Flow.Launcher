@@ -2,9 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-#pragma warning disable IDE0005
 using System.Windows;
-#pragma warning restore IDE0005
 
 namespace Flow.Launcher.Plugin.SharedCommands
 {
@@ -22,7 +20,7 @@ namespace Flow.Launcher.Plugin.SharedCommands
         /// <param name="sourcePath"></param>
         /// <param name="targetPath"></param>
         /// <param name="messageBoxExShow"></param>
-        public static void CopyAll(this string sourcePath, string targetPath, Func<string, MessageBoxResult> messageBoxExShow = null)
+        public static void CopyAll(this string sourcePath, string targetPath, Func<string, MessageBoxResult>? messageBoxExShow = null)
         {
             // Get the subdirectories for the specified directory.
             DirectoryInfo dir = new DirectoryInfo(sourcePath);
@@ -79,7 +77,7 @@ namespace Flow.Launcher.Plugin.SharedCommands
         /// <param name="toPath"></param>
         /// <param name="messageBoxExShow"></param>
         /// <returns></returns>
-        public static bool VerifyBothFolderFilesEqual(this string fromPath, string toPath, Func<string, MessageBoxResult> messageBoxExShow = null)
+        public static bool VerifyBothFolderFilesEqual(this string fromPath, string toPath, Func<string, MessageBoxResult>? messageBoxExShow = null)
         {
             try
             {
@@ -112,7 +110,7 @@ namespace Flow.Launcher.Plugin.SharedCommands
         /// </summary>
         /// <param name="path"></param>
         /// <param name="messageBoxExShow"></param>
-        public static void RemoveFolderIfExists(this string path, Func<string, MessageBoxResult> messageBoxExShow = null)
+        public static void RemoveFolderIfExists(this string path, Func<string, MessageBoxResult>? messageBoxExShow = null)
         {
             try
             {
@@ -165,7 +163,7 @@ namespace Flow.Launcher.Plugin.SharedCommands
         /// </summary>
         /// <param name="fileOrFolderPath"></param>
         /// <param name="messageBoxExShow"></param>
-        public static void OpenPath(string fileOrFolderPath, Func<string, MessageBoxResult> messageBoxExShow = null)
+        public static void OpenPath(string fileOrFolderPath, Func<string, MessageBoxResult>? messageBoxExShow = null)
         {
             var psi = new ProcessStartInfo
             {
@@ -196,7 +194,7 @@ namespace Flow.Launcher.Plugin.SharedCommands
         /// <param name="workingDir">Working directory</param>
         /// <param name="asAdmin">Open as Administrator</param>
         /// <param name="messageBoxExShow"></param>
-        public static void OpenFile(string filePath, string workingDir = "", bool asAdmin = false, Func<string, MessageBoxResult> messageBoxExShow = null)
+        public static void OpenFile(string filePath, string workingDir = "", bool asAdmin = false, Func<string, MessageBoxResult>? messageBoxExShow = null)
         {
             var psi = new ProcessStartInfo
             {
@@ -290,7 +288,7 @@ namespace Flow.Launcher.Plugin.SharedCommands
         ///</summary>
         public static string ReturnPreviousDirectoryIfIncompleteString(string path)
         {
-            if (!path.EndsWith("\\"))
+            if (!path.EndsWith('\\'))
             {
                 // not full path, get previous level directory string
                 var indexOfSeparator = path.LastIndexOf('\\');
@@ -318,7 +316,7 @@ namespace Flow.Launcher.Plugin.SharedCommands
                    && !rel.StartsWith(@"..\")
                    && !Path.IsPathRooted(rel);
         }
-        
+
         /// <summary>
         /// Returns path ended with "\"
         /// </summary>

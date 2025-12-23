@@ -309,7 +309,7 @@ namespace Flow.Launcher.Plugin
         /// </summary>
         /// <param name="DirectoryPath">Directory Path to open</param>
         /// <param name="FileNameOrFilePath">Extra FileName Info</param>
-        public void OpenDirectory(string DirectoryPath, string FileNameOrFilePath = null);
+        public void OpenDirectory(string DirectoryPath, string? FileNameOrFilePath = null);
 
         /// <summary>
         /// Opens the URL using the browser with the given Uri object, even if the URL is a local file.
@@ -379,7 +379,7 @@ namespace Flow.Launcher.Plugin
         /// </param>
         /// <param name="cancelProgress">When user cancel the progress, this action will be called.</param>
         /// <returns></returns>
-        public Task ShowProgressBoxAsync(string caption, Func<Action<double>, Task> reportProgressAsync, Action cancelProgress = null);
+        public Task ShowProgressBoxAsync(string caption, Func<Action<double>, Task> reportProgressAsync, Action? cancelProgress = null);
 
         /// <summary>
         /// Save all Flow's plugins caches

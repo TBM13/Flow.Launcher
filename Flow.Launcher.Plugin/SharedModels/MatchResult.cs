@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Flow.Launcher.Plugin.SharedModels
+﻿namespace Flow.Launcher.Plugin.SharedModels
 {
     /// <summary>
     /// Represents the result of a match operation.
@@ -25,11 +23,10 @@ namespace Flow.Launcher.Plugin.SharedModels
         /// <param name="searchPrecision"></param>
         /// <param name="matchData"></param>
         /// <param name="rawScore"></param>
-        public MatchResult(bool success, SearchPrecisionScore searchPrecision, List<int> matchData, int rawScore)
+        public MatchResult(bool success, SearchPrecisionScore searchPrecision, int rawScore)
         {
             Success = success;
             SearchPrecision = searchPrecision;
-            MatchData = matchData;
             RawScore = rawScore;
         }
 
@@ -46,25 +43,15 @@ namespace Flow.Launcher.Plugin.SharedModels
         /// <summary>
         /// The raw calculated search score without any search precision filtering applied.
         /// </summary>
-        private int _rawScore;
-
-        /// <summary>
-        /// The raw calculated search score without any search precision filtering applied.
-        /// </summary>
         public int RawScore
         {
-            get { return _rawScore; }
+            get { return field; }
             set
             {
-                _rawScore = value;
-                Score = ScoreAfterSearchPrecisionFilter(_rawScore);
+                field = value;
+                Score = IsSearchPrecisionScoreMet(value) ? value : 0;
             }
         }
-
-        /// <summary>
-        /// Matched data to highlight.
-        /// </summary>
-        public List<int> MatchData { get; set; }
 
         /// <summary>
         /// The search precision score used to filter the search results.
@@ -77,17 +64,12 @@ namespace Flow.Launcher.Plugin.SharedModels
         /// <returns></returns>
         public bool IsSearchPrecisionScoreMet()
         {
-            return IsSearchPrecisionScoreMet(_rawScore);
+            return IsSearchPrecisionScoreMet(RawScore);
         }
 
         private bool IsSearchPrecisionScoreMet(int rawScore)
         {
             return rawScore >= (int)SearchPrecision;
-        }
-
-        private int ScoreAfterSearchPrecisionFilter(int rawScore)
-        {
-            return IsSearchPrecisionScoreMet(rawScore) ? rawScore : 0;
         }
     }
 
