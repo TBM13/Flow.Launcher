@@ -174,10 +174,13 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 }
             }
 
+            string autocompleteText = Extension(FullPath) == ShortcutExtension && !string.IsNullOrEmpty(LnkResolvedPath)
+                ? LnkResolvedPath : FullPath;
+
             var result = new Result
             {
                 Title = title,
-                AutoCompleteText = FullPath,
+                AutoCompleteText = autocompleteText,
                 SubTitle = subtitle,
                 IcoPath = IcoPath,
                 Score = matchResult.Score,
@@ -338,9 +341,9 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 string target = ShellLinkHelper.RetrieveTargetPath(path);
                 (string description, string args) = ShellLinkHelper.RetrieveDescriptionAndArgs(path);
 
+                program.LnkResolvedPath = Path.GetFullPath(target);
                 if (!string.IsNullOrEmpty(target) && File.Exists(target))
                 {
-                    program.LnkResolvedPath = Path.GetFullPath(target);
                     program.ExecutableName = Path.GetFileNameWithoutExtension(target);
 
                     if (!string.IsNullOrEmpty(args))
