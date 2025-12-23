@@ -58,10 +58,6 @@ public static class ShellLinkHelper
         var link = new ShellLink();
         const int STGM_READ = 0;
         ((IPersistFile)link).Load(path, STGM_READ);
-        // var hwnd = new HWND(IntPtr.Zero);
-        // Use SLR_NO_UI to avoid showing any UI during resolution, like Problem with Shortcut dialogs
-        // https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ishelllinka-resolve
-        //((IShellLinkW)link).Resolve(hwnd, (uint)SLR_FLAGS.SLR_NO_UI);
 
         const int MAX_PATH = 260;
         Span<char> buffer = stackalloc char[MAX_PATH];
