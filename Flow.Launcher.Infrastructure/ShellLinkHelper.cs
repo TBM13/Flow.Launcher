@@ -36,7 +36,7 @@ public static class ShellLinkHelper
         {
             fixed (char* bufferPtr = buffer)
             {
-                ((IShellLinkW)link).GetPath((PWSTR)bufferPtr, MAX_PATH, &data, (uint)SLGP_FLAGS.SLGP_SHORTPATH);
+                ((IShellLinkW)link).GetPath((PWSTR)bufferPtr, MAX_PATH, &data, 0);
                 target = MemoryMarshal.CreateReadOnlySpanFromNullTerminated(bufferPtr).ToString();
             }
         }
