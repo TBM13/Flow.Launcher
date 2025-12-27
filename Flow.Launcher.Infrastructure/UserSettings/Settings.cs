@@ -12,8 +12,8 @@ namespace Flow.Launcher.Infrastructure.UserSettings
 {
     public class Settings : BaseModel, IHotkeySettings
     {
-        private FlowLauncherJsonStorage<Settings> _storage;
-        private StringMatcher _stringMatcher = null;
+        private FlowLauncherJsonStorage<Settings> _storage = null!;
+        private StringMatcher _stringMatcher = null!;
 
         public void SetStorage(FlowLauncherJsonStorage<Settings> storage)
         {
@@ -24,6 +24,7 @@ namespace Flow.Launcher.Infrastructure.UserSettings
         {
             // Initialize dependency injection instances after Ioc.Default is created
             _stringMatcher = Ioc.Default.GetRequiredService<StringMatcher>();
+            _stringMatcher.UserSettingSearchPrecision = QuerySearchPrecision;
         }
 
         public void Save()
@@ -196,7 +197,7 @@ namespace Flow.Launcher.Infrastructure.UserSettings
         public ObservableCollection<BaseBuiltinShortcutModel> BuiltinShortcuts { get; set; } =
         [
             new AsyncBuiltinShortcutModel("{clipboard}", "shortcut_clipboard_description", () => Win32Helper.StartSTATaskAsync(Clipboard.GetText)),
-            new BuiltinShortcutModel("{active_explorer_path}", "shortcut_active_explorer_path", FileExplorerHelper.GetActiveExplorerPath)
+            new BuiltinShortcutModel("{active_explorer_path}", "shortcut_active_explorer_path", () => FileExplorerHelper.GetActiveExplorerPath() ?? "<error>")
         ];
 
         public bool HideOnStartup { get; set; } = true;

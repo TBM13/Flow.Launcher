@@ -19,7 +19,7 @@ namespace Flow.Launcher.Infrastructure.Hotkey
         private static readonly UnhookWindowsHookExSafeHandle hookId;
 
         public delegate bool KeyboardCallback(KeyEvent keyEvent, int vkCode, SpecialKeyState state);
-        internal static Func<KeyEvent, int, SpecialKeyState, bool> hookedKeyboardCallback;
+        internal static Func<KeyEvent, int, SpecialKeyState, bool>? hookedKeyboardCallback;
 
         static GlobalHotkey()
         {
@@ -30,7 +30,10 @@ namespace Flow.Launcher.Infrastructure.Hotkey
         private static UnhookWindowsHookExSafeHandle SetHook(HOOKPROC proc, WINDOWS_HOOK_ID hookId)
         {
             using var curProcess = Process.GetCurrentProcess();
-            using var curModule = curProcess.MainModule;
+            using ProcessModule? curModule = curProcess.MainModule;
+            if (curModule is null)
+                throw new NullReferenceException(nameof(curModule));
+
             return PInvoke.SetWindowsHookEx(hookId, proc, PInvoke.GetModuleHandle(curModule.ModuleName), 0);
         }
 

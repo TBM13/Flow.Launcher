@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -18,13 +19,16 @@ namespace Flow.Launcher.Infrastructure.Image
 
         private static readonly ImageCache ImageCache = new();
         private static Lock storageLock { get; } = new();
-        private static BinaryStorage<List<(string, bool)>> _storage;
+        private static BinaryStorage<List<(string, bool)>> _storage = null!;
         private static readonly ConcurrentDictionary<string, string> GuidToKey = new();
-        private static ImageHashGenerator _hashGenerator;
+        private static ImageHashGenerator _hashGenerator = null!;
         private static readonly bool EnableImageHash = true;
-        public static ImageSource Image => ImageCache[Constant.ImageIcon, false];
-        public static ImageSource MissingImage => ImageCache[Constant.MissingImgIcon, false];
-        public static ImageSource LoadingImage => ImageCache[Constant.LoadingImgIcon, false];
+        public static ImageSource Image => ImageCache[Constant.ImageIcon, false]
+            ?? throw new NullReferenceException("Failed to get cached default image");
+        public static ImageSource MissingImage => ImageCache[Constant.MissingImgIcon, false]
+            ?? throw new NullReferenceException("Failed to get cached missing image");
+        public static ImageSource LoadingImage => ImageCache[Constant.LoadingImgIcon, false]
+            ?? throw new NullReferenceException("Failed to get cached loading image");
         public const int SmallIconSize = 64;
         public const int FullIconSize = 256;
         public const int FullImageSize = 320;
@@ -60,18 +64,7 @@ namespace Flow.Launcher.Infrastructure.Image
             }
         }
 
-        private class ImageResult
-        {
-            public ImageResult(ImageSource imageSource, ImageType imageType)
-            {
-                ImageSource = imageSource;
-                ImageType = imageType;
-            }
-
-            public ImageType ImageType { get; }
-            public ImageSource ImageSource { get; }
-        }
-
+        private record ImageResult(ImageSource ImageSource, ImageType ImageType);
         private enum ImageType
         {
             File,
@@ -89,15 +82,13 @@ namespace Flow.Launcher.Infrastructure.Image
 
             try
             {
-                if (string.IsNullOrEmpty(path))
-                {
-                    return new ImageResult(MissingImage, ImageType.Error);
-                }
-
                 // extra scope for use of same variable name
                 {
                     if (ImageCache.TryGetValue(path, loadFullImage, out var imageSource))
                     {
+                        if (imageSource is null)
+                            return new ImageResult(MissingImage, ImageType.Error);
+
                         return new ImageResult(imageSource, ImageType.Cache);
                     }
                 }
@@ -123,14 +114,14 @@ namespace Flow.Launcher.Infrastructure.Image
 
                 imageResult = await Task.Run(() => GetThumbnailResult(ref path, loadFullImage));
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 try
                 {
                     // Get thumbnail may fail for certain images on the first try, retry again has proven to work
                     imageResult = GetThumbnailResult(ref path, loadFullImage);
                 }
-                catch (System.Exception e2)
+                catch (Exception e2)
                 {
                     Log.Exception(ClassName, $"Failed to get thumbnail for {path} on first try", e);
                     Log.Exception(ClassName, $"Failed to get thumbnail for {path} on second try", e2);
@@ -230,26 +221,24 @@ namespace Flow.Launcher.Infrastructure.Image
             return ImageCache.ContainsKey(path, loadFullImage);
         }
 
-        public static bool TryGetValue(string path, bool loadFullImage, out ImageSource image)
+        public static bool TryGetValue(string path, bool loadFullImage, [NotNullWhen(true)] out ImageSource? image)
         {
             return ImageCache.TryGetValue(path, loadFullImage, out image);
         }
 
         public static async ValueTask<ImageSource> LoadAsync(string path, bool loadFullImage = false, bool cacheImage = true)
         {
-            if (path != null)
-                path = path.ToLowerInvariant();
-
+            path = path.ToLowerInvariant();
             var imageResult = await LoadInternalAsync(path, loadFullImage);
 
             var img = imageResult.ImageSource;
             if (imageResult.ImageType != ImageType.Error && imageResult.ImageType != ImageType.Cache)
             {
                 // we need to get image hash
-                string hash = EnableImageHash ? _hashGenerator.GetHashFromImage(img) : null;
-                if (hash != null)
+                string? hash = EnableImageHash ? _hashGenerator.GetHashFromImage(img) : null;
+                if (hash is not null)
                 {
-                    if (GuidToKey.TryGetValue(hash, out string key))
+                    if (GuidToKey.TryGetValue(hash, out string? key))
                     {
                         // image already exists
                         img = ImageCache[key, loadFullImage] ?? img;

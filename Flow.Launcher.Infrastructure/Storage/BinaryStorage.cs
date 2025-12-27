@@ -7,8 +7,6 @@ using Flow.Launcher.Plugin;
 using Flow.Launcher.Plugin.SharedCommands;
 using MemoryPack;
 
-#nullable enable
-
 namespace Flow.Launcher.Infrastructure.Storage
 {
     /// <summary>

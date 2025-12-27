@@ -7,8 +7,6 @@ using Flow.Launcher.Infrastructure.Logger;
 using Flow.Launcher.Plugin;
 using Flow.Launcher.Plugin.SharedCommands;
 
-#nullable enable
-
 namespace Flow.Launcher.Infrastructure.Storage
 {
     /// <summary>

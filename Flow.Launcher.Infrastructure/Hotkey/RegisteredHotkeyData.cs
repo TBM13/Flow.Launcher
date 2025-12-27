@@ -2,8 +2,6 @@
 
 namespace Flow.Launcher.Infrastructure.Hotkey;
 
-#nullable enable
-
 /// <summary>
 /// Represents a hotkey that has been registered. Used in <c>Flow.Launcher.HotkeyControlDialog</c> via
 /// <see cref="UserSettings"/> and <see cref="IHotkeySettings"/> to display errors if user tries to register a hotkey

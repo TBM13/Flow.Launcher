@@ -12,7 +12,7 @@ namespace Flow.Launcher.Infrastructure.Image
     }
     public class ImageHashGenerator : IImageHashGenerator
     {
-        public string GetHashFromImage(ImageSource imageSource)
+        public string? GetHashFromImage(ImageSource imageSource)
         {
             if (imageSource is not BitmapSource image)
             {

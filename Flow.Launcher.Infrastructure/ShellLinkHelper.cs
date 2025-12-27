@@ -10,6 +10,8 @@ namespace Flow.Launcher.Infrastructure;
 
 public static class ShellLinkHelper
 {
+    private static string CLASS_NAME => typeof(ShellLinkHelper).FullName ?? nameof(ShellLinkHelper);
+
     // Reference : http://www.pinvoke.net/default.aspx/Interfaces.IShellLinkW
     [ComImport(), Guid("00021401-0000-0000-C000-000000000046")]
     public class ShellLink
@@ -42,7 +44,7 @@ public static class ShellLinkHelper
         }
         catch (COMException e)
         {
-            Log.Exception(typeof(ShellLinkHelper).FullName, $"|IShellLinkW|retrieveTargetPath|{path}" +
+            Log.Exception(CLASS_NAME, $"|IShellLinkW|retrieveTargetPath|{path}" +
                 "|Error occurred while getting program arguments", e);
         }
 
@@ -53,7 +55,7 @@ public static class ShellLinkHelper
     }
 
     // TODO: Review this code
-    public static unsafe (string description, string args) RetrieveDescriptionAndArgs(string path)
+    public static unsafe (string? description, string? args) RetrieveDescriptionAndArgs(string path)
     {
         var link = new ShellLink();
         const int STGM_READ = 0;
@@ -62,8 +64,8 @@ public static class ShellLinkHelper
         const int MAX_PATH = 260;
         Span<char> buffer = stackalloc char[MAX_PATH];
 
-        string description = null;
-        string args = null;
+        string? description = null;
+        string? args = null;
 
         try
         {
@@ -76,7 +78,7 @@ public static class ShellLinkHelper
         catch (COMException e)
         {
             // C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\MiracastView.lnk always cause exception
-            Log.Exception(typeof(ShellLinkHelper).FullName, $"|IShellLinkW|retrieveTargetPath|{path}" +
+            Log.Exception(CLASS_NAME, $"|IShellLinkW|retrieveTargetPath|{path}" +
                 "|Error caused likely due to trying to get the description of the program", e);
         }
 

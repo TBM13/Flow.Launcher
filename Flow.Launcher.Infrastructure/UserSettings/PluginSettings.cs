@@ -56,7 +56,7 @@ namespace Flow.Launcher.Infrastructure.UserSettings
             }
         }
 
-        public Plugin GetPluginSettings(string id)
+        public Plugin? GetPluginSettings(string id)
         {
             if (Plugins.TryGetValue(id, out var plugin))
             {
@@ -65,7 +65,7 @@ namespace Flow.Launcher.Infrastructure.UserSettings
             return null;
         }
 
-        public Plugin RemovePluginSettings(string id)
+        public Plugin? RemovePluginSettings(string id)
         {
             Plugins.Remove(id, out var plugin);
             return plugin;
@@ -74,19 +74,19 @@ namespace Flow.Launcher.Infrastructure.UserSettings
 
     public class Plugin
     {
-        public string ID { get; set; }
+        public required string ID { get; set; }
 
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
-        public string Version { get; set; }
+        public required string Version { get; set; }
 
         [JsonIgnore]
         public List<string> DefaultActionKeywords { get; set; }
 
         // a reference of the action keywords from plugin manager
-        public List<string> ActionKeywords { get; set; }
+        public required List<string> ActionKeywords { get; set; }
 
-        public int Priority { get; set; }
+        public required int Priority { get; set; }
 
         /// <summary>
         /// Used only to save the state of the plugin in settings

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using CommunityToolkit.Mvvm.DependencyInjection;
-using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Plugin.SharedModels;
 
 namespace Flow.Launcher.Infrastructure
@@ -12,16 +11,6 @@ namespace Flow.Launcher.Infrastructure
         private readonly MatchOption _defaultMatchOption = new();
 
         public SearchPrecisionScore UserSettingSearchPrecision { get; set; }
-
-        public StringMatcher(Settings settings)
-        {
-            UserSettingSearchPrecision = settings.QuerySearchPrecision;
-        }
-
-        // This is a workaround to allow unit tests to set the instance
-        public StringMatcher()
-        {
-        }
 
         public static MatchResult FuzzySearch(string query, string stringToCompare)
         {

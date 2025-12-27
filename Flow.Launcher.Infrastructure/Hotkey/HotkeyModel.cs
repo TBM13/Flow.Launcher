@@ -20,7 +20,7 @@ namespace Flow.Launcher.Infrastructure.Hotkey
             { Key.Space, "Space" }, { Key.Oem3, "~" }
         };
 
-        public ModifierKeys ModifierKeys
+        public readonly ModifierKeys ModifierKeys
         {
             get
             {
@@ -122,7 +122,7 @@ namespace Flow.Launcher.Infrastructure.Hotkey
             return string.Join(" + ", EnumerateDisplayKeys());
         }
 
-        public IEnumerable<string> EnumerateDisplayKeys()
+        public readonly IEnumerable<string> EnumerateDisplayKeys()
         {
             if (Ctrl && CharKey is not (Key.LeftCtrl or Key.RightCtrl))
             {
@@ -157,7 +157,7 @@ namespace Flow.Launcher.Infrastructure.Hotkey
         /// </summary>
         /// <param name="validateKeyGestrue">Try to validate hotkey as a KeyGesture.</param>
         /// <returns></returns>
-        public bool Validate(bool validateKeyGestrue = false)
+        public readonly bool Validate(bool validateKeyGestrue = false)
         {
             switch (CharKey)
             {
@@ -222,7 +222,7 @@ namespace Flow.Launcher.Infrastructure.Hotkey
                    key == Key.Decimal;
         }
 
-        public override int GetHashCode()
+        public override readonly int GetHashCode()
         {
             return HashCode.Combine(ModifierKeys, CharKey);
         }

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Flow.Launcher.Infrastructure.Logger;
 using Flow.Launcher.Infrastructure.UserSettings;
@@ -19,7 +20,7 @@ namespace Flow.Launcher.Infrastructure.Storage
         {
             // C# related, add python related below
             var dataType = typeof(T);
-            AssemblyName = dataType.Assembly.GetName().Name;
+            AssemblyName = dataType.Assembly.GetName().Name ?? throw new NullReferenceException("Plugin's assembly name was null");
             DirectoryPath = Path.Combine(DataLocation.PluginSettingsDirectory, AssemblyName);
             FilesFolders.ValidateDirectory(DirectoryPath);
 

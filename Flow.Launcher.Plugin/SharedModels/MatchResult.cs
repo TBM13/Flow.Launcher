@@ -45,7 +45,7 @@
         /// </summary>
         public int RawScore
         {
-            get { return field; }
+            get => field;
             set
             {
                 field = value;

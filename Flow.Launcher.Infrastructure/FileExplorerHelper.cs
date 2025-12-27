@@ -11,10 +11,10 @@ namespace Flow.Launcher.Infrastructure
         /// <summary>
         /// Gets the path of the file explorer that is currently in the foreground
         /// </summary>
-        public static string GetActiveExplorerPath()
+        public static string? GetActiveExplorerPath()
         {
             var explorerWindow = GetActiveExplorer();
-            string locationUrl = explorerWindow?.LocationURL;
+            string? locationUrl = explorerWindow?.LocationURL;
             return !string.IsNullOrEmpty(locationUrl) ? GetDirectoryPath(new Uri(locationUrl).LocalPath) : null;
         }
 
@@ -34,22 +34,23 @@ namespace Flow.Launcher.Infrastructure
         /// <summary>
         /// Gets the file explorer that is currently in the foreground
         /// </summary>
-        private static dynamic GetActiveExplorer()
+        private static dynamic? GetActiveExplorer()
         {
-            Type type = Type.GetTypeFromProgID("Shell.Application");
-            if (type == null) return null;
-            dynamic shell = Activator.CreateInstance(type);
-            if (shell == null)
-            {
+            Type? type = Type.GetTypeFromProgID("Shell.Application");
+            if (type is null)
                 return null;
-            }
+
+            dynamic? shell = Activator.CreateInstance(type);
+            if (shell is null)
+                return null;
 
             var explorerWindows = new List<dynamic>();
             var openWindows = shell.Windows();
             for (int i = 0; i < openWindows.Count; i++)
             {
                 var window = openWindows.Item(i);
-                if (window == null) continue;
+                if (window is null)
+                    continue;
 
                 // find the desired window and make sure that it is indeed a file explorer
                 // we don't want the Internet Explorer or the classic control panel

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
@@ -11,13 +12,13 @@ namespace Flow.Launcher.Infrastructure
         public const string PluginMetadataFileName = "plugin.json";
 
         private static readonly Assembly Assembly = Assembly.GetExecutingAssembly();
-        public static readonly string ProgramDirectory = Directory.GetParent(Assembly.Location).ToString();
+        public static readonly string ProgramDirectory = Directory.GetParent(Assembly.Location)?.ToString() ?? throw new NullReferenceException("Failed to get program directory");
         public static readonly string ExecutablePath = Path.Combine(ProgramDirectory, FlowLauncher + ".exe");
-        public static readonly string ApplicationDirectory = Directory.GetParent(ProgramDirectory).ToString();
+        public static readonly string ApplicationDirectory = Directory.GetParent(ProgramDirectory)?.ToString() ?? throw new NullReferenceException("Failed to get app directory");
 
         public static readonly string PreinstalledDirectory = Path.Combine(ProgramDirectory, Plugins);
         public const string IssuesUrl = "https://github.com/TBM13/Flow.Launcher/issues";
-        public static readonly string Version = FileVersionInfo.GetVersionInfo(Assembly.Location).ProductVersion;
+        public static readonly string Version = FileVersionInfo.GetVersionInfo(Assembly.Location).ProductVersion ?? "<Unknown>";
         public static readonly string Dev = "Dev";
 
         private static readonly string ImagesDirectory = Path.Combine(ProgramDirectory, "Images");

@@ -98,7 +98,7 @@ namespace Flow.Launcher.Infrastructure.Image
                 out var nativeShellItem);
 
             if (retCode != HRESULT.S_OK)
-                throw Marshal.GetExceptionForHR(retCode);
+                throw Marshal.GetExceptionForHR(retCode) ?? new InvalidOperationException("Failed to get thumbnail");
 
             if (nativeShellItem is not IShellItemImageFactory imageFactory)
             {
@@ -161,7 +161,7 @@ namespace Flow.Launcher.Infrastructure.Image
         /// <param name="height">Requested thumbnail height (pixels).</param>
         /// <param name="options">ThumbnailOptions flags controlling extraction behavior.</param>
         /// <returns>An HBITMAP containing the requested image; callers are responsible for freeing the native handle.</returns>
-        private static unsafe HBITMAP GetHBitmapForUrlFile(string fileName, int width, int height, ThumbnailOptions options)
+        private static HBITMAP GetHBitmapForUrlFile(string fileName, int width, int height, ThumbnailOptions options)
         {
             HBITMAP hBitmap;
 

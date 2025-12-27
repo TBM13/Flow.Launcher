@@ -198,6 +198,10 @@ namespace Flow.Launcher.ViewModel
         {
             var imagePath = Result.IcoPath;
             var iconDelegate = Result.Icon;
+
+            if (imagePath is null && iconDelegate is null)
+                return;
+
             if (ImageLoader.TryGetValue(imagePath, false, out var img))
             {
                 _image = img;
