@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using CommunityToolkit.Mvvm.Input;
-using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Plugin;
 using Flow.Launcher.Plugin.SharedModels;
@@ -11,12 +10,9 @@ public partial class SettingsPaneGeneralViewModel : BaseModel
 {
     public Settings Settings { get; }
 
-    private readonly Internationalization _translater;
-
-    public SettingsPaneGeneralViewModel(Settings settings, Internationalization translater)
+    public SettingsPaneGeneralViewModel(Settings settings)
     {
         Settings = settings;
-        _translater = translater;
         UpdateEnumDropdownLocalizations();
     }
 

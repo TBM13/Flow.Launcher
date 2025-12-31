@@ -141,15 +141,11 @@ namespace Flow.Launcher.Core.Resource
         public static string GetTranslation(string key)
         {
             var translation = Application.Current.TryFindResource(key);
-            if (translation is string)
-            {
-                return translation.ToString();
-            }
-            else
-            {
-                PublicApi.Instance.LogError(ClassName, $"No Translation for key {key}");
-                return $"No Translation for key {key}";
-            }
+            if (translation is string s)
+                return s;
+
+            PublicApi.Instance.LogError(ClassName, $"No Translation for key {key}");
+            return $"No Translation for key {key}";
         }
 
         #endregion

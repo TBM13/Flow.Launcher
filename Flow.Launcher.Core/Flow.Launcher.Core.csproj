@@ -11,6 +11,7 @@
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -34,10 +35,6 @@
     <Prefer32Bit>false</Prefer32Bit>
     <NoWarn>$(NoWarn);FLSG0007</NoWarn>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Include="README.md" />
-  </ItemGroup>
   
   <ItemGroup>
     <None Remove="FodyWeavers.xml" />

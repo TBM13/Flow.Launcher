@@ -4,9 +4,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Plugin;
@@ -15,8 +13,6 @@ namespace Flow.Launcher.ViewModel
 {
     public class ResultsViewModel : BaseModel
     {
-        #region Private Fields
-
         private readonly string ClassName = nameof(ResultsViewModel);
 
         public ResultCollection Results { get; }
@@ -28,7 +24,7 @@ namespace Flow.Launcher.ViewModel
 
         public ResultsViewModel()
         {
-            Results = new ResultCollection();
+            Results = [];
             BindingOperations.EnableCollectionSynchronization(Results, _collectionLock);
         }
 
@@ -50,10 +46,6 @@ namespace Flow.Launcher.ViewModel
                 }
             };
         }
-
-        #endregion
-
-        #region Properties
 
         public bool IsPreviewOn { get; set; }
 
@@ -89,24 +81,6 @@ namespace Flow.Launcher.ViewModel
         public ICommand RightClickResultCommand { get; init; }
         public ICommand LeftClickResultCommand { get; init; }
 
-        #endregion
-
-        #region Private Methods
-
-        private static int InsertIndexOf(int newScore, IList<ResultViewModel> list)
-        {
-            int index = 0;
-            for (; index < list.Count; index++)
-            {
-                var result = list[index];
-                if (newScore > result.Result.Score)
-                {
-                    break;
-                }
-            }
-            return index;
-        }
-
         private int NewIndex(int i)
         {
             var n = Results.Count;
@@ -121,10 +95,6 @@ namespace Flow.Launcher.ViewModel
                 return -1;
             }
         }
-
-        #endregion
-
-        #region Public Methods
 
         public void SelectNextResult()
         {
@@ -160,18 +130,6 @@ namespace Flow.Launcher.ViewModel
         {
             lock (_collectionLock)
                 Results.RemoveAll();
-        }
-
-        public void KeepResultsFor(PluginMetadata metadata)
-        {
-            lock (_collectionLock)
-                Results.Update(Results.Where(r => r.Result.PluginID == metadata.ID).ToList());
-        }
-
-        public void KeepResultsExcept(PluginMetadata metadata)
-        {
-            lock (_collectionLock)
-                Results.Update(Results.Where(r => r.Result.PluginID != metadata.ID).ToList());
         }
 
         /// <summary>
@@ -231,15 +189,15 @@ namespace Flow.Launcher.ViewModel
 
             var newResults = newRawResults.Select(r => new ResultViewModel(r, _settings));
 
-            return Results.Where(r => r.Result.PluginID != resultId)
+            return [.. Results.Where(r => r.Result.PluginID != resultId)
                 .Concat(newResults)
                 .OrderByDescending(r => r.Result.Score)
-                .ToList();
+            ];
         }
 
         private List<ResultViewModel> NewResults(ICollection<ResultsForUpdate> resultsForUpdates)
         {
-            if (!resultsForUpdates.Any())
+            if (resultsForUpdates.Count == 0)
             {
                 App.API.LogDebug(ClassName, "No results for updates, returning existing results");
                 return Results;
@@ -250,16 +208,14 @@ namespace Flow.Launcher.ViewModel
             if (resultsForUpdates.Any(x => x.ShouldClearExistingResults))
             {
                 App.API.LogDebug(ClassName, $"Existing results are cleared for query");
-                return newResults.OrderByDescending(rv => rv.Result.Score).ToList();
+                return [.. newResults.OrderByDescending(rv => rv.Result.Score)];
             }
 
             App.API.LogDebug(ClassName, $"Keeping existing results for {resultsForUpdates.Count} queries");
-            return Results.Where(r => r?.Result != null && resultsForUpdates.All(u => u.ID != r.Result.PluginID))
+            return [.. Results.Where(r => r?.Result != null && resultsForUpdates.All(u => u.ID != r.Result.PluginID))
                               .Concat(newResults)
-                              .OrderByDescending(rv => rv.Result.Score)
-                              .ToList();
+                              .OrderByDescending(rv => rv.Result.Score)];
         }
-        #endregion
 
         public class ResultCollection : List<ResultViewModel>, INotifyCollectionChanged
         {

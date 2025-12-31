@@ -37,7 +37,7 @@ namespace Flow.Launcher.Core.Plugin
                     var assemblyLoader = new PluginAssemblyLoader(metadata.ExecuteFilePath);
                     assembly = assemblyLoader.LoadAssemblyAndDependencies();
 
-                    var type = assemblyLoader.FromAssemblyGetTypeOfInterface(assembly,
+                    var type = PluginAssemblyLoader.FromAssemblyGetTypeOfInterface(assembly,
                         typeof(IAsyncPlugin));
 
                     plugin = Activator.CreateInstance(type) as IAsyncPlugin;

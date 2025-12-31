@@ -16,7 +16,7 @@ namespace Flow.Launcher.ViewModel
         private static readonly string ClassName = nameof(ResultViewModel);
 
         private static readonly PrivateFontCollection FontCollection = new();
-        private static readonly Dictionary<string, string> Fonts = new();
+        private static readonly Dictionary<string, string> Fonts = [];
 
         public ResultViewModel(Result result, Settings settings)
         {
@@ -93,14 +93,6 @@ namespace Flow.Launcher.ViewModel
             }
         }
 
-        public double IconRadius
-        {
-            get
-            {
-                return IconXY;
-            }
-        }
-
         public Visibility ShowGlyph
         {
             get
@@ -113,8 +105,6 @@ namespace Flow.Launcher.ViewModel
                 return Settings.UseGlyphIcons && GlyphAvailable ? Visibility.Visible : Visibility.Collapsed;
             }
         }
-
-        public bool IsGlobalQuery => string.IsNullOrEmpty(Result.OriginQuery.ActionKeyword);
 
         private bool GlyphAvailable => Glyph is not null;
 
@@ -238,8 +228,6 @@ namespace Flow.Launcher.ViewModel
         }
 
         public Result Result { get; }
-
-        public double IconXY { get; set; } = 32;
 
         public override bool Equals(object obj)
         {

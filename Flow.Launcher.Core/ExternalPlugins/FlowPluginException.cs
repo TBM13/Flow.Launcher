@@ -1,16 +1,11 @@
-﻿using Flow.Launcher.Plugin;
-using System;
+﻿using System;
+using Flow.Launcher.Plugin;
 
 namespace Flow.Launcher.Core.ExternalPlugins
 {
-    public class FlowPluginException : Exception
+    public class FlowPluginException(PluginMetadata metadata, Exception e) : Exception(e.Message, e)
     {
-        public PluginMetadata Metadata { get; set; }
-        
-        public FlowPluginException(PluginMetadata metadata, Exception e) : base(e.Message, e)
-        {
-            Metadata = metadata;
-        }
+        public PluginMetadata Metadata { get; set; } = metadata;
 
         public override string ToString()
         {

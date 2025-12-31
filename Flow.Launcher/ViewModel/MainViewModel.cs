@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -15,13 +14,11 @@ using System.Windows.Threading;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core.Plugin;
-using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Hotkey;
 using Flow.Launcher.Infrastructure.Storage;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Plugin;
-using Flow.Launcher.Plugin.SharedCommands;
 using Flow.Launcher.Storage;
 using iNKORE.UI.WPF.Modern;
 using Microsoft.VisualStudio.Threading;
@@ -36,8 +33,6 @@ namespace Flow.Launcher.ViewModel
 
         private Query _lastQuery;
         private bool _previousIsHomeQuery;
-        private Query _progressQuery; // Used for QueryResultAsync
-        private Query _updateQuery; // Used for ResultsUpdated
         private string _queryTextBeforeLeaveResults;
         private string _ignoredQueryText; // Used to ignore query text change when switching between context menu and query results
 
@@ -46,7 +41,6 @@ namespace Flow.Launcher.ViewModel
         private readonly UserSelectedRecord _userSelectedRecord;
 
         private CancellationTokenSource _updateSource; // Used to cancel old query flows
-        private CancellationToken _updateToken; // Used to avoid ObjectDisposedException of _updateSource.Token
 
         private ChannelWriter<ResultsForUpdate> _resultsUpdateChannelWriter;
         private Task _resultsViewUpdateTask;
@@ -1054,112 +1048,96 @@ namespace Flow.Launcher.ViewModel
 
             var currentIsHomeQuery = query.IsHomeQuery;
 
-            try
+            _updateSource?.Dispose();
+
+            var currentUpdateSource = new CancellationTokenSource();
+            _updateSource = currentUpdateSource;
+            var currentCancellationToken = _updateSource.Token;
+
+            // Switch to ThreadPool thread
+            await TaskScheduler.Default;
+
+            if (currentCancellationToken.IsCancellationRequested) return;
+
+            // Update the query's IsReQuery property to true if this is a re-query
+            query.IsReQuery = isReQuery;
+
+            ICollection<PluginPair> plugins = Array.Empty<PluginPair>();
+            if (currentIsHomeQuery)
             {
-                _updateSource?.Dispose();
-
-                var currentUpdateSource = new CancellationTokenSource();
-                _updateSource = currentUpdateSource;
-                var currentCancellationToken = _updateSource.Token;
-                _updateToken = currentCancellationToken;
-
-                _progressQuery = query;
-                _updateQuery = query;
-
-                // Switch to ThreadPool thread
-                await TaskScheduler.Default;
-
-                if (currentCancellationToken.IsCancellationRequested) return;
-
-                // Update the query's IsReQuery property to true if this is a re-query
-                query.IsReQuery = isReQuery;
-
-                ICollection<PluginPair> plugins = Array.Empty<PluginPair>();
-                if (currentIsHomeQuery)
+                if (Settings.ShowHomePage)
                 {
-                    if (Settings.ShowHomePage)
-                    {
-                        plugins = PluginManager.ValidPluginsForHomeQuery();
-                    }
+                    plugins = PluginManager.ValidPluginsForHomeQuery();
+                }
 
+                PluginIconPath = null;
+                PluginIconSource = null;
+            }
+            else
+            {
+                plugins = PluginManager.ValidPluginsForQuery(query);
+
+                if (plugins.Count == 1)
+                {
+                    PluginIconPath = plugins.Single().Metadata.IcoPath;
+                    PluginIconSource = await App.API.LoadImageAsync(PluginIconPath);
+                }
+                else
+                {
                     PluginIconPath = null;
                     PluginIconSource = null;
                 }
-                else
-                {
-                    plugins = PluginManager.ValidPluginsForQuery(query);
-
-                    if (plugins.Count == 1)
-                    {
-                        PluginIconPath = plugins.Single().Metadata.IcoPath;
-                        PluginIconSource = await App.API.LoadImageAsync(PluginIconPath);
-                    }
-                    else
-                    {
-                        PluginIconPath = null;
-                        PluginIconSource = null;
-                    }
-                }
-
-                App.API.LogDebug(ClassName, $"Valid <{plugins.Count}> plugins: {string.Join(" ", plugins.Select(x => $"<{x.Metadata.Name}>"))}");
-
-                // Do not wait for performance improvement
-                /*if (string.IsNullOrEmpty(query.ActionKeyword))
-                {
-                    // Wait 15 millisecond for query change in global query
-                    // if query changes, return so that it won't be calculated
-                    await Task.Delay(15, currentCancellationToken);
-                    if (currentCancellationToken.IsCancellationRequested) return;
-                }*/
-
-                // plugins are ICollection, meaning LINQ will get the Count and preallocate Array
-
-                Task[] tasks;
-                if (currentIsHomeQuery)
-                {
-                    if (ShouldClearExistingResultsForNonQuery(plugins))
-                    {
-                        // there are no update tasks and so we can directly return
-                        ClearResults();
-                        return;
-                    }
-
-                    tasks = plugins.Select(plugin => plugin.Metadata.HomeDisabled switch
-                    {
-                        false => QueryTaskAsync(plugin, currentCancellationToken),
-                        true => Task.CompletedTask
-                    }).ToArray();
-                }
-                else
-                {
-                    tasks = plugins.Select(plugin => plugin.Metadata.Disabled switch
-                    {
-                        false => QueryTaskAsync(plugin, currentCancellationToken),
-                        true => Task.CompletedTask
-                    }).ToArray();
-                }
-
-                try
-                {
-                    // Check the code, WhenAll will translate all type of IEnumerable or Collection to Array, so make an array at first
-                    await Task.WhenAll(tasks);
-                }
-                catch (OperationCanceledException)
-                {
-                    // nothing to do here
-                }
-
-                if (currentCancellationToken.IsCancellationRequested) return;
-
-                // this should happen once after all queries are done so progress bar should continue
-                // until the end of all querying
-                _progressQuery = null;
             }
-            finally
+
+            App.API.LogDebug(ClassName, $"Valid <{plugins.Count}> plugins: {string.Join(" ", plugins.Select(x => $"<{x.Metadata.Name}>"))}");
+
+            // Do not wait for performance improvement
+            /*if (string.IsNullOrEmpty(query.ActionKeyword))
             {
-                // this make sures progress query is null when this query is canceled
-                _progressQuery = null;
+                // Wait 15 millisecond for query change in global query
+                // if query changes, return so that it won't be calculated
+                await Task.Delay(15, currentCancellationToken);
+                if (currentCancellationToken.IsCancellationRequested) return;
+            }*/
+
+            // plugins are ICollection, meaning LINQ will get the Count and preallocate Array
+
+            Task[] tasks;
+            if (currentIsHomeQuery)
+            {
+                if (ShouldClearExistingResultsForNonQuery(plugins))
+                {
+                    // there are no update tasks and so we can directly return
+                    ClearResults();
+                    return;
+                }
+
+                tasks = plugins.Select(plugin => plugin.Metadata.HomeDisabled switch
+                {
+                    false => QueryTaskAsync(plugin, currentCancellationToken),
+                    true => Task.CompletedTask
+                }).ToArray();
             }
+            else
+            {
+                tasks = plugins.Select(plugin => plugin.Metadata.Disabled switch
+                {
+                    false => QueryTaskAsync(plugin, currentCancellationToken),
+                    true => Task.CompletedTask
+                }).ToArray();
+            }
+
+            try
+            {
+                // Check the code, WhenAll will translate all type of IEnumerable or Collection to Array, so make an array at first
+                await Task.WhenAll(tasks);
+            }
+            catch (OperationCanceledException)
+            {
+                // nothing to do here
+            }
+
+            if (currentCancellationToken.IsCancellationRequested) return;
 
             // Local function
             void ClearResults()

@@ -336,17 +336,6 @@ namespace Flow.Launcher.Infrastructure
 
         #endregion
 
-        #region Notification
-
-        public static bool IsNotificationSupported()
-        {
-            // Notifications only supported on Windows 10 19041+
-            return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
-                Environment.OSVersion.Version.Build >= 19041;
-        }
-
-        #endregion
-
         #region Explorer
 
         // https://learn.microsoft.com/en-us/windows/win32/api/shlobj_core/nf-shlobj_core-shopenfolderandselectitems

@@ -39,11 +39,9 @@ namespace Flow.Launcher.Core.Plugin
                 }
                 else
                 {
-                    PluginMetadata metadata = GetPluginMetadata(directory);
-                    if (metadata != null)
-                    {
+                    PluginMetadata? metadata = GetPluginMetadata(directory);
+                    if (metadata is not null)
                         allPluginMetadata.Add(metadata);
-                    }
                 }
             }
 
@@ -98,7 +96,7 @@ namespace Flow.Launcher.Core.Plugin
             return (unique_list, duplicate_list);
         }
 
-        private static PluginMetadata GetPluginMetadata(string pluginDirectory)
+        private static PluginMetadata? GetPluginMetadata(string pluginDirectory)
         {
             string configPath = Path.Combine(pluginDirectory, Constant.PluginMetadataFileName);
             if (!File.Exists(configPath))
@@ -107,10 +105,16 @@ namespace Flow.Launcher.Core.Plugin
                 return null;
             }
 
-            PluginMetadata metadata;
+            PluginMetadata? metadata;
             try
             {
                 metadata = JsonSerializer.Deserialize<PluginMetadata>(File.ReadAllText(configPath));
+                if (metadata is null)
+                {
+                    PublicApi.Instance.LogError(ClassName, $"Failed to deserialize config file <{configPath}>");
+                    return null;
+                }
+
                 metadata.PluginDirectory = pluginDirectory;
 
             }

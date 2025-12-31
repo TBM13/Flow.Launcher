@@ -16,11 +16,9 @@ using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Hotkey;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Plugin;
-using Flow.Launcher.Plugin.SharedCommands;
 using Flow.Launcher.Plugin.SharedModels;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern;
-using iNKORE.UI.WPF.Modern.Controls;
 using DataObject = System.Windows.DataObject;
 using Key = System.Windows.Input.Key;
 
@@ -28,14 +26,8 @@ namespace Flow.Launcher
 {
     public partial class MainWindow : IDisposable
     {
-        #region Public Property
-
         // Window Event: Close Event
         public bool CanClose { get; set; } = false;
-
-        #endregion
-
-        #region Private Fields
 
         // Class Name
         private static readonly string ClassName = nameof(MainWindow);
@@ -61,10 +53,6 @@ namespace Flow.Launcher
         // IDisposable
         private bool _disposed = false;
 
-        #endregion
-
-        #region Constructor
-
         public MainWindow()
         {
             _settings = Ioc.Default.GetRequiredService<Settings>();
@@ -80,8 +68,6 @@ namespace Flow.Launcher
             DataObject.AddPastingHandler(QueryTextBox, QueryTextBox_OnPaste);
             _viewModel.ActualApplicationThemeChanged += ViewModel_ActualApplicationThemeChanged;
         }
-
-        #endregion
 
         #region Window Event
 
@@ -537,15 +523,6 @@ namespace Flow.Launcher
             // Initialize call twice to work around multi-display alignment issue- https://github.com/Flow-Launcher/Flow.Launcher/issues/2910
             InitializePosition();
             InitializePosition();
-        }
-
-        private async Task PositionResetAsync()
-        {
-            _viewModel.Show();
-            await Task.Delay(300); // If don't give a time, Positioning will be weird.
-            var screen = SelectedScreen();
-            Left = HorizonCenter(screen);
-            Top = VerticalCenter(screen);
         }
 
         private void InitializePosition()

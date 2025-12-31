@@ -60,7 +60,7 @@ namespace Flow.Launcher.Infrastructure
             var fullStringToCompareWithoutCase = opt.IgnoreCase ? stringToCompare.ToLower() : stringToCompare;
             var queryWithoutCase = opt.IgnoreCase ? query.ToLower() : query;
 
-            var querySubstrings = queryWithoutCase.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var querySubstrings = queryWithoutCase.Split([' '], StringSplitOptions.RemoveEmptyEntries);
             int currentQuerySubstringIndex = 0;
             var currentQuerySubstring = querySubstrings[currentQuerySubstringIndex];
             var currentQuerySubstringCharacterIndex = 0;
@@ -143,8 +143,7 @@ namespace Flow.Launcher.Infrastructure
                         // if it's the beginning character of the first query substring that is matched then we need to update start index
                         firstMatchIndex = currentQuerySubstringIndex == 0 ? startIndexToVerify : firstMatchIndex;
 
-                        indexList = GetUpdatedIndexList(startIndexToVerify, currentQuerySubstringCharacterIndex,
-                            firstMatchIndexInWord, indexList);
+                        UpdateIndexList(startIndexToVerify, currentQuerySubstringCharacterIndex, firstMatchIndexInWord, ref indexList);
                     }
                 }
 
@@ -261,21 +260,14 @@ namespace Flow.Launcher.Infrastructure
             return allMatch;
         }
 
-        private static List<int> GetUpdatedIndexList(int startIndexToVerify, int currentQuerySubstringCharacterIndex,
-            int firstMatchIndexInWord, List<int> indexList)
+        private static void UpdateIndexList(int startIndexToVerify, int currentQuerySubstringCharacterIndex,
+            int firstMatchIndexInWord, ref List<int> indexList)
         {
-            var updatedList = new List<int>();
-
             indexList.RemoveAll(x => x >= firstMatchIndexInWord);
-
-            updatedList.AddRange(indexList);
-
             for (int indexToCheck = 0; indexToCheck < currentQuerySubstringCharacterIndex; indexToCheck++)
             {
-                updatedList.Add(startIndexToVerify + indexToCheck);
+                indexList.Add(startIndexToVerify + indexToCheck);
             }
-
-            return updatedList;
         }
 
         private static bool AllQuerySubstringsMatched(int currentQuerySubstringIndex, int querySubstringsLength)

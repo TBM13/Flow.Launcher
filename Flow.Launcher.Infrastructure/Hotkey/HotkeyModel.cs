@@ -70,7 +70,7 @@ namespace Flow.Launcher.Infrastructure.Hotkey
                 return;
             }
 
-            List<string> keys = hotkeyString.Replace(" ", "").Split('+').ToList();
+            List<string> keys = [.. hotkeyString.Replace(" ", "").Split('+')];
             if (keys.Contains("Alt"))
             {
                 Alt = true;
@@ -117,7 +117,7 @@ namespace Flow.Launcher.Infrastructure.Hotkey
             }
         }
 
-        public override string ToString()
+        public override readonly string ToString()
         {
             return string.Join(" + ", EnumerateDisplayKeys());
         }

@@ -148,7 +148,7 @@ namespace Flow.Launcher.Core.Resource
         #endregion
 
         #region Change Theme
-        public bool ChangeTheme(string theme = null)
+        public bool ChangeTheme(string? theme = null)
         {
             if (string.IsNullOrEmpty(theme))
                 theme = _settings.Theme;

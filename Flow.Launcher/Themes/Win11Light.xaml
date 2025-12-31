@@ -130,7 +130,6 @@
     <CornerRadius x:Key="ItemRadius">5</CornerRadius>
     <Thickness x:Key="ItemMargin">10 0 10 0</Thickness>
     <Thickness x:Key="ResultMargin">0 10 0 10</Thickness>
-    <system:Double x:Key="ResultItemHeight">58</system:Double>
     <Style
         x:Key="PreviewBorderStyle"
         BasedOn="{StaticResource BasePreviewBorderStyle}"

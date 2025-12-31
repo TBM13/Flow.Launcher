@@ -23,9 +23,11 @@ namespace Flow.Launcher.Core.Plugin
             return LoadFromAssemblyName(assemblyName);
         }
 
-        protected override Assembly Load(AssemblyName assemblyName)
+        protected override Assembly? Load(AssemblyName assemblyName)
         {
-            string assemblyPath = dependencyResolver.ResolveAssemblyToPath(assemblyName);
+            string? assemblyPath = dependencyResolver.ResolveAssemblyToPath(assemblyName);
+            if (assemblyPath is null)
+                return null;
 
             // When resolving dependencies, ignore assembly depenedencies that already exits with Flow.Launcher
             // Otherwise duplicate assembly will be loaded and some weird behavior will occur, such as WinRT.Runtime.dll
@@ -34,7 +36,7 @@ namespace Flow.Launcher.Core.Plugin
 
             return existAssembly ?? (assemblyPath == null ? null : LoadFromAssemblyPath(assemblyPath));
         }
-        
+
         protected override IntPtr LoadUnmanagedDll(string unmanagedDllName)
         {
             var path = dependencyResolver.ResolveUnmanagedDllToPath(unmanagedDllName);
@@ -46,7 +48,7 @@ namespace Flow.Launcher.Core.Plugin
             return IntPtr.Zero;
         }
 
-        internal Type FromAssemblyGetTypeOfInterface(Assembly assembly, Type type)
+        internal static Type FromAssemblyGetTypeOfInterface(Assembly assembly, Type type)
         {
             var allTypes = assembly.ExportedTypes;
             return allTypes.First(o => o.IsClass && !o.IsAbstract && o.GetInterfaces().Any(t => t == type));

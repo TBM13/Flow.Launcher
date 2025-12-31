@@ -5,7 +5,6 @@ namespace Flow.Launcher.Helper;
 
 public static class BorderHelper
 {
-    #region Child
 
     public static readonly DependencyProperty ChildProperty =
         DependencyProperty.RegisterAttached(
@@ -28,6 +27,4 @@ public static class BorderHelper
     {
         ((Border)d).Child = (UIElement)e.NewValue;
     }
-
-    #endregion
 }
