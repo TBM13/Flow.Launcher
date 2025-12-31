@@ -49,6 +49,7 @@ namespace Flow.Launcher.ViewModel
         private readonly ResultsViewModel _results, _contextMenu;
         private readonly IReadOnlyList<Result> _emptyResult = [];
 
+        private bool _taskbarShownByFlow = false;
         #endregion
 
         #region Constructor
@@ -1429,6 +1430,13 @@ namespace Flow.Launcher.ViewModel
             MainWindowVisibility = Visibility.Visible;
             MainWindowVisibilityStatus = true;
             VisibilityChanged?.Invoke(this, new VisibilityChangedEventArgs { IsVisible = true });
+
+            // Show the taskbar if the setting is enabled
+            if (Settings.ShowTaskbarWhenInvoked && !_taskbarShownByFlow)
+            {
+                Win32Helper.ShowTaskbar();
+                _taskbarShownByFlow = true;
+            }
         }
 
         public async void Hide()
@@ -1472,6 +1480,13 @@ namespace Flow.Launcher.ViewModel
                     Win32Helper.DWMSetCloakForWindow(mainWindow, true);
                 }
             }, DispatcherPriority.Render);
+
+            // Hide the taskbar if the setting is enabled
+            if (_taskbarShownByFlow)
+            {
+                Win32Helper.HideTaskbar();
+                _taskbarShownByFlow = false;
+            }
 
             // Update WPF properties
             MainWindowVisibilityStatus = false;

@@ -53,3 +53,6 @@ CoTaskMemFree
 IShellLinkW
 SLR_FLAGS
 WIN32_FIND_DATAW
+
+MonitorFromWindow
+PostMessage
