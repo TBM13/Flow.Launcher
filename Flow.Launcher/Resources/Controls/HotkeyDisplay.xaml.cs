@@ -16,7 +16,7 @@ namespace Flow.Launcher.Resources.Controls
         {
             InitializeComponent();
             //List<string> stringList =e.NewValue.Split('+').ToList();
-            Values = new ObservableCollection<string>();
+            Values = [];
             KeysControl.ItemsSource = Values;
         }
 

@@ -19,7 +19,7 @@ public class BorderClipConverter : IMultiValueConverter
         }
 
         Path myPath = new Path();
-        if (width < Double.Epsilon || height < Double.Epsilon)
+        if (width < double.Epsilon || height < double.Epsilon)
         {
             return Geometry.Empty;
         }

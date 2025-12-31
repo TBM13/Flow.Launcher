@@ -1,11 +1,11 @@
-﻿using Flow.Launcher.Infrastructure.Hotkey;
-using Flow.Launcher.Infrastructure.UserSettings;
-using System;
-using NHotkey;
-using NHotkey.Wpf;
-using Flow.Launcher.ViewModel;
+﻿using System;
 using ChefKeys;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using Flow.Launcher.Infrastructure.Hotkey;
+using Flow.Launcher.Infrastructure.UserSettings;
+using Flow.Launcher.ViewModel;
+using NHotkey;
+using NHotkey.Wpf;
 
 namespace Flow.Launcher.Helper;
 
@@ -13,19 +13,21 @@ internal static class HotKeyMapper
 {
     private static readonly string ClassName = nameof(HotKeyMapper);
 
+#pragma warning disable CS8618
     private static Settings _settings;
     private static MainViewModel _mainViewModel;
+#pragma warning restore CS8618
 
     internal static void Initialize()
     {
         _mainViewModel = Ioc.Default.GetRequiredService<MainViewModel>();
-        _settings = Ioc.Default.GetService<Settings>();
+        _settings = Ioc.Default.GetRequiredService<Settings>();
 
         SetHotkey(_settings.Hotkey, OnToggleHotkey);
         LoadCustomPluginHotkey();
     }
 
-    internal static void OnToggleHotkey(object sender, HotkeyEventArgs args)
+    internal static void OnToggleHotkey(object? sender, HotkeyEventArgs args)
     {
         if (!_mainViewModel.ShouldIgnoreHotkeys())
             _mainViewModel.ToggleFlowLauncher();

@@ -42,7 +42,7 @@ namespace Flow.Launcher.Helper
         /// <summary>
         /// Application mutex.
         /// </summary>
-        internal static Mutex SingleInstanceMutex { get; set; }
+        internal static Mutex? SingleInstanceMutex { get; set; }
 
         #endregion
 

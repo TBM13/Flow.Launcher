@@ -31,21 +31,18 @@ namespace Flow.Launcher.Core.Plugin
 
             string actionKeyword, search;
             string possibleActionKeyword = terms[0];
-            string[] searchTerms;
 
             if (nonGlobalPlugins.TryGetValue(possibleActionKeyword, out var pluginPair) && !pluginPair.Metadata.Disabled)
             {
                 // use non global plugin for query
                 actionKeyword = possibleActionKeyword;
                 search = terms.Length > 1 ? trimmedQuery[(actionKeyword.Length + 1)..].TrimStart() : string.Empty;
-                searchTerms = terms[1..];
             }
             else
             {
                 // non action keyword
                 actionKeyword = string.Empty;
                 search = trimmedQuery.TrimStart();
-                searchTerms = terms;
             }
 
             return new Query()

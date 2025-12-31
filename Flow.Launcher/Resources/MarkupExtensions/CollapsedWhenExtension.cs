@@ -5,9 +5,8 @@ using System.Windows.Markup;
 
 namespace Flow.Launcher.Resources.MarkupExtensions;
 
-#nullable enable
-
-public class CollapsedWhenExtension : MarkupExtension {
+public class CollapsedWhenExtension : MarkupExtension
+{
     private Binding? When { get; set; }
     public object? IsEqualTo { get; set; }
 
@@ -39,7 +38,8 @@ public class CollapsedWhenExtension : MarkupExtension {
         When = when;
     }
 
-    public override object ProvideValue(IServiceProvider serviceProvider) {
+    public override object ProvideValue(IServiceProvider serviceProvider)
+    {
         if (serviceProvider.GetService(typeof(IProvideValueTarget)) is not IProvideValueTarget provideValueTarget)
             return DependencyProperty.UnsetValue;
 

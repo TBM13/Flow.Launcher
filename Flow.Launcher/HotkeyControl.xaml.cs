@@ -215,7 +215,7 @@ namespace Flow.Launcher
         private static bool CheckHotkeyAvailability(HotkeyModel hotkey, bool validateKeyGesture) =>
             hotkey.Validate(validateKeyGesture) && HotKeyMapper.CheckAvailability(hotkey);
 
-        public string EmptyHotkey => Localize.none();
+        public static string EmptyHotkey => Localize.none();
 
         public ObservableCollection<string> KeysToDisplay { get; set; } = new();
 
@@ -308,7 +308,7 @@ namespace Flow.Launcher
             }
         }
 
-        public void SetHotkey(string? keyStr, bool triggerValidate = true)
+        public void SetHotkey(string keyStr, bool triggerValidate = true)
         {
             SetHotkey(new HotkeyModel(keyStr), triggerValidate);
         }

@@ -5,7 +5,7 @@ namespace Flow.Launcher.Helper;
 
 public static class WpfHelper
 {
-    public static T FindVisualChild<T>(DependencyObject dep) where T : DependencyObject
+    public static T? FindVisualChild<T>(DependencyObject dep) where T : DependencyObject
     {
         if (dep is null)
             return null;

@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
@@ -6,7 +7,7 @@ namespace Flow.Launcher.Converters;
 
 public class BoolToVisibilityConverter : IValueConverter
 {
-    public object Convert(object value, System.Type targetType, object parameter, CultureInfo culture)
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         return (value, parameter) switch
         {
@@ -18,13 +19,14 @@ public class BoolToVisibilityConverter : IValueConverter
         };
     }
 
-    public object ConvertBack(object value, System.Type targetType, object parameter, CultureInfo culture) => throw new System.InvalidOperationException();
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        => throw new InvalidOperationException();
 }
 
 public class SplitterConverter : IValueConverter
 /* Prevents the dragging part of the preview area from working when preview is turned off. */
 {
-    public object Convert(object value, System.Type targetType, object parameter, CultureInfo culture)
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         return (value, parameter) switch
         {
@@ -36,5 +38,5 @@ public class SplitterConverter : IValueConverter
         };
     }
 
-    public object ConvertBack(object value, System.Type targetType, object parameter, CultureInfo culture) => throw new System.InvalidOperationException();
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new InvalidOperationException();
 }

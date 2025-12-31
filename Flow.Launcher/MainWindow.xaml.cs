@@ -775,7 +775,7 @@ namespace Flow.Launcher
         {
             var textBox = (TextBox)sender;
             _viewModel.QueryText = textBox.Text;
-            _viewModel.Query(false);
+            _viewModel.Query();
         }
 
         #endregion

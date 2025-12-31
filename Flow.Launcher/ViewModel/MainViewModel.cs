@@ -31,16 +31,16 @@ namespace Flow.Launcher.ViewModel
 
         private static readonly string ClassName = nameof(MainViewModel);
 
-        private Query _lastQuery;
+        private Query? _lastQuery;
         private bool _previousIsHomeQuery;
         private string _queryTextBeforeLeaveResults;
-        private string _ignoredQueryText; // Used to ignore query text change when switching between context menu and query results
+        private string? _ignoredQueryText; // Used to ignore query text change when switching between context menu and query results
 
         private readonly FlowLauncherJsonStorage<UserSelectedRecord> _userSelectedRecordStorage;
         private readonly FlowLauncherJsonStorageTopMostRecord _topMostRecord;
         private readonly UserSelectedRecord _userSelectedRecord;
 
-        private CancellationTokenSource _updateSource; // Used to cancel old query flows
+        private CancellationTokenSource? _updateSource; // Used to cancel old query flows
 
         private ChannelWriter<ResultsForUpdate> _resultsUpdateChannelWriter;
         private Task _resultsViewUpdateTask;
@@ -142,7 +142,6 @@ namespace Flow.Launcher.ViewModel
                 switch (args.PropertyName)
                 {
                     case nameof(_results.SelectedItem):
-                        _selectedItemFromQueryResults = true;
                         PreviewSelectedItem = _results.SelectedItem;
                         _ = UpdatePreviewAsync();
                         break;
@@ -250,7 +249,7 @@ namespace Flow.Launcher.ViewModel
             if (QueryResultsSelected())
             {
                 // When we are re-querying, we should not delay the query
-                _ = QueryResultsAsync(false, isReQuery: true);
+                _ = QueryResultsAsync(isReQuery: true);
             }
         }
 
@@ -258,7 +257,7 @@ namespace Flow.Launcher.ViewModel
         {
             BackToQueryResults();
             // When we are re-querying, we should not delay the query
-            _ = QueryResultsAsync(false, isReQuery: true, reSelect: reselect);
+            _ = QueryResultsAsync(isReQuery: true, reSelect: reselect);
         }
 
         [RelayCommand]
@@ -534,7 +533,7 @@ namespace Flow.Launcher.ViewModel
                 // Change query text first
                 QueryText = queryText;
                 // When we are changing query from codes, we should not delay the query
-                Query(false, isReQuery: false);
+                Query(isReQuery: false);
 
                 // set to false so the subsequent set true triggers
                 // PropertyChanged and MoveQueryTextToEnd is called
@@ -543,7 +542,7 @@ namespace Flow.Launcher.ViewModel
             else if (isReQuery)
             {
                 // When we are re-querying, we should not delay the query
-                Query(false, isReQuery: true);
+                Query(isReQuery: true);
             }
 
             QueryTextCursorMovedToEnd = true;
@@ -566,7 +565,7 @@ namespace Flow.Launcher.ViewModel
                 // Change query text first
                 QueryText = queryText;
                 // When we are changing query from codes, we should not delay the query
-                await QueryAsync(false, isReQuery: false);
+                await QueryAsync(isReQuery: false);
 
                 // set to false so the subsequent set true triggers
                 // PropertyChanged and MoveQueryTextToEnd is called
@@ -575,7 +574,7 @@ namespace Flow.Launcher.ViewModel
             else if (isReQuery)
             {
                 // When we are re-querying, we should not delay the query
-                await QueryAsync(false, isReQuery: true);
+                await QueryAsync(isReQuery: true);
             }
 
             QueryTextCursorMovedToEnd = true;
@@ -625,7 +624,7 @@ namespace Flow.Launcher.ViewModel
                     // so we need manually call Query()
                     // http://stackoverflow.com/posts/25895769/revisions
                     if (_queryTextBeforeLeaveResults == string.Empty)
-                        Query(false);
+                        Query();
                 }
 
                 // Update LateSelectedResults later so UI doesn't flicker when entering context menu
@@ -653,8 +652,8 @@ namespace Flow.Launcher.ViewModel
         // because it is more accurate and reliable representation than using Visibility as a condition check
         public bool MainWindowVisibilityStatus { get; set; } = true;
 
-        public event VisibilityChangedEventHandler VisibilityChanged;
-        public event ActualApplicationThemeChangedEventHandler ActualApplicationThemeChanged;
+        public event VisibilityChangedEventHandler? VisibilityChanged;
+        public event ActualApplicationThemeChangedEventHandler? ActualApplicationThemeChanged;
 
         public double MainWindowWidth
         {
@@ -734,11 +733,9 @@ namespace Flow.Launcher.ViewModel
         private static readonly int ResultAreaColumnPreviewShown = 1;
         private static readonly int ResultAreaColumnPreviewHidden = 3;
 
-        private bool? _selectedItemFromQueryResults;
-
         private readonly DefaultPreview _defaultPreview = new();
-        private ResultViewModel _previewSelectedItem;
-        public ResultViewModel PreviewSelectedItem
+        private ResultViewModel? _previewSelectedItem;
+        public ResultViewModel? PreviewSelectedItem
         {
             get => _previewSelectedItem;
             set
@@ -939,10 +936,10 @@ namespace Flow.Launcher.ViewModel
 
         public void QueryResults()
         {
-            _ = QueryResultsAsync(false);
+            _ = QueryResultsAsync();
         }
 
-        public void Query(bool searchDelay, bool isReQuery = false)
+        public void Query(bool isReQuery = false)
         {
             if (_ignoredQueryText != null)
             {
@@ -960,7 +957,7 @@ namespace Flow.Launcher.ViewModel
 
             if (QueryResultsSelected())
             {
-                _ = QueryResultsAsync(searchDelay, isReQuery);
+                _ = QueryResultsAsync(isReQuery);
             }
             else if (ContextMenuSelected())
             {
@@ -968,11 +965,11 @@ namespace Flow.Launcher.ViewModel
             }
         }
 
-        private async Task QueryAsync(bool searchDelay, bool isReQuery = false)
+        private async Task QueryAsync(bool isReQuery = false)
         {
             if (QueryResultsSelected())
             {
-                await QueryResultsAsync(searchDelay, isReQuery);
+                await QueryResultsAsync(isReQuery);
             }
             else if (ContextMenuSelected())
             {
@@ -993,10 +990,10 @@ namespace Flow.Launcher.ViewModel
                 List<Result> results;
                 if (selected.PluginID == null) // SelectedItem from history in home page.
                 {
-                    results = new()
-                    {
+                    results =
+                    [
                         ContextMenuTopMost(selected)
-                    };
+                    ];
                 }
                 else
                 {
@@ -1030,9 +1027,10 @@ namespace Flow.Launcher.ViewModel
             }
         }
 
-        private async Task QueryResultsAsync(bool searchDelay, bool isReQuery = false, bool reSelect = true)
+        private async Task QueryResultsAsync(bool isReQuery = false, bool reSelect = true)
         {
-            _updateSource?.Cancel();
+            if (_updateSource is not null)
+                await _updateSource.CancelAsync();
 
             App.API.LogDebug(ClassName, $"Start query with text: <{QueryText}>");
 
@@ -1112,19 +1110,19 @@ namespace Flow.Launcher.ViewModel
                     return;
                 }
 
-                tasks = plugins.Select(plugin => plugin.Metadata.HomeDisabled switch
+                tasks = [.. plugins.Select(plugin => plugin.Metadata.HomeDisabled switch
                 {
                     false => QueryTaskAsync(plugin, currentCancellationToken),
                     true => Task.CompletedTask
-                }).ToArray();
+                })];
             }
             else
             {
-                tasks = plugins.Select(plugin => plugin.Metadata.Disabled switch
+                tasks = [.. plugins.Select(plugin => plugin.Metadata.Disabled switch
                 {
                     false => QueryTaskAsync(plugin, currentCancellationToken),
                     true => Task.CompletedTask
-                }).ToArray();
+                })];
             }
 
             try
@@ -1191,7 +1189,7 @@ namespace Flow.Launcher.ViewModel
             }
         }
 
-        private async Task<Query> ConstructQueryAsync(string queryText, IEnumerable<CustomShortcutModel> customShortcuts,
+        private async Task<Query?> ConstructQueryAsync(string queryText, IEnumerable<CustomShortcutModel> customShortcuts,
             IEnumerable<BaseBuiltinShortcutModel> builtInShortcuts)
         {
             if (string.IsNullOrWhiteSpace(queryText))
@@ -1310,7 +1308,7 @@ namespace Flow.Launcher.ViewModel
         /// </summary>
         /// <param name="plugins">The collection of plugins to check.</param>
         /// <returns>True if existing results should be cleared, false otherwise.</returns>
-        private bool ShouldClearExistingResultsForNonQuery(ICollection<PluginPair> plugins)
+        private static bool ShouldClearExistingResultsForNonQuery(ICollection<PluginPair> plugins)
         {
             if (plugins.Count == 0 || plugins.All(x => x.Metadata.HomeDisabled == true))
             {
@@ -1496,7 +1494,7 @@ namespace Flow.Launcher.ViewModel
         /// </summary>
         public void UpdateResultView(ICollection<ResultsForUpdate> resultsForUpdates)
         {
-            if (!resultsForUpdates.Any())
+            if (resultsForUpdates.Count == 0)
                 return;
 
             CancellationToken token;

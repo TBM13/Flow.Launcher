@@ -3,8 +3,6 @@ using System.Windows.Data;
 
 namespace Flow.Launcher.Resources.MarkupExtensions;
 
-#nullable enable
-
 public class VisibleWhenExtension : CollapsedWhenExtension
 {
     protected override Visibility DefaultVisibility => Visibility.Collapsed;

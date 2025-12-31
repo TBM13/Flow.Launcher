@@ -5,15 +5,15 @@ using System.Windows.Data;
 
 namespace Flow.Launcher.Resources.MarkupExtensions;
 
-#nullable enable
-
-public class HideableVisibilityConverter : IMultiValueConverter, IValueConverter {
+public class HideableVisibilityConverter : IMultiValueConverter, IValueConverter
+{
     public Visibility DefaultVisibility { get; init; } = Visibility.Visible;
     public Visibility InvertedVisibility { get; init; } = Visibility.Collapsed;
 
     public object? IsEqualTo { get; set; }
 
-    public object Convert(object?[] values, Type targetType, object? parameter, CultureInfo culture) {
+    public object Convert(object?[] values, Type targetType, object? parameter, CultureInfo culture)
+    {
         if (values is not { Length: 2 })
             return DependencyProperty.UnsetValue;
 
@@ -33,7 +33,8 @@ public class HideableVisibilityConverter : IMultiValueConverter, IValueConverter
         return Equals(value, IsEqualTo) ? InvertedVisibility : DefaultVisibility;
     }
 
-    public object[] ConvertBack(object? value, Type[] targetTypes, object? parameter, CultureInfo culture) {
+    public object[] ConvertBack(object? value, Type[] targetTypes, object? parameter, CultureInfo culture)
+    {
         throw new NotSupportedException();
     }
 
