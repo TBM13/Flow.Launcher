@@ -34,7 +34,6 @@ namespace Flow.Launcher.Infrastructure.Image
         public const int FullImageSize = 320;
 
         private static readonly string[] ImageExtensions = [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".ico"];
-        private static readonly string SvgExtension = ".svg";
 
         public static async Task InitializeAsync()
         {
@@ -91,16 +90,6 @@ namespace Flow.Launcher.Infrastructure.Image
 
                         return new ImageResult(imageSource, ImageType.Cache);
                     }
-                }
-
-                if (Uri.TryCreate(path, UriKind.RelativeOrAbsolute, out var uriResult)
-                    && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
-                {
-                    Log.Error(ClassName, $"Failed to load image from path {path}: Remote images are not supported.");
-
-                    ImageSource image = MissingImage;
-                    ImageCache[path, false] = image;
-                    imageResult = new ImageResult(image, ImageType.Error);
                 }
 
                 if (path.StartsWith("data:image", StringComparison.OrdinalIgnoreCase))
@@ -179,12 +168,6 @@ namespace Flow.Launcher.Infrastructure.Image
                          */
                         image = GetThumbnail(path, ThumbnailOptions.ThumbnailOnly);
                     }
-                }
-                else if (extension == SvgExtension)
-                {
-                    Log.Error(ClassName, $"Failed to load SVG image from path {path}: SVG images aren't supported.");
-                    image = Image;
-                    type = ImageType.Error;
                 }
                 else
                 {

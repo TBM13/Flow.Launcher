@@ -22,14 +22,11 @@ namespace Flow.Launcher.ViewModel
         private readonly MainViewModel _mainVM;
         private int MaxResults => _settings?.MaxResultsToShow ?? 6;
 
-        public ResultsViewModel()
+        public ResultsViewModel(Settings settings, MainViewModel mainVM)
         {
             Results = [];
             BindingOperations.EnableCollectionSynchronization(Results, _collectionLock);
-        }
 
-        public ResultsViewModel(Settings settings, MainViewModel mainVM) : this()
-        {
             _settings = settings;
             _mainVM = mainVM;
             _settings.PropertyChanged += (s, e) =>
@@ -74,12 +71,12 @@ namespace Flow.Launcher.ViewModel
 
         public int SelectedIndex { get; set; }
 
-        public ResultViewModel SelectedItem { get; set; }
+        public ResultViewModel? SelectedItem { get; set; }
         public Thickness Margin { get; set; }
         public Visibility Visibility { get; set; } = Visibility.Collapsed;
 
-        public ICommand RightClickResultCommand { get; init; }
-        public ICommand LeftClickResultCommand { get; init; }
+        public required ICommand RightClickResultCommand { get; init; }
+        public required ICommand LeftClickResultCommand { get; init; }
 
         private int NewIndex(int i)
         {
@@ -221,7 +218,7 @@ namespace Flow.Launcher.ViewModel
         {
             private long editTime = 0;
 
-            public event NotifyCollectionChangedEventHandler CollectionChanged;
+            public event NotifyCollectionChangedEventHandler? CollectionChanged;
 
             protected void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
             {

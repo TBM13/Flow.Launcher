@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -695,16 +696,16 @@ namespace Flow.Launcher.ViewModel
             set => Settings.ResultSubItemFontSize = value;
         }
 
-        public ImageSource PluginIconSource { get; private set; } = null;
+        public ImageSource? PluginIconSource { get; private set; } = null;
 
-        public string PluginIconPath { get; set; } = null;
+        public string? PluginIconPath { get; set; } = null;
 
         private static string VerifyOrSetDefaultHotkey(string hotkey, string defaultHotkey)
         {
             try
             {
                 var converter = new KeyGestureConverter();
-                var key = (KeyGesture)converter.ConvertFromString(hotkey);
+                var key = (KeyGesture?)converter.ConvertFromString(hotkey);
             }
             catch (Exception e) when (e is NotSupportedException || e is InvalidEnumArgumentException)
             {
@@ -763,7 +764,7 @@ namespace Flow.Launcher.ViewModel
             }
         }
 
-        public Control PreviewContent
+        public Control? PreviewContent
         {
             get
             {
@@ -918,9 +919,9 @@ namespace Flow.Launcher.ViewModel
             }
         }
 
-        private bool CanExternalPreviewSelectedResult(out string path)
+        private bool CanExternalPreviewSelectedResult([NotNullWhen(true)] out string? path)
         {
-            path = QueryResultsPreviewed() ? _results.SelectedItem?.Result?.Preview.FilePath : string.Empty;
+            path = QueryResultsPreviewed() ? _results.SelectedItem?.Result.Preview.FilePath : string.Empty;
             return !string.IsNullOrEmpty(path);
         }
 
