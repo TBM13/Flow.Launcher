@@ -4,3 +4,7 @@ LoadLibraryEx
 FreeLibrary
 ExpandEnvironmentStrings
 S_OK
+IShellItem
+SHCreateItemFromParsingName
+IShellLinkW
+CoTaskMemFree
