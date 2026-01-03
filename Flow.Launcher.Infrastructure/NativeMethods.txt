@@ -56,3 +56,6 @@ WIN32_FIND_DATAW
 
 MonitorFromWindow
 PostMessage
+
+SetWindowLong
+GetWindowLong
