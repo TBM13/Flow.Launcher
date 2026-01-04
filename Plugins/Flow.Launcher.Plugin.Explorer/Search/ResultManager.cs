@@ -4,7 +4,6 @@ using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Plugin.Explorer.Helper;
 using Flow.Launcher.Plugin.Explorer.Views;
 using Flow.Launcher.Plugin.SharedCommands;
 using Flow.Launcher.Plugin.SharedModels;
@@ -59,27 +58,6 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             };
         }
 
-        internal static void ShowNativeContextMenu(string path, ResultType type)
-        {
-            var screenWithMouseCursor = MonitorInfo.GetCursorDisplayMonitor();
-            var xOfScreenCenter = screenWithMouseCursor.WorkingArea.Left + screenWithMouseCursor.WorkingArea.Width / 2;
-            var yOfScreenCenter = screenWithMouseCursor.WorkingArea.Top + screenWithMouseCursor.WorkingArea.Height / 2;
-            var showPosition = new System.Drawing.Point((int)xOfScreenCenter, (int)yOfScreenCenter);
-
-            switch (type)
-            {
-                case ResultType.File:
-                    var fileInfo = new FileInfo[] { new(path) };
-                    new ShellContextMenu().ShowContextMenu(fileInfo, showPosition);
-                    break;
-
-                case ResultType.Folder:
-                    var folderInfo = new System.IO.DirectoryInfo[] { new(path) };
-                    new ShellContextMenu().ShowContextMenu(folderInfo, showPosition);
-                    break;
-            }
-        }
-
         internal static Result CreateFolderResult(string title, string subtitle, string path, Query query, int score = 0)
         {
             return new Result
@@ -96,11 +74,6 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 PreviewPanel = new Lazy<UserControl>(() => new PreviewPanel(Settings, path, ResultType.Folder)),
                 Action = c =>
                 {
-                    if (c.SpecialKeyState.ToModifierKeys() == ModifierKeys.Alt)
-                    {
-                        ShowNativeContextMenu(path, ResultType.Folder);
-                        return false;
-                    }
                     // open folder
                     if (c.SpecialKeyState.ToModifierKeys() == (ModifierKeys.Control | ModifierKeys.Shift))
                     {
@@ -223,11 +196,6 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 CopyText = folderPath,
                 Action = c =>
                 {
-                    if (c.SpecialKeyState.ToModifierKeys() == ModifierKeys.Alt)
-                    {
-                        ShowNativeContextMenu(folderPath, ResultType.Folder);
-                        return false;
-                    }
                     OpenFolder(folderPath);
                     return true;
                 },
@@ -262,11 +230,6 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 PreviewPanel = new Lazy<UserControl>(() => new PreviewPanel(Settings, filePath, ResultType.File)),
                 Action = c =>
                 {
-                    if (c.SpecialKeyState.ToModifierKeys() == ModifierKeys.Alt)
-                    {
-                        ShowNativeContextMenu(filePath, ResultType.File);
-                        return false;
-                    }
                     try
                     {
                         if (c.SpecialKeyState.ToModifierKeys() == (ModifierKeys.Control | ModifierKeys.Shift))

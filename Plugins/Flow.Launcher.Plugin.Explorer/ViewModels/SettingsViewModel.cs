@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Windows;
-using System.Windows.Forms;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Plugin.Explorer.Search;
+using Microsoft.Win32;
 
 namespace Flow.Launcher.Plugin.Explorer.ViewModels
 {
@@ -158,19 +158,17 @@ namespace Flow.Launcher.Plugin.Explorer.ViewModels
 
         private static string? PromptUserSelectPath(ResultType type, string? initialDirectory = null)
         {
-            string? path = null;
-
             if (type is ResultType.Folder)
             {
-                var folderBrowserDialog = new FolderBrowserDialog();
+                var folderBrowserDialog = new OpenFolderDialog();
 
                 if (initialDirectory is not null)
                     folderBrowserDialog.InitialDirectory = initialDirectory;
 
-                if (folderBrowserDialog.ShowDialog() != DialogResult.OK)
-                    return path;
+                if (folderBrowserDialog.ShowDialog() != true)
+                    return null;
 
-                path = folderBrowserDialog.SelectedPath;
+                return folderBrowserDialog.FolderName;
             }
             else if (type is ResultType.File)
             {
@@ -178,12 +176,13 @@ namespace Flow.Launcher.Plugin.Explorer.ViewModels
                 if (initialDirectory is not null)
                     openFileDialog.InitialDirectory = initialDirectory;
 
-                if (openFileDialog.ShowDialog() != DialogResult.OK)
-                    return path;
+                if (openFileDialog.ShowDialog() != true)
+                    return null;
 
-                path = openFileDialog.FileName;
+                return openFileDialog.FileName;
             }
-            return path;
+
+            return null;
         }
 
         [RelayCommand]
