@@ -18,7 +18,7 @@ using Point = System.Windows.Point;
 
 namespace Flow.Launcher.Infrastructure
 {
-    public static class Win32Helper
+    public static partial class Win32Helper
     {
         #region Blur Handling
 
@@ -373,8 +373,8 @@ namespace Flow.Launcher.Infrastructure
          * Inspired by https://github.com/ysc3839/win32-darkmode
          */
 
-        [DllImport("uxtheme.dll", EntryPoint = "#135", SetLastError = true)]
-        private static extern int SetPreferredAppMode(int appMode);
+        [LibraryImport("uxtheme.dll", EntryPoint = "#135", SetLastError = true)]
+        private static partial int SetPreferredAppMode(int appMode);
 
         public static void EnableWin32DarkMode(string colorScheme)
         {
