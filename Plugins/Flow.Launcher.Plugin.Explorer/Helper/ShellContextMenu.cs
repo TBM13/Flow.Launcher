@@ -39,7 +39,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
         /// <summary>Default constructor</summary>
         public ShellContextMenu()
         {
-            this.CreateHandle(new CreateParams());
+            CreateHandle(new CreateParams());
         }
 
         #endregion
@@ -97,25 +97,6 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
         /// <returns>true if the message has been handled, false otherwise</returns>
         protected override void WndProc(ref Message m)
         {
-            #region IContextMenu
-
-            if (_oContextMenu != null &&
-                m.Msg == (int)WM.MENUSELECT &&
-                (ShellHelper.HiWord(m.WParam) & (nint)MFT.SEPARATOR) == 0 &&
-                (ShellHelper.HiWord(m.WParam) & (nint)MFT.POPUP) == 0)
-            {
-                string info = string.Empty;
-
-                if (ShellHelper.LoWord(m.WParam) == (nint)CMD_CUSTOM.ExpandCollapse)
-                    info = "Expands or collapses the current selected item";
-                else
-                {
-                    info = "";
-                }
-            }
-
-            #endregion
-
             #region IContextMenu2
 
             if (_oContextMenu2 != null &&
@@ -149,19 +130,21 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
 
         #region InvokeCommand
 
-        private void InvokeCommand(IContextMenu oContextMenu, uint nCmd, string strFolder, Point pointInvoke)
+        private static void InvokeCommand(IContextMenu oContextMenu, uint nCmd, string strFolder, Point pointInvoke)
         {
-            CMINVOKECOMMANDINFOEX invoke = new CMINVOKECOMMANDINFOEX();
-            invoke.cbSize = cbInvokeCommand;
-            invoke.lpVerb = (IntPtr)(nCmd - CMD_FIRST);
-            invoke.lpDirectory = strFolder;
-            invoke.lpVerbW = (IntPtr)(nCmd - CMD_FIRST);
-            invoke.lpDirectoryW = strFolder;
-            invoke.fMask = CMIC.UNICODE | CMIC.PTINVOKE |
-                           ((Control.ModifierKeys & Keys.Control) != 0 ? CMIC.CONTROL_DOWN : 0) |
-                           ((Control.ModifierKeys & Keys.Shift) != 0 ? CMIC.SHIFT_DOWN : 0);
-            invoke.ptInvoke = new POINT(pointInvoke.X, pointInvoke.Y);
-            invoke.nShow = SW.SHOWNORMAL;
+            CMINVOKECOMMANDINFOEX invoke = new CMINVOKECOMMANDINFOEX
+            {
+                cbSize = cbInvokeCommand,
+                lpVerb = (IntPtr)(nCmd - CMD_FIRST),
+                lpDirectory = strFolder,
+                lpVerbW = (IntPtr)(nCmd - CMD_FIRST),
+                lpDirectoryW = strFolder,
+                fMask = CMIC.UNICODE | CMIC.PTINVOKE |
+                               ((Control.ModifierKeys & Keys.Control) != 0 ? CMIC.CONTROL_DOWN : 0) |
+                               ((Control.ModifierKeys & Keys.Shift) != 0 ? CMIC.SHIFT_DOWN : 0),
+                ptInvoke = new POINT(pointInvoke.X, pointInvoke.Y),
+                nShow = SW.SHOWNORMAL
+            };
 
             oContextMenu.InvokeCommand(ref invoke);
         }
@@ -225,7 +208,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
                 int nResult = SHGetDesktopFolder(out pUnkownDesktopFolder);
                 if (S_OK != nResult)
                 {
-                    throw new ShellContextMenuException("Failed to get the desktop shell folder");
+                    throw new Exception("Failed to get the desktop shell folder");
                 }
                 _oDesktopFolder = (IShellFolder)Marshal.GetTypedObjectForIUnknown(pUnkownDesktopFolder, typeof(IShellFolder));
             }
@@ -376,7 +359,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
         /// Free the PIDLs
         /// </summary>
         /// <param name="arrPIDLs">Array of PIDLs (IntPtr)</param>
-        protected void FreePIDLs(IntPtr[] arrPIDLs)
+        protected static void FreePIDLs(IntPtr[] arrPIDLs)
         {
             if (null != arrPIDLs)
             {
@@ -388,66 +371,6 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
                         arrPIDLs[n] = IntPtr.Zero;
                     }
                 }
-            }
-        }
-
-        #endregion
-
-        #region InvokeContextMenuDefault
-
-        private void InvokeContextMenuDefault(FileInfo[] arrFI)
-        {
-            // Release all resources first.
-            ReleaseAll();
-
-            IntPtr pMenu = IntPtr.Zero,
-                iContextMenuPtr = IntPtr.Zero;
-
-            try
-            {
-                _arrPIDLs = GetPIDLs(arrFI);
-                if (null == _arrPIDLs)
-                {
-                    ReleaseAll();
-                    return;
-                }
-
-                if (false == GetContextMenuInterfaces(_oParentFolder, _arrPIDLs, out iContextMenuPtr))
-                {
-                    ReleaseAll();
-                    return;
-                }
-
-                pMenu = CreatePopupMenu();
-
-                int nResult = _oContextMenu.QueryContextMenu(
-                    pMenu,
-                    0,
-                    CMD_FIRST,
-                    CMD_LAST,
-                    CMF.DEFAULTONLY |
-                    ((Control.ModifierKeys & Keys.Shift) != 0 ? CMF.EXTENDEDVERBS : 0));
-
-                uint nDefaultCmd = (uint)GetMenuDefaultItem(pMenu, false, 0);
-                if (nDefaultCmd >= CMD_FIRST)
-                {
-                    InvokeCommand(_oContextMenu, nDefaultCmd, arrFI[0].DirectoryName, Control.MousePosition);
-                }
-
-                DestroyMenu(pMenu);
-                pMenu = IntPtr.Zero;
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                if (pMenu != IntPtr.Zero)
-                {
-                    DestroyMenu(pMenu);
-                }
-                ReleaseAll();
             }
         }
 
@@ -465,7 +388,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
             // Release all resources first.
             ReleaseAll();
             _arrPIDLs = GetPIDLs(files);
-            this.ShowContextMenu(pointScreen);
+            ShowContextMenu(pointScreen);
         }
 
         /// <summary>
@@ -478,7 +401,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
             // Release all resources first.
             ReleaseAll();
             _arrPIDLs = GetPIDLs(dirs);
-            this.ShowContextMenu(pointScreen);
+            ShowContextMenu(pointScreen);
         }
 
         /// <summary>
@@ -529,7 +452,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
                     TPM.RETURNCMD,
                     pointScreen.X,
                     pointScreen.Y,
-                    this.Handle,
+                    Handle,
                     IntPtr.Zero);
 
                 DestroyMenu(pMenu);
@@ -567,7 +490,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
 
         #endregion
 
-        #region Local variabled
+        #region Local variables
 
         private IContextMenu _oContextMenu;
         private IContextMenu2 _oContextMenu2;
@@ -586,10 +509,9 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
         private const uint CMD_LAST = 30000;
 
         private const int S_OK = 0;
-        private const int S_FALSE = 1;
 
-        private static int cbMenuItemInfo = Marshal.SizeOf(typeof(MENUITEMINFO));
-        private static int cbInvokeCommand = Marshal.SizeOf(typeof(CMINVOKECOMMANDINFOEX));
+        private static readonly int cbMenuItemInfo = Marshal.SizeOf<MENUITEMINFO>();
+        private static readonly int cbInvokeCommand = Marshal.SizeOf<CMINVOKECOMMANDINFOEX>();
 
         #endregion
 
@@ -597,11 +519,11 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
 
         // Retrieves the IShellFolder interface for the desktop folder, which is the root of the Shell's namespace.
         [DllImport("shell32.dll")]
-        private static extern Int32 SHGetDesktopFolder(out IntPtr ppshf);
+        private static extern int SHGetDesktopFolder(out IntPtr ppshf);
 
         // Takes a STRRET structure returned by IShellFolder::GetDisplayNameOf, converts it to a string, and places the result in a buffer. 
         [DllImport("shlwapi.dll", EntryPoint = "StrRetToBuf", ExactSpelling = false, CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern Int32 StrRetToBuf(IntPtr pstr, IntPtr pidl, StringBuilder pszBuf, int cchBuf);
+        private static extern int StrRetToBuf(IntPtr pstr, IntPtr pidl, StringBuilder pszBuf, int cchBuf);
 
         // The TrackPopupMenuEx function displays a shortcut menu at the specified location and tracks the selection of items on the shortcut menu. The shortcut menu can appear anywhere on the screen.
         [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
@@ -614,32 +536,18 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
         // The DestroyMenu function destroys the specified menu and frees any memory that the menu occupies.
         [DllImport("user32", SetLastError = true, CharSet = CharSet.Auto)]
         private static extern bool DestroyMenu(IntPtr hMenu);
-
-        // Determines the default menu item on the specified menu
-        [DllImport("user32", SetLastError = true, CharSet = CharSet.Auto)]
-        private static extern int GetMenuDefaultItem(IntPtr hMenu, bool fByPos, uint gmdiFlags);
-
         #endregion
 
         #region Shell GUIDs
 
-        private static Guid IID_IShellFolder = new Guid("{000214E6-0000-0000-C000-000000000046}");
-        private static Guid IID_IContextMenu = new Guid("{000214e4-0000-0000-c000-000000000046}");
-        private static Guid IID_IContextMenu2 = new Guid("{000214f4-0000-0000-c000-000000000046}");
-        private static Guid IID_IContextMenu3 = new Guid("{bcfce0a0-ec17-11d0-8d10-00a0c90f2719}");
+        private static Guid IID_IShellFolder = new("{000214E6-0000-0000-C000-000000000046}");
+        private static Guid IID_IContextMenu = new("{000214e4-0000-0000-c000-000000000046}");
+        private static Guid IID_IContextMenu2 = new("{000214f4-0000-0000-c000-000000000046}");
+        private static Guid IID_IContextMenu3 = new("{bcfce0a0-ec17-11d0-8d10-00a0c90f2719}");
 
         #endregion
 
         #region Structs
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct CWPSTRUCT
-        {
-            public IntPtr lparam;
-            public IntPtr wparam;
-            public int message;
-            public IntPtr hwnd;
-        }
 
         // Contains extended information about a shortcut menu command
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
@@ -670,67 +578,29 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
 
         // Contains information about a menu item
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-        private struct MENUITEMINFO
+        private struct MENUITEMINFO(string text)
         {
-            public MENUITEMINFO(string text)
-            {
-                cbSize = cbMenuItemInfo;
-                dwTypeData = text;
-                cch = text.Length;
-                fMask = 0;
-                fType = 0;
-                fState = 0;
-                wID = 0;
-                hSubMenu = IntPtr.Zero;
-                hbmpChecked = IntPtr.Zero;
-                hbmpUnchecked = IntPtr.Zero;
-                dwItemData = IntPtr.Zero;
-                hbmpItem = IntPtr.Zero;
-            }
-
-            public int cbSize;
-            public MIIM fMask;
-            public MFT fType;
-            public MFS fState;
-            public uint wID;
-            public IntPtr hSubMenu;
-            public IntPtr hbmpChecked;
-            public IntPtr hbmpUnchecked;
-            public IntPtr dwItemData;
+            public int cbSize = cbMenuItemInfo;
+            public MIIM fMask = 0;
+            public MFT fType = 0;
+            public MFS fState = 0;
+            public uint wID = 0;
+            public IntPtr hSubMenu = IntPtr.Zero;
+            public IntPtr hbmpChecked = IntPtr.Zero;
+            public IntPtr hbmpUnchecked = IntPtr.Zero;
+            public IntPtr dwItemData = IntPtr.Zero;
             [MarshalAs(UnmanagedType.LPTStr)]
-            public string dwTypeData;
-            public int cch;
-            public IntPtr hbmpItem;
-        }
-
-        // A generalized global memory handle used for data transfer operations by the 
-        // IAdviseSink, IDataObject, and IOleCache interfaces
-        [StructLayout(LayoutKind.Sequential)]
-        private struct STGMEDIUM
-        {
-            public TYMED tymed;
-            public IntPtr hBitmap;
-            public IntPtr hMetaFilePict;
-            public IntPtr hEnhMetaFile;
-            public IntPtr hGlobal;
-            public IntPtr lpszFileName;
-            public IntPtr pstm;
-            public IntPtr pstg;
-            public IntPtr pUnkForRelease;
+            public string dwTypeData = text;
+            public int cch = text.Length;
+            public IntPtr hbmpItem = IntPtr.Zero;
         }
 
         // Defines the x- and y-coordinates of a point
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-        private struct POINT
+        private struct POINT(int x, int y)
         {
-            public POINT(int x, int y)
-            {
-                this.x = x;
-                this.y = y;
-            }
-
-            public int x;
-            public int y;
+            public int x = x;
+            public int y = y;
         }
 
         #endregion
@@ -853,12 +723,6 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
             VERNEGANIMATION = 0x2000,
             NOANIMATION = 0x4000,
             LAYOUTRTL = 0x8000
-        }
-
-        // The cmd for a custom added menu item
-        private enum CMD_CUSTOM
-        {
-            ExpandCollapse = (int)CMD_LAST + 1
         }
 
         // Flags used with the CMINVOKECOMMANDINFOEX structure
@@ -1160,33 +1024,18 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
             TYPE = 0x10
         }
 
-        // Indicates the type of storage medium being used in a data transfer
-        [Flags]
-        private enum TYMED
-        {
-            ENHMF = 0x40,
-            FILE = 2,
-            GDI = 0x10,
-            HGLOBAL = 1,
-            ISTORAGE = 8,
-            ISTREAM = 4,
-            MFPICT = 0x20,
-            NULL = 0
-        }
-
         #endregion
 
         #region IShellFolder
 
-        [ComImport]
+        [ComImport, Guid("000214E6-0000-0000-C000-000000000046")]
         [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        [Guid("000214E6-0000-0000-C000-000000000046")]
         private interface IShellFolder
         {
             // Translates a file object's or folder's display name into an item identifier list.
             // Return value: error code, if any
             [PreserveSig]
-            Int32 ParseDisplayName(
+            int ParseDisplayName(
                 IntPtr hwnd,
                 IntPtr pbc,
                 [MarshalAs(UnmanagedType.LPWStr)] string pszDisplayName,
@@ -1198,7 +1047,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
             // identifier enumeration object and returning its IEnumIDList interface.
             // Return value: error code, if any
             [PreserveSig]
-            Int32 EnumObjects(
+            int EnumObjects(
                 IntPtr hwnd,
                 SHCONTF grfFlags,
                 out IntPtr enumIDList);
@@ -1206,7 +1055,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
             // Retrieves an IShellFolder object for a subfolder.
             // Return value: error code, if any
             [PreserveSig]
-            Int32 BindToObject(
+            int BindToObject(
                 IntPtr pidl,
                 IntPtr pbc,
                 ref Guid riid,
@@ -1215,7 +1064,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
             // Requests a pointer to an object's storage interface. 
             // Return value: error code, if any
             [PreserveSig]
-            Int32 BindToStorage(
+            int BindToStorage(
                 IntPtr pidl,
                 IntPtr pbc,
                 ref Guid riid,
@@ -1232,7 +1081,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
             // follow the second (pidl1 > pidl2).  Zero A return value of zero
             // indicates that the two items are the same (pidl1 = pidl2). 
             [PreserveSig]
-            Int32 CompareIDs(
+            int CompareIDs(
                 IntPtr lParam,
                 IntPtr pidl1,
                 IntPtr pidl2);
@@ -1241,7 +1090,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
             // with a folder object.
             // Return value: error code, if any
             [PreserveSig]
-            Int32 CreateViewObject(
+            int CreateViewObject(
                 IntPtr hwndOwner,
                 Guid riid,
                 out IntPtr ppv);
@@ -1249,7 +1098,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
             // Retrieves the attributes of one or more file objects or subfolders. 
             // Return value: error code, if any
             [PreserveSig]
-            Int32 GetAttributesOf(
+            int GetAttributesOf(
                 uint cidl,
                 [MarshalAs(UnmanagedType.LPArray)] IntPtr[] apidl,
                 ref SFGAO rgfInOut);
@@ -1258,7 +1107,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
             // specified file objects or folders.
             // Return value: error code, if any
             [PreserveSig]
-            Int32 GetUIObjectOf(
+            int GetUIObjectOf(
                 IntPtr hwndOwner,
                 uint cidl,
                 [MarshalAs(UnmanagedType.LPArray)] IntPtr[] apidl,
@@ -1269,7 +1118,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
             // Retrieves the display name for the specified file object or subfolder. 
             // Return value: error code, if any
             [PreserveSig()]
-            Int32 GetDisplayNameOf(
+            int GetDisplayNameOf(
                 IntPtr pidl,
                 SHGNO uFlags,
                 IntPtr lpName);
@@ -1278,7 +1127,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
             // identifier in the process.
             // Return value: error code, if any
             [PreserveSig]
-            Int32 SetNameOf(
+            int SetNameOf(
                 IntPtr hwnd,
                 IntPtr pidl,
                 [MarshalAs(UnmanagedType.LPWStr)] string pszName,
@@ -1290,14 +1139,13 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
 
         #region IContextMenu
 
-        [ComImport()]
+        [ComImport, Guid("000214e4-0000-0000-c000-000000000046")]
         [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        [GuidAttribute("000214e4-0000-0000-c000-000000000046")]
         private interface IContextMenu
         {
             // Adds commands to a shortcut menu
             [PreserveSig()]
-            Int32 QueryContextMenu(
+            int QueryContextMenu(
                 IntPtr hmenu,
                 uint iMenu,
                 uint idCmdFirst,
@@ -1306,14 +1154,14 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
 
             // Carries out the command associated with a shortcut menu item
             [PreserveSig()]
-            Int32 InvokeCommand(
+            int InvokeCommand(
                 ref CMINVOKECOMMANDINFOEX info);
 
             // Retrieves information about a shortcut menu command, 
             // including the help string and the language-independent, 
             // or canonical, name for the command
             [PreserveSig()]
-            Int32 GetCommandString(
+            int GetCommandString(
                 uint idcmd,
                 GCS uflags,
                 uint reserved,
@@ -1327,7 +1175,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
         {
             // Adds commands to a shortcut menu
             [PreserveSig()]
-            Int32 QueryContextMenu(
+            int QueryContextMenu(
                 IntPtr hmenu,
                 uint iMenu,
                 uint idCmdFirst,
@@ -1336,14 +1184,14 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
 
             // Carries out the command associated with a shortcut menu item
             [PreserveSig()]
-            Int32 InvokeCommand(
+            int InvokeCommand(
                 ref CMINVOKECOMMANDINFOEX info);
 
             // Retrieves information about a shortcut menu command, 
             // including the help string and the language-independent, 
             // or canonical, name for the command
             [PreserveSig()]
-            Int32 GetCommandString(
+            int GetCommandString(
                 uint idcmd,
                 GCS uflags,
                 uint reserved,
@@ -1353,7 +1201,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
             // Allows client objects of the IContextMenu interface to 
             // handle messages associated with owner-drawn menu items
             [PreserveSig]
-            Int32 HandleMenuMsg(
+            int HandleMenuMsg(
                 uint uMsg,
                 IntPtr wParam,
                 IntPtr lParam);
@@ -1365,7 +1213,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
         {
             // Adds commands to a shortcut menu
             [PreserveSig()]
-            Int32 QueryContextMenu(
+            int QueryContextMenu(
                 IntPtr hmenu,
                 uint iMenu,
                 uint idCmdFirst,
@@ -1374,14 +1222,14 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
 
             // Carries out the command associated with a shortcut menu item
             [PreserveSig()]
-            Int32 InvokeCommand(
+            int InvokeCommand(
                 ref CMINVOKECOMMANDINFOEX info);
 
             // Retrieves information about a shortcut menu command, 
             // including the help string and the language-independent, 
             // or canonical, name for the command
             [PreserveSig()]
-            Int32 GetCommandString(
+            int GetCommandString(
                 uint idcmd,
                 GCS uflags,
                 uint reserved,
@@ -1391,7 +1239,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
             // Allows client objects of the IContextMenu interface to 
             // handle messages associated with owner-drawn menu items
             [PreserveSig]
-            Int32 HandleMenuMsg(
+            int HandleMenuMsg(
                 uint uMsg,
                 IntPtr wParam,
                 IntPtr lParam);
@@ -1399,7 +1247,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
             // Allows client objects of the IContextMenu3 interface to 
             // handle messages associated with owner-drawn menu items
             [PreserveSig]
-            Int32 HandleMenuMsg2(
+            int HandleMenuMsg2(
                 uint uMsg,
                 IntPtr wParam,
                 IntPtr lParam,
@@ -1408,206 +1256,4 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
 
         #endregion
     }
-
-    #region ShellContextMenuException
-
-    public class ShellContextMenuException : Exception
-    {
-        /// <summary>Default contructor</summary>
-        public ShellContextMenuException()
-        {
-        }
-
-        /// <summary>Constructor with message</summary>
-        /// <param name="message">Message</param>
-        public ShellContextMenuException(string message)
-            : base(message)
-        {
-        }
-    }
-
-    #endregion
-
-    #region Class HookEventArgs
-
-    public class HookEventArgs : EventArgs
-    {
-        public int HookCode; // Hook code
-        public IntPtr wParam; // WPARAM argument
-        public IntPtr lParam; // LPARAM argument
-    }
-
-    #endregion
-
-    #region Enum HookType
-
-    // Hook Types
-    public enum HookType : int
-    {
-        WH_JOURNALRECORD = 0,
-        WH_JOURNALPLAYBACK = 1,
-        WH_KEYBOARD = 2,
-        WH_GETMESSAGE = 3,
-        WH_CALLWNDPROC = 4,
-        WH_CBT = 5,
-        WH_SYSMSGFILTER = 6,
-        WH_MOUSE = 7,
-        WH_HARDWARE = 8,
-        WH_DEBUG = 9,
-        WH_SHELL = 10,
-        WH_FOREGROUNDIDLE = 11,
-        WH_CALLWNDPROCRET = 12,
-        WH_KEYBOARD_LL = 13,
-        WH_MOUSE_LL = 14
-    }
-
-    #endregion
-
-    #region Class LocalWindowsHook
-
-    public class LocalWindowsHook
-    {
-        // ************************************************************************
-        // Filter function delegate
-        public delegate int HookProc(int code, IntPtr wParam, IntPtr lParam);
-        // ************************************************************************
-
-        // ************************************************************************
-        // Internal properties
-        protected IntPtr m_hhook = IntPtr.Zero;
-        protected HookProc m_filterFunc = null;
-        protected HookType m_hookType;
-        // ************************************************************************
-
-        // ************************************************************************
-        // Event delegate
-        public delegate void HookEventHandler(object sender, HookEventArgs e);
-        // ************************************************************************
-
-        // ************************************************************************
-        // Event: HookInvoked 
-        public event HookEventHandler HookInvoked;
-        protected void OnHookInvoked(HookEventArgs e)
-        {
-            if (HookInvoked != null)
-                HookInvoked(this, e);
-        }
-        // ************************************************************************
-
-        // ************************************************************************
-        // Class constructor(s)
-        public LocalWindowsHook(HookType hook)
-        {
-            m_hookType = hook;
-            m_filterFunc = new HookProc(this.CoreHookProc);
-        }
-        public LocalWindowsHook(HookType hook, HookProc func)
-        {
-            m_hookType = hook;
-            m_filterFunc = func;
-        }
-        // ************************************************************************
-
-        // ************************************************************************
-        // Default filter function
-        protected int CoreHookProc(int code, IntPtr wParam, IntPtr lParam)
-        {
-            if (code < 0)
-                return CallNextHookEx(m_hhook, code, wParam, lParam);
-
-            // Let clients determine what to do
-            HookEventArgs e = new HookEventArgs();
-            e.HookCode = code;
-            e.wParam = wParam;
-            e.lParam = lParam;
-            OnHookInvoked(e);
-
-            // Yield to the next hook in the chain
-            return CallNextHookEx(m_hhook, code, wParam, lParam);
-        }
-        // ************************************************************************
-
-        // ************************************************************************
-        // Install the hook
-        public void Install()
-        {
-            m_hhook = SetWindowsHookEx(
-                m_hookType,
-                m_filterFunc,
-                IntPtr.Zero,
-                Environment.CurrentManagedThreadId);
-        }
-        // ************************************************************************
-
-        // ************************************************************************
-        // Uninstall the hook
-        public void Uninstall()
-        {
-            UnhookWindowsHookEx(m_hhook);
-        }
-        // ************************************************************************
-
-
-        #region Win32 Imports
-
-        // ************************************************************************
-        // Win32: SetWindowsHookEx()
-        [DllImport("user32.dll")]
-        protected static extern IntPtr SetWindowsHookEx(HookType code,
-            HookProc func,
-            IntPtr hInstance,
-            int threadID);
-        // ************************************************************************
-
-        // ************************************************************************
-        // Win32: UnhookWindowsHookEx()
-        [DllImport("user32.dll")]
-        protected static extern int UnhookWindowsHookEx(IntPtr hhook);
-        // ************************************************************************
-
-        // ************************************************************************
-        // Win32: CallNextHookEx()
-        [DllImport("user32.dll")]
-        protected static extern int CallNextHookEx(IntPtr hhook,
-            int code, IntPtr wParam, IntPtr lParam);
-        // ************************************************************************
-
-        #endregion
-    }
-
-    #endregion
-
-    #region ShellHelper
-
-    internal static class ShellHelper
-    {
-        #region Low/High Word
-
-        /// <summary>
-        /// Retrieves the High Word of a WParam of a WindowMessage
-        /// </summary>
-        /// <param name="ptr">The pointer to the WParam</param>
-        /// <returns>The unsigned integer for the High Word</returns>
-        public static nint HiWord(IntPtr ptr)
-        {
-            if ((ptr & 0x80000000) == 0x80000000)
-                return (ptr >> 16);
-            else
-                return ((ptr >> 16) & 0xffff);
-        }
-
-        /// <summary>
-        /// Retrieves the Low Word of a WParam of a WindowMessage
-        /// </summary>
-        /// <param name="ptr">The pointer to the WParam</param>
-        /// <returns>The unsigned integer for the Low Word</returns>
-        public static nint LoWord(IntPtr ptr)
-        {
-            return ptr & 0xffff;
-        }
-
-        #endregion
-    }
-
-    #endregion
 }
