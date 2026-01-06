@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using Flow.Launcher.Plugin.Explorer.Helper;
 using Flow.Launcher.Plugin.Explorer.Search;
 using Flow.Launcher.Plugin.SharedCommands;
 
@@ -60,6 +61,25 @@ namespace Flow.Launcher.Plugin.Explorer
                     contextMenus.Add(CreateOpenWithShellResult(record));
                 else if (record.Type == ResultType.File)
                     contextMenus.Add(CreateOpenWithMenu(record));
+
+                if (record.Type is not ResultType.Volume)
+                {
+                    contextMenus.Add(new Result()
+                    {
+                        Title = Localize.plugin_explorer_show_contextmenu_title(),
+                        SubTitle = Localize.plugin_explorer_show_contextmenu_subtitle(),
+                        Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue700"),
+                        Action = _ =>
+                        {
+                            if (record.Type is ResultType.Volume)
+                                return false;
+
+                            ResultManager.ShowNativeContextMenu(record.FullPath, record.Type);
+
+                            return false;
+                        },
+                    });
+                }
 
                 if (record.Type == ResultType.File && CanRunAsDifferentUser(record.FullPath))
                     contextMenus.Add(new Result
