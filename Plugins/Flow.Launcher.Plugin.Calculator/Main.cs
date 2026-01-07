@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
 using Flow.Launcher.Plugin.Calculator.ViewModels;
@@ -11,7 +10,7 @@ using Mages.Core;
 
 namespace Flow.Launcher.Plugin.Calculator
 {
-    public class Main : IPlugin, IPluginI18n, ISettingProvider
+    public class Main : IPlugin, ISettingProvider
     {
         private static readonly Regex ThousandGroupRegex = MainRegexHelper.GetThousandGroupRegex();
         private static readonly Regex NumberRegex = MainRegexHelper.GetNumberRegex();
@@ -110,7 +109,7 @@ namespace Flow.Launcher.Plugin.Calculator
                     [
                         new Result
                         {
-                            Title = Localize.flowlauncher_plugin_calculator_expression_not_complete(),
+                            Title = Localize.Error_ExpressionNotComplete,
                             IcoPath = IcoPath
                         }
                     ];
@@ -139,30 +138,22 @@ namespace Flow.Launcher.Plugin.Calculator
                             CopyText = newResult,
                             Action = c =>
                             {
-                                try
+                                if (c.SpecialKeyState.CtrlPressed)
                                 {
-                                    if (c.SpecialKeyState.CtrlPressed)
+                                    if (!string.IsNullOrEmpty(hex))
                                     {
-                                        if (!string.IsNullOrEmpty(hex))
-                                        {
-                                            Context.API.CopyToClipboard(hex, showDefaultNotification: false);
-                                            return true;
-                                        }
+                                        Context.API.CopyToClipboard(hex, showDefaultNotification: false);
+                                        return true;
                                     }
-
-                                    // Remove group separators before copying value
-                                    string decimalSeparator = GetDecimalSeparator();
-                                    string groupSeparator = GetGroupSeparator(decimalSeparator);
-                                    string value = newResult.Replace(groupSeparator, "");
-
-                                    Context.API.CopyToClipboard(value, showDefaultNotification: false);
-                                    return true;
                                 }
-                                catch (ExternalException)
-                                {
-                                    Context.API.ShowMsgBox(Localize.flowlauncher_plugin_calculator_failed_to_copy());
-                                    return false;
-                                }
+
+                                // Remove group separators before copying value
+                                string decimalSeparator = GetDecimalSeparator();
+                                string groupSeparator = GetGroupSeparator(decimalSeparator);
+                                string value = newResult.Replace(groupSeparator, "");
+
+                                Context.API.CopyToClipboard(value, showDefaultNotification: false);
+                                return true;
                             }
                         }
                     ];
@@ -176,7 +167,7 @@ namespace Flow.Launcher.Plugin.Calculator
                 [
                     new Result
                     {
-                        Title = Localize.flowlauncher_plugin_calculator_expression_not_complete(),
+                        Title = Localize.Error_ExpressionNotComplete,
                         IcoPath = IcoPath
                     }
                 ];
@@ -419,24 +410,9 @@ namespace Flow.Launcher.Plugin.Calculator
             };
         }
 
-        public string GetTranslatedPluginTitle()
-        {
-            return Localize.flowlauncher_plugin_calculator_plugin_name();
-        }
-
-        public string GetTranslatedPluginDescription()
-        {
-            return Localize.flowlauncher_plugin_calculator_plugin_description();
-        }
-
         public Control CreateSettingPanel()
         {
             return new CalculatorSettings(_settings);
-        }
-
-        public void OnCultureInfoChanged(CultureInfo newCulture)
-        {
-            DecimalSeparatorLocalized.UpdateLabels(_viewModel.AllDecimalSeparator);
         }
     }
 }

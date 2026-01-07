@@ -1,17 +1,14 @@
-﻿using Flow.Launcher.Localization.Attributes;
+﻿using System.ComponentModel;
 
 namespace Flow.Launcher.Plugin.Calculator
 {
-    [EnumLocalize]
     public enum DecimalSeparator
     {
-        [EnumLocalizeKey(nameof(Localize.flowlauncher_plugin_calculator_decimal_separator_use_system_locale))]
+        [Description(Localize.Setting_DecimalSeparator_UseSystemLocale)]
         UseSystemLocale,
-
-        [EnumLocalizeKey(nameof(Localize.flowlauncher_plugin_calculator_decimal_separator_dot))]
+        [Description(Localize.Setting_DecimalSeparator_Dot)]
         Dot,
-
-        [EnumLocalizeKey(nameof(Localize.flowlauncher_plugin_calculator_decimal_separator_comma))]
+        [Description(Localize.Setting_DecimalSeparator_Comma)]
         Comma
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Flow.Launcher.Infrastructure.UI;
 
 namespace Flow.Launcher.Plugin.Calculator.ViewModels;
 
@@ -9,7 +10,8 @@ public class SettingsViewModel(Settings settings) : BaseModel
 
     public static IEnumerable<int> MaxDecimalPlacesRange => Enumerable.Range(1, 20);
 
-    public List<DecimalSeparatorLocalized> AllDecimalSeparator { get; } = DecimalSeparatorLocalized.GetValues();
+    public static IEnumerable<LocalizedEnumItem<DecimalSeparator>> AllDecimalSeparator
+        => EnumLocalization.GetLocalizedEnumItems<DecimalSeparator>();
 
     public DecimalSeparator SelectedDecimalSeparator
     {
