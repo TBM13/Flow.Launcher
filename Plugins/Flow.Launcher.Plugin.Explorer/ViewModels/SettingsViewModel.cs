@@ -10,17 +10,11 @@ using Flow.Launcher.Plugin.Explorer.Search;
 
 namespace Flow.Launcher.Plugin.Explorer.ViewModels
 {
-    public partial class SettingsViewModel : BaseModel
+    public partial class SettingsViewModel(PluginInitContext context, Settings settings) : BaseModel
     {
-        public Settings Settings { get; set; }
+        public Settings Settings { get; set; } = settings;
 
-        internal PluginInitContext Context { get; set; }
-
-        public SettingsViewModel(PluginInitContext context, Settings settings)
-        {
-            Context = context;
-            Settings = settings;
-        }
+        internal PluginInitContext Context { get; set; } = context;
 
         public void Save()
         {
@@ -105,8 +99,8 @@ namespace Flow.Launcher.Plugin.Explorer.ViewModels
         public Visibility PreviewPanelDateTimeChoicesVisibility => ShowCreatedDateInPreviewPanel || ShowModifiedDateInPreviewPanel ? Visibility.Visible : Visibility.Collapsed;
 
 
-        public List<string> TimeFormatList { get; } = new()
-        {
+        public List<string> TimeFormatList { get; } =
+        [
             "h:mm",
             "hh:mm",
             "H:mm",
@@ -117,11 +111,11 @@ namespace Flow.Launcher.Plugin.Explorer.ViewModels
             "hh:mm tt",
             "hh:mm:ss tt",
             "HH:mm:ss"
-        };
+        ];
 
 
-        public List<string> DateFormatList { get; } = new()
-        {
+        public List<string> DateFormatList { get; } =
+        [
             "dd/MM/yyyy",
             "dd/MM/yyyy ddd",
             "dd/MM/yyyy, dddd",
@@ -152,7 +146,7 @@ namespace Flow.Launcher.Plugin.Explorer.ViewModels
             "yyyy-MMM-dd",
             "yyyy-MMM-dd ddd",
             "yyyy-MMM-dd, dddd",
-        };
+        ];
 
         #endregion
 
@@ -187,53 +181,13 @@ namespace Flow.Launcher.Plugin.Explorer.ViewModels
         }
 
         [RelayCommand]
-        private void OpenFileEditorPath()
-        {
-            var path = PromptUserSelectPath(ResultType.File, Settings.EditorPath != null ? Path.GetDirectoryName(Settings.EditorPath) : null);
-            if (path is null)
-                return;
-
-            FileEditorPath = path;
-        }
-
-        [RelayCommand]
-        private void OpenFolderEditorPath()
-        {
-            var path = PromptUserSelectPath(ResultType.File, Settings.FolderEditorPath != null ? Path.GetDirectoryName(Settings.FolderEditorPath) : null);
-            if (path is null)
-                return;
-
-            FolderEditorPath = path;
-        }
-
-        [RelayCommand]
         private void OpenShellPath()
         {
-            var path = PromptUserSelectPath(ResultType.File, Settings.EditorPath != null ? Path.GetDirectoryName(Settings.EditorPath) : null);
+            var path = PromptUserSelectPath(ResultType.File, Settings.ShellPath != null ? Path.GetDirectoryName(Settings.ShellPath) : null);
             if (path is null)
                 return;
 
             ShellPath = path;
-        }
-
-        public string FileEditorPath
-        {
-            get => Settings.EditorPath;
-            set
-            {
-                Settings.EditorPath = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string FolderEditorPath
-        {
-            get => Settings.FolderEditorPath;
-            set
-            {
-                Settings.FolderEditorPath = value;
-                OnPropertyChanged();
-            }
         }
 
         public string ShellPath

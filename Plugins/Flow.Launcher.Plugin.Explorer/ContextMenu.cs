@@ -2,28 +2,18 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
-using Flow.Launcher.Plugin.Explorer.Helper;
 using Flow.Launcher.Plugin.Explorer.Search;
 using Flow.Launcher.Plugin.SharedCommands;
 
 namespace Flow.Launcher.Plugin.Explorer
 {
-    internal class ContextMenu : IContextMenu
+    internal class ContextMenu(PluginInitContext context, Settings settings) : IContextMenu
     {
         private static readonly string ClassName = nameof(ContextMenu);
 
-        private PluginInitContext Context { get; set; }
-
-        private Settings Settings { get; set; }
-
-        public ContextMenu(PluginInitContext context, Settings settings)
-        {
-            Context = context;
-            Settings = settings;
-        }
+        private readonly PluginInitContext _context = context;
+        private readonly Settings _settings = settings;
 
         public List<Result> LoadContextMenus(Result selectedResult)
         {
@@ -38,24 +28,18 @@ namespace Flow.Launcher.Plugin.Explorer
                     {
                         try
                         {
-                            Context.API.CopyToClipboard(record.FullPath, showDefaultNotification: false);
+                            _context.API.CopyToClipboard(record.FullPath, showDefaultNotification: false);
                             return true;
                         }
                         catch (Exception e)
                         {
                             LogException("Fail to set text in clipboard", e);
-                            Context.API.ShowMsgError(Localize.plugin_explorer_fail_to_set_text());
+                            _context.API.ShowMsgError(Localize.plugin_explorer_fail_to_set_text());
                             return false;
                         }
                     },
                     Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue8c8")
                 });
-
-                if (record.Type == ResultType.File && !string.IsNullOrEmpty(Settings.EditorPath))
-                    contextMenus.Add(CreateOpenWithEditorResult(record, Settings.EditorPath));
-
-                if ((record.Type == ResultType.Folder || record.Type == ResultType.Volume) && !string.IsNullOrEmpty(Settings.FolderEditorPath))
-                    contextMenus.Add(CreateOpenWithEditorResult(record, Settings.FolderEditorPath));
 
                 if (record.Type == ResultType.Folder)
                     contextMenus.Add(CreateOpenWithShellResult(record));
@@ -94,7 +78,7 @@ namespace Flow.Launcher.Plugin.Explorer
                             }
                             catch (FileNotFoundException e)
                             {
-                                Context.API.ShowMsgError(
+                                _context.API.ShowMsgError(
                                     Localize.plugin_explorer_plugin_name(),
                                     Localize.plugin_explorer_file_not_found(e.Message));
                                 return false;
@@ -109,39 +93,9 @@ namespace Flow.Launcher.Plugin.Explorer
             return contextMenus;
         }
 
-        private Result CreateOpenWithEditorResult(SearchResult record, string editorPath)
-        {
-            var name = $"{Localize.plugin_explorer_openwitheditor()} {Path.GetFileNameWithoutExtension(editorPath)}";
-
-            return new Result
-            {
-                Title = name,
-                Action = _ =>
-                {
-                    try
-                    {
-                        Process.Start(new ProcessStartInfo()
-                        {
-                            FileName = editorPath,
-                            ArgumentList = { record.FullPath }
-                        });
-                        return true;
-                    }
-                    catch (Exception e)
-                    {
-                        var message = Localize.plugin_explorer_openwitheditor_error(record.FullPath, Path.GetFileNameWithoutExtension(editorPath), editorPath);
-                        LogException(message, e);
-                        Context.API.ShowMsgError(message);
-                        return false;
-                    }
-                },
-                Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue70f"),
-            };
-        }
-
         private Result CreateOpenWithShellResult(SearchResult record)
         {
-            string shellPath = Settings.ShellPath;
+            string shellPath = _settings.ShellPath;
 
             var name = $"{Localize.plugin_explorer_openwithshell()} {Path.GetFileNameWithoutExtension(shellPath)}";
 
@@ -163,7 +117,7 @@ namespace Flow.Launcher.Plugin.Explorer
                     {
                         var message = Localize.plugin_explorer_openwithshell_error(record.FullPath, Path.GetFileNameWithoutExtension(shellPath), shellPath);
                         LogException(message, e);
-                        Context.API.ShowMsgError(message);
+                        _context.API.ShowMsgError(message);
                         return false;
                     }
                 },
@@ -188,7 +142,7 @@ namespace Flow.Launcher.Plugin.Explorer
 
         private void LogException(string message, Exception e)
         {
-            Context.API.LogException(ClassName, message, e);
+            _context.API.LogException(ClassName, message, e);
         }
 
         private static bool CanRunAsDifferentUser(string path)

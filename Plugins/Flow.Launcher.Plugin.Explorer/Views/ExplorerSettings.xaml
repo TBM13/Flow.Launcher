@@ -156,60 +156,6 @@
                     IsChecked="{Binding Settings.UseLocationAsWorkingDir}" />
 
                 <TextBlock
-                    Grid.Row="3"
-                    Grid.Column="0"
-                    Margin="{StaticResource SettingPanelItemTopBottomMargin}"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Center"
-                    Foreground="{DynamicResource Color05B}"
-                    Text="{DynamicResource plugin_explorer_file_editor_path}" />
-                <StackPanel
-                    Grid.Row="3"
-                    Grid.Column="1"
-                    Margin="{StaticResource SettingPanelItemLeftTopBottomMargin}"
-                    Orientation="Horizontal">
-                    <TextBox
-                        Width="{StaticResource SettingPanelPathTextBoxWidth}"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Text="{Binding FileEditorPath}"
-                        TextWrapping="NoWrap" />
-                    <Button
-                        Margin="{StaticResource SettingPanelItemLeftMargin}"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Command="{Binding OpenFileEditorPathCommand}"
-                        Content="{DynamicResource select}" />
-                </StackPanel>
-
-                <TextBlock
-                    Grid.Row="4"
-                    Grid.Column="0"
-                    Margin="{StaticResource SettingPanelItemTopBottomMargin}"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Center"
-                    Foreground="{DynamicResource Color05B}"
-                    Text="{DynamicResource plugin_explorer_folder_editor_path}" />
-                <StackPanel
-                    Grid.Row="4"
-                    Grid.Column="1"
-                    Margin="{StaticResource SettingPanelItemLeftTopBottomMargin}"
-                    Orientation="Horizontal">
-                    <TextBox
-                        Width="{StaticResource SettingPanelPathTextBoxWidth}"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Text="{Binding FolderEditorPath}"
-                        TextWrapping="NoWrap" />
-                    <Button
-                        Margin="{StaticResource SettingPanelItemLeftMargin}"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Command="{Binding OpenFolderEditorPathCommand}"
-                        Content="{DynamicResource select}" />
-                </StackPanel>
-
-                <TextBlock
                     Grid.Row="5"
                     Grid.Column="0"
                     Margin="{StaticResource SettingPanelItemTopBottomMargin}"

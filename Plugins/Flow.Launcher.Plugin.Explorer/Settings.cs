@@ -3,9 +3,6 @@
     public class Settings
     {
         public int MaxResult { get; set; } = 100;
-        public string EditorPath { get; set; } = "";
-
-        public string FolderEditorPath { get; set; } = "";
 
         public string ShellPath { get; set; } = "cmd";
 
