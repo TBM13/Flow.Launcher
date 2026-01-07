@@ -124,12 +124,6 @@ namespace Flow.Launcher.Core.Plugin
                 return null;
             }
 
-            if (!AllowedLanguage.IsAllowed(metadata.Language))
-            {
-                PublicApi.Instance.LogError(ClassName, $"Invalid language <{metadata.Language}> for config <{configPath}>");
-                return null;
-            }
-
             if (!File.Exists(metadata.ExecuteFilePath))
             {
                 PublicApi.Instance.LogError(ClassName, $"Execute file path didn't exist <{metadata.ExecuteFilePath}> for conifg <{configPath}");

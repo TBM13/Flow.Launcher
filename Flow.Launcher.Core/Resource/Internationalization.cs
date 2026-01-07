@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Plugin;
 
 namespace Flow.Launcher.Core.Resource
 {
@@ -31,9 +28,6 @@ namespace Flow.Launcher.Core.Resource
             // Add Flow Launcher language directory
             AddFlowLauncherLanguageDirectory();
 
-            // Add plugin language directories first so that we can load language files from plugins
-            AddPluginLanguageDirectories();
-
             // Load default language resources
             LoadDefaultLanguage();
         }
@@ -49,25 +43,6 @@ namespace Flow.Launcher.Core.Resource
             }
 
             _languageDirectories.Add(directory);
-        }
-
-        private void AddPluginLanguageDirectories()
-        {
-            foreach (var pluginsDir in PluginManager.Directories)
-            {
-                if (!Directory.Exists(pluginsDir)) continue;
-
-                // Enumerate all top directories in the plugin directory
-                foreach (var dir in Directory.GetDirectories(pluginsDir))
-                {
-                    // Check if the directory contains a language folder
-                    var pluginLanguageDir = Path.Combine(dir, Folder);
-                    if (!Directory.Exists(pluginLanguageDir)) continue;
-
-                    // Check if the language directory contains default language file since it will be checked later
-                    _languageDirectories.Add(pluginLanguageDir);
-                }
-            }
         }
 
         private void LoadDefaultLanguage()

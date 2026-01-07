@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 #pragma warning disable IDE0005
 using Flow.Launcher.Infrastructure.Logger;
@@ -23,11 +22,9 @@ namespace Flow.Launcher.Core.Plugin
         private static List<PluginPair> DotNetPlugins(List<PluginMetadata> source)
         {
             var erroredPlugins = new List<string>();
-
             var plugins = new List<PluginPair>();
-            var metadatas = source.Where(o => AllowedLanguage.IsDotNet(o.Language));
 
-            foreach (var metadata in metadatas)
+            foreach (var metadata in source)
             {
                 Assembly assembly = null;
                 IAsyncPlugin plugin = null;

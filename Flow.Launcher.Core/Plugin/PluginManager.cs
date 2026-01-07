@@ -199,26 +199,13 @@ namespace Flow.Launcher.Core.Plugin
         {
             foreach (var metadata in metadatas)
             {
-                if (AllowedLanguage.IsDotNet(metadata.Language))
+                if (string.IsNullOrEmpty(metadata.AssemblyName))
                 {
-                    if (string.IsNullOrEmpty(metadata.AssemblyName))
-                    {
-                        PublicApi.Instance.LogWarn(ClassName, $"AssemblyName is empty for plugin with metadata: {metadata.Name}");
-                        continue; // Skip if AssemblyName is not set, which can happen for erroneous plugins
-                    }
-                    metadata.PluginSettingsDirectoryPath = Path.Combine(DataLocation.PluginSettingsDirectory, metadata.AssemblyName);
-                    metadata.PluginCacheDirectoryPath = Path.Combine(DataLocation.PluginCacheDirectory, metadata.AssemblyName);
+                    PublicApi.Instance.LogWarn(ClassName, $"AssemblyName is empty for plugin with metadata: {metadata.Name}");
+                    continue; // Skip if AssemblyName is not set, which can happen for erroneous plugins
                 }
-                else
-                {
-                    if (string.IsNullOrEmpty(metadata.Name))
-                    {
-                        PublicApi.Instance.LogWarn(ClassName, $"Name is empty for plugin with metadata: {metadata.Name}");
-                        continue; // Skip if Name is not set, which can happen for erroneous plugins
-                    }
-                    metadata.PluginSettingsDirectoryPath = Path.Combine(DataLocation.PluginSettingsDirectory, metadata.Name);
-                    metadata.PluginCacheDirectoryPath = Path.Combine(DataLocation.PluginCacheDirectory, metadata.Name);
-                }
+                metadata.PluginSettingsDirectoryPath = Path.Combine(DataLocation.PluginSettingsDirectory, metadata.AssemblyName);
+                metadata.PluginCacheDirectoryPath = Path.Combine(DataLocation.PluginCacheDirectory, metadata.AssemblyName);
             }
         }
 
