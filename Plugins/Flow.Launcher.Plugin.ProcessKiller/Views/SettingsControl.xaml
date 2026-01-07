@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:Flow.Launcher.Plugin.ProcessKiller.ViewModels"
+    xmlns:root="clr-namespace:Flow.Launcher.Plugin.ProcessKiller"
     d:DataContext="{d:DesignInstance Type=vm:SettingsViewModel}"
     d:DesignHeight="300"
     d:DesignWidth="500"
@@ -18,12 +19,12 @@
         <CheckBox
             Grid.Row="0"
             Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
-            Content="{DynamicResource flowlauncher_plugin_processkiller_show_window_title}"
+            Content="{x:Static root:Localize.Settings_ShowWindowTitle}"
             IsChecked="{Binding Settings.ShowWindowTitle}" />
         <CheckBox
             Grid.Row="1"
             Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
-            Content="{DynamicResource flowlauncher_plugin_processkiller_put_visible_window_process_top}"
+            Content="{x:Static root:Localize.Settings_PutVisibleWindowsOnTop}"
             IsChecked="{Binding Settings.PutVisibleWindowProcessesTop}" />
     </Grid>
 </UserControl>

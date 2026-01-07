@@ -7,14 +7,12 @@ using Flow.Launcher.Plugin.ProcessKiller.Views;
 
 namespace Flow.Launcher.Plugin.ProcessKiller
 {
-    public class Main : IPlugin, IPluginI18n, IContextMenu, ISettingProvider
+    public class Main : IPlugin, IContextMenu, ISettingProvider
     {
         internal static PluginInitContext Context { get; private set; }
 
         private Settings _settings;
-
         private readonly ProcessHelper processHelper = new();
-
         private SettingsViewModel _viewModel;
 
         public void Init(PluginInitContext context)
@@ -29,16 +27,6 @@ namespace Flow.Launcher.Plugin.ProcessKiller
             return CreateResultsFromQuery(query);
         }
 
-        public string GetTranslatedPluginTitle()
-        {
-            return Localize.flowlauncher_plugin_processkiller_plugin_name();
-        }
-
-        public string GetTranslatedPluginDescription()
-        {
-            return Localize.flowlauncher_plugin_processkiller_plugin_description();
-        }
-
         public List<Result> LoadContextMenus(Result result)
         {
             var menuOptions = new List<Result>();
@@ -51,7 +39,7 @@ namespace Flow.Launcher.Plugin.ProcessKiller
             {
                 menuOptions.Add(new Result
                 {
-                    Title = Localize.flowlauncher_plugin_processkiller_kill_instances(),
+                    Title = Localize.Action_KillAllInstances,
                     SubTitle = processPath,
                     Action = _ =>
                     {
@@ -193,8 +181,8 @@ namespace Flow.Launcher.Plugin.ProcessKiller
                 sortedResults.Insert(1, new Result()
                 {
                     IcoPath = firstResult?.IcoPath,
-                    Title = Localize.flowlauncher_plugin_processkiller_kill_all(firstResult?.ContextData),
-                    SubTitle = Localize.flowlauncher_plugin_processkiller_kill_all_count(processlist.Count),
+                    Title = Localize.Action_KillAllInstancesOf((string)firstResult?.ContextData),
+                    SubTitle = Localize.Action_KillAll(processlist.Count),
                     Score = 200,
                     Action = (c) =>
                     {
