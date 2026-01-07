@@ -4,7 +4,6 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
-using IniParser;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Gdi;
@@ -164,14 +163,13 @@ namespace Flow.Launcher.Infrastructure.Image
         private static HBITMAP GetHBitmapForUrlFile(string fileName, int width, int height, ThumbnailOptions options)
         {
             HBITMAP hBitmap;
+            Span<char> iconFileBuffer = stackalloc char[1024];
 
             try
             {
-                var parser = new FileIniDataParser();
-                var data = parser.ReadFile(fileName);
-                var urlSection = data["InternetShortcut"];
+                uint length = PInvoke.GetPrivateProfileString("InternetShortcut", "IconFile", string.Empty, iconFileBuffer, fileName);
+                string iconPath = new string(iconFileBuffer[..(int)length]);
 
-                var iconPath = urlSection?["IconFile"];
                 if (!File.Exists(iconPath))
                 {
                     // If the IconFile is missing, throw exception to fallback to the default icon
