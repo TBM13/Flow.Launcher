@@ -31,7 +31,6 @@ namespace Flow.Launcher.Core.Plugin
 
         private static readonly ConcurrentBag<PluginPair> _contextMenuPlugins = [];
         private static readonly ConcurrentBag<PluginPair> _homePlugins = [];
-        private static readonly ConcurrentBag<PluginPair> _translationPlugins = [];
         private static readonly ConcurrentBag<PluginPair> _externalPreviewPlugins = [];
 
         /// <summary>
@@ -264,9 +263,6 @@ namespace Flow.Launcher.Core.Plugin
                     return;
                 }
 
-                // Update plugin metadata translation after the plugin is initialized with IPublicAPI instance
-                Internationalization.UpdatePluginMetadataTranslation(pair);
-
                 // Add plugin to lists after the plugin is initialized
                 AddPluginToLists(pair);
             }));
@@ -312,10 +308,6 @@ namespace Flow.Launcher.Core.Plugin
             if (pair.Plugin is IAsyncHomeQuery)
             {
                 _homePlugins.Add(pair);
-            }
-            if (pair.Plugin is IPluginI18n)
-            {
-                _translationPlugins.Add(pair);
             }
             if (pair.Plugin is IAsyncExternalPreview)
             {
@@ -494,11 +486,6 @@ namespace Flow.Launcher.Core.Plugin
         public static Dictionary<string, PluginPair> GetNonGlobalPlugins()
         {
             return _nonGlobalPlugins.ToDictionary();
-        }
-
-        public static List<PluginPair> GetTranslationPlugins()
-        {
-            return [.. _translationPlugins];
         }
 
         #endregion

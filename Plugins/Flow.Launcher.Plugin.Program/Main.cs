@@ -15,7 +15,7 @@ using Path = System.IO.Path;
 
 namespace Flow.Launcher.Plugin.Program
 {
-    public class Main : ISettingProvider, IAsyncPlugin, IPluginI18n, IContextMenu, IAsyncReloadable, IDisposable
+    public class Main : ISettingProvider, IAsyncPlugin, IContextMenu, IAsyncReloadable, IDisposable
     {
         private static readonly string ClassName = nameof(Main);
 
@@ -431,16 +431,6 @@ namespace Flow.Launcher.Plugin.Program
         public Control CreateSettingPanel()
         {
             return new ProgramSetting(Context, _settings);
-        }
-
-        public string GetTranslatedPluginTitle()
-        {
-            return Context.API.GetTranslation("flowlauncher_plugin_program_plugin_name");
-        }
-
-        public string GetTranslatedPluginDescription()
-        {
-            return Context.API.GetTranslation("flowlauncher_plugin_program_plugin_description");
         }
 
         public List<Result> LoadContextMenus(Result selectedResult)
