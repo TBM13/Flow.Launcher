@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     xmlns:viewModels="clr-namespace:Flow.Launcher.Plugin.Explorer.ViewModels"
+    xmlns:root="clr-namespace:Flow.Launcher.Plugin.Explorer"
     d:DataContext="{d:DesignInstance viewModels:SettingsViewModel}"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -122,7 +123,7 @@
         <Expander
             x:Name="GeneralSettingsExpander"
             Expanded="Expander_Expanded"
-            Header="{DynamicResource plugin_explorer_generalsetting_header}"
+            Header="{x:Static root:Localize.Settings_General}"
             IsExpanded="False"
             Style="{StaticResource CustomExpanderStyle}">
 
@@ -152,7 +153,7 @@
                     Grid.ColumnSpan="2"
                     Margin="{StaticResource SettingPanelItemTopBottomMargin}"
                     HorizontalAlignment="Left"
-                    Content="{DynamicResource plugin_explorer_use_location_as_working_dir}"
+                    Content="{x:Static root:Localize.Settings_General_UseLocationAsWorkingDir}"
                     IsChecked="{Binding Settings.UseLocationAsWorkingDir}" />
 
                 <TextBlock
@@ -162,7 +163,7 @@
                     HorizontalAlignment="Left"
                     VerticalAlignment="Center"
                     Foreground="{DynamicResource Color05B}"
-                    Text="{DynamicResource plugin_explorer_shell_path}" />
+                    Text="{x:Static root:Localize.Settings_General_ShellPath}" />
                 <StackPanel
                     Grid.Row="5"
                     Grid.Column="1"
@@ -188,7 +189,7 @@
                     Margin="{StaticResource SettingPanelItemTopBottomMargin}"
                     VerticalAlignment="Center"
                     Foreground="{DynamicResource Color05B}"
-                    Text="{DynamicResource plugin_explorer_Excluded_File_Types}" />
+                    Text="{x:Static root:Localize.Settings_General_ExcludedFileTypes}" />
                 <TextBox
                     Grid.Row="9"
                     Grid.Column="1"
@@ -196,7 +197,7 @@
                     Margin="{StaticResource SettingPanelItemLeftTopBottomMargin}"
                     HorizontalAlignment="Left"
                     Text="{Binding ExcludedFileTypes}"
-                    ToolTip="{DynamicResource plugin_explorer_Excluded_File_Types_Tooltip}" />
+                    ToolTip="{x:Static root:Localize.Settings_General_ExcludedFileTypes_Tooltip}" />
 
                 <TextBlock
                     Grid.Row="10"
@@ -204,7 +205,7 @@
                     Margin="{StaticResource SettingPanelItemTopBottomMargin}"
                     VerticalAlignment="Center"
                     Foreground="{DynamicResource Color05B}"
-                    Text="{DynamicResource plugin_explorer_Maximum_Results}" />
+                    Text="{x:Static root:Localize.Settings_General_MaxResults}" />
                 <TextBox
                     Grid.Row="10"
                     Grid.Column="1"
@@ -214,8 +215,7 @@
                     VerticalAlignment="Center"
                     MaxLength="6"
                     PreviewTextInput="AllowOnlyNumericInput"
-                    Text="{Binding MaxResult}"
-                    ToolTip="{DynamicResource plugin_explorer_Maximum_Results_Tooltip}" />
+                    Text="{Binding MaxResult}" />
             </Grid>
         </Expander>
 
@@ -223,7 +223,7 @@
         <Expander
             x:Name="PreviewPanelExpander"
             Expanded="Expander_Expanded"
-            Header="{DynamicResource plugin_explorer_previewpanel_setting_header}"
+            Header="{x:Static root:Localize.Settings_Preview}"
             IsExpanded="False"
             Style="{StaticResource CustomExpanderStyle}">
             <Grid Margin="32 -10 0 0">
@@ -246,26 +246,26 @@
                         Margin="{StaticResource SettingPanelItemTopBottomMargin}"
                         VerticalAlignment="Center"
                         Foreground="{DynamicResource Color05B}"
-                        Text="{DynamicResource plugin_explorer_previewpanel_file_info_label}" />
+                        Text="{x:Static root:Localize.Settings_Preview_DisplayFileInfo}" />
                     <WrapPanel
                         Width="Auto"
                         HorizontalAlignment="Right"
                         DockPanel.Dock="Right">
                         <CheckBox
                             Margin="{StaticResource SettingPanelItemLeftTopBottomMargin}"
-                            Content="{DynamicResource plugin_explorer_previewpanel_display_file_size_checkbox}"
+                            Content="{x:Static root:Localize.Settings_Preview_Size}"
                             IsChecked="{Binding ShowFileSizeInPreviewPanel}" />
                         <CheckBox
                             Margin="{StaticResource SettingPanelItemLeftTopBottomMargin}"
-                            Content="{DynamicResource plugin_explorer_previewpanel_display_file_creation_checkbox}"
+                            Content="{x:Static root:Localize.Settings_Preview_DateCreated}"
                             IsChecked="{Binding ShowCreatedDateInPreviewPanel}" />
                         <CheckBox
                             Margin="{StaticResource SettingPanelItemLeftTopBottomMargin}"
-                            Content="{DynamicResource plugin_explorer_previewpanel_display_file_modification_checkbox}"
+                            Content="{x:Static root:Localize.Settings_Preview_DateModified}"
                             IsChecked="{Binding ShowModifiedDateInPreviewPanel}" />
                         <CheckBox
                             Margin="{StaticResource SettingPanelItemLeftTopBottomMargin}"
-                            Content="{DynamicResource plugin_explorer_previewpanel_display_file_age_checkbox}"
+                            Content="{x:Static root:Localize.Settings_Preview_FileAge}"
                             IsChecked="{Binding ShowFileAgeInPreviewPanel}" />
                     </WrapPanel>
                 </DockPanel>
@@ -281,7 +281,7 @@
                         VerticalAlignment="Center"
                         Foreground="{DynamicResource Color05B}"
                         IsEnabled="{Binding ShowPreviewPanelDateTimeChoices}"
-                        Text="{DynamicResource plugin_explorer_previewpanel_date_and_time_format_label}"
+                        Text="{x:Static root:Localize.Settings_Preview_DateAndTimeFormat}"
                         Visibility="{Binding PreviewPanelDateTimeChoicesVisibility}" />
                     <WrapPanel
                         Width="Auto"

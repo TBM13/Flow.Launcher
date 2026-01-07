@@ -111,7 +111,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                         }
                         catch (Exception ex)
                         {
-                            Context.API.ShowMsgBox(ex.Message, Localize.plugin_explorer_opendir_error());
+                            Context.API.ShowMsgBox(ex.Message, Localize.Error_OpenDir);
                             return false;
                         }
                     }
@@ -125,7 +125,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                         }
                         catch (Exception ex)
                         {
-                            Context.API.ShowMsgBox(ex.Message, Localize.plugin_explorer_opendir_error());
+                            Context.API.ShowMsgBox(ex.Message, Localize.Error_OpenDir);
                             return false;
                         }
                     }
@@ -137,12 +137,12 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                     }
                     catch (Exception ex)
                     {
-                        Context.API.ShowMsgBox(ex.Message, Localize.plugin_explorer_opendir_error());
+                        Context.API.ShowMsgBox(ex.Message, Localize.Error_OpenDir);
                         return false;
                     }
                 },
                 Score = score,
-                TitleToolTip = Localize.plugin_explorer_plugin_ToolTipOpenDirectory(),
+                TitleToolTip = Localize.FolderResult_OpenDirectoryTooltip,
                 SubTitleToolTip = path,
                 ContextData = new SearchResult { Type = ResultType.Folder, FullPath = path }
             };
@@ -154,7 +154,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             DriveInfo drv = new DriveInfo(driveLetter);
             var freespace = ToReadableSize(drv.AvailableFreeSpace, 2);
             var totalspace = ToReadableSize(drv.TotalSize, 2);
-            var subtitle = Localize.plugin_explorer_diskfreespace(freespace, totalspace);
+            var subtitle = Localize.DiskResult_FreeSpace(freespace, totalspace);
             double usingSize = (Convert.ToDouble(drv.TotalSize) - Convert.ToDouble(drv.AvailableFreeSpace)) / Convert.ToDouble(drv.TotalSize) * 100;
 
             return new Result
@@ -215,8 +215,8 @@ namespace Flow.Launcher.Plugin.Explorer.Search
 
             return new Result
             {
-                Title = Localize.plugin_explorer_openresultfolder(),
-                SubTitle = Localize.plugin_explorer_openresultfolder_subtitle(),
+                Title = Localize.FolderResult_OpenResultFolder,
+                SubTitle = Localize.FolderResult_OpenResultFolder_Subtitle,
                 AutoCompleteText = GetAutoCompleteText(query, path, ResultType.Folder),
                 IcoPath = folderPath,
                 Score = 500,
@@ -284,12 +284,12 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                     }
                     catch (Exception ex)
                     {
-                        Context.API.ShowMsgBox(ex.Message, Localize.plugin_explorer_openfile_error());
+                        Context.API.ShowMsgBox(ex.Message, Localize.Error_OpenFile);
                     }
 
                     return true;
                 },
-                TitleToolTip = Localize.plugin_explorer_plugin_ToolTipOpenContainingFolder(),
+                TitleToolTip = Localize.FileResult_OpenContainingFolderTooltip,
                 SubTitleToolTip = filePath,
                 ContextData = new SearchResult { Type = ResultType.File, FullPath = filePath }
             };

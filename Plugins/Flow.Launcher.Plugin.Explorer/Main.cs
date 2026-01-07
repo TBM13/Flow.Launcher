@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using Flow.Launcher.Plugin.Explorer.Exceptions;
-using Flow.Launcher.Plugin.Explorer.Helper;
 using Flow.Launcher.Plugin.Explorer.Search;
 using Flow.Launcher.Plugin.Explorer.ViewModels;
 using Flow.Launcher.Plugin.Explorer.Views;
 
 namespace Flow.Launcher.Plugin.Explorer
 {
-    public class Main : ISettingProvider, IAsyncPlugin, IContextMenu, IPluginI18n
+    public class Main : ISettingProvider, IAsyncPlugin, IContextMenu
     {
         internal static PluginInitContext Context { get; set; }
 
@@ -73,16 +68,6 @@ namespace Flow.Launcher.Plugin.Explorer
                     }
                 ];
             }
-        }
-
-        public string GetTranslatedPluginTitle()
-        {
-            return Localize.plugin_explorer_plugin_name();
-        }
-
-        public string GetTranslatedPluginDescription()
-        {
-            return Localize.plugin_explorer_plugin_description();
         }
     }
 }

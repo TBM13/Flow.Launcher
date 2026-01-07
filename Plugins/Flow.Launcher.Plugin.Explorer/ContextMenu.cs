@@ -22,21 +22,12 @@ namespace Flow.Launcher.Plugin.Explorer
             {
                 contextMenus.Add(new Result
                 {
-                    Title = Localize.plugin_explorer_copypath(),
-                    SubTitle = Localize.plugin_explorer_copypath_subtitle(),
+                    Title = Localize.GeneralResult_CopyPath,
+                    SubTitle = Localize.GeneralResult_CopyPath_Subtitle,
                     Action = _ =>
                     {
-                        try
-                        {
-                            _context.API.CopyToClipboard(record.FullPath, showDefaultNotification: false);
-                            return true;
-                        }
-                        catch (Exception e)
-                        {
-                            LogException("Fail to set text in clipboard", e);
-                            _context.API.ShowMsgError(Localize.plugin_explorer_fail_to_set_text());
-                            return false;
-                        }
+                        _context.API.CopyToClipboard(record.FullPath, showDefaultNotification: false);
+                        return true;
                     },
                     Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue8c8")
                 });
@@ -50,8 +41,8 @@ namespace Flow.Launcher.Plugin.Explorer
                 {
                     contextMenus.Add(new Result()
                     {
-                        Title = Localize.plugin_explorer_show_contextmenu_title(),
-                        SubTitle = Localize.plugin_explorer_show_contextmenu_subtitle(),
+                        Title = Localize.GeneralResult_ShowWindowsMenu,
+                        SubTitle = Localize.GeneralResult_ShowWindowsMenu_Subtitle,
                         Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue700"),
                         Action = _ =>
                         {
@@ -68,8 +59,8 @@ namespace Flow.Launcher.Plugin.Explorer
                 if (record.Type == ResultType.File && CanRunAsDifferentUser(record.FullPath))
                     contextMenus.Add(new Result
                     {
-                        Title = Localize.plugin_explorer_runasdifferentuser(),
-                        SubTitle = Localize.plugin_explorer_runasdifferentuser_subtitle(),
+                        Title = Localize.FileResult_RunAsDifferentUser,
+                        SubTitle = Localize.FileResult_RunAsDifferentUser_Subtitle,
                         Action = (context) =>
                         {
                             try
@@ -79,8 +70,8 @@ namespace Flow.Launcher.Plugin.Explorer
                             catch (FileNotFoundException e)
                             {
                                 _context.API.ShowMsgError(
-                                    Localize.plugin_explorer_plugin_name(),
-                                    Localize.plugin_explorer_file_not_found(e.Message));
+                                    Localize.PluginName,
+                                    Localize.Error_FileNotFound(e.Message));
                                 return false;
                             }
 
@@ -97,7 +88,7 @@ namespace Flow.Launcher.Plugin.Explorer
         {
             string shellPath = _settings.ShellPath;
 
-            var name = $"{Localize.plugin_explorer_openwithshell()} {Path.GetFileNameWithoutExtension(shellPath)}";
+            var name = $"{Localize.FolderResult_OpenWithShell} {Path.GetFileNameWithoutExtension(shellPath)}";
 
             return new Result
             {
@@ -115,7 +106,7 @@ namespace Flow.Launcher.Plugin.Explorer
                     }
                     catch (Exception e)
                     {
-                        var message = Localize.plugin_explorer_openwithshell_error(record.FullPath, Path.GetFileNameWithoutExtension(shellPath), shellPath);
+                        var message = Localize.Error_OpenWithShell(record.FullPath, Path.GetFileNameWithoutExtension(shellPath), shellPath);
                         LogException(message, e);
                         _context.API.ShowMsgError(message);
                         return false;
@@ -129,8 +120,8 @@ namespace Flow.Launcher.Plugin.Explorer
         {
             return new Result
             {
-                Title = Localize.plugin_explorer_openwith(),
-                SubTitle = Localize.plugin_explorer_openwith_subtitle(),
+                Title = Localize.FileResult_OpenWith,
+                SubTitle = Localize.FileResult_OpenWith_Subtitle,
                 Action = _ =>
                 {
                     Process.Start("rundll32.exe", $"{Path.Combine(Environment.SystemDirectory, "shell32.dll")},OpenAs_RunDLL {record.FullPath}");

@@ -9,8 +9,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Flow.Launcher.Plugin.Explorer.Search;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Flow.Launcher.Plugin.Explorer.Search;
 
 namespace Flow.Launcher.Plugin.Explorer.Views;
 
@@ -25,11 +25,11 @@ public partial class PreviewPanel : UserControl
     public string FileName { get; }
 
     [ObservableProperty]
-    private string _fileSize = Localize.plugin_explorer_plugin_tooltip_more_info_unknown();
-    
+    private string _fileSize = Localize.Preview_UnknownValue;
+
     [ObservableProperty]
     private string _createdAt = "";
-    
+
     [ObservableProperty]
     private string _lastModifiedAt = "";
 
@@ -88,7 +88,7 @@ public partial class PreviewPanel : UserControl
 
         if (Settings.ShowModifiedDateInPreviewPanel)
         {
-            LastModifiedAt = type == ResultType.File ? 
+            LastModifiedAt = type == ResultType.File ?
                 GetFileLastModifiedAt(filePath, Settings.PreviewPanelDateFormat, Settings.PreviewPanelTimeFormat, Settings.ShowFileAgeInPreviewPanel) :
                 GetFolderLastModifiedAt(filePath, Settings.PreviewPanelDateFormat, Settings.PreviewPanelTimeFormat, Settings.ShowFileAgeInPreviewPanel);
         }
@@ -111,17 +111,17 @@ public partial class PreviewPanel : UserControl
         catch (FileNotFoundException)
         {
             Main.Context.API.LogError(ClassName, $"File not found: {filePath}");
-            return Localize.plugin_explorer_plugin_tooltip_more_info_unknown();
+            return Localize.Preview_UnknownValue;
         }
         catch (UnauthorizedAccessException)
         {
             Main.Context.API.LogError(ClassName, $"Access denied to file: {filePath}");
-            return Localize.plugin_explorer_plugin_tooltip_more_info_unknown();
+            return Localize.Preview_UnknownValue;
         }
         catch (Exception e)
         {
             Main.Context.API.LogException(ClassName, $"Failed to get file size for {filePath}", e);
-            return Localize.plugin_explorer_plugin_tooltip_more_info_unknown();
+            return Localize.Preview_UnknownValue;
         }
     }
 
@@ -142,17 +142,17 @@ public partial class PreviewPanel : UserControl
         catch (FileNotFoundException)
         {
             Main.Context.API.LogError(ClassName, $"File not found: {filePath}");
-            return Localize.plugin_explorer_plugin_tooltip_more_info_unknown();
+            return Localize.Preview_UnknownValue;
         }
         catch (UnauthorizedAccessException)
         {
             Main.Context.API.LogError(ClassName, $"Access denied to file: {filePath}");
-            return Localize.plugin_explorer_plugin_tooltip_more_info_unknown();
+            return Localize.Preview_UnknownValue;
         }
         catch (Exception e)
         {
             Main.Context.API.LogException(ClassName, $"Failed to get file created date for {filePath}", e);
-            return Localize.plugin_explorer_plugin_tooltip_more_info_unknown();
+            return Localize.Preview_UnknownValue;
         }
     }
 
@@ -173,17 +173,17 @@ public partial class PreviewPanel : UserControl
         catch (FileNotFoundException)
         {
             Main.Context.API.LogError(ClassName, $"File not found: {filePath}");
-            return Localize.plugin_explorer_plugin_tooltip_more_info_unknown();
+            return Localize.Preview_UnknownValue;
         }
         catch (UnauthorizedAccessException)
         {
             Main.Context.API.LogError(ClassName, $"Access denied to file: {filePath}");
-            return Localize.plugin_explorer_plugin_tooltip_more_info_unknown();
+            return Localize.Preview_UnknownValue;
         }
         catch (Exception e)
         {
             Main.Context.API.LogException(ClassName, $"Failed to get file modified date for {filePath}", e);
-            return Localize.plugin_explorer_plugin_tooltip_more_info_unknown();
+            return Localize.Preview_UnknownValue;
         }
     }
 
@@ -205,17 +205,17 @@ public partial class PreviewPanel : UserControl
         catch (FileNotFoundException)
         {
             Main.Context.API.LogError(ClassName, $"Folder not found: {folderPath}");
-            return Localize.plugin_explorer_plugin_tooltip_more_info_unknown();
+            return Localize.Preview_UnknownValue;
         }
         catch (UnauthorizedAccessException)
         {
             Main.Context.API.LogError(ClassName, $"Access denied to folder: {folderPath}");
-            return Localize.plugin_explorer_plugin_tooltip_more_info_unknown();
+            return Localize.Preview_UnknownValue;
         }
         catch (OperationCanceledException)
         {
             Main.Context.API.LogError(ClassName, $"Operation timed out while calculating folder size for {folderPath}");
-            return Localize.plugin_explorer_plugin_tooltip_more_info_unknown();
+            return Localize.Preview_UnknownValue;
         }
         // For parallel operations, AggregateException may be thrown if any of the tasks fail
         catch (AggregateException ae)
@@ -224,22 +224,22 @@ public partial class PreviewPanel : UserControl
             {
                 case FileNotFoundException:
                     Main.Context.API.LogError(ClassName, $"Folder not found: {folderPath}");
-                    return Localize.plugin_explorer_plugin_tooltip_more_info_unknown();
+                    return Localize.Preview_UnknownValue;
                 case UnauthorizedAccessException:
                     Main.Context.API.LogError(ClassName, $"Access denied to folder: {folderPath}");
-                    return Localize.plugin_explorer_plugin_tooltip_more_info_unknown();
+                    return Localize.Preview_UnknownValue;
                 case OperationCanceledException:
                     Main.Context.API.LogError(ClassName, $"Operation timed out while calculating folder size for {folderPath}");
-                    return Localize.plugin_explorer_plugin_tooltip_more_info_unknown();
+                    return Localize.Preview_UnknownValue;
                 default:
                     Main.Context.API.LogException(ClassName, $"Failed to get folder size for {folderPath}", ae);
-                    return Localize.plugin_explorer_plugin_tooltip_more_info_unknown();
+                    return Localize.Preview_UnknownValue;
             }
         }
         catch (Exception e)
         {
             Main.Context.API.LogException(ClassName, $"Failed to get folder size for {folderPath}", e);
-            return Localize.plugin_explorer_plugin_tooltip_more_info_unknown();
+            return Localize.Preview_UnknownValue;
         }
     }
 
@@ -260,17 +260,17 @@ public partial class PreviewPanel : UserControl
         catch (FileNotFoundException)
         {
             Main.Context.API.LogError(ClassName, $"Folder not found: {folderPath}");
-            return Localize.plugin_explorer_plugin_tooltip_more_info_unknown();
+            return Localize.Preview_UnknownValue;
         }
         catch (UnauthorizedAccessException)
         {
             Main.Context.API.LogError(ClassName, $"Access denied to folder: {folderPath}");
-            return Localize.plugin_explorer_plugin_tooltip_more_info_unknown();
+            return Localize.Preview_UnknownValue;
         }
         catch (Exception e)
         {
             Main.Context.API.LogException(ClassName, $"Failed to get folder created date for {folderPath}", e);
-            return Localize.plugin_explorer_plugin_tooltip_more_info_unknown();
+            return Localize.Preview_UnknownValue;
         }
     }
 
@@ -291,17 +291,17 @@ public partial class PreviewPanel : UserControl
         catch (FileNotFoundException)
         {
             Main.Context.API.LogError(ClassName, $"Folder not found: {folderPath}");
-            return Localize.plugin_explorer_plugin_tooltip_more_info_unknown();
+            return Localize.Preview_UnknownValue;
         }
         catch (UnauthorizedAccessException)
         {
             Main.Context.API.LogError(ClassName, $"Access denied to folder: {folderPath}");
-            return Localize.plugin_explorer_plugin_tooltip_more_info_unknown();
+            return Localize.Preview_UnknownValue;
         }
         catch (Exception e)
         {
             Main.Context.API.LogException(ClassName, $"Failed to get folder modified date for {folderPath}", e);
-            return Localize.plugin_explorer_plugin_tooltip_more_info_unknown();
+            return Localize.Preview_UnknownValue;
         }
     }
 
@@ -311,20 +311,20 @@ public partial class PreviewPanel : UserControl
         var difference = now - fileDateTime;
 
         if (difference.TotalDays < 1)
-            return Localize.Today();
+            return Localize.Preview_Today;
         if (difference.TotalDays < 30)
-            return Localize.DaysAgo((int)difference.TotalDays);
+            return Localize.Preview_DaysAgo((int)difference.TotalDays);
 
         var monthsDiff = (now.Year - fileDateTime.Year) * 12 + now.Month - fileDateTime.Month;
         if (monthsDiff == 1)
-            return Localize.OneMonthAgo();
+            return Localize.Preview_OneMonthAgo;
         if (monthsDiff < 12)
-            return Localize.MonthsAgo(monthsDiff);
+            return Localize.Preview_MonthsAgo(monthsDiff);
 
         var yearsDiff = now.Year - fileDateTime.Year;
         if (now.Month < fileDateTime.Month || (now.Month == fileDateTime.Month && now.Day < fileDateTime.Day))
-            yearsDiff--; 
+            yearsDiff--;
 
-        return yearsDiff == 1 ? Localize.OneYearAgo(): Localize.YearsAgo(yearsDiff);
+        return yearsDiff == 1 ? Localize.Preview_OneYearAgo : Localize.Preview_YearsAgo(yearsDiff);
     }
 }
