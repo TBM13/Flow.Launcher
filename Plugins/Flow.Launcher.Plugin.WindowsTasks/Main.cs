@@ -8,7 +8,7 @@ using Microsoft.Win32.TaskScheduler;
 
 namespace Flow.Launcher.Plugin.WindowsTasks;
 
-public class Main : IPlugin, IContextMenu, IPluginI18n
+public class Main : IPlugin, IContextMenu
 {
     public const string PLUGIN_ICON = "Images\\app.png";
     public const string TASK_DISABLED_ICON = "Images\\task_disabled.png";
@@ -16,8 +16,6 @@ public class Main : IPlugin, IContextMenu, IPluginI18n
 
     internal static PluginInitContext Context { get; private set; } = null!;
 
-    public string GetTranslatedPluginTitle() => Localize.plugin_windowstasks_plugin_name();
-    public string GetTranslatedPluginDescription() => Localize.plugin_windowstasks_plugin_description();
     public void Init(PluginInitContext context)
     {
         Context = context;
@@ -93,7 +91,7 @@ public class Main : IPlugin, IContextMenu, IPluginI18n
             {
                 res.Add(new()
                 {
-                    Title = Localize.plugin_windowstasks_taskAction_disable(),
+                    Title = Localize.TaskAction_Disable,
                     Glyph = new GlyphInfo(FontFamily: GLYPH_FONT, Glyph: "\xEB4A"),
                     Action = c =>
                     {
@@ -106,7 +104,7 @@ public class Main : IPlugin, IContextMenu, IPluginI18n
             {
                 res.Add(new()
                 {
-                    Title = Localize.plugin_windowstasks_taskAction_enable(),
+                    Title = Localize.TaskAction_Enable,
                     Glyph = new GlyphInfo(FontFamily: GLYPH_FONT, Glyph: "\xEB49"),
                     Action = c =>
                     {
@@ -182,13 +180,13 @@ public class Main : IPlugin, IContextMenu, IPluginI18n
         StringBuilder sb = new();
         string localizedState = task.State switch
         {
-            TaskState.Disabled => Localize.plugin_windowstasks_taskState_disabled(),
-            TaskState.Queued => Localize.plugin_windowstasks_taskState_queued(),
-            TaskState.Ready => Localize.plugin_windowstasks_taskState_ready(),
-            TaskState.Running => Localize.plugin_windowstasks_taskState_running(),
-            TaskState.Unknown or _ => Localize.plugin_windowstasks_taskState_unknown(),
+            TaskState.Disabled => Localize.TaskState_Disabled,
+            TaskState.Queued => Localize.TaskState_Queued,
+            TaskState.Ready => Localize.TaskState_Ready,
+            TaskState.Running => Localize.TaskState_Running,
+            TaskState.Unknown or _ => Localize.TaskState_Unknown,
         };
-        sb.Append(Localize.plugin_windowstasks_taskState(localizedState));
+        sb.Append(Localize.TaskState(localizedState));
 
         // A 1999 date usually means the task was never run
         if (task.LastRunTime.Year >= 2000)
@@ -196,7 +194,7 @@ public class Main : IPlugin, IContextMenu, IPluginI18n
             sb.Append(" - ");
 
             string lastRunTime = task.LastRunTime.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.CurrentCulture);
-            sb.Append(Localize.plugin_windowstasks_lastRunTime(lastRunTime));
+            sb.Append(Localize.LastRunTime(lastRunTime));
         }
 
         // A 0001 date usually means there is no next run time scheduled
@@ -208,7 +206,7 @@ public class Main : IPlugin, IContextMenu, IPluginI18n
                 sb.Append(" - ");
 
                 string nextRunTime = task.NextRunTime.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.CurrentCulture);
-                sb.Append(Localize.plugin_windowstasks_nextRunTime(nextRunTime));
+                sb.Append(Localize.NextRunTime(nextRunTime));
             }
         }
 

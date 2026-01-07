@@ -41,11 +41,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Languages\*.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="Images\*.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -55,7 +50,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Flow.Launcher.Localization" Version="0.0.6" ExcludeAssets="runtime" />
     <PackageReference Include="TaskScheduler" Version="2.12.2" />
     <PackageReference Include="TaskSchedulerEditor" Version="2.12.2" />
   </ItemGroup>
