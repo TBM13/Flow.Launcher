@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Windows;
 using Microsoft.Win32;
@@ -13,7 +12,7 @@ using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Flow.Launcher.Plugin.Sys
 {
-    public class Main : IPlugin, IPluginI18n
+    public class Main : IPlugin
     {
         // SHTDN_REASON_MAJOR_OTHER indicates a generic shutdown reason that isn't categorized under hardware failure,
         // software updates, or other predefined reasons.
@@ -103,14 +102,13 @@ namespace Flow.Launcher.Plugin.Sys
             [
                 new Result
                 {
-                    Title = Localize.flowlauncher_plugin_sys_shutdown_computer_cmd(),
-                    SubTitle = Localize.flowlauncher_plugin_sys_shutdown_computer(),
+                    Title = Localize.Cmd_Shutdown,
+                    SubTitle = Localize.Cmd_Shutdown_Description,
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe7e8"),
                     Action = c =>
                     {
                         var result = Context.API.ShowMsgBox(
-                            Localize.flowlauncher_plugin_sys_dlgtext_shutdown_computer(),
-                            Localize.flowlauncher_plugin_sys_shutdown_computer(),
+                            Localize.Dialog_ConfirmShutdown, Localize.Cmd_Shutdown_Description,
                             MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
                         if (result == MessageBoxResult.Yes)
@@ -129,14 +127,13 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = Localize.flowlauncher_plugin_sys_restart_computer_cmd(),
-                    SubTitle = Localize.flowlauncher_plugin_sys_restart_computer(),
+                    Title = Localize.Cmd_Restart,
+                    SubTitle = Localize.Cmd_Restart_Description,
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe777"),
                     Action = c =>
                     {
                         var result = Context.API.ShowMsgBox(
-                            Localize.flowlauncher_plugin_sys_dlgtext_restart_computer(),
-                            Localize.flowlauncher_plugin_sys_restart_computer(),
+                            Localize.Dialog_ConfirmRestart, Localize.Cmd_Restart_Description,
                             MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
                         if (result == MessageBoxResult.Yes)
@@ -155,14 +152,13 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = Localize.flowlauncher_plugin_sys_restart_advanced_cmd(),
-                    SubTitle = Localize.flowlauncher_plugin_sys_restart_advanced(),
+                    Title = Localize.Cmd_RestartAdvanced,
+                    SubTitle = Localize.Cmd_RestartAdvanced_Description,
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xecc5"),
                     Action = c =>
                     {
                         var result = Context.API.ShowMsgBox(
-                            Localize.flowlauncher_plugin_sys_dlgtext_restart_computer_advanced(),
-                            Localize.flowlauncher_plugin_sys_restart_computer(),
+                            Localize.Dialog_ConfirmRestartAdvanced, Localize.Cmd_RestartAdvanced_Description,
                             MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
                         if (result == MessageBoxResult.Yes)
@@ -181,14 +177,13 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = Localize.flowlauncher_plugin_sys_log_off_cmd(),
-                    SubTitle = Localize.flowlauncher_plugin_sys_log_off(),
+                    Title = Localize.Cmd_LogOff,
+                    SubTitle = Localize.Cmd_LogOff_Description,
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe77b"),
                     Action = c =>
                     {
                         var result = Context.API.ShowMsgBox(
-                            Localize.flowlauncher_plugin_sys_dlgtext_logoff_computer(),
-                            Localize.flowlauncher_plugin_sys_log_off(),
+                            Localize.Dialog_ConfirmLogOff, Localize.Cmd_LogOff_Description,
                             MessageBoxButton.YesNo, MessageBoxImage.Warning);
                         if (result == MessageBoxResult.Yes)
                             PInvoke.ExitWindowsEx(EXIT_WINDOWS_FLAGS.EWX_LOGOFF, REASON);
@@ -197,8 +192,8 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = Localize.flowlauncher_plugin_sys_lock_cmd(),
-                    SubTitle = Localize.flowlauncher_plugin_sys_lock(),
+                    Title = Localize.Cmd_Lock,
+                    SubTitle = Localize.Cmd_Lock_Description,
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe72e"),
                     Action = c =>
                     {
@@ -208,8 +203,8 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = Localize.flowlauncher_plugin_sys_sleep_cmd(),
-                    SubTitle = Localize.flowlauncher_plugin_sys_sleep(),
+                    Title = Localize.Cmd_Sleep,
+                    SubTitle = Localize.Cmd_Sleep_Description,
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xec46"),
                     Action = c =>
                     {
@@ -219,8 +214,8 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = Localize.flowlauncher_plugin_sys_hibernate_cmd(),
-                    SubTitle = Localize.flowlauncher_plugin_sys_hibernate(),
+                    Title = Localize.Cmd_Hibernate,
+                    SubTitle = Localize.Cmd_Hibernate_Description,
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe8be"),
                     Action= c =>
                     {
@@ -230,8 +225,7 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = Localize.flowlauncher_plugin_sys_openrecyclebin_cmd(),
-                    SubTitle = Localize.flowlauncher_plugin_sys_openrecyclebin(),
+                    Title = Localize.Cmd_OpenRecycleBin,
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe74d"),
                     CopyText = recycleBinFolder,
                     Action = c =>
@@ -242,8 +236,8 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = Localize.flowlauncher_plugin_sys_exit_cmd(),
-                    SubTitle = Localize.flowlauncher_plugin_sys_exit(),
+                    Title = Localize.Cmd_Exit,
+                    SubTitle = Localize.Cmd_Exit_Description,
                     IcoPath = "Images\\app.png",
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe89f"),
                     Action = c =>
@@ -255,8 +249,8 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = Localize.flowlauncher_plugin_sys_setting_cmd(),
-                    SubTitle = Localize.flowlauncher_plugin_sys_setting(),
+                    Title = Localize.Cmd_Settings,
+                    SubTitle = Localize.Cmd_Settings_Description,
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xf210"),
                     IcoPath = "Images\\app.png",
                     Action = c =>
@@ -267,7 +261,7 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = Localize.flowlauncher_plugin_sys_toggleDarkMode_cmd(),
+                    Title = Localize.Cmd_ToggleDarkMode,
                     Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe7a1"),
                     IcoPath = "Images\\app.png",
                     Action = c =>
@@ -305,21 +299,6 @@ namespace Flow.Launcher.Plugin.Sys
             ]);
 
             return results;
-        }
-
-        public string GetTranslatedPluginTitle()
-        {
-            return Localize.flowlauncher_plugin_sys_plugin_name();
-        }
-
-        public string GetTranslatedPluginDescription()
-        {
-            return Localize.flowlauncher_plugin_sys_plugin_description();
-        }
-
-        public void OnCultureInfoChanged(CultureInfo _)
-        {
-
         }
     }
 }
