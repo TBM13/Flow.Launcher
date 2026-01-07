@@ -14,7 +14,6 @@ using Flow.Launcher.Infrastructure.Logger;
 using Flow.Launcher.Plugin.Program.Views.Models;
 using Flow.Launcher.Plugin.SharedCommands;
 using Flow.Launcher.Plugin.SharedModels;
-using IniParser;
 using MemoryPack;
 using Microsoft.Win32;
 
@@ -384,14 +383,9 @@ namespace Flow.Launcher.Plugin.Program.Programs
 
             try
             {
-                var parser = new FileIniDataParser();
-                var data = parser.ReadFile(path);
-                var urlSection = data["InternetShortcut"];
-                var url = urlSection?["URL"];
+                var url = InternetShortcutHelper.GetUrl(path);
                 if (string.IsNullOrEmpty(url))
-                {
                     return program;
-                }
 
                 foreach (var protocol in protocols)
                 {
@@ -403,7 +397,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     }
                 }
 
-                var iconPath = urlSection?["IconFile"];
+                var iconPath = InternetShortcutHelper.GetIconPath(path);
                 if (!string.IsNullOrEmpty(iconPath))
                 {
                     program.IcoPath = iconPath;

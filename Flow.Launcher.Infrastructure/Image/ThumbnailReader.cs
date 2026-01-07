@@ -162,27 +162,18 @@ namespace Flow.Launcher.Infrastructure.Image
         /// <returns>An HBITMAP containing the requested image; callers are responsible for freeing the native handle.</returns>
         private static HBITMAP GetHBitmapForUrlFile(string fileName, int width, int height, ThumbnailOptions options)
         {
-            HBITMAP hBitmap;
-            Span<char> iconFileBuffer = stackalloc char[1024];
+            string? iconPath = InternetShortcutHelper.GetIconPath(fileName);
+            if (iconPath == null || !File.Exists(iconPath))
+                return GetHBitmap(Path.GetFullPath(fileName), width, height, options);
 
             try
             {
-                uint length = PInvoke.GetPrivateProfileString("InternetShortcut", "IconFile", string.Empty, iconFileBuffer, fileName);
-                string iconPath = new string(iconFileBuffer[..(int)length]);
-
-                if (!File.Exists(iconPath))
-                {
-                    // If the IconFile is missing, throw exception to fallback to the default icon
-                    throw new FileNotFoundException("Icon file not specified in Internet shortcut (.url) file.");
-                }
-                hBitmap = GetHBitmap(Path.GetFullPath(iconPath), width, height, options);
+                return GetHBitmap(Path.GetFullPath(iconPath), width, height, options);
             }
             catch
             {
-                hBitmap = GetHBitmap(Path.GetFullPath(fileName), width, height, options);
+                return GetHBitmap(Path.GetFullPath(fileName), width, height, options);
             }
-
-            return hBitmap;
         }
     }
 }
