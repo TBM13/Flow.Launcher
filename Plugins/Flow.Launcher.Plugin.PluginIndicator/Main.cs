@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Flow.Launcher.Plugin.PluginIndicator
 {
-    public class Main : IPlugin, IPluginI18n, IHomeQuery
+    public class Main : IPlugin, IHomeQuery
     {
         internal static PluginInitContext Context { get; private set; }
 
@@ -34,7 +34,7 @@ namespace Flow.Launcher.Plugin.PluginIndicator
                 select new Result
                 {
                     Title = keyword,
-                    SubTitle = Localize.flowlauncher_plugin_pluginindicator_result_subtitle(plugin.Name),
+                    SubTitle = Localize.ResultSubtitle(plugin.Name),
                     Score = score,
                     IcoPath = plugin.IcoPath,
                     AutoCompleteText = $"{keyword}{Plugin.Query.TermSeparator}",
@@ -64,16 +64,6 @@ namespace Flow.Launcher.Plugin.PluginIndicator
                 }
             }
             return nonGlobalPlugins;
-        }
-
-        public string GetTranslatedPluginTitle()
-        {
-            return Localize.flowlauncher_plugin_pluginindicator_plugin_name();
-        }
-
-        public string GetTranslatedPluginDescription()
-        {
-            return Localize.flowlauncher_plugin_pluginindicator_plugin_description();
         }
 
         public List<Result> HomeQuery()
