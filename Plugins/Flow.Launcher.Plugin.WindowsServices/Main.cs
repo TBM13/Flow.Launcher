@@ -5,14 +5,12 @@ using System.ServiceProcess;
 
 namespace Flow.Launcher.Plugin.WindowsServices;
 
-public class Main : IPlugin, IContextMenu, IPluginI18n
+public class Main : IPlugin, IContextMenu
 {
     public const string PLUGIN_ICON = "Images\\app.png";
 
     internal static PluginInitContext Context { get; private set; } = null!;
 
-    public string GetTranslatedPluginTitle() => Localize.plugin_windowsservices_plugin_name();
-    public string GetTranslatedPluginDescription() => Localize.plugin_windowsservices_plugin_description();
     public void Init(PluginInitContext context)
     {
         Context = context;
@@ -31,7 +29,7 @@ public class Main : IPlugin, IContextMenu, IPluginI18n
         }
         catch (Exception e)
         {
-            Context.API.ShowMsgError(Localize.plugin_windowsservices_error_changeStartupTypeFail(), e.ToString());
+            Context.API.ShowMsgError(Localize.Error_ChangeStartupTypeFail, e.ToString());
             return false;
         }
 
@@ -43,7 +41,7 @@ public class Main : IPlugin, IContextMenu, IPluginI18n
             }
             catch (Exception e)
             {
-                Context.API.ShowMsgError(Localize.plugin_windowsservices_error_startServiceFail(), e.ToString());
+                Context.API.ShowMsgError(Localize.Error_StartServiceFail, e.ToString());
                 return false;
             }
         }
@@ -60,7 +58,7 @@ public class Main : IPlugin, IContextMenu, IPluginI18n
         }
         catch (Exception e)
         {
-            Context.API.ShowMsgError(Localize.plugin_windowsservices_error_changeStartupTypeFail(), e.ToString());
+            Context.API.ShowMsgError(Localize.Error_ChangeStartupTypeFail, e.ToString());
             return false;
         }
 
@@ -72,7 +70,7 @@ public class Main : IPlugin, IContextMenu, IPluginI18n
             }
             catch (Exception e)
             {
-                Context.API.ShowMsgError(Localize.plugin_windowsservices_error_stopServiceFail(), e.ToString());
+                Context.API.ShowMsgError(Localize.Error_StopServiceFail, e.ToString());
                 return false;
             }
         }
@@ -92,7 +90,7 @@ public class Main : IPlugin, IContextMenu, IPluginI18n
             {
                 results.Add(new Result()
                 {
-                    Title = Localize.plugin_windowsservices_action_restartService(),
+                    Title = Localize.Action_RestartService,
                     Glyph = new(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xe777"),
                     Action = (c) =>
                     {
@@ -102,7 +100,7 @@ public class Main : IPlugin, IContextMenu, IPluginI18n
                         }
                         catch (Exception e)
                         {
-                            Context.API.ShowMsgError(Localize.plugin_windowsservices_error_restartServiceFail(), e.ToString());
+                            Context.API.ShowMsgError(Localize.Error_RestartServiceFail, e.ToString());
                             return false;
                         }
 
@@ -114,7 +112,7 @@ public class Main : IPlugin, IContextMenu, IPluginI18n
 
             results.Add(new Result()
             {
-                Title = Localize.plugin_windowsservices_action_stopService(),
+                Title = Localize.Action_StopService,
                 Glyph = new(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xe769"),
                 Action = (c) =>
                 {
@@ -124,7 +122,7 @@ public class Main : IPlugin, IContextMenu, IPluginI18n
                     }
                     catch (Exception e)
                     {
-                        Context.API.ShowMsgError(Localize.plugin_windowsservices_error_stopServiceFail(), e.ToString());
+                        Context.API.ShowMsgError(Localize.Error_StopServiceFail, e.ToString());
                         return false;
                     }
 
@@ -137,7 +135,7 @@ public class Main : IPlugin, IContextMenu, IPluginI18n
         {
             results.Add(new Result()
             {
-                Title = Localize.plugin_windowsservices_action_startService(),
+                Title = Localize.Action_StartService,
                 Glyph = new(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xe768"),
                 Action = (c) =>
                 {
@@ -147,7 +145,7 @@ public class Main : IPlugin, IContextMenu, IPluginI18n
                     }
                     catch (Exception e)
                     {
-                        Context.API.ShowMsgError(Localize.plugin_windowsservices_error_startServiceFail(), e.ToString());
+                        Context.API.ShowMsgError(Localize.Error_StartServiceFail, e.ToString());
                         return false;
                     }
 
@@ -161,30 +159,30 @@ public class Main : IPlugin, IContextMenu, IPluginI18n
         {
             results.Add(new Result()
             {
-                Title = Localize.plugin_windowsservices_action_enableManual(),
+                Title = Localize.Action_EnableManual,
                 SubTitle = service.IsRunning ?
-                    Localize.plugin_windowsservices_action_enableManual_description() :
-                    Localize.plugin_windowsservices_action_enableManualAndStart_description(),
+                    Localize.Action_EnableManual_Description :
+                    Localize.Action_EnableManualAndStart_Description,
                 Glyph = new(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xEB49"),
                 Action = c => EnableService(service, Action.EnableManual)
             });
 
             results.Add(new Result()
             {
-                Title = Localize.plugin_windowsservices_action_enableAutomatic(),
+                Title = Localize.Action_EnableAutomatic,
                 SubTitle = service.IsRunning ?
-                    Localize.plugin_windowsservices_action_enableAutomatic_description() :
-                    Localize.plugin_windowsservices_action_enableAutomaticAndStart_description(),
+                    Localize.Action_EnableAutomatic_Description :
+                    Localize.Action_EnableAutomaticAndStart_Description,
                 Glyph = new(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xEB49"),
                 Action = c => EnableService(service, Action.EnableAutomatic)
             });
 
             results.Add(new Result()
             {
-                Title = Localize.plugin_windowsservices_action_enableAutomaticDelayed(),
+                Title = Localize.Action_EnableAutomaticDelayed,
                 SubTitle = service.IsRunning ?
-                    Localize.plugin_windowsservices_action_enableAutomaticDelayed_description() :
-                    Localize.plugin_windowsservices_action_enableAutomaticDelayedAndStart_description(),
+                    Localize.Action_EnableAutomaticDelayed_Description :
+                    Localize.Action_EnableAutomaticDelayedAndStart_Description,
                 Glyph = new(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xEB49"),
                 Action = c => EnableService(service, Action.EnableAutomaticDelayed)
             });
@@ -193,10 +191,10 @@ public class Main : IPlugin, IContextMenu, IPluginI18n
         {
             results.Add(new Result()
             {
-                Title = Localize.plugin_windowsservices_action_disable(),
+                Title = Localize.Action_Disable,
                 SubTitle = service.IsRunning ?
-                    Localize.plugin_windowsservices_action_disableAndStop_description() :
-                    Localize.plugin_windowsservices_action_disable_description(),
+                    Localize.Action_DisableAndStop_Description :
+                    Localize.Action_Disable_Description,
                 Glyph = new(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xEB4A"),
                 Action = c => DisableService(service)
             });

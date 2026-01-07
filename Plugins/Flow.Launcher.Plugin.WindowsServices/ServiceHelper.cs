@@ -223,7 +223,7 @@ public static class ServiceHelper
         if (failed != 0)
         {
             Main.Context.API.LogError(ClassName, $"Failed to create {failed} ServiceResult(s)");
-            Main.Context.API.ShowMsgError(Localize.plugin_windowsservices_error_getInformationFail(failed));
+            Main.Context.API.ShowMsgError(Localize.Error_GetInformationFail(failed));
         }
 
         return results.Where(r => r is not null)!;
@@ -300,22 +300,22 @@ public static class ServiceHelper
 
     private static string GetResultSubTitle(ServiceResult svc)
     {
-        return Localize.plugin_windowsservices_info_status() + ": " + GetLocalizedStatus(svc.Status)
-            + " - " + Localize.plugin_windowsservices_info_startupType() + ": " + GetLocalizedStartType(svc)
-            + " - " + Localize.plugin_windowsservices_info_name() + ": " + svc.ServiceName;
+        return Localize.Info_Status + ": " + GetLocalizedStatus(svc.Status)
+            + " - " + Localize.Info_StartupType + ": " + GetLocalizedStartType(svc)
+            + " - " + Localize.Info_Name + ": " + svc.ServiceName;
     }
 
     private static string GetLocalizedStatus(ServiceControllerStatus status)
     {
         return status switch
         {
-            ServiceControllerStatus.StartPending => Localize.plugin_windowsservices_info_status_startPending(),
-            ServiceControllerStatus.Running => Localize.plugin_windowsservices_info_status_running(),
-            ServiceControllerStatus.StopPending => Localize.plugin_windowsservices_info_status_stopPending(),
-            ServiceControllerStatus.Stopped => Localize.plugin_windowsservices_info_status_stopped(),
-            ServiceControllerStatus.PausePending => Localize.plugin_windowsservices_info_status_pausePending(),
-            ServiceControllerStatus.Paused => Localize.plugin_windowsservices_info_status_paused(),
-            ServiceControllerStatus.ContinuePending => Localize.plugin_windowsservices_info_status_continuePending(),
+            ServiceControllerStatus.StartPending => Localize.Info_Status_StartPending,
+            ServiceControllerStatus.Running => Localize.Info_Status_Running,
+            ServiceControllerStatus.StopPending => Localize.Info_Status_StopPending,
+            ServiceControllerStatus.Stopped => Localize.Info_Status_Stopped,
+            ServiceControllerStatus.PausePending => Localize.Info_Status_PausePending,
+            ServiceControllerStatus.Paused => Localize.Info_Status_Paused,
+            ServiceControllerStatus.ContinuePending => Localize.Info_Status_ContinuePending,
             _ => status.ToString()
         };
     }
@@ -325,12 +325,12 @@ public static class ServiceHelper
         ServiceStartMode startMode = svc.StartType;
         return startMode switch
         {
-            ServiceStartMode.Boot => Localize.plugin_windowsservices_info_startupType_boot(),
-            ServiceStartMode.System => Localize.plugin_windowsservices_info_startupType_system(),
-            ServiceStartMode.Automatic when svc.IsDelayedAutoStart() => Localize.plugin_windowsservices_info_startupType_automaticDelayed(),
-            ServiceStartMode.Automatic => Localize.plugin_windowsservices_info_startupType_automatic(),
-            ServiceStartMode.Manual => Localize.plugin_windowsservices_info_startupType_manual(),
-            ServiceStartMode.Disabled => Localize.plugin_windowsservices_info_startupType_disabled(),
+            ServiceStartMode.Boot => Localize.Info_StartupType_Boot,
+            ServiceStartMode.System => Localize.Info_StartupType_System,
+            ServiceStartMode.Automatic when svc.IsDelayedAutoStart() => Localize.Info_StartupType_AutomaticDelayed,
+            ServiceStartMode.Automatic => Localize.Info_StartupType_Automatic,
+            ServiceStartMode.Manual => Localize.Info_StartupType_Manual,
+            ServiceStartMode.Disabled => Localize.Info_StartupType_Disabled,
             _ => startMode.ToString()
         };
     }
