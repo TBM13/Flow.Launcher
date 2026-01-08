@@ -6,13 +6,9 @@ using System.Windows.Media.Imaging;
 
 namespace Flow.Launcher.Infrastructure.Image
 {
-    public interface IImageHashGenerator
+    public static class ImageHashGenerator
     {
-        string GetHashFromImage(ImageSource image);
-    }
-    public class ImageHashGenerator : IImageHashGenerator
-    {
-        public string? GetHashFromImage(ImageSource imageSource)
+        public static string? GetHashFromImage(ImageSource imageSource)
         {
             if (imageSource is not BitmapSource image)
             {

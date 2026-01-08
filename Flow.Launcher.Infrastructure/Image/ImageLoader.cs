@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Security.Policy;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Flow.Launcher.Infrastructure.Logger;
-using Flow.Launcher.Infrastructure.Storage;
 
 namespace Flow.Launcher.Infrastructure.Image
 {
@@ -20,11 +15,7 @@ namespace Flow.Launcher.Infrastructure.Image
         private static readonly string ClassName = nameof(ImageLoader);
 
         private static readonly ImageCache ImageCache = new();
-        private static Lock storageLock { get; } = new();
-        private static BinaryStorage<List<(string, bool)>> _storage = null!;
         private static readonly ConcurrentDictionary<string, string> GuidToKey = new();
-        private static ImageHashGenerator _hashGenerator = null!;
-        private static readonly bool EnableImageHash = true;
         public static ImageSource Image => ImageCache[Constant.ImageIcon, false]!;
         public static ImageSource MissingImage => ImageCache[Constant.MissingImgIcon, false]!;
         public static ImageSource LoadingImage => ImageCache[Constant.LoadingImgIcon, false]!;
@@ -38,13 +29,6 @@ namespace Flow.Launcher.Infrastructure.Image
         {
             await Task.Run(() =>
             {
-                _storage = new BinaryStorage<List<(string, bool)>>("Image");
-                _hashGenerator = new ImageHashGenerator();
-
-                // Even though we no longer do image preloading and thus don't need _storage,
-                // for some reason MemoryPackSerializer exceptions appear when this is removed
-                LoadStorageToConcurrentDictionary();
-
                 foreach (var icon in new[] { Constant.DefaultIcon, Constant.ImageIcon, Constant.MissingImgIcon, Constant.LoadingImgIcon })
                 {
                     ImageSource img = new BitmapImage(new Uri(icon));
@@ -52,14 +36,6 @@ namespace Flow.Launcher.Infrastructure.Image
                     ImageCache[icon, false] = img;
                 }
             });
-        }
-
-        private static List<(string, bool)> LoadStorageToConcurrentDictionary()
-        {
-            lock (storageLock)
-            {
-                return _storage.TryLoad([]);
-            }
         }
 
         private record ImageResult(ImageSource ImageSource, ImageType ImageType);
@@ -89,15 +65,6 @@ namespace Flow.Launcher.Infrastructure.Image
 
                         return new ImageResult(imageSource, ImageType.Cache);
                     }
-                }
-
-                if (path.StartsWith("data:image", StringComparison.OrdinalIgnoreCase))
-                {
-                    throw new NotSupportedException();
-
-                    /*var imageSource = new BitmapImage(new Uri(path));
-                    imageSource.Freeze();
-                    return new ImageResult(imageSource, ImageType.Data);*/
                 }
 
                 imageResult = await Task.Run(() => GetThumbnailResult(ref path, loadFullImage));
@@ -198,11 +165,6 @@ namespace Flow.Launcher.Infrastructure.Image
                 option);
         }
 
-        public static bool CacheContainImage(string path, bool loadFullImage = false)
-        {
-            return ImageCache.ContainsKey(path, loadFullImage);
-        }
-
         public static bool TryGetValue(string path, bool loadFullImage, [NotNullWhen(true)] out ImageSource? image)
         {
             return ImageCache.TryGetValue(path, loadFullImage, out image);
@@ -217,7 +179,7 @@ namespace Flow.Launcher.Infrastructure.Image
             if (imageResult.ImageType != ImageType.Error && imageResult.ImageType != ImageType.Cache)
             {
                 // we need to get image hash
-                string? hash = EnableImageHash ? _hashGenerator.GetHashFromImage(img) : null;
+                string? hash = ImageHashGenerator.GetHashFromImage(img);
                 if (hash is not null)
                 {
                     if (GuidToKey.TryGetValue(hash, out string? key))
@@ -274,7 +236,6 @@ namespace Flow.Launcher.Infrastructure.Image
                 image.DecodePixelHeight = decodedHeight;
 
             image.Freeze();
-            Trace.WriteLine(path);
             return image;
         }
     }
