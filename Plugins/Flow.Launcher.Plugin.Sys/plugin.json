@@ -1,6 +1,6 @@
 {
   "ID": "CEA08895D2544B019B2E9C5009600DF4",
-  "ActionKeywords": [ "*" ],
+  "ActionKeywords": [ ">" ],
   "Name": "System Commands",
   "Description": "Provide System related commands. e.g. shutdown,lock, setting etc.",
   "Author": "qianlifeng",
