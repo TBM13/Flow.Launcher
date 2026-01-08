@@ -38,7 +38,7 @@ namespace Flow.Launcher.Plugin.Calculator
         private static Engine MagesEngine;
         private const string Comma = ",";
         private const string Dot = ".";
-        private const string IcoPath = "Images/calculator.png";
+        private static string IcoPath = PluginMetadataDefinition.Metadata.IcoPath;
         private static readonly List<Result> EmptyResults = [];
 
         internal static PluginInitContext Context { get; private set; } = null!;
