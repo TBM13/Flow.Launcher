@@ -5,10 +5,9 @@ namespace Flow.Launcher.Infrastructure.Logger
 {
     public static class Log
     {
-        [Conditional("DEBUG")]
         public static void Exception(string className, string message, System.Exception exception, [CallerMemberName] string methodName = "")
         {
-            System.Diagnostics.Debug.WriteLine($"EXCEPTION: {methodName}@{className}: {message}\n\n{exception}");
+            Trace.WriteLine($"EXCEPTION: {methodName}@{className}: {message}\n\n{exception}");
         }
 
         private static string CheckClassAndMessageAndReturnFullClassWithMethod(string className, string message,
