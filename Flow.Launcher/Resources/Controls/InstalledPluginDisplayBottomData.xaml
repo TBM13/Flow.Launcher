@@ -28,7 +28,7 @@
                 VerticalAlignment="center"
                 FontSize="11"
                 Foreground="{DynamicResource PluginInfoColor}"
-                Text="{Binding PluginPair.Metadata.Author}" />
+                Text="{Binding PluginMetadata.Author}" />
             <TextBlock
                 Margin="10 0 0 0"
                 VerticalAlignment="Center"
@@ -41,12 +41,6 @@
                 FontSize="11"
                 Foreground="{DynamicResource PluginInfoColor}"
                 Text="{Binding Version}"/>
-            <TextBlock
-                Margin="5 0"
-                VerticalAlignment="Center"
-                FontSize="11"
-                Foreground="{DynamicResource PluginInfoColor}"
-                Text="|" />
         </StackPanel>
     </Border>
 </UserControl>
