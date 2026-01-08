@@ -14,25 +14,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <Version>5.1.0</Version>
-    <PackageVersion>5.1.0</PackageVersion>
-    <AssemblyVersion>5.1.0</AssemblyVersion>
-    <FileVersion>5.1.0</FileVersion>
-    <PackageId>Flow.Launcher.Plugin</PackageId>
-    <Authors>Flow-Launcher</Authors>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/Flow-Launcher/Flow.Launcher</RepositoryUrl>
-    <PackageDescription>Reference this library if you want to develop a Flow Launcher plugin</PackageDescription>
-    <PackageTags>flowlauncher</PackageTags>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(APPVEYOR)' == 'True'">
-    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-  </PropertyGroup>
-
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>portable</DebugType>

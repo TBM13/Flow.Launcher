@@ -10,6 +10,7 @@ namespace Flow.Launcher.Infrastructure;
 
 public static class ShellLinkHelper
 {
+    public const string SHELL_LINK_EXTENSION = ".lnk";
     private static string CLASS_NAME => typeof(ShellLinkHelper).FullName ?? nameof(ShellLinkHelper);
 
     // Reference : http://www.pinvoke.net/default.aspx/Interfaces.IShellLinkW

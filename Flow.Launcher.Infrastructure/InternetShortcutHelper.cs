@@ -5,6 +5,8 @@ namespace Flow.Launcher.Infrastructure;
 
 public static class InternetShortcutHelper
 {
+    public const string INTERNET_SHORTCUT_EXTENSION = ".url";
+
     public static string? GetUrl(string path)
     {
         Span<char> urlBuffer = stackalloc char[2048];
