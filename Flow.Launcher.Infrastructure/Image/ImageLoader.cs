@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
@@ -23,12 +25,9 @@ namespace Flow.Launcher.Infrastructure.Image
         private static readonly ConcurrentDictionary<string, string> GuidToKey = new();
         private static ImageHashGenerator _hashGenerator = null!;
         private static readonly bool EnableImageHash = true;
-        public static ImageSource Image => ImageCache[Constant.ImageIcon, false]
-            ?? throw new NullReferenceException("Failed to get cached default image");
-        public static ImageSource MissingImage => ImageCache[Constant.MissingImgIcon, false]
-            ?? throw new NullReferenceException("Failed to get cached missing image");
-        public static ImageSource LoadingImage => ImageCache[Constant.LoadingImgIcon, false]
-            ?? throw new NullReferenceException("Failed to get cached loading image");
+        public static ImageSource Image => ImageCache[Constant.ImageIcon, false]!;
+        public static ImageSource MissingImage => ImageCache[Constant.MissingImgIcon, false]!;
+        public static ImageSource LoadingImage => ImageCache[Constant.LoadingImgIcon, false]!;
         public const int SmallIconSize = 64;
         public const int FullIconSize = 256;
         public const int FullImageSize = 320;
@@ -245,38 +244,37 @@ namespace Flow.Launcher.Infrastructure.Image
 
         private static BitmapImage LoadFullImage(string path)
         {
+            path = Path.GetFullPath(path);
+            Uri uri = new Uri(path);
+
+            int decodedWidth = 0, decodedHeight = 0;
+            // Peek at the image dimensions without fully loading it
+            BitmapFrame frame = BitmapFrame.Create(uri, BitmapCreateOptions.DelayCreation, BitmapCacheOption.None);
+            if (frame.PixelWidth > FullImageSize || frame.PixelHeight > FullImageSize)
+            {
+                if (frame.PixelWidth > frame.PixelHeight)
+                    // Image is landscape, constraining the width is enough
+                    // (since the aspect ratio is maintained)
+                    decodedWidth = FullImageSize;
+                else
+                    // Image is portrait, constraining the height is enough
+                    decodedHeight = FullImageSize;
+            }
+
             BitmapImage image = new BitmapImage();
             image.BeginInit();
             image.CacheOption = BitmapCacheOption.OnLoad;
-            image.UriSource = new Uri(path);
+            image.UriSource = uri;
             image.CreateOptions = BitmapCreateOptions.IgnoreColorProfile;
             image.EndInit();
 
-            if (image.PixelWidth > FullImageSize)
-            {
-                BitmapImage resizedWidth = new BitmapImage();
-                resizedWidth.BeginInit();
-                resizedWidth.CacheOption = BitmapCacheOption.OnLoad;
-                resizedWidth.UriSource = new Uri(path);
-                resizedWidth.CreateOptions = BitmapCreateOptions.IgnoreColorProfile;
-                resizedWidth.DecodePixelWidth = FullImageSize;
-                resizedWidth.EndInit();
+            if (decodedWidth > 0)
+                image.DecodePixelWidth = decodedWidth;
+            if (decodedHeight > 0)
+                image.DecodePixelHeight = decodedHeight;
 
-                if (resizedWidth.PixelHeight > FullImageSize)
-                {
-                    BitmapImage resizedHeight = new BitmapImage();
-                    resizedHeight.BeginInit();
-                    resizedHeight.CacheOption = BitmapCacheOption.OnLoad;
-                    resizedHeight.UriSource = new Uri(path);
-                    resizedHeight.CreateOptions = BitmapCreateOptions.IgnoreColorProfile;
-                    resizedHeight.DecodePixelHeight = FullImageSize;
-                    resizedHeight.EndInit();
-                    return resizedHeight;
-                }
-
-                return resizedWidth;
-            }
-
+            image.Freeze();
+            Trace.WriteLine(path);
             return image;
         }
     }
