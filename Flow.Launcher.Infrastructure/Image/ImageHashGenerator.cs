@@ -23,7 +23,7 @@ namespace Flow.Launcher.Infrastructure.Image
                 bitmapFrame.Freeze();
                 enc.Frames.Add(bitmapFrame);
                 enc.Save(outStream);
-                var byteArray = outStream.GetBuffer();
+                var byteArray = outStream.GetBuffer().AsSpan(0, (int)outStream.Length);
                 var hash = Convert.ToBase64String(SHA1.HashData(byteArray));
                 return hash;
             }
