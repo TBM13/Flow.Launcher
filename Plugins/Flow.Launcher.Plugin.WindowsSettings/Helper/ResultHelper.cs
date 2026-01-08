@@ -50,7 +50,7 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Helper
         /// </summary>
         private const int NO_GLYPH_PENALTY = -10;
 
-        private const string WINDOWS_SETTINGS_ICON_PATH = "Images/WindowsSettings.light.png";
+        private static readonly string WINDOWS_SETTINGS_ICON_PATH = PluginMetadataDefinition.Metadata.IcoPath;
         private static readonly string CONTROL_PANEL_ICON_PATH = Environment.ExpandEnvironmentVariables(@"%SystemRoot%\System32\control.exe");
         private static readonly string MMC_ICON_PATH = Environment.ExpandEnvironmentVariables(@"%SystemRoot%\System32\mmc.exe");
 
