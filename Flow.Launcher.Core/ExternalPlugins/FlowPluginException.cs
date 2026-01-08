@@ -10,7 +10,6 @@ namespace Flow.Launcher.Core.ExternalPlugins
         public override string ToString()
         {
             return $@"{Metadata.Name} Exception: 
-Websites: {Metadata.Website}
 Author: {Metadata.Author}
 Version: {Metadata.Version}
 {base.ToString()}";

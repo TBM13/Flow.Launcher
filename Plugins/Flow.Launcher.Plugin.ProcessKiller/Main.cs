@@ -7,6 +7,22 @@ using Flow.Launcher.Plugin.ProcessKiller.Views;
 
 namespace Flow.Launcher.Plugin.ProcessKiller
 {
+    public static class PluginMetadataDefinition
+    {
+        public static readonly PluginMetadata Metadata = new()
+        {
+            ID = "b64d0a79-329a-48b0-b53f-d658318a1bf6",
+            ActionKeywords = ["kill"],
+            Name = "Process Killer",
+            Description = "Kill running processes from Flow",
+            Author = "Flow-Launcher",
+            Version = "1.0.0",
+            IcoPath = "Images/Plugin.ProcessKiller.png",
+
+            Plugin = new Main()
+        };
+    }
+
     public class Main : IPlugin, IContextMenu, ISettingProvider
     {
         internal static PluginInitContext Context { get; private set; }

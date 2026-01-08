@@ -47,24 +47,6 @@
                 FontSize="11"
                 Foreground="{DynamicResource PluginInfoColor}"
                 Text="|" />
-            <TextBlock
-                Margin="5 0 0 0"
-                Style="{DynamicResource LinkBtnStyle}"
-                Text="&#xe80f;"
-                ToolTip="{DynamicResource plugin_query_web}">
-                <TextBlock.InputBindings>
-                    <MouseBinding Command="{Binding OpenSourceCodeLinkCommand}" MouseAction="LeftClick" />
-                </TextBlock.InputBindings>
-            </TextBlock>
-            <TextBlock
-                Margin="10 0 5 0"
-                Style="{DynamicResource LinkBtnStyle}"
-                Text="&#xe8b7;"
-                ToolTip="{DynamicResource pluginDirectory}">
-                <TextBlock.InputBindings>
-                    <MouseBinding Command="{Binding OpenPluginDirectoryCommand}" MouseAction="LeftClick" />
-                </TextBlock.InputBindings>
-            </TextBlock>
         </StackPanel>
     </Border>
 </UserControl>

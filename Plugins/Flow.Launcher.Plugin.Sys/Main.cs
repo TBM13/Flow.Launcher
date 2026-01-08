@@ -12,6 +12,22 @@ using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Flow.Launcher.Plugin.Sys
 {
+    public static class PluginMetadataDefinition
+    {
+        public static readonly PluginMetadata Metadata = new()
+        {
+            ID = "CEA08895D2544B019B2E9C5009600DF4",
+            ActionKeywords = [">"],
+            Name = "System Commands",
+            Description = "Provide System related commands. e.g. shutdown,lock, setting etc.",
+            Author = "qianlifeng",
+            Version = "1.0.0",
+            IcoPath = "Images/Plugin.Sys.png",
+
+            Plugin = new Main()
+        };
+    }
+
     public class Main : IPlugin
     {
         // SHTDN_REASON_MAJOR_OTHER indicates a generic shutdown reason that isn't categorized under hardware failure,

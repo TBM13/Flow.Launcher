@@ -16,7 +16,7 @@ namespace Flow.Launcher.Infrastructure.UserSettings
         /// FL will get default values from metadata first and then load settings to metadata
         /// </summary>
         /// <param name="metadatas">Parsed plugin metadatas</param>
-        public void UpdatePluginSettings(List<PluginMetadata> metadatas)
+        public void UpdatePluginSettings(IEnumerable<PluginMetadata> metadatas)
         {
             foreach (var metadata in metadatas)
             {

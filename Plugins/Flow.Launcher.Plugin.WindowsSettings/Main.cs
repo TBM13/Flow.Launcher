@@ -4,6 +4,22 @@ using Flow.Launcher.Plugin.WindowsSettings.Helper;
 
 namespace Flow.Launcher.Plugin.WindowsSettings
 {
+    public static class PluginMetadataDefinition
+    {
+        public static readonly PluginMetadata Metadata = new()
+        {
+            ID = "5043CETYU6A748679OPA02D27D99677A",
+            ActionKeywords = ["*"],
+            Name = "Windows Settings",
+            Description = "Search settings inside Control Panel and Settings App",
+            Author = "TobiasSekan",
+            Version = "1.0.0",
+            IcoPath = "Images/Plugin.WindowsSettings.png",
+
+            Plugin = new Main()
+        };
+    }
+
     public sealed class Main : IPlugin
     {
         private IEnumerable<WindowsSetting>? _settingsList;

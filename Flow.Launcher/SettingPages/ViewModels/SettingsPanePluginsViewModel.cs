@@ -105,12 +105,12 @@ public partial class SettingsPanePluginsViewModel : BaseModel
     // Include init failed ones so that we can uninstall them
     // Include initializing ones so that we can change related settings like action keywords, etc.
     public List<PluginViewModel> PluginViewModels => _pluginViewModels ??= App.API.GetAllPlugins()
-        .OrderBy(plugin => plugin.Metadata.Disabled)
-        .ThenBy(plugin => plugin.Metadata.Name)
+        .OrderBy(plugin => plugin.Disabled)
+        .ThenBy(plugin => plugin.Name)
         .Select(plugin => new PluginViewModel
         {
-            PluginPair = plugin,
-            PluginSettingsObject = _settings.PluginSettings.GetPluginSettings(plugin.Metadata.ID)
+            PluginMetadata = plugin,
+            PluginSettingsObject = _settings.PluginSettings.GetPluginSettings(plugin.ID)
         })
         .Where(plugin => plugin.PluginSettingsObject != null)
         .ToList();
@@ -118,8 +118,8 @@ public partial class SettingsPanePluginsViewModel : BaseModel
     public bool SatisfiesFilter(PluginViewModel plugin)
     {
         return string.IsNullOrEmpty(FilterText) ||
-            App.API.FuzzySearch(FilterText, plugin.PluginPair.Metadata.Name).IsSearchPrecisionScoreMet() ||
-            App.API.FuzzySearch(FilterText, plugin.PluginPair.Metadata.Description).IsSearchPrecisionScoreMet();
+            App.API.FuzzySearch(FilterText, plugin.PluginMetadata.Name).IsSearchPrecisionScoreMet() ||
+            App.API.FuzzySearch(FilterText, plugin.PluginMetadata.Description).IsSearchPrecisionScoreMet();
     }
 
     [RelayCommand]

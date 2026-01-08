@@ -1062,7 +1062,7 @@ namespace Flow.Launcher.ViewModel
             // Update the query's IsReQuery property to true if this is a re-query
             query.IsReQuery = isReQuery;
 
-            ICollection<PluginPair> plugins = Array.Empty<PluginPair>();
+            ICollection<PluginMetadata> plugins = Array.Empty<PluginMetadata>();
             if (currentIsHomeQuery)
             {
                 if (Settings.ShowHomePage)
@@ -1079,7 +1079,7 @@ namespace Flow.Launcher.ViewModel
 
                 if (plugins.Count == 1)
                 {
-                    PluginIconPath = plugins.Single().Metadata.IcoPath;
+                    PluginIconPath = plugins.Single().IcoPath;
                     PluginIconSource = await App.API.LoadImageAsync(PluginIconPath);
                 }
                 else
@@ -1089,7 +1089,7 @@ namespace Flow.Launcher.ViewModel
                 }
             }
 
-            App.API.LogDebug(ClassName, $"Valid <{plugins.Count}> plugins: {string.Join(" ", plugins.Select(x => $"<{x.Metadata.Name}>"))}");
+            App.API.LogDebug(ClassName, $"Valid <{plugins.Count}> plugins: {string.Join(" ", plugins.Select(x => $"<{x.Name}>"))}");
 
             // Do not wait for performance improvement
             /*if (string.IsNullOrEmpty(query.ActionKeyword))
@@ -1112,7 +1112,7 @@ namespace Flow.Launcher.ViewModel
                     return;
                 }
 
-                tasks = [.. plugins.Select(plugin => plugin.Metadata.HomeDisabled switch
+                tasks = [.. plugins.Select(plugin => plugin.HomeDisabled switch
                 {
                     false => QueryTaskAsync(plugin, currentCancellationToken),
                     true => Task.CompletedTask
@@ -1120,7 +1120,7 @@ namespace Flow.Launcher.ViewModel
             }
             else
             {
-                tasks = [.. plugins.Select(plugin => plugin.Metadata.Disabled switch
+                tasks = [.. plugins.Select(plugin => plugin.Disabled switch
                 {
                     false => QueryTaskAsync(plugin, currentCancellationToken),
                     true => Task.CompletedTask
@@ -1154,9 +1154,9 @@ namespace Flow.Launcher.ViewModel
             }
 
             // Local function
-            async Task QueryTaskAsync(PluginPair plugin, CancellationToken token)
+            async Task QueryTaskAsync(PluginMetadata plugin, CancellationToken token)
             {
-                App.API.LogDebug(ClassName, $"Wait for querying plugin <{plugin.Metadata.Name}>");
+                App.API.LogDebug(ClassName, $"Wait for querying plugin <{plugin.Name}>");
 
                 // Since it is wrapped within a ThreadPool Thread, the synchronous context is null
                 // Task.Yield will force it to run in ThreadPool
@@ -1181,9 +1181,9 @@ namespace Flow.Launcher.ViewModel
 
                 if (token.IsCancellationRequested) return;
 
-                App.API.LogDebug(ClassName, $"Update results for plugin <{plugin.Metadata.Name}>");
+                App.API.LogDebug(ClassName, $"Update results for plugin <{plugin.Name}>");
 
-                if (!_resultsUpdateChannelWriter.TryWrite(new ResultsForUpdate(resultsCopy, plugin.Metadata, query,
+                if (!_resultsUpdateChannelWriter.TryWrite(new ResultsForUpdate(resultsCopy, plugin, query,
                     token, reSelect)))
                 {
                     App.API.LogError(ClassName, "Unable to add item to Result Update Queue");
@@ -1310,9 +1310,9 @@ namespace Flow.Launcher.ViewModel
         /// </summary>
         /// <param name="plugins">The collection of plugins to check.</param>
         /// <returns>True if existing results should be cleared, false otherwise.</returns>
-        private static bool ShouldClearExistingResultsForNonQuery(ICollection<PluginPair> plugins)
+        private static bool ShouldClearExistingResultsForNonQuery(ICollection<PluginMetadata> plugins)
         {
-            if (plugins.Count == 0 || plugins.All(x => x.Metadata.HomeDisabled == true))
+            if (plugins.Count == 0 || plugins.All(x => x.HomeDisabled == true))
             {
                 App.API.LogDebug(ClassName, $"Existing results should be cleared for non-query");
                 return true;

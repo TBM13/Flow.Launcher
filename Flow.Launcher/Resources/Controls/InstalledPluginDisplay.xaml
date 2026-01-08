@@ -38,14 +38,14 @@
                     <StackPanel Grid.Column="1" Margin="16 0 14 0">
                         <TextBlock
                             Foreground="{DynamicResource Color05B}"
-                            Text="{Binding PluginPair.Metadata.Name}"
+                            Text="{Binding PluginMetadata.Name}"
                             TextWrapping="Wrap"
-                            ToolTip="{Binding PluginPair.Metadata.Version}" />
+                            ToolTip="{Binding PluginMetadata.Version}" />
                         <TextBlock
                             Margin="0 2 0 0"
                             FontSize="12"
                             Foreground="{DynamicResource Color04B}"
-                            Text="{Binding PluginPair.Metadata.Description}"
+                            Text="{Binding PluginMetadata.Description}"
                             TextWrapping="WrapWithOverflow" />
                     </StackPanel>
 

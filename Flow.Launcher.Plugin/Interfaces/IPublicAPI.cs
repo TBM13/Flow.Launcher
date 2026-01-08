@@ -170,7 +170,7 @@ namespace Flow.Launcher.Plugin
         /// Will also return any plugins not fully initialized yet
         /// </remarks>
         /// <returns></returns>
-        List<PluginPair> GetAllPlugins();
+        List<PluginMetadata> GetAllPlugins();
 
         /// <summary>
         /// Get all initialized plugins
@@ -179,7 +179,7 @@ namespace Flow.Launcher.Plugin
         /// Whether to include plugins that failed to initialize
         /// </param>
         /// <returns></returns>
-        List<PluginPair> GetAllInitializedPlugins(bool includeFailed);
+        List<PluginMetadata> GetAllInitializedPlugins(bool includeFailed);
 
         /// <summary>
         /// Registers a callback function for global keyboard events.

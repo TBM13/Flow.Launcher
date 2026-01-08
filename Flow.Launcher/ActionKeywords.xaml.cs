@@ -1,26 +1,26 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
 using Flow.Launcher.Plugin;
 using Flow.Launcher.ViewModel;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace Flow.Launcher
 {
     public partial class ActionKeywords
     {
-        private readonly PluginPair _plugin;
+        private readonly PluginMetadata _plugin;
         private readonly PluginViewModel _pluginViewModel;
 
         public ActionKeywords(PluginViewModel pluginViewModel)
         {
             InitializeComponent();
-            _plugin = pluginViewModel.PluginPair;
+            _plugin = pluginViewModel.PluginMetadata;
             _pluginViewModel = pluginViewModel;
         }
 
         private void ActionKeyword_OnLoaded(object sender, RoutedEventArgs e)
         {
-            tbOldActionKeyword.Text = string.Join(Query.ActionKeywordSeparator, _plugin.Metadata.ActionKeywords);
+            tbOldActionKeyword.Text = string.Join(Query.ActionKeywordSeparator, _plugin.ActionKeywords);
             tbAction.Text = tbOldActionKeyword.Text;
             tbAction.SelectAll();
             tbAction.Focus();
@@ -33,7 +33,7 @@ namespace Flow.Launcher
 
         private void btnDone_OnClick(object sender, RoutedEventArgs _)
         {
-            var oldActionKeywords = _plugin.Metadata.ActionKeywords;
+            var oldActionKeywords = _plugin.ActionKeywords;
 
             var newActionKeywords = tbAction.Text.Split(Query.ActionKeywordSeparator)
                                                  .Where(s => !string.IsNullOrEmpty(s))
@@ -53,7 +53,7 @@ namespace Flow.Launcher
 
             if (oldActionKeywords.Count != newActionKeywords.Count)
             {
-                ReplaceActionKeyword(_plugin.Metadata.ID, removedActionKeywords, addedActionKeywords);
+                ReplaceActionKeyword(_plugin.ID, removedActionKeywords, addedActionKeywords);
                 return;
             }
 
@@ -67,7 +67,7 @@ namespace Flow.Launcher
             }
             else
             {
-                ReplaceActionKeyword(_plugin.Metadata.ID, removedActionKeywords, addedActionKeywords);
+                ReplaceActionKeyword(_plugin.ID, removedActionKeywords, addedActionKeywords);
             }
         }
 

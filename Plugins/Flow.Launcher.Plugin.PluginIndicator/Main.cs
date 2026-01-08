@@ -3,6 +3,22 @@ using System.Linq;
 
 namespace Flow.Launcher.Plugin.PluginIndicator
 {
+    public static class PluginMetadataDefinition
+    {
+        public static readonly PluginMetadata Metadata = new()
+        {
+            ID = "6A122269676E40EB86EB543B945932B9",
+            ActionKeywords = ["?"],
+            Name = "Plugin Indicator",
+            Description = "Provides plugin action keyword suggestions",
+            Author = "qianlifeng",
+            Version = "1.0.0",
+            IcoPath = "Images/Plugin.PluginIndicator.png",
+
+            Plugin = new Main()
+        };
+    }
+
     public class Main : IPlugin, IHomeQuery
     {
         internal static PluginInitContext Context { get; private set; }
@@ -24,7 +40,7 @@ namespace Flow.Launcher.Plugin.PluginIndicator
 
             var results =
                 from keyword in nonGlobalPlugins.Keys
-                let plugin = nonGlobalPlugins[keyword].Metadata
+                let plugin = nonGlobalPlugins[keyword]
                 let keywordSearchResult = Context.API.FuzzySearch(querySearch, keyword)
                 let searchResult = keywordSearchResult.IsSearchPrecisionScoreMet() ? keywordSearchResult : Context.API.FuzzySearch(querySearch, plugin.Name)
                 let score = searchResult.Score
@@ -47,12 +63,12 @@ namespace Flow.Launcher.Plugin.PluginIndicator
             return [.. results];
         }
 
-        private static Dictionary<string, PluginPair> GetNonGlobalPlugins()
+        private static Dictionary<string, PluginMetadata> GetNonGlobalPlugins()
         {
-            var nonGlobalPlugins = new Dictionary<string, PluginPair>();
+            var nonGlobalPlugins = new Dictionary<string, PluginMetadata>();
             foreach (var plugin in Context.API.GetAllPlugins())
             {
-                foreach (var actionKeyword in plugin.Metadata.ActionKeywords)
+                foreach (var actionKeyword in plugin.ActionKeywords)
                 {
                     // Skip global keywords
                     if (actionKeyword == Plugin.Query.GlobalPluginWildcardSign) continue;

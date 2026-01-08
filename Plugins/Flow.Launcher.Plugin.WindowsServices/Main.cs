@@ -5,9 +5,25 @@ using System.ServiceProcess;
 
 namespace Flow.Launcher.Plugin.WindowsServices;
 
+public static class PluginMetadataDefinition
+{
+    public static readonly PluginMetadata Metadata = new()
+    {
+        ID = "42f63e8d-3d3d-4b4b-9e91-c6094bf240ec",
+        ActionKeywords = ["svc"],
+        Name = "Windows Services Manager",
+        Description = "Manage Windows services from Flow Launcher",
+        Author = "TBM13",
+        Version = "1.1.1",
+        IcoPath = "Images/Plugin.WindowsServices.png",
+
+        Plugin = new Main()
+    };
+}
+
 public class Main : IPlugin, IContextMenu
 {
-    public const string PLUGIN_ICON = "Images\\app.png";
+    public static readonly string PLUGIN_ICON = PluginMetadataDefinition.Metadata.IcoPath;
 
     internal static PluginInitContext Context { get; private set; } = null!;
 

@@ -8,10 +8,26 @@ using Microsoft.Win32.TaskScheduler;
 
 namespace Flow.Launcher.Plugin.WindowsTasks;
 
+public static class PluginMetadataDefinition
+{
+    public static readonly PluginMetadata Metadata = new()
+    {
+        ID = "239acbf0-8488-44ef-9a98-43025a3886ca",
+        ActionKeywords = ["task"],
+        Name = "Windows Tasks",
+        Description = "Manage Windows tasks from Flow Launcher",
+        Author = "TBM13",
+        Version = "1.0.0",
+        IcoPath = "Images/Plugin.WindowsTasks.png",
+
+        Plugin = new Main()
+    };
+}
+
 public class Main : IPlugin, IContextMenu
 {
-    public const string PLUGIN_ICON = "Images\\app.png";
-    public const string TASK_DISABLED_ICON = "Images\\task_disabled.png";
+    public static readonly string PLUGIN_ICON = PluginMetadataDefinition.Metadata.IcoPath;
+    public const string TASK_DISABLED_ICON = "Images\\Plugin.WindowsTasks.TaskDisabled.png";
     public const string GLYPH_FONT = "/Resources/#Segoe Fluent Icons";
 
     internal static PluginInitContext Context { get; private set; } = null!;

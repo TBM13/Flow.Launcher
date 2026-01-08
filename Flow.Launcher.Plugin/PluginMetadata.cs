@@ -1,22 +1,16 @@
 ﻿using System.Collections.Generic;
-using System.IO;
-using System.Text.Json.Serialization;
 
 namespace Flow.Launcher.Plugin
 {
     public record PluginMetadata
     {
         public required string ID { get; init; }
-        public required string Name { get; set; }
+        public required string Name { get; init; }
         public required string Author { get; init; }
         public required string Version { get; init; }
-        /// <summary>
-        /// See <see cref="AllowedLanguage"/>.
-        /// </summary>
-        public required string Language { get; init; }
-        public required string Description { get; set; }
-        public required string Website { get; init; }
+        public required string Description { get; init; }
         public required List<string> ActionKeywords { get; set; }
+        public required IAsyncPlugin Plugin { get; init; }
 
         /// <summary>
         /// Whether the plugin is disabled.
@@ -27,37 +21,11 @@ namespace Flow.Launcher.Plugin
         /// </summary>
         public bool HomeDisabled { get; set; }
 
-#pragma warning disable CS8618
-        public string ExecuteFilePath { get; private set; }
-#pragma warning restore CS8618
-        public required string ExecuteFileName { get; set; }
-#pragma warning disable CS8618
-        [JsonIgnore]
-        public string AssemblyName { get; internal set; }
-#pragma warning restore CS8618
-
-        /// <summary>
-        /// Plugin source directory.
-        /// </summary>
-#pragma warning disable CS9264
-        public string PluginDirectory
-#pragma warning restore CS9264
-        {
-            get => field;
-            internal set
-            {
-                field = value;
-                ExecuteFilePath = Path.Combine(value, ExecuteFileName);
-                IcoPath = Path.Combine(value, IcoPath);
-            }
-        }
-
         /// <summary>
         /// Plugin icon path.
         /// </summary>
-        public required string IcoPath { get; set; }
+        public required string IcoPath { get; init; }
 
-        [JsonIgnore]
         public int Priority { get; set; }
 
 #pragma warning disable CS8618

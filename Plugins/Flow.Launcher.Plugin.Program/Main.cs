@@ -15,6 +15,22 @@ using Path = System.IO.Path;
 
 namespace Flow.Launcher.Plugin.Program
 {
+    public static class PluginMetadataDefinition
+    {
+        public static readonly PluginMetadata Metadata = new()
+        {
+            ID = "791FC278BA414111B8D1886DFE447410",
+            ActionKeywords = ["*"],
+            Name = "Program",
+            Description = "Search programs in Flow.Launcher",
+            Author = "qianlifeng",
+            Version = "1.0.0",
+            IcoPath = "Images/Plugin.Program.png",
+
+            Plugin = new Main()
+        };
+    }
+
     public class Main : ISettingProvider, IAsyncPlugin, IContextMenu, IAsyncReloadable, IDisposable
     {
         private static readonly string ClassName = nameof(Main);

@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Flow.Launcher.Core.ExternalPlugins;
-using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Plugin;
@@ -21,17 +20,30 @@ namespace Flow.Launcher.Core.Plugin
     {
         private static readonly string ClassName = nameof(PluginManager);
 
-        private static readonly ConcurrentDictionary<string, PluginPair> _allLoadedPlugins = [];
-        private static readonly ConcurrentDictionary<string, PluginPair> _allInitializedPlugins = [];
-        private static readonly ConcurrentDictionary<string, PluginPair> _initFailedPlugins = [];
-        private static readonly ConcurrentDictionary<string, PluginPair> _globalPlugins = [];
-        private static readonly ConcurrentDictionary<string, PluginPair> _nonGlobalPlugins = [];
+        public static readonly PluginMetadata[] Plugins =
+        [
+            Launcher.Plugin.Calculator.PluginMetadataDefinition.Metadata,
+            Launcher.Plugin.Explorer.PluginMetadataDefinition.Metadata,
+            Launcher.Plugin.PluginIndicator.PluginMetadataDefinition.Metadata,
+            Launcher.Plugin.ProcessKiller.PluginMetadataDefinition.Metadata,
+            Launcher.Plugin.Sys.PluginMetadataDefinition.Metadata,
+            Launcher.Plugin.WindowsServices.PluginMetadataDefinition.Metadata,
+            Launcher.Plugin.WindowsSettings.PluginMetadataDefinition.Metadata,
+            Launcher.Plugin.WindowsTasks.PluginMetadataDefinition.Metadata,
+            Launcher.Plugin.Program.PluginMetadataDefinition.Metadata,
+        ];
+
+        private static readonly ConcurrentDictionary<string, PluginMetadata> _allLoadedPlugins = [];
+        private static readonly ConcurrentDictionary<string, PluginMetadata> _allInitializedPlugins = [];
+        private static readonly ConcurrentDictionary<string, PluginMetadata> _initFailedPlugins = [];
+        private static readonly ConcurrentDictionary<string, PluginMetadata> _globalPlugins = [];
+        private static readonly ConcurrentDictionary<string, PluginMetadata> _nonGlobalPlugins = [];
 
         private static PluginsSettings Settings;
 
-        private static readonly ConcurrentBag<PluginPair> _contextMenuPlugins = [];
-        private static readonly ConcurrentBag<PluginPair> _homePlugins = [];
-        private static readonly ConcurrentBag<PluginPair> _externalPreviewPlugins = [];
+        private static readonly ConcurrentBag<PluginMetadata> _contextMenuPlugins = [];
+        private static readonly ConcurrentBag<PluginMetadata> _homePlugins = [];
+        private static readonly ConcurrentBag<PluginMetadata> _externalPreviewPlugins = [];
 
         /// <summary>
         /// Directories that will hold Flow Launcher plugin directory
@@ -47,16 +59,16 @@ namespace Flow.Launcher.Core.Plugin
         /// </summary>
         public static void Save()
         {
-            foreach (var pluginPair in GetAllInitializedPlugins(includeFailed: false))
+            foreach (var metadata in GetAllInitializedPlugins(includeFailed: false))
             {
-                var savable = pluginPair.Plugin as ISavable;
+                var savable = metadata.Plugin as ISavable;
                 try
                 {
                     savable?.Save();
                 }
                 catch (Exception e)
                 {
-                    PublicApi.Instance.LogException(ClassName, $"Failed to save plugin {pluginPair.Metadata.Name}", e);
+                    PublicApi.Instance.LogException(ClassName, $"Failed to save plugin {metadata.Name}", e);
                 }
             }
 
@@ -73,11 +85,11 @@ namespace Flow.Launcher.Core.Plugin
             }
         }
 
-        private static async Task DisposePluginAsync(PluginPair pluginPair)
+        private static async Task DisposePluginAsync(PluginMetadata metadata)
         {
             try
             {
-                switch (pluginPair.Plugin)
+                switch (metadata.Plugin)
                 {
                     case IDisposable disposable:
                         disposable.Dispose();
@@ -89,7 +101,7 @@ namespace Flow.Launcher.Core.Plugin
             }
             catch (Exception e)
             {
-                PublicApi.Instance.LogException(ClassName, $"Failed to dispose plugin {pluginPair.Metadata.Name}", e);
+                PublicApi.Instance.LogException(ClassName, $"Failed to dispose plugin {metadata.Name}", e);
             }
         }
 
@@ -136,12 +148,12 @@ namespace Flow.Launcher.Core.Plugin
 
         public static bool UseExternalPreview()
         {
-            return GetExternalPreviewPlugins().Any(x => !x.Metadata.Disabled);
+            return GetExternalPreviewPlugins().Any(x => !x.Disabled);
         }
 
         public static bool AllowAlwaysPreview()
         {
-            var plugin = GetExternalPreviewPlugins().FirstOrDefault(x => !x.Metadata.Disabled);
+            var plugin = GetExternalPreviewPlugins().FirstOrDefault(x => !x.Disabled);
 
             if (plugin is null)
                 return false;
@@ -149,7 +161,7 @@ namespace Flow.Launcher.Core.Plugin
             return ((IAsyncExternalPreview)plugin.Plugin).AllowAlwaysPreview();
         }
 
-        private static IList<PluginPair> GetExternalPreviewPlugins()
+        private static IList<PluginMetadata> GetExternalPreviewPlugins()
         {
             return [.. _externalPreviewPlugins];
         }
@@ -174,38 +186,28 @@ namespace Flow.Launcher.Core.Plugin
         /// <param name="settings"></param>
         public static void LoadPlugins(PluginsSettings settings)
         {
-            var metadatas = PluginConfig.Parse(Directories);
             Settings = settings;
-            Settings.UpdatePluginSettings(metadatas);
+            Settings.UpdatePluginSettings(Plugins);
 
             // Load plugins
-            var allLoadedPlugins = PluginsLoader.Plugins(metadatas, Settings);
-            foreach (var plugin in allLoadedPlugins)
+            foreach (var plugin in Plugins)
             {
                 if (plugin != null)
                 {
-                    if (!_allLoadedPlugins.TryAdd(plugin.Metadata.ID, plugin))
-                    {
-                        PublicApi.Instance.LogError(ClassName, $"Plugin with ID {plugin.Metadata.ID} already loaded");
-                    }
+                    if (!_allLoadedPlugins.TryAdd(plugin.ID, plugin))
+                        throw new Exception($"Plugin with ID {plugin.ID} already loaded");
                 }
             }
 
-            // Since dotnet plugins need to get assembly name first, we should update plugin directory after loading plugins
-            UpdatePluginDirectory(metadatas);
+            UpdatePluginDirectory(Plugins);
         }
 
-        private static void UpdatePluginDirectory(List<PluginMetadata> metadatas)
+        private static void UpdatePluginDirectory(IEnumerable<PluginMetadata> metadatas)
         {
             foreach (var metadata in metadatas)
             {
-                if (string.IsNullOrEmpty(metadata.AssemblyName))
-                {
-                    PublicApi.Instance.LogWarn(ClassName, $"AssemblyName is empty for plugin with metadata: {metadata.Name}");
-                    continue; // Skip if AssemblyName is not set, which can happen for erroneous plugins
-                }
-                metadata.PluginSettingsDirectoryPath = Path.Combine(DataLocation.PluginSettingsDirectory, metadata.AssemblyName);
-                metadata.PluginCacheDirectoryPath = Path.Combine(DataLocation.PluginCacheDirectory, metadata.AssemblyName);
+                metadata.PluginSettingsDirectoryPath = Path.Combine(DataLocation.PluginSettingsDirectory, metadata.ID);
+                metadata.PluginCacheDirectoryPath = Path.Combine(DataLocation.PluginCacheDirectory, metadata.ID);
             }
         }
 
@@ -218,47 +220,47 @@ namespace Flow.Launcher.Core.Plugin
         {
             var initTasks = _allLoadedPlugins.Select(x => Task.Run(async () =>
             {
-                var pair = x.Value;
+                var metadata = x.Value;
 
                 // Register plugin action keywords so that plugins can be queried in results
-                RegisterPluginActionKeywords(pair);
+                RegisterPluginActionKeywords(metadata);
 
                 try
                 {
-                    await pair.Plugin.InitAsync(new PluginInitContext(pair.Metadata, PublicApi.Instance));
+                    await metadata.Plugin.InitAsync(new PluginInitContext(metadata, PublicApi.Instance));
                 }
                 catch (Exception e)
                 {
-                    PublicApi.Instance.LogException(ClassName, $"Fail to Init plugin: {pair.Metadata.Name}", e);
-                    if (pair.Metadata.Disabled && pair.Metadata.HomeDisabled)
+                    PublicApi.Instance.LogException(ClassName, $"Fail to Init plugin: {metadata.Name}", e);
+                    if (metadata.Disabled && metadata.HomeDisabled)
                     {
                         // If this plugin is already disabled, do not show error message again
                         // Or else it will be shown every time
-                        PublicApi.Instance.LogDebug(ClassName, $"Skipped init for <{pair.Metadata.Name}> due to error");
+                        PublicApi.Instance.LogDebug(ClassName, $"Skipped init for <{metadata.Name}> due to error");
                     }
                     else
                     {
-                        pair.Metadata.Disabled = true;
-                        pair.Metadata.HomeDisabled = true;
-                        PublicApi.Instance.LogDebug(ClassName, $"Disable plugin <{pair.Metadata.Name}> because init failed");
+                        metadata.Disabled = true;
+                        metadata.HomeDisabled = true;
+                        PublicApi.Instance.LogDebug(ClassName, $"Disable plugin <{metadata.Name}> because init failed");
                     }
 
                     // Even if the plugin cannot be initialized, we still need to add it in all plugin list so that
                     // we can remove the plugin from Plugin or Store page or Plugin Manager plugin.
-                    _allInitializedPlugins.TryAdd(pair.Metadata.ID, pair);
-                    _initFailedPlugins.TryAdd(pair.Metadata.ID, pair);
+                    _allInitializedPlugins.TryAdd(metadata.ID, metadata);
+                    _initFailedPlugins.TryAdd(metadata.ID, metadata);
                     return;
                 }
 
                 // Add plugin to lists after the plugin is initialized
-                AddPluginToLists(pair);
+                AddPluginToLists(metadata);
             }));
 
             await Task.WhenAll(initTasks);
 
             if (!_initFailedPlugins.IsEmpty)
             {
-                var failed = string.Join(",", _initFailedPlugins.Values.Select(x => x.Metadata.Name));
+                var failed = string.Join(",", _initFailedPlugins.Values.Select(x => x.Name));
                 PublicApi.Instance.ShowMsg(
                     Localize.failedToInitializePluginsTitle(),
                     Localize.failedToInitializePluginsMessage(failed),
@@ -268,49 +270,49 @@ namespace Flow.Launcher.Core.Plugin
             }
         }
 
-        private static void RegisterPluginActionKeywords(PluginPair pair)
+        private static void RegisterPluginActionKeywords(PluginMetadata metadata)
         {
             // set distinct on each plugin's action keywords helps only firing global(*) and action keywords once where a plugin
             // has multiple global and action keywords because we will only add them here once.
-            foreach (var actionKeyword in pair.Metadata.ActionKeywords.Distinct())
+            foreach (var actionKeyword in metadata.ActionKeywords.Distinct())
             {
                 switch (actionKeyword)
                 {
                     case Query.GlobalPluginWildcardSign:
-                        _globalPlugins.TryAdd(pair.Metadata.ID, pair);
+                        _globalPlugins.TryAdd(metadata.ID, metadata);
                         break;
                     default:
-                        _nonGlobalPlugins.TryAdd(actionKeyword, pair);
+                        _nonGlobalPlugins.TryAdd(actionKeyword, metadata);
                         break;
                 }
             }
         }
 
-        private static void AddPluginToLists(PluginPair pair)
+        private static void AddPluginToLists(PluginMetadata metadata)
         {
-            if (pair.Plugin is IContextMenu)
+            if (metadata.Plugin is IContextMenu)
             {
-                _contextMenuPlugins.Add(pair);
+                _contextMenuPlugins.Add(metadata);
             }
-            if (pair.Plugin is IAsyncHomeQuery)
+            if (metadata.Plugin is IAsyncHomeQuery)
             {
-                _homePlugins.Add(pair);
+                _homePlugins.Add(metadata);
             }
-            if (pair.Plugin is IAsyncExternalPreview)
+            if (metadata.Plugin is IAsyncExternalPreview)
             {
-                _externalPreviewPlugins.Add(pair);
+                _externalPreviewPlugins.Add(metadata);
             }
-            _allInitializedPlugins.TryAdd(pair.Metadata.ID, pair);
+            _allInitializedPlugins.TryAdd(metadata.ID, metadata);
         }
 
         #endregion
 
         #region Validate & Query Plugins
 
-        public static ICollection<PluginPair> ValidPluginsForQuery(Query query)
+        public static ICollection<PluginMetadata> ValidPluginsForQuery(Query query)
         {
             if (query is null)
-                return Array.Empty<PluginPair>();
+                return Array.Empty<PluginMetadata>();
 
             if (!_nonGlobalPlugins.TryGetValue(query.ActionKeyword, out var plugin))
             {
@@ -320,15 +322,14 @@ namespace Flow.Launcher.Core.Plugin
             return [plugin];
         }
 
-        public static ICollection<PluginPair> ValidPluginsForHomeQuery()
+        public static ICollection<PluginMetadata> ValidPluginsForHomeQuery()
         {
             return [.. _homePlugins];
         }
 
-        public static async Task<List<Result>> QueryForPluginAsync(PluginPair pair, Query query, CancellationToken token)
+        public static async Task<List<Result>?> QueryForPluginAsync(PluginMetadata metadata, Query query, CancellationToken token)
         {
             var results = new List<Result>();
-            var metadata = pair.Metadata;
 
             if (IsPluginInitializing(metadata))
             {
@@ -338,7 +339,7 @@ namespace Flow.Launcher.Core.Plugin
                     SubTitle = Localize.pluginStillInitializingSubtitle(),
                     AutoCompleteText = query.TrimmedQuery,
                     IcoPath = metadata.IcoPath,
-                    PluginDirectory = metadata.PluginDirectory,
+                    PluginDirectory = string.Empty,  // TODO
                     ActionKeywordAssigned = query.ActionKeyword,
                     PluginID = metadata.ID,
                     OriginQuery = query,
@@ -354,7 +355,7 @@ namespace Flow.Launcher.Core.Plugin
 
             try
             {
-                results = await pair.Plugin.QueryAsync(query, token).ConfigureAwait(false);
+                results = await metadata.Plugin.QueryAsync(query, token).ConfigureAwait(false);
 
                 token.ThrowIfCancellationRequested();
                 if (results == null)
@@ -376,7 +377,7 @@ namespace Flow.Launcher.Core.Plugin
                     SubTitle = Localize.pluginFailedToRespondSubtitle(),
                     AutoCompleteText = query.TrimmedQuery,
                     IcoPath = Constant.ErrorIcon,
-                    PluginDirectory = metadata.PluginDirectory,
+                    PluginDirectory = string.Empty, // TODO
                     ActionKeywordAssigned = query.ActionKeyword,
                     PluginID = metadata.ID,
                     OriginQuery = query,
@@ -387,10 +388,9 @@ namespace Flow.Launcher.Core.Plugin
             return results;
         }
 
-        public static async Task<List<Result>> QueryHomeForPluginAsync(PluginPair pair, Query query, CancellationToken token)
+        public static async Task<List<Result>?> QueryHomeForPluginAsync(PluginMetadata metadata, Query query, CancellationToken token)
         {
             var results = new List<Result>();
-            var metadata = pair.Metadata;
 
             if (IsPluginInitializing(metadata))
             {
@@ -400,7 +400,7 @@ namespace Flow.Launcher.Core.Plugin
                     SubTitle = Localize.pluginStillInitializingSubtitle(),
                     AutoCompleteText = query.TrimmedQuery,
                     IcoPath = metadata.IcoPath,
-                    PluginDirectory = metadata.PluginDirectory,
+                    PluginDirectory = string.Empty, // TODO
                     ActionKeywordAssigned = query.ActionKeyword,
                     PluginID = metadata.ID,
                     OriginQuery = query,
@@ -416,7 +416,7 @@ namespace Flow.Launcher.Core.Plugin
 
             try
             {
-                results = await ((IAsyncHomeQuery)pair.Plugin).HomeQueryAsync(token).ConfigureAwait(false);
+                results = await ((IAsyncHomeQuery)metadata.Plugin).HomeQueryAsync(token).ConfigureAwait(false);
 
                 token.ThrowIfCancellationRequested();
                 if (results == null)
@@ -447,12 +447,12 @@ namespace Flow.Launcher.Core.Plugin
 
         #region Get Plugin List
 
-        public static List<PluginPair> GetAllLoadedPlugins()
+        public static List<PluginMetadata> GetAllLoadedPlugins()
         {
             return [.. _allLoadedPlugins.Values];
         }
 
-        public static List<PluginPair> GetAllInitializedPlugins(bool includeFailed)
+        public static List<PluginMetadata> GetAllInitializedPlugins(bool includeFailed)
         {
             if (includeFailed)
             {
@@ -461,16 +461,16 @@ namespace Flow.Launcher.Core.Plugin
             else
             {
                 return [.. _allInitializedPlugins.Values
-                    .Where(p => !_initFailedPlugins.ContainsKey(p.Metadata.ID))];
+                    .Where(p => !_initFailedPlugins.ContainsKey(p.ID))];
             }
         }
 
-        private static List<PluginPair> GetGlobalPlugins()
+        private static List<PluginMetadata> GetGlobalPlugins()
         {
             return [.. _globalPlugins.Values];
         }
 
-        public static Dictionary<string, PluginPair> GetNonGlobalPlugins()
+        public static Dictionary<string, PluginMetadata> GetNonGlobalPlugins()
         {
             return _nonGlobalPlugins.ToDictionary();
         }
@@ -483,7 +483,8 @@ namespace Flow.Launcher.Core.Plugin
         {
             foreach (var r in results)
             {
-                r.PluginDirectory = metadata.PluginDirectory;
+                // TODO
+                // r.PluginDirectory = metadata.PluginDirectory;
                 r.PluginID = metadata.ID;
                 r.OriginQuery = query;
 
@@ -502,9 +503,9 @@ namespace Flow.Launcher.Core.Plugin
         /// </remarks>
         /// <param name="id"></param>
         /// <returns></returns>
-        public static PluginPair GetPluginForId(string id)
+        public static PluginMetadata? GetPluginForId(string id)
         {
-            return GetAllLoadedPlugins().FirstOrDefault(o => o.Metadata.ID == id);
+            return GetAllLoadedPlugins().FirstOrDefault(o => o.ID == id);
         }
 
         #endregion
@@ -514,25 +515,26 @@ namespace Flow.Launcher.Core.Plugin
         public static List<Result> GetContextMenusForPlugin(Result result)
         {
             var results = new List<Result>();
-            var pluginPair = _contextMenuPlugins.FirstOrDefault(o => o.Metadata.ID == result.PluginID);
-            if (pluginPair != null)
+            var metadata = _contextMenuPlugins.FirstOrDefault(o => o.ID == result.PluginID);
+            if (metadata != null)
             {
-                var plugin = (IContextMenu)pluginPair.Plugin;
+                var plugin = (IContextMenu)metadata.Plugin;
 
                 try
                 {
                     results = plugin.LoadContextMenus(result) ?? results;
                     foreach (var r in results)
                     {
-                        r.PluginDirectory = pluginPair.Metadata.PluginDirectory;
-                        r.PluginID = pluginPair.Metadata.ID;
+                        // TODO
+                        // r.PluginDirectory = metadata.PluginDirectory;
+                        r.PluginID = metadata.ID;
                         r.OriginQuery = result.OriginQuery;
                     }
                 }
                 catch (Exception e)
                 {
                     PublicApi.Instance.LogException(ClassName,
-                        $"Can't load context menus for plugin <{pluginPair.Metadata.Name}>",
+                        $"Can't load context menus for plugin <{metadata.Name}>",
                         e);
                 }
             }
@@ -546,7 +548,7 @@ namespace Flow.Launcher.Core.Plugin
 
         public static bool IsHomePlugin(string id)
         {
-            return _homePlugins.Any(p => p.Metadata.ID == id);
+            return _homePlugins.Any(p => p.ID == id);
         }
 
         #endregion
@@ -635,7 +637,7 @@ namespace Flow.Launcher.Core.Plugin
             }
 
             // Update action keywords and action keyword in plugin metadata
-            plugin.Metadata.ActionKeywords.Add(newActionKeyword);
+            plugin.ActionKeywords.Add(newActionKeyword);
         }
 
         /// <summary>
@@ -647,7 +649,7 @@ namespace Flow.Launcher.Core.Plugin
             var plugin = GetPluginForId(id);
             if (oldActionkeyword == Query.GlobalPluginWildcardSign
                 && // Plugins may have multiple ActionKeywords that are global, eg. WebSearch
-                plugin.Metadata.ActionKeywords
+                plugin.ActionKeywords
                     .Count(x => x == Query.GlobalPluginWildcardSign) == 1)
             {
                 _globalPlugins.TryRemove(id, out _);
@@ -659,7 +661,7 @@ namespace Flow.Launcher.Core.Plugin
             }
 
             // Update action keywords in plugin metadata
-            plugin.Metadata.ActionKeywords.Remove(oldActionkeyword);
+            plugin.ActionKeywords.Remove(oldActionkeyword);
         }
 
         #endregion

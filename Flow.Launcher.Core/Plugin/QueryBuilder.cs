@@ -6,7 +6,7 @@ namespace Flow.Launcher.Core.Plugin
 {
     public static class QueryBuilder
     {
-        public static Query? Build(string originalQuery, string trimmedQuery, Dictionary<string, PluginPair> nonGlobalPlugins)
+        public static Query? Build(string originalQuery, string trimmedQuery, Dictionary<string, PluginMetadata> nonGlobalPlugins)
         {
             // home query
             if (string.IsNullOrEmpty(trimmedQuery))
@@ -32,7 +32,7 @@ namespace Flow.Launcher.Core.Plugin
             string actionKeyword, search;
             string possibleActionKeyword = terms[0];
 
-            if (nonGlobalPlugins.TryGetValue(possibleActionKeyword, out var pluginPair) && !pluginPair.Metadata.Disabled)
+            if (nonGlobalPlugins.TryGetValue(possibleActionKeyword, out var pluginMetadata) && !pluginMetadata.Disabled)
             {
                 // use non global plugin for query
                 actionKeyword = possibleActionKeyword;
@@ -42,8 +42,8 @@ namespace Flow.Launcher.Core.Plugin
             // For example: '>settings' ('>' is the action keyword)
             else if (possibleActionKeyword.Length >= 2
                     && !char.IsLetterOrDigit(possibleActionKeyword[0])
-                    && nonGlobalPlugins.TryGetValue(possibleActionKeyword[0..1], out var pluginPair2)
-                    && !pluginPair2.Metadata.Disabled)
+                    && nonGlobalPlugins.TryGetValue(possibleActionKeyword[0..1], out var pluginMetadata2)
+                    && !pluginMetadata2.Disabled)
             {
                 actionKeyword = possibleActionKeyword[0..1];
                 search = trimmedQuery[1..].TrimStart();

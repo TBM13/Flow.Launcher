@@ -9,6 +9,22 @@ using Flow.Launcher.Plugin.Explorer.Views;
 
 namespace Flow.Launcher.Plugin.Explorer
 {
+    public static class PluginMetadataDefinition
+    {
+        public static readonly PluginMetadata Metadata = new()
+        {
+            ID = "572be03c74c642baae319fc283e561a8",
+            ActionKeywords = ["*"],
+            Name = "Explorer",
+            Description = "Explore and manage files and folders",
+            Author = "Jeremy Wu",
+            Version = "1.0.0",
+            IcoPath = "Images/Plugin.Explorer.png",
+
+            Plugin = new Main()
+        };
+    }
+
     public class Main : ISettingProvider, IAsyncPlugin, IContextMenu
     {
         internal static PluginInitContext Context { get; set; }

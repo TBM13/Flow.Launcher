@@ -226,9 +226,9 @@ namespace Flow.Launcher
 
         public string GetTranslation(string key) => Internationalization.GetTranslation(key);
 
-        public List<PluginPair> GetAllPlugins() => PluginManager.GetAllLoadedPlugins();
+        public List<PluginMetadata> GetAllPlugins() => PluginManager.GetAllLoadedPlugins();
 
-        public List<PluginPair> GetAllInitializedPlugins(bool includeFailed) =>
+        public List<PluginMetadata> GetAllInitializedPlugins(bool includeFailed) =>
             PluginManager.GetAllInitializedPlugins(includeFailed);
 
         public MatchResult FuzzySearch(string query, string stringToCompare) =>

@@ -10,6 +10,22 @@ using Mages.Core;
 
 namespace Flow.Launcher.Plugin.Calculator
 {
+    public static class PluginMetadataDefinition
+    {
+        public static readonly PluginMetadata Metadata = new()
+        {
+            ID = "CEA0FDFC6D3B4085823D60DC76F28855",
+            ActionKeywords = ["*"],
+            Name = "Calculator",
+            Description = "Perform mathematical calculations, including hex values and advanced functions such as 'min(1,2,3)', 'sqrt(123)' and 'cos(123)'.",
+            Author = "cxfksword, dcog989",
+            Version = "1.0.0",
+            IcoPath = "Images/Plugin.Calculator.png",
+
+            Plugin = new Main()
+        };
+    }
+
     public class Main : IPlugin, ISettingProvider
     {
         private static readonly Regex ThousandGroupRegex = MainRegexHelper.GetThousandGroupRegex();

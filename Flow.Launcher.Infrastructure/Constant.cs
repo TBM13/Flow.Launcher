@@ -9,7 +9,6 @@ namespace Flow.Launcher.Infrastructure
     {
         public const string FlowLauncher = "Flow.Launcher";
         public const string Plugins = "Plugins";
-        public const string PluginMetadataFileName = "plugin.json";
 
         private static readonly Assembly Assembly = Assembly.GetExecutingAssembly();
         public static readonly string ProgramDirectory = Directory.GetParent(Assembly.Location)?.ToString() ?? throw new NullReferenceException("Failed to get program directory");

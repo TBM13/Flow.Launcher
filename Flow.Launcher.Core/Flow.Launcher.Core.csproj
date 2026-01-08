@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net10.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
     <UseWpf>true</UseWpf>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -66,6 +66,15 @@
   <ItemGroup>
     <ProjectReference Include="..\Flow.Launcher.Infrastructure\Flow.Launcher.Infrastructure.csproj" />
     <ProjectReference Include="..\Flow.Launcher.Plugin\Flow.Launcher.Plugin.csproj" />
+    <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.Calculator\Flow.Launcher.Plugin.Calculator.csproj" />
+    <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.Explorer\Flow.Launcher.Plugin.Explorer.csproj" />
+    <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.PluginIndicator\Flow.Launcher.Plugin.PluginIndicator.csproj" />
+    <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.ProcessKiller\Flow.Launcher.Plugin.ProcessKiller.csproj" />
+    <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.Program\Flow.Launcher.Plugin.Program.csproj" />
+    <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.Sys\Flow.Launcher.Plugin.Sys.csproj" />
+    <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.WindowsServices\Flow.Launcher.Plugin.WindowsServices.csproj" />
+    <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.WindowsSettings\Flow.Launcher.Plugin.WindowsSettings.csproj" />
+    <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.WindowsTasks\Flow.Launcher.Plugin.WindowsTasks.csproj" />
   </ItemGroup>
 
 </Project>

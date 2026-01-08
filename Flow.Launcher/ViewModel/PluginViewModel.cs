@@ -22,11 +22,11 @@ namespace Flow.Launcher.ViewModel
         private static readonly Thickness SettingPanelMargin = (Thickness)Application.Current.FindResource("SettingPanelMargin");
         private static readonly Thickness SettingPanelItemTopBottomMargin = (Thickness)Application.Current.FindResource("SettingPanelItemTopBottomMargin");
 
-        public PluginPair PluginPair { get; init; }
+        public PluginMetadata PluginMetadata { get; init; }
 
         private async Task LoadIconAsync()
         {
-            Image = await App.API.LoadImageAsync(PluginPair.Metadata.IcoPath);
+            Image = await App.API.LoadImageAsync(PluginMetadata.IcoPath);
             OnPropertyChanged(nameof(Image));
         }
 
@@ -49,20 +49,20 @@ namespace Flow.Launcher.ViewModel
 
         public bool PluginState
         {
-            get => !PluginPair.Metadata.Disabled;
+            get => !PluginMetadata.Disabled;
             set
             {
-                PluginPair.Metadata.Disabled = !value;
+                PluginMetadata.Disabled = !value;
                 PluginSettingsObject.Disabled = !value;
             }
         }
 
         public bool PluginHomeState
         {
-            get => !PluginPair.Metadata.HomeDisabled;
+            get => !PluginMetadata.HomeDisabled;
             set
             {
-                PluginPair.Metadata.HomeDisabled = !value;
+                PluginMetadata.HomeDisabled = !value;
                 PluginSettingsObject.HomeDisabled = !value;
             }
         }
@@ -81,10 +81,10 @@ namespace Flow.Launcher.ViewModel
 
         public int Priority
         {
-            get => PluginPair.Metadata.Priority;
+            get => PluginMetadata.Priority;
             set
             {
-                PluginPair.Metadata.Priority = value;
+                PluginMetadata.Priority = value;
                 PluginSettingsObject.Priority = value;
             }
         }
@@ -101,57 +101,43 @@ namespace Flow.Launcher.ViewModel
         public bool HasSettingControl =>
             // Here we do not check if the plugin is initialized successfully
             // So we can let users change settings for initializing or initialization failed plugins
-            PluginPair.Plugin is ISettingProvider;
+            PluginMetadata.Plugin is ISettingProvider;
 
         public Control SettingControl
             => IsExpanded
                 ? _settingControl
                     ??= HasSettingControl
-                        ? TryCreateSettingPanel(PluginPair)
+                        ? TryCreateSettingPanel(PluginMetadata)
                         : null
                 : null;
         private ImageSource _image = ImageLoader.MissingImage;
 
-        private static Control TryCreateSettingPanel(PluginPair pair)
+        private static Control TryCreateSettingPanel(PluginMetadata metadata)
         {
             try
             {
                 // We can safely cast here as we already check this in HasSettingControl
-                return ((ISettingProvider)pair.Plugin).CreateSettingPanel();
+                return ((ISettingProvider)metadata.Plugin).CreateSettingPanel();
             }
             catch (Exception e)
             {
                 // Log exception
-                App.API.LogException(ClassName, $"Failed to create setting panel for {pair.Metadata.Name}", e);
+                App.API.LogException(ClassName, $"Failed to create setting panel for {metadata.Name}", e);
 
                 // Show error message in UI
-                var errorMsg = Localize.errorCreatingSettingPanel(pair.Metadata.Name, Environment.NewLine, e.Message);
+                var errorMsg = Localize.errorCreatingSettingPanel(metadata.Name, Environment.NewLine, e.Message);
                 return CreateErrorSettingPanel(errorMsg);
             }
         }
 
-        public string Version => Localize.plugin_query_version() + " " + PluginPair.Metadata.Version;
-        public string ActionKeywordsText => string.Join(Query.ActionKeywordSeparator, PluginPair.Metadata.ActionKeywords);
+        public string Version => Localize.plugin_query_version() + " " + PluginMetadata.Version;
+        public string ActionKeywordsText => string.Join(Query.ActionKeywordSeparator, PluginMetadata.ActionKeywords);
         public Infrastructure.UserSettings.Plugin PluginSettingsObject { get; init; }
-        public bool HomeEnabled => Settings.ShowHomePage && PluginManager.IsHomePlugin(PluginPair.Metadata.ID);
+        public bool HomeEnabled => Settings.ShowHomePage && PluginManager.IsHomePlugin(PluginMetadata.ID);
 
         public void OnActionKeywordsTextChanged()
         {
             OnPropertyChanged(nameof(ActionKeywordsText));
-        }
-
-        [RelayCommand]
-        private void OpenPluginDirectory()
-        {
-            var directory = PluginPair.Metadata.PluginDirectory;
-            if (!string.IsNullOrEmpty(directory))
-                App.API.OpenDirectory(directory);
-        }
-
-        [RelayCommand]
-        private void OpenSourceCodeLink()
-        {
-            App.API.OpenWebUrl(new(PluginPair.Metadata.Website));
         }
 
         [RelayCommand]
