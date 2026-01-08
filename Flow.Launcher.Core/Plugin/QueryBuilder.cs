@@ -38,6 +38,16 @@ namespace Flow.Launcher.Core.Plugin
                 actionKeyword = possibleActionKeyword;
                 search = terms.Length > 1 ? trimmedQuery[(actionKeyword.Length + 1)..].TrimStart() : string.Empty;
             }
+            // Allow queries with a single-digit actionKeyword (that isn't a number nor letter), and no spaces.
+            // For example: '>settings' ('>' is the action keyword)
+            else if (possibleActionKeyword.Length >= 2
+                    && !char.IsLetterOrDigit(possibleActionKeyword[0])
+                    && nonGlobalPlugins.TryGetValue(possibleActionKeyword[0..1], out var pluginPair2)
+                    && !pluginPair2.Metadata.Disabled)
+            {
+                actionKeyword = possibleActionKeyword[0..1];
+                search = trimmedQuery[1..].TrimStart();
+            }
             else
             {
                 // non action keyword
