@@ -15,7 +15,6 @@ namespace Flow.Launcher.Infrastructure
         public static readonly string ExecutablePath = Path.Combine(ProgramDirectory, FlowLauncher + ".exe");
         public static readonly string ApplicationDirectory = Directory.GetParent(ProgramDirectory)?.ToString() ?? throw new NullReferenceException("Failed to get app directory");
 
-        public static readonly string PreinstalledDirectory = Path.Combine(ProgramDirectory, Plugins);
         public const string IssuesUrl = "https://github.com/TBM13/Flow.Launcher/issues";
         public static readonly string Version = FileVersionInfo.GetVersionInfo(Assembly.Location).ProductVersion ?? "<Unknown>";
         public static readonly string Dev = "Dev";

@@ -30,11 +30,6 @@ namespace Flow.Launcher.ViewModel
                 {
                     var fontFamilyPath = glyph.FontFamily;
 
-                    if (!Path.IsPathRooted(fontFamilyPath))
-                    {
-                        fontFamilyPath = Path.Combine(Result.PluginDirectory, fontFamilyPath);
-                    }
-
                     if (Fonts.TryGetValue(fontFamilyPath, out var value))
                     {
                         Glyph = glyph with
@@ -173,7 +168,7 @@ namespace Flow.Launcher.ViewModel
                 catch (Exception e)
                 {
                     App.API.LogException(ClassName,
-                        $"IcoPath is empty and exception when calling IconDelegate for result <{Result.Title}> of plugin <{Result.PluginDirectory}>",
+                        $"IcoPath is empty and exception when calling IconDelegate for result <{Result.Title}> of plugin <{Result.PluginID}>",
                         e);
                 }
             }

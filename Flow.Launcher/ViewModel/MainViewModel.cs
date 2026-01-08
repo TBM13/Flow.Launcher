@@ -1329,7 +1329,6 @@ namespace Flow.Launcher.ViewModel
                 menu = new Result
                 {
                     Title = Localize.cancelTopMostInThisQuery(),
-                    PluginDirectory = Constant.ProgramDirectory,
                     Action = _ =>
                     {
                         _topMostRecord.Remove(result);
@@ -1346,7 +1345,6 @@ namespace Flow.Launcher.ViewModel
                 menu = new Result
                 {
                     Title = Localize.setAsTopMostInThisQuery(),
-                    PluginDirectory = Constant.ProgramDirectory,
                     Action = _ =>
                     {
                         _topMostRecord.AddOrUpdate(result);

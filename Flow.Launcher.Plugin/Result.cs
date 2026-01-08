@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -59,27 +58,7 @@ namespace Flow.Launcher.Plugin
         /// </summary>
         /// <value>Can be a local file path or a URL.</value>
         /// <remarks>GlyphInfo is prioritized if not null</remarks>
-        public string? IcoPath
-        {
-            get => field;
-            set
-            {
-                // As a standard this property will handle prepping and converting to absolute local path for icon image processing
-                if (!string.IsNullOrEmpty(value)
-                    && !string.IsNullOrEmpty(PluginDirectory)
-                    && !Path.IsPathRooted(value)
-                    && !value.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
-                    && !value.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
-                    && !value.StartsWith("data:image", StringComparison.OrdinalIgnoreCase))
-                {
-                    field = Path.Combine(PluginDirectory, value);
-                }
-                else
-                {
-                    field = value;
-                }
-            }
-        }
+        public string? IcoPath { get; set; }
 
         /// <summary>
         /// Delegate function that produces an <see cref="ImageSource"/>
@@ -127,25 +106,6 @@ namespace Flow.Launcher.Plugin
         /// Query information associated with the result
         /// </summary>
         internal Query? OriginQuery { get; set; }
-
-        /// <summary>
-        /// Plugin directory
-        /// </summary>
-        public string? PluginDirectory
-        {
-            get => field;
-            set
-            {
-                field = value;
-
-                // When the Result object is returned from the query call, PluginDirectory is not provided until
-                // UpdatePluginMetadata call is made at PluginManager.cs L196. Once the PluginDirectory becomes available
-                // we need to update (only if not Uri path) the IcoPath with the full absolute path so the image can be loaded.
-#pragma warning disable CA2245
-                IcoPath = IcoPath;
-#pragma warning restore CA2245
-            }
-        }
 
         /// <summary>
         /// Additional data associated with this result

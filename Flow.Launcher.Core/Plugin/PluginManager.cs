@@ -20,7 +20,7 @@ namespace Flow.Launcher.Core.Plugin
     {
         private static readonly string ClassName = nameof(PluginManager);
 
-        public static readonly PluginMetadata[] Plugins =
+        private static readonly PluginMetadata[] Plugins =
         [
             Launcher.Plugin.Calculator.PluginMetadataDefinition.Metadata,
             Launcher.Plugin.Explorer.PluginMetadataDefinition.Metadata,
@@ -44,14 +44,6 @@ namespace Flow.Launcher.Core.Plugin
         private static readonly ConcurrentBag<PluginMetadata> _contextMenuPlugins = [];
         private static readonly ConcurrentBag<PluginMetadata> _homePlugins = [];
         private static readonly ConcurrentBag<PluginMetadata> _externalPreviewPlugins = [];
-
-        /// <summary>
-        /// Directories that will hold Flow Launcher plugin directory
-        /// </summary>
-        public static readonly string[] Directories =
-        [
-            Constant.PreinstalledDirectory, DataLocation.PluginsDirectory
-        ];
 
         #region Save & Dispose & Reload Plugin
         /// <summary>
@@ -192,22 +184,11 @@ namespace Flow.Launcher.Core.Plugin
             // Load plugins
             foreach (var plugin in Plugins)
             {
-                if (plugin != null)
-                {
-                    if (!_allLoadedPlugins.TryAdd(plugin.ID, plugin))
-                        throw new Exception($"Plugin with ID {plugin.ID} already loaded");
-                }
-            }
+                if (!_allLoadedPlugins.TryAdd(plugin.ID, plugin))
+                    throw new Exception($"Plugin with ID {plugin.ID} already loaded");
 
-            UpdatePluginDirectory(Plugins);
-        }
-
-        private static void UpdatePluginDirectory(IEnumerable<PluginMetadata> metadatas)
-        {
-            foreach (var metadata in metadatas)
-            {
-                metadata.PluginSettingsDirectoryPath = Path.Combine(DataLocation.PluginSettingsDirectory, metadata.ID);
-                metadata.PluginCacheDirectoryPath = Path.Combine(DataLocation.PluginCacheDirectory, metadata.ID);
+                plugin.PluginSettingsDirectoryPath = Path.Combine(DataLocation.PluginSettingsDirectory, plugin.ID);
+                plugin.PluginCacheDirectoryPath = Path.Combine(DataLocation.PluginCacheDirectory, plugin.ID);
             }
         }
 
@@ -339,7 +320,6 @@ namespace Flow.Launcher.Core.Plugin
                     SubTitle = Localize.pluginStillInitializingSubtitle(),
                     AutoCompleteText = query.TrimmedQuery,
                     IcoPath = metadata.IcoPath,
-                    PluginDirectory = string.Empty,  // TODO
                     ActionKeywordAssigned = query.ActionKeyword,
                     PluginID = metadata.ID,
                     OriginQuery = query,
@@ -377,7 +357,6 @@ namespace Flow.Launcher.Core.Plugin
                     SubTitle = Localize.pluginFailedToRespondSubtitle(),
                     AutoCompleteText = query.TrimmedQuery,
                     IcoPath = Constant.ErrorIcon,
-                    PluginDirectory = string.Empty, // TODO
                     ActionKeywordAssigned = query.ActionKeyword,
                     PluginID = metadata.ID,
                     OriginQuery = query,
@@ -400,7 +379,6 @@ namespace Flow.Launcher.Core.Plugin
                     SubTitle = Localize.pluginStillInitializingSubtitle(),
                     AutoCompleteText = query.TrimmedQuery,
                     IcoPath = metadata.IcoPath,
-                    PluginDirectory = string.Empty, // TODO
                     ActionKeywordAssigned = query.ActionKeyword,
                     PluginID = metadata.ID,
                     OriginQuery = query,
@@ -483,8 +461,6 @@ namespace Flow.Launcher.Core.Plugin
         {
             foreach (var r in results)
             {
-                // TODO
-                // r.PluginDirectory = metadata.PluginDirectory;
                 r.PluginID = metadata.ID;
                 r.OriginQuery = query;
 
@@ -525,8 +501,6 @@ namespace Flow.Launcher.Core.Plugin
                     results = plugin.LoadContextMenus(result) ?? results;
                     foreach (var r in results)
                     {
-                        // TODO
-                        // r.PluginDirectory = metadata.PluginDirectory;
                         r.PluginID = metadata.ID;
                         r.OriginQuery = result.OriginQuery;
                     }

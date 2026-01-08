@@ -47,10 +47,6 @@
   <ItemGroup>
     <Content Include="FodyWeavers.xml" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <PackageReference Include="Flow.Launcher.Localization" Version="0.0.6" />
-  </ItemGroup>
 
   <PropertyGroup>
     <FLLUseDependencyInjection>true</FLLUseDependencyInjection>
