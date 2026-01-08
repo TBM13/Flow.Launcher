@@ -452,11 +452,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     _ = Task.Run(() => Launch(shouldRunElevated)).ConfigureAwait(false);
                     if (elevated && !shouldRunElevated)
                     {
-                        var title = api.GetTranslation("flowlauncher_plugin_program_disable_dlgtitle_error");
-                        var message =
-                            api.GetTranslation(
-                                "flowlauncher_plugin_program_run_as_administrator_not_supported_message");
-                        api.ShowMsgError(title, message);
+                        api.ShowMsgError(Localize.Error_Title, Localize.Error_UnableToRunAsAdmin);
                     }
 
                     return true;
@@ -472,7 +468,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
             {
                 new()
                 {
-                    Title = api.GetTranslation("flowlauncher_plugin_program_open_containing_folder"),
+                    Title = Localize.Action_OpenContainingFolder,
                     Action = _ =>
                     {
                         Main.Context.API.OpenDirectory(Location);
@@ -487,7 +483,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
             {
                 contextMenus.Add(new Result
                 {
-                    Title = api.GetTranslation("flowlauncher_plugin_program_run_as_administrator"),
+                    Title = Localize.Action_RunAsAdministrator,
                     Action = c =>
                     {
                         _ = Task.Run(() => Launch(true)).ConfigureAwait(false);

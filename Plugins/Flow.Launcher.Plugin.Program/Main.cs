@@ -445,7 +445,7 @@ namespace Flow.Launcher.Plugin.Program
             menuOptions.Add(
                 new Result
                 {
-                    Title = Context.API.GetTranslation("flowlauncher_plugin_program_disable_program"),
+                    Title = Localize.Action_DisableProgram,
                     Action = c =>
                     {
                         _ = Task.Run(async () =>
@@ -457,9 +457,8 @@ namespace Flow.Launcher.Plugin.Program
                                 {
                                     ResetCache();
                                     Context.API.ShowMsg(
-                                        Context.API.GetTranslation("flowlauncher_plugin_program_disable_dlgtitle_success"),
-                                        Context.API.GetTranslation(
-                                            "flowlauncher_plugin_program_disable_dlgtitle_success_message"));
+                                        Localize.Dialog_DisableSuccess_Title,
+                                        Localize.Dialog_DisableSuccess_Message);
                                 }
                                 Context.API.ReQuery();
                             }
@@ -529,10 +528,8 @@ namespace Flow.Launcher.Plugin.Program
             }
             catch (Exception)
             {
-                var title = Context.API.GetTranslation("flowlauncher_plugin_program_disable_dlgtitle_error");
-                var message = string.Format(Context.API.GetTranslation("flowlauncher_plugin_program_run_failed"),
-                    info.FileName);
-                Context.API.ShowMsgError(title, message);
+                Context.API.ShowMsgError(
+                    Localize.Error_Title, Localize.Error_UnableToRun(info.FileName));
             }
         }
 

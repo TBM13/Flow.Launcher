@@ -5,7 +5,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
-    Title="{DynamicResource flowlauncher_plugin_program_suffixes}"
+    xmlns:root="clr-namespace:Flow.Launcher.Plugin.Program"
+    Title="{x:Static root:Localize.Settings_ProgramSuffixes}"
     Width="600"
     Background="{DynamicResource PopuBGColor}"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
@@ -129,7 +130,7 @@
                         Margin="0 0 0 0"
                         FontSize="20"
                         FontWeight="SemiBold"
-                        Text="{DynamicResource flowlauncher_plugin_program_suffixes}"
+                        Text="{x:Static root:Localize.Settings_ProgramSuffixes}"
                         TextAlignment="Left" />
                 </StackPanel>
                 <TextBlock
@@ -140,14 +141,14 @@
                 <Border Style="{DynamicResource SettingGroupBoxURLToolTip}">
                     <TextBlock
                         FontSize="14"
-                        Text="{DynamicResource flowlauncher_plugin_program_protocol_tooltip}"
+                        Text="{x:Static root:Localize.Settings_ProtocolTooltip}"
                         TextWrapping="Wrap" />
                 </Border>
 
                 <Border Style="{DynamicResource SettingGroupBoxSuffixToolTip}">
                     <TextBlock
                         FontSize="14"
-                        Text="{DynamicResource flowlauncher_plugin_program_suffixes_tooltip}"
+                        Text="{x:Static root:Localize.Settings_SuffixesTooltip}"
                         TextWrapping="Wrap" />
                 </Border>
 
@@ -162,7 +163,7 @@
                             Margin="0 0 0 8"
                             FontSize="16"
                             FontWeight="SemiBold"
-                            Text="{DynamicResource flowlauncher_plugin_program_suffixes_executable_types}" />
+                            Text="{x:Static root:Localize.Settings_SuffixesExecutableTypes}" />
                         <CheckBox
                             Name="apprefMS"
                             Margin="10 0 0 0"
@@ -184,7 +185,7 @@
                         <CheckBox
                             Name="CustomFiles"
                             Margin="10 0 0 0"
-                            Content="{DynamicResource flowlauncher_plugin_program_suffixes_custom_file_types}"
+                            Content="{x:Static root:Localize.Settings_SuffixesCustomFileTypes}"
                             IsChecked="{Binding UseCustomSuffixes}" />
                         <TextBox
                             x:Name="tbSuffixes"
@@ -203,26 +204,26 @@
                                 Margin="0 0 0 8"
                                 FontSize="16"
                                 FontWeight="SemiBold"
-                                Text="{DynamicResource flowlauncher_plugin_program_suffixes_URL_types}" />
+                                Text="{x:Static root:Localize.Settings_SuffixesURLTypes}" />
                             <CheckBox
                                 Name="steam"
                                 Margin="10 0 0 0"
-                                Content="{DynamicResource flowlauncher_plugin_program_suffixes_URL_steam}"
+                                Content="{x:Static root:Localize.Settings_SuffixesURLSteam}"
                                 IsChecked="{Binding ProtocolsStatus[steam]}" />
                             <CheckBox
                                 Name="epic"
                                 Margin="10 0 0 0"
-                                Content="{DynamicResource flowlauncher_plugin_program_suffixes_URL_epic}"
+                                Content="{x:Static root:Localize.Settings_SuffixesURLEpic}"
                                 IsChecked="{Binding ProtocolsStatus[epic]}" />
                             <CheckBox
                                 Name="http"
                                 Margin="10 0 0 0"
-                                Content="{DynamicResource flowlauncher_plugin_program_suffixes_URL_http}"
+                                Content="{x:Static root:Localize.Settings_SuffixesURLHttp}"
                                 IsChecked="{Binding ProtocolsStatus[http]}" />
                             <CheckBox
                                 Name="CustomProtocol"
                                 Margin="10 0 0 0"
-                                Content="{DynamicResource flowlauncher_plugin_program_suffixes_custom_urls}"
+                                Content="{x:Static root:Localize.Settings_SuffixesCustomUrls}"
                                 IsChecked="{Binding UseCustomProtocols}" />
                             <TextBox
                                 x:Name="tbProtocols"
@@ -245,7 +246,7 @@
                     MinWidth="140"
                     Margin="0 0 5 0"
                     Click="BtnReset_OnClick"
-                    Content="{DynamicResource flowlauncher_plugin_program_reset}" />
+                    Content="{x:Static root:Localize.Settings_ResetDefault}" />
                 <Button
                     x:Name="btnCancel"
                     Height="30"
@@ -260,7 +261,7 @@
                     Margin="5 0 0 0"
                     HorizontalAlignment="Right"
                     Click="BtnAdd_OnClick"
-                    Content="{DynamicResource flowlauncher_plugin_program_update}"
+                    Content="{x:Static root:Localize.Settings_Update}"
                     Style="{DynamicResource AccentButtonStyle}" />
             </StackPanel>
         </Border>

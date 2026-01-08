@@ -45,7 +45,7 @@ namespace Flow.Launcher.Plugin.Program.ViewModels
         {
             API = context.API;
             Settings = settings;
-            AddBtnText = API.GetTranslation("flowlauncher_plugin_program_add");
+            AddBtnText = Localize.Settings_Add;
         }
 
         public AddProgramSourceViewModel(PluginInitContext context, Settings settings, ProgramSource programSource) : this(context, settings)
@@ -53,7 +53,7 @@ namespace Flow.Launcher.Plugin.Program.ViewModels
             Source = programSource;
             enabled = Source.Enabled;
             location = Source.Location;
-            AddBtnText = API.GetTranslation("flowlauncher_plugin_program_update");
+            AddBtnText = Localize.Settings_Update;
             IsCustomSource = Settings.ProgramSources.Any(x => x.UniqueIdentifier == Source.UniqueIdentifier);
         }
 
@@ -72,11 +72,11 @@ namespace Flow.Launcher.Plugin.Program.ViewModels
         {
             if (!Directory.Exists(Location))
             {
-                return (false, API.GetTranslation("flowlauncher_plugin_program_invalid_path"));
+                return (false, Localize.Error_InvalidPath);
             }
             else if (DuplicateSource(Location))
             {
-                return (false, API.GetTranslation("flowlauncher_plugin_program_duplicate_program_source"));
+                return (false, Localize.ProgramSource_Duplicate);
             }
             else
             {
@@ -93,11 +93,11 @@ namespace Flow.Launcher.Plugin.Program.ViewModels
             {
                 if (!Directory.Exists(Location))
                 {
-                    return (false, API.GetTranslation("flowlauncher_plugin_program_invalid_path"));
+                    return (false, Localize.Error_InvalidPath);
                 }
                 else if (DuplicateSource(Location))
                 {
-                    return (false, API.GetTranslation("flowlauncher_plugin_program_duplicate_program_source"));
+                    return (false, Localize.ProgramSource_Duplicate);
                 }
                 else
                 {

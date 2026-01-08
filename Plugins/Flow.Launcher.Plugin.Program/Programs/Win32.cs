@@ -212,7 +212,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
             {
                 new()
                 {
-                    Title = api.GetTranslation("flowlauncher_plugin_program_run_as_different_user"),
+                    Title = Localize.Action_RunAsDifferentUser,
                     Action = c =>
                     {
                         var info = new ProcessStartInfo
@@ -228,7 +228,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 },
                 new()
                 {
-                    Title = api.GetTranslation("flowlauncher_plugin_program_run_as_administrator"),
+                    Title = Localize.Action_RunAsAdministrator,
                     Action = c =>
                     {
                         var info = new ProcessStartInfo
@@ -247,7 +247,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 },
                 new()
                 {
-                    Title = api.GetTranslation("flowlauncher_plugin_program_open_containing_folder"),
+                    Title = Localize.Action_OpenContainingFolder,
                     Action = _ =>
                     {
                         Main.Context.API.OpenDirectory(ParentDirectory, FullPath);
@@ -268,7 +268,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
         {
             return new Result
             {
-                Title = api.GetTranslation("flowlauncher_plugin_program_open_target_folder"),
+                Title = Localize.Action_OpenTargetFolder,
                 Action = _ =>
                 {
                     api.OpenDirectory(Path.GetDirectoryName(ExecutablePath), ExecutablePath);

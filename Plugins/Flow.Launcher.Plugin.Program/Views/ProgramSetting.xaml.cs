@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
-using Flow.Launcher.Plugin.Program.Views.Models;
-using Flow.Launcher.Plugin.Program.Views.Commands;
-using Flow.Launcher.Plugin.Program.Programs;
-using System.ComponentModel;
 using System.Windows.Data;
+using System.Windows.Input;
+using Flow.Launcher.Plugin.Program.Programs;
 using Flow.Launcher.Plugin.Program.ViewModels;
+using Flow.Launcher.Plugin.Program.Views.Commands;
+using Flow.Launcher.Plugin.Program.Views.Models;
 
 namespace Flow.Launcher.Plugin.Program.Views
 {
@@ -191,7 +191,7 @@ namespace Flow.Launcher.Plugin.Program.Views
         {
             if (selectedProgramSource == null)
             {
-                string msg = context.API.GetTranslation("flowlauncher_plugin_program_pls_select_program_source");
+                string msg = Localize.ProgramSource_PleaseSelect;
                 context.API.ShowMsgBox(msg);
             }
             else
@@ -298,7 +298,7 @@ namespace Flow.Launcher.Plugin.Program.Views
 
             if (selectedItems.Count == 0)
             {
-                context.API.ShowMsgBox(context.API.GetTranslation("flowlauncher_plugin_program_pls_select_program_source"));
+                context.API.ShowMsgBox(Localize.ProgramSource_PleaseSelect);
                 return;
             }
 
@@ -375,7 +375,7 @@ namespace Flow.Launcher.Plugin.Program.Views
 
         private static bool HasMoreOrEqualEnabledItems(List<ProgramSource> items)
         {
-            var enableCount = items.Where(x => x.Enabled).Count();
+            var enableCount = items.Count(x => x.Enabled);
             return enableCount >= items.Count - enableCount;
         }
 
@@ -387,11 +387,11 @@ namespace Flow.Launcher.Plugin.Program.Views
 
             if (HasMoreOrEqualEnabledItems(selectedItems))
             {
-                btnProgramSourceStatus.Content = context.API.GetTranslation("flowlauncher_plugin_program_disable");
+                btnProgramSourceStatus.Content = Localize.Settings_ProgramDisable;
             }
             else
             {
-                btnProgramSourceStatus.Content = context.API.GetTranslation("flowlauncher_plugin_program_enable");
+                btnProgramSourceStatus.Content = Localize.Settings_ProgramEnable;
             }
         }
 
@@ -413,17 +413,17 @@ namespace Flow.Launcher.Plugin.Program.Views
 
             if (selectedItems.Count == 0)
             {
-                context.API.ShowMsgBox(context.API.GetTranslation("flowlauncher_plugin_program_pls_select_program_source"));
+                context.API.ShowMsgBox(Localize.ProgramSource_PleaseSelect);
                 return;
             }
 
             if (!IsAllItemsUserAdded(selectedItems))
             {
-                context.API.ShowMsgBox(context.API.GetTranslation("flowlauncher_plugin_program_delete_program_source_select_user_added"));
+                context.API.ShowMsgBox(Localize.ProgramSource_DeleteSelectUserAdded);
                 return;
             }
 
-            if (context.API.ShowMsgBox(context.API.GetTranslation("flowlauncher_plugin_program_delete_program_source"),
+            if (context.API.ShowMsgBox(Localize.ProgramSource_DeleteConfirm,
                 string.Empty, MessageBoxButton.YesNo) == MessageBoxResult.No)
             {
                 return;

@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:root="clr-namespace:Flow.Launcher.Plugin.Program"
     Height="520"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
     mc:Ignorable="d">
@@ -22,7 +23,7 @@
                 MinWidth="120"
                 Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
                 VerticalAlignment="Center"
-                Text="{DynamicResource flowlauncher_plugin_program_index_source}" />
+                Text="{x:Static root:Localize.Settings_IndexSources}" />
             <WrapPanel
                 Width="Auto"
                 Margin="{StaticResource SettingPanelItemTopBottomMargin}"
@@ -31,27 +32,27 @@
                 <CheckBox
                     Name="UWPEnabled"
                     Margin="{StaticResource SettingPanelItemRightMargin}"
-                    Content="{DynamicResource flowlauncher_plugin_program_index_uwp}"
+                    Content="{x:Static root:Localize.Settings_IndexUwp}"
                     IsChecked="{Binding EnableUWP}"
-                    ToolTip="{DynamicResource flowlauncher_plugin_program_index_uwp_tooltip}"
+                    ToolTip="{x:Static root:Localize.Settings_IndexUwp_Tooltip}"
                     Visibility="{Binding ShowUWPCheckbox, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 <CheckBox
                     Name="StartMenuEnabled"
                     Margin="{StaticResource SettingPanelItemRightMargin}"
-                    Content="{DynamicResource flowlauncher_plugin_program_index_start}"
+                    Content="{x:Static root:Localize.Settings_IndexStart}"
                     IsChecked="{Binding EnableStartMenuSource}"
-                    ToolTip="{DynamicResource flowlauncher_plugin_program_index_start_tooltip}" />
+                    ToolTip="{x:Static root:Localize.Settings_IndexStart_Tooltip}" />
                 <CheckBox
                     Name="RegistryEnabled"
                     Margin="{StaticResource SettingPanelItemRightMargin}"
-                    Content="{DynamicResource flowlauncher_plugin_program_index_registry}"
+                    Content="{x:Static root:Localize.Settings_IndexRegistry}"
                     IsChecked="{Binding EnableRegistrySource}"
-                    ToolTip="{DynamicResource flowlauncher_plugin_program_index_registry_tooltip}" />
+                    ToolTip="{x:Static root:Localize.Settings_IndexRegistry_Tooltip}" />
                 <CheckBox
                     Name="PATHEnabled"
-                    Content="{DynamicResource flowlauncher_plugin_program_index_PATH}"
+                    Content="{x:Static root:Localize.Settings_IndexPATH}"
                     IsChecked="{Binding EnablePATHSource}"
-                    ToolTip="{DynamicResource flowlauncher_plugin_program_index_PATH_tooltip}" />
+                    ToolTip="{x:Static root:Localize.Settings_IndexPATH_Tooltip}" />
             </WrapPanel>
         </DockPanel>
         <StackPanel
@@ -64,30 +65,30 @@
                     MinWidth="120"
                     Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
                     VerticalAlignment="Center"
-                    Text="{DynamicResource flowlauncher_plugin_program_index_option}" />
+                    Text="{x:Static root:Localize.Settings_IndexOptions}" />
                 <WrapPanel
                     Width="Auto"
                     HorizontalAlignment="Right"
                     DockPanel.Dock="Right">
                     <CheckBox
                         Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
-                        Content="{DynamicResource flowlauncher_plugin_program_enable_hidelnkpath}"
+                        Content="{x:Static root:Localize.Settings_EnableHideLnkPath}"
                         IsChecked="{Binding HideAppsPath}"
-                        ToolTip="{DynamicResource flowlauncher_plugin_program_enable_hidelnkpath_tooltip}" />
+                        ToolTip="{x:Static root:Localize.Settings_EnableHideLnkPath_Tooltip}" />
                     <CheckBox
                         Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
-                        Content="{DynamicResource flowlauncher_plugin_program_enable_hideuninstallers}"
+                        Content="{x:Static root:Localize.Settings_EnableHideUninstallers}"
                         IsChecked="{Binding HideUninstallers}"
-                        ToolTip="{DynamicResource flowlauncher_plugin_program_enable_hideuninstallers_tooltip}" />
+                        ToolTip="{x:Static root:Localize.Settings_EnableHideUninstallers_Tooltip}" />
                     <CheckBox
                         Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
-                        Content="{DynamicResource flowlauncher_plugin_program_enable_description}"
+                        Content="{x:Static root:Localize.Settings_EnableDescription}"
                         IsChecked="{Binding EnableDescription}"
-                        ToolTip="{DynamicResource flowlauncher_plugin_program_enable_description_tooltip}" />
+                        ToolTip="{x:Static root:Localize.Settings_EnableDescription_Tooltip}" />
                     <CheckBox
-                        Content="{DynamicResource flowlauncher_plugin_program_enable_hideduplicatedwindowsapp}"
+                        Content="{x:Static root:Localize.Settings_EnableHideDuplicatedWindowsApp}"
                         IsChecked="{Binding HideDuplicatedWindowsApp}"
-                        ToolTip="{DynamicResource flowlauncher_plugin_program_enable_hideduplicatedwindowsapp_tooltip}" />
+                        ToolTip="{x:Static root:Localize.Settings_EnableHideDuplicatedWindowsApp_Tooltip}" />
                 </WrapPanel>
             </DockPanel>
             <Separator Style="{StaticResource SettingPanelSeparatorStyle}" />
@@ -101,21 +102,21 @@
                     Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
                     HorizontalAlignment="Right"
                     Click="btnLoadAllProgramSource_OnClick"
-                    Content="{DynamicResource flowlauncher_plugin_program_all_programs}" />
+                    Content="{x:Static root:Localize.Settings_AllPrograms}" />
                 <Button
                     x:Name="btnProgramSuffixes"
                     MinWidth="120"
                     Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
                     HorizontalAlignment="Right"
                     Click="BtnProgramSuffixes_OnClick"
-                    Content="{DynamicResource flowlauncher_plugin_program_suffixes}" />
+                    Content="{x:Static root:Localize.Settings_ProgramSuffixes}" />
                 <Button
                     x:Name="btnReindex"
                     MinWidth="120"
                     Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
                     HorizontalAlignment="Right"
                     Click="btnReindex_Click"
-                    Content="{DynamicResource flowlauncher_plugin_program_reindex}" />
+                    Content="{x:Static root:Localize.Settings_Reindex}" />
                 <StackPanel
                     x:Name="indexingPanel"
                     HorizontalAlignment="Left"
@@ -133,7 +134,7 @@
                         Height="20"
                         Margin="{StaticResource SettingPanelItemTopBottomMargin}"
                         HorizontalAlignment="Center"
-                        Text="{DynamicResource flowlauncher_plugin_program_indexing}" />
+                        Text="{x:Static root:Localize.Settings_Indexing}" />
                 </StackPanel>
             </StackPanel>
         </StackPanel>
@@ -154,23 +155,23 @@
             SizeChanged="ListView_SizeChanged">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Width="150" Header="{DynamicResource flowlauncher_plugin_program_name}">
+                    <GridViewColumn Width="150" Header="{x:Static root:Localize.Settings_ProgramName}">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Name}" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Width="90" Header="{DynamicResource flowlauncher_plugin_program_status}">
+                    <GridViewColumn Width="90" Header="{x:Static root:Localize.Settings_ProgramStatus}">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock TextAlignment="Left">
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock">
-                                            <Setter Property="Text" Value="{DynamicResource flowlauncher_plugin_program_false}" />
+                                            <Setter Property="Text" Value="{x:Static root:Localize.Settings_ProgramDisabled}" />
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding Enabled, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                                    <Setter Property="Text" Value="{DynamicResource flowlauncher_plugin_program_true}" />
+                                                    <Setter Property="Text" Value="{x:Static root:Localize.Settings_ProgramEnabled}" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
@@ -179,7 +180,7 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="{DynamicResource flowlauncher_plugin_program_location}">
+                    <GridViewColumn Header="{x:Static root:Localize.Settings_ProgramLocation}">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Location}" TextTrimming="CharacterEllipsis" />
@@ -196,25 +197,25 @@
                     MinWidth="100"
                     Margin="{StaticResource SettingPanelItemTopBottomMargin}"
                     Click="btnProgramSourceStatus_OnClick"
-                    Content="{DynamicResource flowlauncher_plugin_program_disable}" />
+                    Content="{x:Static root:Localize.Settings_ProgramDisable}" />
                 <Button
                     x:Name="btnEditProgramSource"
                     MinWidth="100"
                     Margin="{StaticResource SettingPanelItemLeftTopBottomMargin}"
                     Click="btnEditProgramSource_OnClick"
-                    Content="{DynamicResource flowlauncher_plugin_program_edit}" />
+                    Content="{x:Static root:Localize.Settings_Edit}" />
                 <Button
                     x:Name="btnDeleteProgramSource"
                     MinWidth="100"
                     Margin="{StaticResource SettingPanelItemLeftTopBottomMargin}"
                     Click="btnDeleteProgramSource_OnClick"
-                    Content="{DynamicResource flowlauncher_plugin_program_delete}" />
+                    Content="{x:Static root:Localize.Settings_Delete}" />
                 <Button
                     x:Name="btnAddProgramSource"
                     MinWidth="100"
                     Margin="{StaticResource SettingPanelItemLeftTopBottomMargin}"
                     Click="btnAddProgramSource_OnClick"
-                    Content="{DynamicResource flowlauncher_plugin_program_add}" />
+                    Content="{x:Static root:Localize.Settings_Add}" />
             </StackPanel>
         </DockPanel>
     </Grid>
