@@ -12,7 +12,6 @@ using System.Windows;
 using System.Windows.Media;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Resource;
-using Flow.Launcher.Core.Storage;
 using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Helpers;
@@ -28,7 +27,7 @@ using iNKORE.UI.WPF.Modern;
 
 namespace Flow.Launcher
 {
-    public class PublicAPIInstance : Plugin.IPublicAPI, IRemovable
+    public class PublicAPIInstance : Plugin.IPublicAPI
     {
         private static readonly string ClassName = nameof(PublicAPIInstance);
 
