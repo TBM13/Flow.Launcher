@@ -64,16 +64,6 @@ namespace Flow.Launcher
             _mainVM.ChangeQueryText(query, requery);
         }
 
-        public void RestartApp()
-        {
-            _mainVM.Hide();
-
-            // We must manually save
-            // UpdateManager.RestartApp() will call Environment.Exit(0)
-            // which will cause ungraceful exit
-            SaveAppAllSettings();
-        }
-
         public void ShowMainWindow() => _mainVM.Show();
 
         public void FocusQueryTextBox() => _mainVM.FocusQueryTextBox();

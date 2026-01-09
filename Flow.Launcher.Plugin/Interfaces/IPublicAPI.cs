@@ -27,11 +27,6 @@ namespace Flow.Launcher.Plugin
         void ChangeQuery(string query, bool requery = false);
 
         /// <summary>
-        /// Restart Flow Launcher
-        /// </summary>
-        void RestartApp();
-
-        /// <summary>
         /// Run a shell command
         /// </summary>
         /// <param name="cmd">The command or program to run</param>
