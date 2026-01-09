@@ -25,6 +25,18 @@ namespace Flow.Launcher.Infrastructure.Image
 
         private static readonly string[] ImageExtensions = [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".ico"];
 
+        private record ImageResult(ImageSource ImageSource, ImageType ImageType);
+        private enum ImageType
+        {
+            File,
+            Folder,
+            Data,
+            ImageFile,
+            FullImageFile,
+            Error,
+            Cache
+        }
+
         public static async Task InitializeAsync()
         {
             await Task.Run(() =>
@@ -38,59 +50,57 @@ namespace Flow.Launcher.Infrastructure.Image
             });
         }
 
-        private record ImageResult(ImageSource ImageSource, ImageType ImageType);
-        private enum ImageType
+        public static bool TryGetValue(string path, bool loadFullImage, [NotNullWhen(true)] out ImageSource? image)
         {
-            File,
-            Folder,
-            Data,
-            ImageFile,
-            FullImageFile,
-            Error,
-            Cache
+            return ImageCache.TryGetValue(path, loadFullImage, out image);
         }
 
-        private static async ValueTask<ImageResult> LoadInternalAsync(string path, bool loadFullImage = false)
+        private static BitmapSource GetThumbnail(string path,
+            ThumbnailOptions option = ThumbnailOptions.ThumbnailOnly, int size = SmallIconSize)
         {
-            ImageResult imageResult;
-
-            try
-            {
-                // extra scope for use of same variable name
-                {
-                    if (ImageCache.TryGetValue(path, loadFullImage, out var imageSource))
-                    {
-                        if (imageSource is null)
-                            return new ImageResult(MissingImage, ImageType.Error);
-
-                        return new ImageResult(imageSource, ImageType.Cache);
-                    }
-                }
-
-                imageResult = await Task.Run(() => GetThumbnailResult(ref path, loadFullImage));
-            }
-            catch (Exception e)
-            {
-                try
-                {
-                    // Get thumbnail may fail for certain images on the first try, retry again has proven to work
-                    imageResult = GetThumbnailResult(ref path, loadFullImage);
-                }
-                catch (Exception e2)
-                {
-                    Log.Exception(ClassName, $"Failed to get thumbnail for {path} on first try", e);
-                    Log.Exception(ClassName, $"Failed to get thumbnail for {path} on second try", e2);
-
-                    ImageSource image = MissingImage;
-                    ImageCache[path, false] = image;
-                    imageResult = new ImageResult(image, ImageType.Error);
-                }
-            }
-
-            return imageResult;
+            return WindowsThumbnailProvider.GetThumbnail(
+                path,
+                size,
+                size,
+                option);
         }
 
-        private static ImageResult GetThumbnailResult(ref string path, bool loadFullImage = false)
+        private static BitmapImage LoadFullImage(string path)
+        {
+            path = Path.GetFullPath(path);
+            Uri uri = new Uri(path);
+
+            int decodedWidth = 0, decodedHeight = 0;
+            // Peek at the image dimensions without fully loading it
+            BitmapFrame frame = BitmapFrame.Create(uri, BitmapCreateOptions.DelayCreation, BitmapCacheOption.None);
+            if (frame.PixelWidth > FullImageSize || frame.PixelHeight > FullImageSize)
+            {
+                if (frame.PixelWidth > frame.PixelHeight)
+                    // Image is landscape, constraining the width is enough
+                    // (since the aspect ratio is maintained)
+                    decodedWidth = FullImageSize;
+                else
+                    // Image is portrait, constraining the height is enough
+                    decodedHeight = FullImageSize;
+            }
+
+            BitmapImage image = new BitmapImage();
+            image.BeginInit();
+            image.CacheOption = BitmapCacheOption.OnLoad;
+            image.UriSource = uri;
+            image.CreateOptions = BitmapCreateOptions.IgnoreColorProfile;
+            image.EndInit();
+
+            if (decodedWidth > 0)
+                image.DecodePixelWidth = decodedWidth;
+            if (decodedHeight > 0)
+                image.DecodePixelHeight = decodedHeight;
+
+            image.Freeze();
+            return image;
+        }
+
+        private static ImageResult GetThumbnailResult(string path, bool loadFullImage = false)
         {
             ImageSource image;
             ImageType type = ImageType.Error;
@@ -144,7 +154,6 @@ namespace Flow.Launcher.Infrastructure.Image
             else
             {
                 image = MissingImage;
-                path = Constant.MissingImgIcon;
             }
 
             if (type != ImageType.Error)
@@ -155,24 +164,42 @@ namespace Flow.Launcher.Infrastructure.Image
             return new ImageResult(image, type);
         }
 
-        private static BitmapSource GetThumbnail(string path, ThumbnailOptions option = ThumbnailOptions.ThumbnailOnly,
-            int size = SmallIconSize)
+        private static async ValueTask<ImageResult> LoadInternalAsync(string path, bool loadFullImage = false)
         {
-            return WindowsThumbnailProvider.GetThumbnail(
-                path,
-                size,
-                size,
-                option);
-        }
+            ImageResult imageResult;
 
-        public static bool TryGetValue(string path, bool loadFullImage, [NotNullWhen(true)] out ImageSource? image)
-        {
-            return ImageCache.TryGetValue(path, loadFullImage, out image);
+            try
+            {
+                imageResult = await Task.Run(() => GetThumbnailResult(path, loadFullImage));
+            }
+            catch (Exception e)
+            {
+                try
+                {
+                    // Get thumbnail may fail for certain images on the first try, retry again has proven to work
+                    imageResult = GetThumbnailResult(path, loadFullImage);
+                }
+                catch (Exception e2)
+                {
+                    Log.Exception(ClassName, $"Failed to get thumbnail for {path} on first try", e);
+                    Log.Exception(ClassName, $"Failed to get thumbnail for {path} on second try", e2);
+
+                    ImageSource image = MissingImage;
+                    ImageCache[path, false] = image;
+                    imageResult = new ImageResult(image, ImageType.Error);
+                }
+            }
+
+            return imageResult;
         }
 
         public static async ValueTask<ImageSource> LoadAsync(string path, bool loadFullImage = false, bool cacheImage = true)
         {
             path = path.ToLowerInvariant();
+            // Use cached image if available
+            if (ImageCache.TryGetValue(path, loadFullImage, out ImageSource? cachedImage))
+                return cachedImage;
+
             var imageResult = await LoadInternalAsync(path, loadFullImage);
 
             var img = imageResult.ImageSource;
@@ -202,41 +229,6 @@ namespace Flow.Launcher.Infrastructure.Image
             }
 
             return img;
-        }
-
-        private static BitmapImage LoadFullImage(string path)
-        {
-            path = Path.GetFullPath(path);
-            Uri uri = new Uri(path);
-
-            int decodedWidth = 0, decodedHeight = 0;
-            // Peek at the image dimensions without fully loading it
-            BitmapFrame frame = BitmapFrame.Create(uri, BitmapCreateOptions.DelayCreation, BitmapCacheOption.None);
-            if (frame.PixelWidth > FullImageSize || frame.PixelHeight > FullImageSize)
-            {
-                if (frame.PixelWidth > frame.PixelHeight)
-                    // Image is landscape, constraining the width is enough
-                    // (since the aspect ratio is maintained)
-                    decodedWidth = FullImageSize;
-                else
-                    // Image is portrait, constraining the height is enough
-                    decodedHeight = FullImageSize;
-            }
-
-            BitmapImage image = new BitmapImage();
-            image.BeginInit();
-            image.CacheOption = BitmapCacheOption.OnLoad;
-            image.UriSource = uri;
-            image.CreateOptions = BitmapCreateOptions.IgnoreColorProfile;
-            image.EndInit();
-
-            if (decodedWidth > 0)
-                image.DecodePixelWidth = decodedWidth;
-            if (decodedHeight > 0)
-                image.DecodePixelHeight = decodedHeight;
-
-            image.Freeze();
-            return image;
         }
     }
 }
