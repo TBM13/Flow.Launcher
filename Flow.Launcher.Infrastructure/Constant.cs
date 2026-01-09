@@ -35,6 +35,4 @@ public static class Constant
     public const string Themes = "Themes";
     public const string Settings = "Settings";
     public const string Cache = "Cache";
-
-    public const string SystemLanguageCode = "system";
 }

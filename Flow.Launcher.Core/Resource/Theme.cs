@@ -23,13 +23,10 @@ namespace Flow.Launcher.Core.Resource
 
         private readonly IPublicAPI _api;
         private readonly Settings _settings;
-        private readonly List<string> _themeDirectories = [];
         private ResourceDictionary _oldResource;
         private string _oldTheme;
-        private const string Folder = Constant.Themes;
         private const string Extension = ".xaml";
-        private static string DirectoryPath => Path.Combine(Constant.ProgramDirectory, Folder);
-        private static string UserDirectoryPath => Path.Combine(DataLocation.DataDirectory(), Folder);
+        private static string DirectoryPath => Path.Combine(Constant.ProgramDirectory, Constant.Themes);
 
         private Thickness _themeResizeBorderThickness;
 
@@ -42,17 +39,13 @@ namespace Flow.Launcher.Core.Resource
             _api = publicAPI;
             _settings = settings;
 
-            _themeDirectories.Add(DirectoryPath);
-            _themeDirectories.Add(UserDirectoryPath);
-            MakeSureThemeDirectoriesExist();
-
             var dicts = Application.Current.Resources.MergedDictionaries;
             _oldResource = dicts.FirstOrDefault(d =>
             {
                 if (d.Source == null) return false;
 
                 var p = d.Source.AbsolutePath;
-                return p.Contains(Folder) && Path.GetExtension(p) == Extension;
+                return p.Contains(Constant.Themes) && Path.GetExtension(p) == Extension;
             });
 
             if (_oldResource != null)
@@ -69,22 +62,6 @@ namespace Flow.Launcher.Core.Resource
         #endregion
 
         #region Theme Resources
-
-        private void MakeSureThemeDirectoriesExist()
-        {
-            foreach (var dir in _themeDirectories.Where(dir => !Directory.Exists(dir)))
-            {
-                try
-                {
-                    Directory.CreateDirectory(dir);
-                }
-                catch (Exception e)
-                {
-                    _api.LogException(ClassName, $"Exception when create directory <{dir}>", e);
-                }
-            }
-        }
-
         private void UpdateResourceDictionary(ResourceDictionary dictionaryToUpdate)
         {
             // Add new resources
@@ -132,13 +109,10 @@ namespace Flow.Launcher.Core.Resource
 
         private string GetThemePath(string themeName)
         {
-            foreach (string themeDirectory in _themeDirectories)
+            string path = Path.Combine(DirectoryPath, themeName + Extension);
+            if (File.Exists(path))
             {
-                string path = Path.Combine(themeDirectory, themeName + Extension);
-                if (File.Exists(path))
-                {
-                    return path;
-                }
+                return path;
             }
 
             return string.Empty;

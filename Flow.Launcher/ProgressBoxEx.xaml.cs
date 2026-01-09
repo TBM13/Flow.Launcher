@@ -9,17 +9,17 @@ namespace Flow.Launcher
     {
         private static readonly string ClassName = nameof(ProgressBoxEx);
 
-        private readonly Action _cancelProgress;
+        private readonly Action? _cancelProgress;
 
-        private ProgressBoxEx(Action cancelProgress)
+        private ProgressBoxEx(Action? cancelProgress)
         {
             _cancelProgress = cancelProgress;
             InitializeComponent();
         }
 
-        public static async Task ShowAsync(string caption, Func<Action<double>, Task> reportProgressAsync, Action cancelProgress = null)
+        public static async Task ShowAsync(string caption, Func<Action<double>?, Task> reportProgressAsync, Action? cancelProgress = null)
         {
-            ProgressBoxEx progressBox = null;
+            ProgressBoxEx? progressBox = null;
             try
             {
                 if (!Application.Current.Dispatcher.CheckAccess())

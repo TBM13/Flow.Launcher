@@ -238,20 +238,6 @@ namespace Flow.Launcher
 
         private readonly ConcurrentDictionary<Type, ISavable> _pluginJsonStorages = new();
 
-        public void RemovePluginSettings(string assemblyName)
-        {
-            foreach (var keyValuePair in _pluginJsonStorages)
-            {
-                var key = keyValuePair.Key;
-                var value = keyValuePair.Value;
-                var name = value.GetType().GetField("AssemblyName")?.GetValue(value)?.ToString();
-                if (name == assemblyName)
-                {
-                    _pluginJsonStorages.TryRemove(key, out var _);
-                }
-            }
-        }
-
         public void SavePluginSettings()
         {
             foreach (var savable in _pluginJsonStorages.Values)
@@ -457,22 +443,9 @@ namespace Flow.Launcher
             MessageBoxEx.Show(messageBoxText, caption, button, icon, defaultResult);
 
         public Task ShowProgressBoxAsync(string caption, Func<Action<double>, Task> reportProgressAsync,
-            Action cancelProgress = null) => ProgressBoxEx.ShowAsync(caption, reportProgressAsync, cancelProgress);
+            Action? cancelProgress = null) => ProgressBoxEx.ShowAsync(caption, reportProgressAsync, cancelProgress);
 
         private readonly ConcurrentDictionary<(string, string, Type), ISavable> _pluginBinaryStorages = new();
-
-        public void RemovePluginCaches(string cacheDirectory)
-        {
-            foreach (var keyValuePair in _pluginBinaryStorages)
-            {
-                var key = keyValuePair.Key;
-                var currentCacheDirectory = key.Item2;
-                if (cacheDirectory == currentCacheDirectory)
-                {
-                    _pluginBinaryStorages.TryRemove(key, out var _);
-                }
-            }
-        }
 
         public void SavePluginCaches()
         {
