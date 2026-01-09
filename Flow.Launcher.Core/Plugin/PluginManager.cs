@@ -7,9 +7,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Flow.Launcher.Core.ExternalPlugins;
 using Flow.Launcher.Infrastructure;
+using Flow.Launcher.Infrastructure.Plugins;
+using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 using Flow.Launcher.Infrastructure.UserSettings;
-using Flow.Launcher.Plugin;
-using ISavable = Flow.Launcher.Plugin.ISavable;
+using ISavable = Flow.Launcher.Infrastructure.Plugins.Interfaces.ISavable;
 
 namespace Flow.Launcher.Core.Plugin
 {
@@ -60,12 +61,12 @@ namespace Flow.Launcher.Core.Plugin
                 }
                 catch (Exception e)
                 {
-                    PublicApi.Instance.LogException(ClassName, $"Failed to save plugin {metadata.Name}", e);
+                    IPublicAPI.Instance.LogException(ClassName, $"Failed to save plugin {metadata.Name}", e);
                 }
             }
 
-            PublicApi.Instance.SavePluginSettings();
-            PublicApi.Instance.SavePluginCaches();
+            IPublicAPI.Instance.SavePluginSettings();
+            IPublicAPI.Instance.SavePluginCaches();
         }
 
         public static async ValueTask DisposePluginsAsync()
@@ -93,7 +94,7 @@ namespace Flow.Launcher.Core.Plugin
             }
             catch (Exception e)
             {
-                PublicApi.Instance.LogException(ClassName, $"Failed to dispose plugin {metadata.Name}", e);
+                IPublicAPI.Instance.LogException(ClassName, $"Failed to dispose plugin {metadata.Name}", e);
             }
         }
 
@@ -208,22 +209,22 @@ namespace Flow.Launcher.Core.Plugin
 
                 try
                 {
-                    await metadata.Plugin.InitAsync(new PluginInitContext(metadata, PublicApi.Instance));
+                    await metadata.Plugin.InitAsync(new PluginInitContext(metadata, IPublicAPI.Instance));
                 }
                 catch (Exception e)
                 {
-                    PublicApi.Instance.LogException(ClassName, $"Fail to Init plugin: {metadata.Name}", e);
+                    IPublicAPI.Instance.LogException(ClassName, $"Fail to Init plugin: {metadata.Name}", e);
                     if (metadata.Disabled && metadata.HomeDisabled)
                     {
                         // If this plugin is already disabled, do not show error message again
                         // Or else it will be shown every time
-                        PublicApi.Instance.LogDebug(ClassName, $"Skipped init for <{metadata.Name}> due to error");
+                        IPublicAPI.Instance.LogDebug(ClassName, $"Skipped init for <{metadata.Name}> due to error");
                     }
                     else
                     {
                         metadata.Disabled = true;
                         metadata.HomeDisabled = true;
-                        PublicApi.Instance.LogDebug(ClassName, $"Disable plugin <{metadata.Name}> because init failed");
+                        IPublicAPI.Instance.LogDebug(ClassName, $"Disable plugin <{metadata.Name}> because init failed");
                     }
 
                     // Even if the plugin cannot be initialized, we still need to add it in all plugin list so that
@@ -242,9 +243,9 @@ namespace Flow.Launcher.Core.Plugin
             if (!_initFailedPlugins.IsEmpty)
             {
                 var failed = string.Join(",", _initFailedPlugins.Values.Select(x => x.Name));
-                PublicApi.Instance.ShowMsg(
-                    Localize.failedToInitializePluginsTitle(),
-                    Localize.failedToInitializePluginsMessage(failed),
+                IPublicAPI.Instance.ShowMsg(
+                    Localize.Plugins_FailToInit,
+                    Localize.Plugins_FailToInit_Message(failed),
                     "",
                     false
                 );
@@ -316,8 +317,8 @@ namespace Flow.Launcher.Core.Plugin
             {
                 Result r = new()
                 {
-                    Title = Localize.pluginStillInitializing(metadata.Name),
-                    SubTitle = Localize.pluginStillInitializingSubtitle(),
+                    Title = Localize.Plugin_StillInitializing(metadata.Name),
+                    SubTitle = Localize.Plugin_StillInitializing_Subtitle,
                     AutoCompleteText = query.TrimmedQuery,
                     IcoPath = metadata.IcoPath,
                     ActionKeywordAssigned = query.ActionKeyword,
@@ -325,7 +326,7 @@ namespace Flow.Launcher.Core.Plugin
                     OriginQuery = query,
                     Action = _ =>
                     {
-                        PublicApi.Instance.ReQuery();
+                        IPublicAPI.Instance.ReQuery();
                         return false;
                     }
                 };
@@ -353,8 +354,8 @@ namespace Flow.Launcher.Core.Plugin
             {
                 Result r = new()
                 {
-                    Title = Localize.pluginFailedToRespond(metadata.Name),
-                    SubTitle = Localize.pluginFailedToRespondSubtitle(),
+                    Title = Localize.Plugin_FailedToRespond(metadata.Name),
+                    SubTitle = Localize.Plugin_FailedToRespond_Subtitle,
                     AutoCompleteText = query.TrimmedQuery,
                     IcoPath = Constant.ErrorIcon,
                     ActionKeywordAssigned = query.ActionKeyword,
@@ -375,8 +376,8 @@ namespace Flow.Launcher.Core.Plugin
             {
                 Result r = new()
                 {
-                    Title = Localize.pluginStillInitializing(metadata.Name),
-                    SubTitle = Localize.pluginStillInitializingSubtitle(),
+                    Title = Localize.Plugin_StillInitializing(metadata.Name),
+                    SubTitle = Localize.Plugin_StillInitializing_Subtitle,
                     AutoCompleteText = query.TrimmedQuery,
                     IcoPath = metadata.IcoPath,
                     ActionKeywordAssigned = query.ActionKeyword,
@@ -384,7 +385,7 @@ namespace Flow.Launcher.Core.Plugin
                     OriginQuery = query,
                     Action = _ =>
                     {
-                        PublicApi.Instance.ReQuery();
+                        IPublicAPI.Instance.ReQuery();
                         return false;
                     }
                 };
@@ -410,7 +411,7 @@ namespace Flow.Launcher.Core.Plugin
             }
             catch (Exception e)
             {
-                PublicApi.Instance.LogException(ClassName, $"Failed to query home for plugin: {metadata.Name}", e);
+                IPublicAPI.Instance.LogException(ClassName, $"Failed to query home for plugin: {metadata.Name}", e);
                 return null;
             }
             return results;
@@ -507,7 +508,7 @@ namespace Flow.Launcher.Core.Plugin
                 }
                 catch (Exception e)
                 {
-                    PublicApi.Instance.LogException(ClassName,
+                    IPublicAPI.Instance.LogException(ClassName,
                         $"Can't load context menus for plugin <{metadata.Name}>",
                         e);
                 }

@@ -6,9 +6,9 @@ using System.Windows.Input;
 using ChefKeys;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Helper;
+using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Hotkey;
 using Flow.Launcher.Infrastructure.UserSettings;
-using Flow.Launcher.Plugin;
 using iNKORE.UI.WPF.Modern.Controls;
 
 namespace Flow.Launcher;

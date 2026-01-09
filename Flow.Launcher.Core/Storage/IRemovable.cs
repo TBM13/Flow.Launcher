@@ -1,7 +1,7 @@
 ﻿namespace Flow.Launcher.Core.Storage;
 
 /// <summary>
-/// Remove storage instances from <see cref="Launcher.Plugin.IPublicAPI"/> instance
+/// Remove storage instances from <see cref="Infrastructure.IPublicAPI"/> instance
 /// </summary>
 public interface IRemovable
 {

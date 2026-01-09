@@ -8,9 +8,9 @@ using System.Windows.Documents;
 using Flow.Launcher.Core.ExternalPlugins;
 using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
+using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Logger;
 using Flow.Launcher.Infrastructure.UserSettings;
-using Flow.Launcher.Plugin.SharedCommands;
 
 namespace Flow.Launcher
 {

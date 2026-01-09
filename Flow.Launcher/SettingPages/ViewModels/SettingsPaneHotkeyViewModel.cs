@@ -2,9 +2,9 @@
 using System.Windows;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Helper;
+using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Hotkey;
 using Flow.Launcher.Infrastructure.UserSettings;
-using Flow.Launcher.Plugin;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
 

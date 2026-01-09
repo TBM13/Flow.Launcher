@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using Flow.Launcher.Infrastructure;
+using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Plugin.Program.Views;
 using Flow.Launcher.Plugin.Program.Views.Models;
 

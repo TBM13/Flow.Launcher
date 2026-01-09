@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Flow.Launcher.Plugin.SharedCommands;
+using Flow.Launcher.Infrastructure;
+using Flow.Launcher.Infrastructure.Helpers;
+using Flow.Launcher.Infrastructure.Plugins;
 
 namespace Flow.Launcher.Plugin.Explorer.Search
 {

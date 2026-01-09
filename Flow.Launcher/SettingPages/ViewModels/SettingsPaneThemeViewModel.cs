@@ -3,7 +3,6 @@ using System.Linq;
 using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.UserSettings;
-using Flow.Launcher.Plugin;
 using iNKORE.UI.WPF.Modern;
 
 namespace Flow.Launcher.SettingPages.ViewModels;

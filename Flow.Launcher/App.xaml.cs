@@ -8,10 +8,10 @@ using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
+using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Image;
 using Flow.Launcher.Infrastructure.Storage;
 using Flow.Launcher.Infrastructure.UserSettings;
-using Flow.Launcher.Plugin;
 using Flow.Launcher.SettingPages.ViewModels;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern.Common;
@@ -59,9 +59,9 @@ namespace Flow.Launcher
                     .UseContentRoot(AppContext.BaseDirectory)
                     .ConfigureServices(services => services
                         .AddSingleton(_ => _settings)
-                        .AddSingleton<StringMatcher>()
                         .AddSingleton<Internationalization>()
                         .AddSingleton<IPublicAPI, PublicAPIInstance>()
+                        .AddSingleton<Plugin.IPublicAPI, PublicAPIInstance>()
                         .AddSingleton<Theme>()
                         // Use one instance for main window view model because we only have one main window
                         .AddSingleton<MainViewModel>()

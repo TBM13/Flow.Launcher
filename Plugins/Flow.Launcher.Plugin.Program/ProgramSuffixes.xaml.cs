@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
+using Flow.Launcher.Infrastructure.Plugins;
 
 namespace Flow.Launcher.Plugin.Program
 {

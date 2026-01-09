@@ -8,227 +8,226 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Flow.Launcher.Infrastructure.Logger;
 
-namespace Flow.Launcher.Infrastructure.Image
+namespace Flow.Launcher.Infrastructure.Image;
+
+public static class ImageLoader
 {
-    public static class ImageLoader
+    private static readonly string ClassName = nameof(ImageLoader);
+
+    private static readonly ImageCache ImageCache = new();
+    private static readonly ConcurrentDictionary<string, string> GuidToKey = new();
+    public static ImageSource Image => ImageCache[Constant.ImageIcon, false]!;
+    public static ImageSource MissingImage => ImageCache[Constant.MissingImgIcon, false]!;
+    public static ImageSource LoadingImage => ImageCache[Constant.LoadingImgIcon, false]!;
+    public const int SmallIconSize = 64;
+    public const int FullIconSize = 256;
+    public const int FullImageSize = 320;
+
+    private static readonly string[] ImageExtensions = [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".ico"];
+
+    private record ImageResult(ImageSource ImageSource, ImageType ImageType);
+    private enum ImageType
     {
-        private static readonly string ClassName = nameof(ImageLoader);
+        File,
+        Folder,
+        Data,
+        ImageFile,
+        FullImageFile,
+        Error,
+        Cache
+    }
 
-        private static readonly ImageCache ImageCache = new();
-        private static readonly ConcurrentDictionary<string, string> GuidToKey = new();
-        public static ImageSource Image => ImageCache[Constant.ImageIcon, false]!;
-        public static ImageSource MissingImage => ImageCache[Constant.MissingImgIcon, false]!;
-        public static ImageSource LoadingImage => ImageCache[Constant.LoadingImgIcon, false]!;
-        public const int SmallIconSize = 64;
-        public const int FullIconSize = 256;
-        public const int FullImageSize = 320;
-
-        private static readonly string[] ImageExtensions = [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".ico"];
-
-        private record ImageResult(ImageSource ImageSource, ImageType ImageType);
-        private enum ImageType
+    public static async Task InitializeAsync()
+    {
+        await Task.Run(() =>
         {
-            File,
-            Folder,
-            Data,
-            ImageFile,
-            FullImageFile,
-            Error,
-            Cache
-        }
-
-        public static async Task InitializeAsync()
-        {
-            await Task.Run(() =>
+            foreach (var icon in new[] { Constant.DefaultIcon, Constant.ImageIcon, Constant.MissingImgIcon, Constant.LoadingImgIcon })
             {
-                foreach (var icon in new[] { Constant.DefaultIcon, Constant.ImageIcon, Constant.MissingImgIcon, Constant.LoadingImgIcon })
-                {
-                    ImageSource img = new BitmapImage(new Uri(icon));
-                    img.Freeze();
-                    ImageCache[icon, false] = img;
-                }
-            });
-        }
-
-        public static bool TryGetValue(string path, bool loadFullImage, [NotNullWhen(true)] out ImageSource? image)
-        {
-            return ImageCache.TryGetValue(path, loadFullImage, out image);
-        }
-
-        private static BitmapSource GetThumbnail(string path,
-            ThumbnailOptions option = ThumbnailOptions.ThumbnailOnly, int size = SmallIconSize)
-        {
-            return WindowsThumbnailProvider.GetThumbnail(
-                path,
-                size,
-                size,
-                option);
-        }
-
-        private static BitmapImage LoadFullImage(string path)
-        {
-            path = Path.GetFullPath(path);
-            Uri uri = new Uri(path);
-
-            int decodedWidth = 0, decodedHeight = 0;
-            // Peek at the image dimensions without fully loading it
-            BitmapFrame frame = BitmapFrame.Create(uri, BitmapCreateOptions.DelayCreation, BitmapCacheOption.None);
-            if (frame.PixelWidth > FullImageSize || frame.PixelHeight > FullImageSize)
-            {
-                if (frame.PixelWidth > frame.PixelHeight)
-                    // Image is landscape, constraining the width is enough
-                    // (since the aspect ratio is maintained)
-                    decodedWidth = FullImageSize;
-                else
-                    // Image is portrait, constraining the height is enough
-                    decodedHeight = FullImageSize;
+                ImageSource img = new BitmapImage(new Uri(icon));
+                img.Freeze();
+                ImageCache[icon, false] = img;
             }
+        });
+    }
 
-            BitmapImage image = new BitmapImage();
-            image.BeginInit();
-            image.CacheOption = BitmapCacheOption.OnLoad;
-            image.UriSource = uri;
-            image.CreateOptions = BitmapCreateOptions.IgnoreColorProfile;
-            image.EndInit();
+    public static bool TryGetValue(string path, bool loadFullImage, [NotNullWhen(true)] out ImageSource? image)
+    {
+        return ImageCache.TryGetValue(path, loadFullImage, out image);
+    }
 
-            if (decodedWidth > 0)
-                image.DecodePixelWidth = decodedWidth;
-            if (decodedHeight > 0)
-                image.DecodePixelHeight = decodedHeight;
+    private static BitmapSource GetThumbnail(string path,
+        ThumbnailOptions option = ThumbnailOptions.ThumbnailOnly, int size = SmallIconSize)
+    {
+        return WindowsThumbnailProvider.GetThumbnail(
+            path,
+            size,
+            size,
+            option);
+    }
 
-            image.Freeze();
-            return image;
+    private static BitmapImage LoadFullImage(string path)
+    {
+        path = Path.GetFullPath(path);
+        Uri uri = new Uri(path);
+
+        int decodedWidth = 0, decodedHeight = 0;
+        // Peek at the image dimensions without fully loading it
+        BitmapFrame frame = BitmapFrame.Create(uri, BitmapCreateOptions.DelayCreation, BitmapCacheOption.None);
+        if (frame.PixelWidth > FullImageSize || frame.PixelHeight > FullImageSize)
+        {
+            if (frame.PixelWidth > frame.PixelHeight)
+                // Image is landscape, constraining the width is enough
+                // (since the aspect ratio is maintained)
+                decodedWidth = FullImageSize;
+            else
+                // Image is portrait, constraining the height is enough
+                decodedHeight = FullImageSize;
         }
 
-        private static ImageResult GetThumbnailResult(string path, bool loadFullImage = false)
-        {
-            ImageSource image;
-            ImageType type = ImageType.Error;
+        BitmapImage image = new BitmapImage();
+        image.BeginInit();
+        image.CacheOption = BitmapCacheOption.OnLoad;
+        image.UriSource = uri;
+        image.CreateOptions = BitmapCreateOptions.IgnoreColorProfile;
+        image.EndInit();
 
-            if (Directory.Exists(path))
+        if (decodedWidth > 0)
+            image.DecodePixelWidth = decodedWidth;
+        if (decodedHeight > 0)
+            image.DecodePixelHeight = decodedHeight;
+
+        image.Freeze();
+        return image;
+    }
+
+    private static ImageResult GetThumbnailResult(string path, bool loadFullImage = false)
+    {
+        ImageSource image;
+        ImageType type = ImageType.Error;
+
+        if (Directory.Exists(path))
+        {
+            /* Directories can also have thumbnails instead of shell icons.
+             * Generating thumbnails for a bunch of folder results while scrolling
+             * could have a big impact on performance and Flow.Launcher responsibility.
+             * - Solution: just load the icon
+             */
+            type = ImageType.Folder;
+            image = GetThumbnail(path, ThumbnailOptions.IconOnly);
+        }
+        else if (File.Exists(path))
+        {
+            var extension = Path.GetExtension(path).ToLower();
+            if (ImageExtensions.Contains(extension))
             {
-                /* Directories can also have thumbnails instead of shell icons.
-                 * Generating thumbnails for a bunch of folder results while scrolling
-                 * could have a big impact on performance and Flow.Launcher responsibility.
-                 * - Solution: just load the icon
-                 */
-                type = ImageType.Folder;
-                image = GetThumbnail(path, ThumbnailOptions.IconOnly);
-            }
-            else if (File.Exists(path))
-            {
-                var extension = Path.GetExtension(path).ToLower();
-                if (ImageExtensions.Contains(extension))
+                type = ImageType.ImageFile;
+                if (loadFullImage)
                 {
-                    type = ImageType.ImageFile;
-                    if (loadFullImage)
+                    try
                     {
-                        try
-                        {
-                            image = LoadFullImage(path);
-                            type = ImageType.FullImageFile;
-                        }
-                        catch (NotSupportedException ex)
-                        {
-                            image = Image;
-                            type = ImageType.Error;
-                            Log.Exception(ClassName, $"Failed to load image file from path {path}: {ex.Message}", ex);
-                        }
+                        image = LoadFullImage(path);
+                        type = ImageType.FullImageFile;
                     }
-                    else
+                    catch (NotSupportedException ex)
                     {
-                        /* Although the documentation for GetImage on MSDN indicates that
-                         * if a thumbnail is available it will return one, this has proved to not
-                         * be the case in many situations while testing.
-                         * - Solution: explicitly pass the ThumbnailOnly flag
-                         */
-                        image = GetThumbnail(path, ThumbnailOptions.ThumbnailOnly);
+                        image = Image;
+                        type = ImageType.Error;
+                        Log.Exception(ClassName, $"Failed to load image file from path {path}: {ex.Message}", ex);
                     }
                 }
                 else
                 {
-                    type = ImageType.File;
-                    image = GetThumbnail(path, ThumbnailOptions.None, loadFullImage ? FullIconSize : SmallIconSize);
+                    /* Although the documentation for GetImage on MSDN indicates that
+                     * if a thumbnail is available it will return one, this has proved to not
+                     * be the case in many situations while testing.
+                     * - Solution: explicitly pass the ThumbnailOnly flag
+                     */
+                    image = GetThumbnail(path, ThumbnailOptions.ThumbnailOnly);
                 }
             }
             else
             {
-                image = MissingImage;
+                type = ImageType.File;
+                image = GetThumbnail(path, ThumbnailOptions.None, loadFullImage ? FullIconSize : SmallIconSize);
             }
-
-            if (type != ImageType.Error)
-            {
-                image.Freeze();
-            }
-
-            return new ImageResult(image, type);
+        }
+        else
+        {
+            image = MissingImage;
         }
 
-        private static async ValueTask<ImageResult> LoadInternalAsync(string path, bool loadFullImage = false)
+        if (type != ImageType.Error)
         {
-            ImageResult imageResult;
+            image.Freeze();
+        }
 
+        return new ImageResult(image, type);
+    }
+
+    private static async ValueTask<ImageResult> LoadInternalAsync(string path, bool loadFullImage = false)
+    {
+        ImageResult imageResult;
+
+        try
+        {
+            imageResult = await Task.Run(() => GetThumbnailResult(path, loadFullImage));
+        }
+        catch (Exception e)
+        {
             try
             {
-                imageResult = await Task.Run(() => GetThumbnailResult(path, loadFullImage));
+                // Get thumbnail may fail for certain images on the first try, retry again has proven to work
+                imageResult = GetThumbnailResult(path, loadFullImage);
             }
-            catch (Exception e)
+            catch (Exception e2)
             {
-                try
-                {
-                    // Get thumbnail may fail for certain images on the first try, retry again has proven to work
-                    imageResult = GetThumbnailResult(path, loadFullImage);
-                }
-                catch (Exception e2)
-                {
-                    Log.Exception(ClassName, $"Failed to get thumbnail for {path} on first try", e);
-                    Log.Exception(ClassName, $"Failed to get thumbnail for {path} on second try", e2);
+                Log.Exception(ClassName, $"Failed to get thumbnail for {path} on first try", e);
+                Log.Exception(ClassName, $"Failed to get thumbnail for {path} on second try", e2);
 
-                    ImageSource image = MissingImage;
-                    ImageCache[path, false] = image;
-                    imageResult = new ImageResult(image, ImageType.Error);
-                }
+                ImageSource image = MissingImage;
+                ImageCache[path, false] = image;
+                imageResult = new ImageResult(image, ImageType.Error);
             }
-
-            return imageResult;
         }
 
-        public static async ValueTask<ImageSource> LoadAsync(string path, bool loadFullImage = false, bool cacheImage = true)
+        return imageResult;
+    }
+
+    public static async ValueTask<ImageSource> LoadAsync(string path, bool loadFullImage = false, bool cacheImage = true)
+    {
+        path = path.ToLowerInvariant();
+        // Use cached image if available
+        if (ImageCache.TryGetValue(path, loadFullImage, out ImageSource? cachedImage))
+            return cachedImage;
+
+        var imageResult = await LoadInternalAsync(path, loadFullImage);
+
+        var img = imageResult.ImageSource;
+        if (imageResult.ImageType != ImageType.Error && imageResult.ImageType != ImageType.Cache)
         {
-            path = path.ToLowerInvariant();
-            // Use cached image if available
-            if (ImageCache.TryGetValue(path, loadFullImage, out ImageSource? cachedImage))
-                return cachedImage;
-
-            var imageResult = await LoadInternalAsync(path, loadFullImage);
-
-            var img = imageResult.ImageSource;
-            if (imageResult.ImageType != ImageType.Error && imageResult.ImageType != ImageType.Cache)
+            // we need to get image hash
+            string? hash = ImageHashGenerator.GetHashFromImage(img);
+            if (hash is not null)
             {
-                // we need to get image hash
-                string? hash = ImageHashGenerator.GetHashFromImage(img);
-                if (hash is not null)
+                if (GuidToKey.TryGetValue(hash, out string? key))
                 {
-                    if (GuidToKey.TryGetValue(hash, out string? key))
-                    {
-                        // image already exists
-                        img = ImageCache[key, loadFullImage] ?? img;
-                    }
-                    else if (cacheImage)
-                    {
-                        // save guid key
-                        GuidToKey[hash] = path;
-                    }
+                    // image already exists
+                    img = ImageCache[key, loadFullImage] ?? img;
                 }
-
-                if (cacheImage)
+                else if (cacheImage)
                 {
-                    // update cache
-                    ImageCache[path, loadFullImage] = img;
+                    // save guid key
+                    GuidToKey[hash] = path;
                 }
             }
 
-            return img;
+            if (cacheImage)
+            {
+                // update cache
+                ImageCache[path, loadFullImage] = img;
+            }
         }
+
+        return img;
     }
 }

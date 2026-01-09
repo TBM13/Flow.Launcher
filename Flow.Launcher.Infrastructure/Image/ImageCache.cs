@@ -6,76 +6,75 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using BitFaster.Caching.Lfu;
 
-namespace Flow.Launcher.Infrastructure.Image
+namespace Flow.Launcher.Infrastructure.Image;
+
+public class ImageCache
 {
-    public class ImageCache
+    private const int MaxCached = 150;
+
+    private ConcurrentLfu<(string, bool), ImageSource?> CacheManager { get; set; } = new(MaxCached);
+
+    public void Initialize(IEnumerable<(string, bool)> usage)
     {
-        private const int MaxCached = 150;
-
-        private ConcurrentLfu<(string, bool), ImageSource?> CacheManager { get; set; } = new(MaxCached);
-
-        public void Initialize(IEnumerable<(string, bool)> usage)
+        foreach (var key in usage)
         {
-            foreach (var key in usage)
-            {
-                CacheManager.AddOrUpdate(key, null);
-            }
+            CacheManager.AddOrUpdate(key, null);
+        }
+    }
+
+    public ImageSource? this[string path, bool isFullImage = false]
+    {
+        get
+        {
+            return CacheManager.TryGet((path, isFullImage), out var value) ? value : null;
+        }
+        set
+        {
+            CacheManager.AddOrUpdate((path, isFullImage), value);
+        }
+    }
+
+    public async ValueTask<ImageSource?> GetOrAddAsync(string key,
+        Func<(string, bool), Task<ImageSource?>> valueFactory,
+        bool isFullImage = false)
+    {
+        return await CacheManager.GetOrAddAsync((key, isFullImage), valueFactory);
+    }
+
+    public bool ContainsKey(string key, bool isFullImage)
+    {
+        return CacheManager.TryGet((key, isFullImage), out _);
+    }
+
+    public bool TryGetValue(string key, bool isFullImage, [NotNullWhen(true)] out ImageSource? image)
+    {
+        if (CacheManager.TryGet((key, isFullImage), out var value))
+        {
+            image = value;
+            return image is not null;
         }
 
-        public ImageSource? this[string path, bool isFullImage = false]
-        {
-            get
-            {
-                return CacheManager.TryGet((path, isFullImage), out var value) ? value : null;
-            }
-            set
-            {
-                CacheManager.AddOrUpdate((path, isFullImage), value);
-            }
-        }
+        image = null;
+        return false;
+    }
 
-        public async ValueTask<ImageSource?> GetOrAddAsync(string key,
-            Func<(string, bool), Task<ImageSource?>> valueFactory,
-            bool isFullImage = false)
-        {
-            return await CacheManager.GetOrAddAsync((key, isFullImage), valueFactory);
-        }
+    public int CacheSize()
+    {
+        return CacheManager.Count;
+    }
 
-        public bool ContainsKey(string key, bool isFullImage)
-        {
-            return CacheManager.TryGet((key, isFullImage), out _);
-        }
+    /// <summary>
+    /// return the number of unique images in the cache (by reference not by checking images content)
+    /// </summary>
+    public int UniqueImagesInCache()
+    {
+        return CacheManager.Select(x => x.Value)
+            .Distinct()
+            .Count();
+    }
 
-        public bool TryGetValue(string key, bool isFullImage, [NotNullWhen(true)] out ImageSource? image)
-        {
-            if (CacheManager.TryGet((key, isFullImage), out var value))
-            {
-                image = value;
-                return image is not null;
-            }
-
-            image = null;
-            return false;
-        }
-
-        public int CacheSize()
-        {
-            return CacheManager.Count;
-        }
-
-        /// <summary>
-        /// return the number of unique images in the cache (by reference not by checking images content)
-        /// </summary>
-        public int UniqueImagesInCache()
-        {
-            return CacheManager.Select(x => x.Value)
-                .Distinct()
-                .Count();
-        }
-
-        public IEnumerable<KeyValuePair<(string, bool), ImageSource?>> EnumerateEntries()
-        {
-            return CacheManager;
-        }
+    public IEnumerable<KeyValuePair<(string, bool), ImageSource?>> EnumerateEntries()
+    {
+        return CacheManager;
     }
 }

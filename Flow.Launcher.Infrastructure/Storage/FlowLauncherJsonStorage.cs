@@ -1,48 +1,47 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Logger;
+using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 using Flow.Launcher.Infrastructure.UserSettings;
-using Flow.Launcher.Plugin;
-using Flow.Launcher.Plugin.SharedCommands;
 
-namespace Flow.Launcher.Infrastructure.Storage
+namespace Flow.Launcher.Infrastructure.Storage;
+
+// Expose ISaveable interface in derived class to make sure we are calling the new version of Save method
+public class FlowLauncherJsonStorage<T> : JsonStorage<T>, ISavable where T : new()
 {
-    // Expose ISaveable interface in derived class to make sure we are calling the new version of Save method
-    public class FlowLauncherJsonStorage<T> : JsonStorage<T>, ISavable where T : new()
+    private static readonly string ClassName = "FlowLauncherJsonStorage";
+
+    public FlowLauncherJsonStorage()
     {
-        private static readonly string ClassName = "FlowLauncherJsonStorage";
+        DirectoryPath = Path.Combine(DataLocation.DataDirectory(), DirectoryName);
+        FilesFolders.ValidateDirectory(DirectoryPath);
 
-        public FlowLauncherJsonStorage()
+        var filename = typeof(T).Name;
+        FilePath = Path.Combine(DirectoryPath, $"{filename}{FileSuffix}");
+    }
+
+    public new void Save()
+    {
+        try
         {
-            DirectoryPath = Path.Combine(DataLocation.DataDirectory(), DirectoryName);
-            FilesFolders.ValidateDirectory(DirectoryPath);
-
-            var filename = typeof(T).Name;
-            FilePath = Path.Combine(DirectoryPath, $"{filename}{FileSuffix}");
+            base.Save();
         }
-
-        public new void Save()
+        catch (System.Exception e)
         {
-            try
-            {
-                base.Save();
-            }
-            catch (System.Exception e)
-            {
-                Log.Exception(ClassName, $"Failed to save FL settings to path: {FilePath}", e);
-            }
+            Log.Exception(ClassName, $"Failed to save FL settings to path: {FilePath}", e);
         }
+    }
 
-        public new async Task SaveAsync()
+    public new async Task SaveAsync()
+    {
+        try
         {
-            try
-            {
-                await base.SaveAsync();
-            }
-            catch (System.Exception e)
-            {
-                Log.Exception(ClassName, $"Failed to save FL settings to path: {FilePath}", e);
-            }
+            await base.SaveAsync();
+        }
+        catch (System.Exception e)
+        {
+            Log.Exception(ClassName, $"Failed to save FL settings to path: {FilePath}", e);
         }
     }
 }

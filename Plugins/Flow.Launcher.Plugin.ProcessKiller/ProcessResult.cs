@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using Flow.Launcher.Plugin.SharedModels;
+using Flow.Launcher.Infrastructure.Helpers;
 
 namespace Flow.Launcher.Plugin.ProcessKiller
 {

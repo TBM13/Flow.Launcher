@@ -45,18 +45,10 @@
     <Compile Include="..\SolutionAssemblyInfo.cs" Link="Properties\SolutionAssemblyInfo.cs" />
     <None Include="FodyWeavers.xml" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\Flow.Launcher.Plugin\Flow.Launcher.Plugin.csproj">
-      <Project>{8451ecdd-2ea4-4966-bb0a-7bbc40138e80}</Project>
-      <Name>Flow.Launcher.Plugin</Name>
-    </ProjectReference>
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="BitFaster.Caching" Version="2.5.4" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="Flow.Launcher.Localization" Version="0.0.6" />
     <PackageReference Include="Fody" Version="6.9.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -74,12 +66,5 @@
   <PropertyGroup>
     <FLLUseDependencyInjection>true</FLLUseDependencyInjection>
   </PropertyGroup>
-
-  <ItemGroup>
-    <AdditionalFiles Remove="Languages\en.xaml" />
-    <AdditionalFiles Include="..\Flow.Launcher\Languages\en.xaml">
-      <Link>Languages\en.xaml</Link>
-    </AdditionalFiles>
-  </ItemGroup>
   
 </Project>

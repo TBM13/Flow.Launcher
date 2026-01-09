@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Storage;
-using Flow.Launcher.Plugin;
 
 namespace Flow.Launcher.Storage
 {

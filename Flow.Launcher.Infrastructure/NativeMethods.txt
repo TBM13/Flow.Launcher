@@ -61,3 +61,19 @@ SetWindowLong
 GetWindowLong
 
 GetPrivateProfileString
+
+EnumThreadWindows
+GetWindowText
+GetWindowTextLength
+
+WM_KEYDOWN
+WM_KEYUP
+WM_SYSKEYDOWN
+WM_SYSKEYUP
+
+GetSystemMetrics
+EnumDisplayMonitors
+GetMonitorInfo
+MONITORINFOEXW
+GetCursorPos
+MonitorFromPoint

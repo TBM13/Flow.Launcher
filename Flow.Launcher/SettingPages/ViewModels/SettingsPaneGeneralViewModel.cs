@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using CommunityToolkit.Mvvm.Input;
+using Flow.Launcher.Infrastructure;
+using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.UserSettings;
-using Flow.Launcher.Plugin;
-using Flow.Launcher.Plugin.SharedModels;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
 
@@ -34,7 +34,7 @@ public partial class SettingsPaneGeneralViewModel : BaseModel
     {
         get
         {
-            var screens = MonitorInfo.GetDisplayMonitors();
+            var screens = MonitorHelper.GetDisplayMonitors();
             var screenNumbers = new List<int>();
             for (var i = 1; i <= screens.Count; i++)
             {

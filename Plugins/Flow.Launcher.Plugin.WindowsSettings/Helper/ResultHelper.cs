@@ -26,6 +26,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Plugin.WindowsSettings.Classes;
 using Flow.Launcher.Plugin.WindowsSettings.Properties;
 

@@ -3,235 +3,234 @@ using System.Globalization;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Logger;
-using Flow.Launcher.Plugin;
-using Flow.Launcher.Plugin.SharedCommands;
+using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 
-namespace Flow.Launcher.Infrastructure.Storage
+namespace Flow.Launcher.Infrastructure.Storage;
+
+/// <summary>
+/// Serialize object using json format.
+/// </summary>
+public class JsonStorage<T> : ISavable where T : new()
 {
-    /// <summary>
-    /// Serialize object using json format.
-    /// </summary>
-    public class JsonStorage<T> : ISavable where T : new()
+    private static readonly string ClassName = "JsonStorage";
+
+    protected T? Data;
+
+    // need a new directory name
+    public const string DirectoryName = Constant.Settings;
+    public const string FileSuffix = ".json";
+
+    protected string FilePath { get; init; } = null!;
+
+    private string TempFilePath => $"{FilePath}.tmp";
+
+    private string BackupFilePath => $"{FilePath}.bak";
+
+    protected string DirectoryPath { get; init; } = null!;
+
+    // Let the derived class to set the file path
+    protected JsonStorage()
     {
-        private static readonly string ClassName = "JsonStorage";
+    }
 
-        protected T? Data;
+    public JsonStorage(string filePath)
+    {
+        FilePath = filePath;
+        DirectoryPath = Path.GetDirectoryName(filePath) ?? throw new ArgumentException("Invalid file path");
 
-        // need a new directory name
-        public const string DirectoryName = Constant.Settings;
-        public const string FileSuffix = ".json";
+        FilesFolders.ValidateDirectory(DirectoryPath);
+    }
 
-        protected string FilePath { get; init; } = null!;
+    public bool Exists()
+    {
+        return File.Exists(FilePath);
+    }
 
-        private string TempFilePath => $"{FilePath}.tmp";
-
-        private string BackupFilePath => $"{FilePath}.bak";
-
-        protected string DirectoryPath { get; init; } = null!;
-
-        // Let the derived class to set the file path
-        protected JsonStorage()
+    public void Delete()
+    {
+        foreach (var path in new[] { FilePath, BackupFilePath, TempFilePath })
         {
-        }
-
-        public JsonStorage(string filePath)
-        {
-            FilePath = filePath;
-            DirectoryPath = Path.GetDirectoryName(filePath) ?? throw new ArgumentException("Invalid file path");
-
-            FilesFolders.ValidateDirectory(DirectoryPath);
-        }
-
-        public bool Exists()
-        {
-            return File.Exists(FilePath);
-        }
-
-        public void Delete()
-        {
-            foreach (var path in new[] { FilePath, BackupFilePath, TempFilePath })
+            if (File.Exists(path))
             {
-                if (File.Exists(path))
-                {
-                    File.Delete(path);
-                }
+                File.Delete(path);
             }
         }
+    }
 
-        public async Task<T> LoadAsync()
+    public async Task<T> LoadAsync()
+    {
+        if (Data != null)
+            return Data;
+
+        string? serialized = null;
+
+        if (File.Exists(FilePath))
         {
-            if (Data != null)
-                return Data;
+            serialized = await File.ReadAllTextAsync(FilePath);
+        }
 
-            string? serialized = null;
-
-            if (File.Exists(FilePath))
+        if (!string.IsNullOrEmpty(serialized))
+        {
+            try
             {
-                serialized = await File.ReadAllTextAsync(FilePath);
+                Data = JsonSerializer.Deserialize<T>(serialized) ?? await LoadBackupOrDefaultAsync();
             }
-
-            if (!string.IsNullOrEmpty(serialized))
-            {
-                try
-                {
-                    Data = JsonSerializer.Deserialize<T>(serialized) ?? await LoadBackupOrDefaultAsync();
-                }
-                catch (JsonException)
-                {
-                    Data = await LoadBackupOrDefaultAsync();
-                }
-            }
-            else
+            catch (JsonException)
             {
                 Data = await LoadBackupOrDefaultAsync();
             }
-
-            return Data ?? throw new NullReferenceException();
+        }
+        else
+        {
+            Data = await LoadBackupOrDefaultAsync();
         }
 
-        private async ValueTask<T> LoadBackupOrDefaultAsync()
-        {
-            var backup = await TryLoadBackupAsync();
+        return Data ?? throw new NullReferenceException();
+    }
 
-            return backup ?? LoadDefault();
+    private async ValueTask<T> LoadBackupOrDefaultAsync()
+    {
+        var backup = await TryLoadBackupAsync();
+
+        return backup ?? LoadDefault();
+    }
+
+    private async ValueTask<T?> TryLoadBackupAsync()
+    {
+        if (!File.Exists(BackupFilePath))
+            return default;
+
+        try
+        {
+            await using var source = File.OpenRead(BackupFilePath);
+            var data = await JsonSerializer.DeserializeAsync<T>(source) ?? default;
+
+            if (data != null)
+                RestoreBackup();
+
+            return data;
+        }
+        catch (JsonException)
+        {
+            return default;
+        }
+    }
+
+    private void RestoreBackup()
+    {
+        Log.Info(ClassName, $"Failed to load settings.json, {BackupFilePath} restored successfully");
+
+        if (File.Exists(FilePath))
+            File.Replace(BackupFilePath, FilePath, null);
+        else
+            File.Move(BackupFilePath, FilePath);
+    }
+
+    public T Load()
+    {
+        string? serialized = null;
+
+        if (File.Exists(FilePath))
+        {
+            serialized = File.ReadAllText(FilePath);
         }
 
-        private async ValueTask<T?> TryLoadBackupAsync()
+        if (!string.IsNullOrEmpty(serialized))
         {
-            if (!File.Exists(BackupFilePath))
-                return default;
-
             try
             {
-                await using var source = File.OpenRead(BackupFilePath);
-                var data = await JsonSerializer.DeserializeAsync<T>(source) ?? default;
-
-                if (data != null)
-                    RestoreBackup();
-
-                return data;
+                Data = JsonSerializer.Deserialize<T>(serialized) ?? TryLoadBackup() ?? LoadDefault();
             }
             catch (JsonException)
-            {
-                return default;
-            }
-        }
-
-        private void RestoreBackup()
-        {
-            Log.Info(ClassName, $"Failed to load settings.json, {BackupFilePath} restored successfully");
-
-            if (File.Exists(FilePath))
-                File.Replace(BackupFilePath, FilePath, null);
-            else
-                File.Move(BackupFilePath, FilePath);
-        }
-
-        public T Load()
-        {
-            string? serialized = null;
-
-            if (File.Exists(FilePath))
-            {
-                serialized = File.ReadAllText(FilePath);
-            }
-
-            if (!string.IsNullOrEmpty(serialized))
-            {
-                try
-                {
-                    Data = JsonSerializer.Deserialize<T>(serialized) ?? TryLoadBackup() ?? LoadDefault();
-                }
-                catch (JsonException)
-                {
-                    Data = TryLoadBackup() ?? LoadDefault();
-                }
-            }
-            else
             {
                 Data = TryLoadBackup() ?? LoadDefault();
             }
-
-            return Data ?? throw new NullReferenceException();
+        }
+        else
+        {
+            Data = TryLoadBackup() ?? LoadDefault();
         }
 
-        private T LoadDefault()
-        {
-            if (File.Exists(FilePath))
-            {
-                BackupOriginFile();
-            }
+        return Data ?? throw new NullReferenceException();
+    }
 
-            return new T();
+    private T LoadDefault()
+    {
+        if (File.Exists(FilePath))
+        {
+            BackupOriginFile();
         }
 
-        private T? TryLoadBackup()
+        return new T();
+    }
+
+    private T? TryLoadBackup()
+    {
+        if (!File.Exists(BackupFilePath))
+            return default;
+
+        try
         {
-            if (!File.Exists(BackupFilePath))
-                return default;
+            var data = JsonSerializer.Deserialize<T>(File.ReadAllText(BackupFilePath));
 
-            try
-            {
-                var data = JsonSerializer.Deserialize<T>(File.ReadAllText(BackupFilePath));
+            if (data != null)
+                RestoreBackup();
 
-                if (data != null)
-                    RestoreBackup();
-
-                return data;
-            }
-            catch (JsonException)
-            {
-                return default;
-            }
+            return data;
         }
-
-        private void BackupOriginFile()
+        catch (JsonException)
         {
-            var timestamp = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fffffff", CultureInfo.CurrentUICulture);
-            var directory = Path.GetDirectoryName(FilePath) ?? throw new NullReferenceException();
-            var originName = Path.GetFileNameWithoutExtension(FilePath);
-            var backupName = $"{originName}-{timestamp}{FileSuffix}";
-            var backupPath = Path.Combine(directory, backupName);
-            File.Copy(FilePath, backupPath, true);
-            // todo give user notification for the backup process
+            return default;
         }
+    }
 
-        public void Save()
+    private void BackupOriginFile()
+    {
+        var timestamp = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss-fffffff", CultureInfo.CurrentUICulture);
+        var directory = Path.GetDirectoryName(FilePath) ?? throw new NullReferenceException();
+        var originName = Path.GetFileNameWithoutExtension(FilePath);
+        var backupName = $"{originName}-{timestamp}{FileSuffix}";
+        var backupPath = Path.Combine(directory, backupName);
+        File.Copy(FilePath, backupPath, true);
+        // todo give user notification for the backup process
+    }
+
+    public void Save()
+    {
+        // User may delete the directory, so we need to check it
+        FilesFolders.ValidateDirectory(DirectoryPath);
+
+        var serialized = JsonSerializer.Serialize(Data,
+            new JsonSerializerOptions { WriteIndented = true });
+
+        File.WriteAllText(TempFilePath, serialized);
+
+        AtomicWriteSetting();
+    }
+
+    public async Task SaveAsync()
+    {
+        // User may delete the directory, so we need to check it
+        FilesFolders.ValidateDirectory(DirectoryPath);
+
+        await using var tempOutput = File.OpenWrite(TempFilePath);
+        await JsonSerializer.SerializeAsync(tempOutput, Data,
+            new JsonSerializerOptions { WriteIndented = true });
+        AtomicWriteSetting();
+    }
+
+    private void AtomicWriteSetting()
+    {
+        if (!File.Exists(FilePath))
         {
-            // User may delete the directory, so we need to check it
-            FilesFolders.ValidateDirectory(DirectoryPath);
-
-            var serialized = JsonSerializer.Serialize(Data,
-                new JsonSerializerOptions { WriteIndented = true });
-
-            File.WriteAllText(TempFilePath, serialized);
-
-            AtomicWriteSetting();
+            File.Move(TempFilePath, FilePath);
         }
-
-        public async Task SaveAsync()
+        else
         {
-            // User may delete the directory, so we need to check it
-            FilesFolders.ValidateDirectory(DirectoryPath);
-
-            await using var tempOutput = File.OpenWrite(TempFilePath);
-            await JsonSerializer.SerializeAsync(tempOutput, Data,
-                new JsonSerializerOptions { WriteIndented = true });
-            AtomicWriteSetting();
-        }
-
-        private void AtomicWriteSetting()
-        {
-            if (!File.Exists(FilePath))
-            {
-                File.Move(TempFilePath, FilePath);
-            }
-            else
-            {
-                var finalFilePath = new FileInfo(FilePath).LinkTarget ?? FilePath;
-                File.Replace(TempFilePath, finalFilePath, BackupFilePath);
-            }
+            var finalFilePath = new FileInfo(FilePath).LinkTarget ?? FilePath;
+            File.Replace(TempFilePath, finalFilePath, BackupFilePath);
         }
     }
 }

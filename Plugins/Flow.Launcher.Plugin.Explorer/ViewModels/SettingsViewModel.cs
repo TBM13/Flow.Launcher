@@ -6,6 +6,8 @@ using System.IO;
 using System.Windows;
 using System.Windows.Forms;
 using CommunityToolkit.Mvvm.Input;
+using Flow.Launcher.Infrastructure;
+using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Plugin.Explorer.Search;
 
 namespace Flow.Launcher.Plugin.Explorer.ViewModels

@@ -6,10 +6,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using Flow.Launcher.Infrastructure;
+using Flow.Launcher.Infrastructure.Helpers;
+using Flow.Launcher.Infrastructure.Plugins;
+using Flow.Launcher.Infrastructure.Plugins.Interfaces;
+using Flow.Launcher.Infrastructure.UI;
 using Flow.Launcher.Plugin.Program.Programs;
 using Flow.Launcher.Plugin.Program.Views;
 using Flow.Launcher.Plugin.Program.Views.Models;
-using Flow.Launcher.Plugin.SharedCommands;
 using Microsoft.Extensions.Caching.Memory;
 using Path = System.IO.Path;
 

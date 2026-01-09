@@ -5,9 +5,10 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Image;
+using Flow.Launcher.Infrastructure.UI;
 using Flow.Launcher.Infrastructure.UserSettings;
-using Flow.Launcher.Plugin;
 
 namespace Flow.Launcher.ViewModel
 {

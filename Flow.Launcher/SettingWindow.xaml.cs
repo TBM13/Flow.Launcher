@@ -5,8 +5,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Infrastructure;
+using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.UserSettings;
-using Flow.Launcher.Plugin.SharedModels;
 using Flow.Launcher.SettingPages.Views;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern.Controls;
@@ -193,7 +193,7 @@ public partial class SettingWindow
 
     private static bool IsPositionValid(double top, double left)
     {
-        foreach (var screen in MonitorInfo.GetDisplayMonitors())
+        foreach (var screen in MonitorHelper.GetDisplayMonitors())
         {
             var workingArea = screen.WorkingArea;
 
@@ -208,7 +208,7 @@ public partial class SettingWindow
 
     private double WindowLeft()
     {
-        var screen = MonitorInfo.GetCursorDisplayMonitor();
+        var screen = MonitorHelper.GetCursorDisplayMonitor();
         var dip1 = Win32Helper.TransformPixelsToDIP(this, screen.WorkingArea.X, 0);
         var dip2 = Win32Helper.TransformPixelsToDIP(this, screen.WorkingArea.Width, 0);
         var left = (dip2.X - ActualWidth) / 2 + dip1.X;
@@ -217,7 +217,7 @@ public partial class SettingWindow
 
     private double WindowTop()
     {
-        var screen = MonitorInfo.GetCursorDisplayMonitor();
+        var screen = MonitorHelper.GetCursorDisplayMonitor();
         var dip1 = Win32Helper.TransformPixelsToDIP(this, 0, screen.WorkingArea.Y);
         var dip2 = Win32Helper.TransformPixelsToDIP(this, 0, screen.WorkingArea.Height);
         var top = (dip2.Y - ActualHeight) / 2 + dip1.Y - 20;

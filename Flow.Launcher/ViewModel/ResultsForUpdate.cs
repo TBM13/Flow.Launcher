@@ -1,4 +1,5 @@
-﻿using Flow.Launcher.Plugin;
+﻿using Flow.Launcher.Infrastructure;
+using Flow.Launcher.Infrastructure.Plugins;
 using System.Collections.Generic;
 using System.Threading;
 

@@ -5,57 +5,46 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
-using CommunityToolkit.Mvvm.DependencyInjection;
-using Flow.Launcher.Core;
-using Flow.Launcher.Core.ExternalPlugins;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Core.Storage;
 using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
+using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Hotkey;
 using Flow.Launcher.Infrastructure.Image;
 using Flow.Launcher.Infrastructure.Logger;
+using Flow.Launcher.Infrastructure.Plugins;
+using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 using Flow.Launcher.Infrastructure.Storage;
 using Flow.Launcher.Infrastructure.UserSettings;
-using Flow.Launcher.Plugin;
-using Flow.Launcher.Plugin.SharedCommands;
-using Flow.Launcher.Plugin.SharedModels;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern;
 
 namespace Flow.Launcher
 {
-    public class PublicAPIInstance : IPublicAPI, IRemovable
+    public class PublicAPIInstance : Plugin.IPublicAPI, IRemovable
     {
         private static readonly string ClassName = nameof(PublicAPIInstance);
 
         private readonly Settings _settings;
         private readonly MainViewModel _mainVM;
 
-        // Must use getter to avoid accessing Application.Current.Resources.MergedDictionaries so earlier in theme constructor
-        private Theme _theme;
-        private Theme Theme => _theme ??= Ioc.Default.GetRequiredService<Theme>();
-
         private readonly object _saveSettingsLock = new();
-
-        #region Constructor
 
         public PublicAPIInstance(Settings settings, MainViewModel mainVM)
         {
             _settings = settings;
             _mainVM = mainVM;
             GlobalHotkey.hookedKeyboardCallback = KListener_hookedKeyboardCallback;
-        }
 
-        #endregion
+            IPublicAPI.Instance = this;
+        }
 
         #region Public API
 

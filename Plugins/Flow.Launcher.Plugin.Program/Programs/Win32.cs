@@ -10,10 +10,10 @@ using System.Threading.Channels;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Flow.Launcher.Infrastructure;
+using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Logger;
+using Flow.Launcher.Infrastructure.UI;
 using Flow.Launcher.Plugin.Program.Views.Models;
-using Flow.Launcher.Plugin.SharedCommands;
-using Flow.Launcher.Plugin.SharedModels;
 using MemoryPack;
 using Microsoft.Win32;
 

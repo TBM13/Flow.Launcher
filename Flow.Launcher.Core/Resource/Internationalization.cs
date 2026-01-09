@@ -38,7 +38,7 @@ namespace Flow.Launcher.Core.Resource
             var directory = Path.Combine(Constant.ProgramDirectory, Folder);
             if (!Directory.Exists(directory))
             {
-                PublicApi.Instance.LogError(ClassName, $"Flow Launcher language directory can't be found <{directory}>");
+                IPublicAPI.Instance.LogError(ClassName, $"Flow Launcher language directory can't be found <{directory}>");
                 return;
             }
 
@@ -90,7 +90,7 @@ namespace Flow.Launcher.Core.Resource
                 }
                 else
                 {
-                    PublicApi.Instance.LogError(ClassName, $"Language path can't be found <{path}>");
+                    IPublicAPI.Instance.LogError(ClassName, $"Language path can't be found <{path}>");
                     var english = Path.Combine(folder, DefaultFile);
                     if (File.Exists(english))
                     {
@@ -98,7 +98,7 @@ namespace Flow.Launcher.Core.Resource
                     }
                     else
                     {
-                        PublicApi.Instance.LogError(ClassName, $"Default English Language path can't be found <{path}>");
+                        IPublicAPI.Instance.LogError(ClassName, $"Default English Language path can't be found <{path}>");
                         return string.Empty;
                     }
                 }
@@ -119,7 +119,7 @@ namespace Flow.Launcher.Core.Resource
             if (translation is string s)
                 return s;
 
-            PublicApi.Instance.LogError(ClassName, $"No Translation for key {key}");
+            IPublicAPI.Instance.LogError(ClassName, $"No Translation for key {key}");
             return $"No Translation for key {key}";
         }
 

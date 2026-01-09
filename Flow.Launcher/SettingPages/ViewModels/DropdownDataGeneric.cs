@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Flow.Launcher.Plugin;
+using Flow.Launcher.Infrastructure;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
 

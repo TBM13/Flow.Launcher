@@ -13,10 +13,9 @@ using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
+using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Hotkey;
 using Flow.Launcher.Infrastructure.UserSettings;
-using Flow.Launcher.Plugin;
-using Flow.Launcher.Plugin.SharedModels;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern;
 using DataObject = System.Windows.DataObject;
@@ -391,7 +390,7 @@ namespace Flow.Launcher
                         double yRatio = mousePos.Y / maxHeight;
 
                         // Current monitor information
-                        var screen = MonitorInfo.GetNearestDisplayMonitor(new WindowInteropHelper(this).Handle);
+                        var screen = MonitorHelper.GetNearestDisplayMonitor(new WindowInteropHelper(this).Handle);
                         var workingArea = screen.WorkingArea;
                         var screenLeftTop = Win32Helper.TransformPixelsToDIP(this, workingArea.X, workingArea.Y);
 
@@ -637,31 +636,31 @@ namespace Flow.Launcher
 
         private MonitorInfo SelectedScreen()
         {
-            MonitorInfo screen;
+            MonitorInfo? screen;
             switch (_settings.SearchWindowScreen)
             {
                 case SearchWindowScreens.Cursor:
-                    screen = MonitorInfo.GetCursorDisplayMonitor();
+                    screen = MonitorHelper.GetCursorDisplayMonitor();
                     break;
                 case SearchWindowScreens.Focus:
-                    screen = MonitorInfo.GetNearestDisplayMonitor(Win32Helper.GetForegroundWindow());
+                    screen = MonitorHelper.GetNearestDisplayMonitor(Win32Helper.GetForegroundWindow());
                     break;
                 case SearchWindowScreens.Primary:
-                    screen = MonitorInfo.GetPrimaryDisplayMonitor();
+                    screen = MonitorHelper.GetPrimaryDisplayMonitor();
                     break;
                 case SearchWindowScreens.Custom:
-                    var allScreens = MonitorInfo.GetDisplayMonitors();
+                    var allScreens = MonitorHelper.GetDisplayMonitors();
                     if (_settings.CustomScreenNumber <= allScreens.Count)
                         screen = allScreens[_settings.CustomScreenNumber - 1];
                     else
                         screen = allScreens[0];
                     break;
                 default:
-                    screen = MonitorInfo.GetDisplayMonitors()[0];
+                    screen = MonitorHelper.GetDisplayMonitors()[0];
                     break;
             }
 
-            return screen ?? MonitorInfo.GetDisplayMonitors()[0];
+            return screen ?? MonitorHelper.GetDisplayMonitors()[0];
         }
 
         private double HorizonCenter(MonitorInfo screen)

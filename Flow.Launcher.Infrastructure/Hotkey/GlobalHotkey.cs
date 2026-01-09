@@ -1,102 +1,100 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using Flow.Launcher.Plugin;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Input.KeyboardAndMouse;
 using Windows.Win32.UI.WindowsAndMessaging;
 
-namespace Flow.Launcher.Infrastructure.Hotkey
+namespace Flow.Launcher.Infrastructure.Hotkey;
+
+/// <summary>
+/// Listens keyboard globally.
+/// <remarks>Uses WH_KEYBOARD_LL.</remarks>
+/// </summary>
+public class GlobalHotkey : IDisposable
 {
-    /// <summary>
-    /// Listens keyboard globally.
-    /// <remarks>Uses WH_KEYBOARD_LL.</remarks>
-    /// </summary>
-    public class GlobalHotkey : IDisposable
+    private static readonly HOOKPROC _procKeyboard = HookKeyboardCallback;
+    private static readonly UnhookWindowsHookExSafeHandle hookId;
+
+    public delegate bool KeyboardCallback(KeyEvent keyEvent, int vkCode, SpecialKeyState state);
+    internal static Func<KeyEvent, int, SpecialKeyState, bool>? hookedKeyboardCallback;
+
+    static GlobalHotkey()
     {
-        private static readonly HOOKPROC _procKeyboard = HookKeyboardCallback;
-        private static readonly UnhookWindowsHookExSafeHandle hookId;
+        // Set the hook
+        hookId = SetHook(_procKeyboard, WINDOWS_HOOK_ID.WH_KEYBOARD_LL);
+    }
 
-        public delegate bool KeyboardCallback(KeyEvent keyEvent, int vkCode, SpecialKeyState state);
-        internal static Func<KeyEvent, int, SpecialKeyState, bool>? hookedKeyboardCallback;
+    private static UnhookWindowsHookExSafeHandle SetHook(HOOKPROC proc, WINDOWS_HOOK_ID hookId)
+    {
+        using var curProcess = Process.GetCurrentProcess();
+        using ProcessModule? curModule = curProcess.MainModule;
+        if (curModule is null)
+            throw new NullReferenceException(nameof(curModule));
 
-        static GlobalHotkey()
+        return PInvoke.SetWindowsHookEx(hookId, proc, PInvoke.GetModuleHandle(curModule.ModuleName), 0);
+    }
+
+    public static SpecialKeyState CheckModifiers()
+    {
+        SpecialKeyState state = new SpecialKeyState();
+        if ((PInvoke.GetKeyState((int)VIRTUAL_KEY.VK_SHIFT) & 0x8000) != 0)
         {
-            // Set the hook
-            hookId = SetHook(_procKeyboard, WINDOWS_HOOK_ID.WH_KEYBOARD_LL);
+            //SHIFT is pressed
+            state.ShiftPressed = true;
+        }
+        if ((PInvoke.GetKeyState((int)VIRTUAL_KEY.VK_CONTROL) & 0x8000) != 0)
+        {
+            //CONTROL is pressed
+            state.CtrlPressed = true;
+        }
+        if ((PInvoke.GetKeyState((int)VIRTUAL_KEY.VK_MENU) & 0x8000) != 0)
+        {
+            //ALT is pressed
+            state.AltPressed = true;
+        }
+        if ((PInvoke.GetKeyState((int)VIRTUAL_KEY.VK_LWIN) & 0x8000) != 0 ||
+            (PInvoke.GetKeyState((int)VIRTUAL_KEY.VK_RWIN) & 0x8000) != 0)
+        {
+            //WIN is pressed
+            state.WinPressed = true;
         }
 
-        private static UnhookWindowsHookExSafeHandle SetHook(HOOKPROC proc, WINDOWS_HOOK_ID hookId)
-        {
-            using var curProcess = Process.GetCurrentProcess();
-            using ProcessModule? curModule = curProcess.MainModule;
-            if (curModule is null)
-                throw new NullReferenceException(nameof(curModule));
+        return state;
+    }
 
-            return PInvoke.SetWindowsHookEx(hookId, proc, PInvoke.GetModuleHandle(curModule.ModuleName), 0);
+    private static LRESULT HookKeyboardCallback(int nCode, WPARAM wParam, LPARAM lParam)
+    {
+        bool continues = true;
+
+        if (nCode >= 0)
+        {
+            if (wParam.Value == (int)KeyEvent.WM_KEYDOWN ||
+                wParam.Value == (int)KeyEvent.WM_KEYUP ||
+                wParam.Value == (int)KeyEvent.WM_SYSKEYDOWN ||
+                wParam.Value == (int)KeyEvent.WM_SYSKEYUP)
+            {
+                if (hookedKeyboardCallback != null)
+                    continues = hookedKeyboardCallback((KeyEvent)wParam.Value, Marshal.ReadInt32(lParam), CheckModifiers());
+            }
         }
 
-        public static SpecialKeyState CheckModifiers()
+        if (continues)
         {
-            SpecialKeyState state = new SpecialKeyState();
-            if ((PInvoke.GetKeyState((int)VIRTUAL_KEY.VK_SHIFT) & 0x8000) != 0)
-            {
-                //SHIFT is pressed
-                state.ShiftPressed = true;
-            }
-            if ((PInvoke.GetKeyState((int)VIRTUAL_KEY.VK_CONTROL) & 0x8000) != 0)
-            {
-                //CONTROL is pressed
-                state.CtrlPressed = true;
-            }
-            if ((PInvoke.GetKeyState((int)VIRTUAL_KEY.VK_MENU) & 0x8000) != 0)
-            {
-                //ALT is pressed
-                state.AltPressed = true;
-            }
-            if ((PInvoke.GetKeyState((int)VIRTUAL_KEY.VK_LWIN) & 0x8000) != 0 ||
-                (PInvoke.GetKeyState((int)VIRTUAL_KEY.VK_RWIN) & 0x8000) != 0)
-            {
-                //WIN is pressed
-                state.WinPressed = true;
-            }
-
-            return state;
+            return PInvoke.CallNextHookEx(hookId, nCode, wParam, lParam);
         }
 
-        private static LRESULT HookKeyboardCallback(int nCode, WPARAM wParam, LPARAM lParam)
-        {
-            bool continues = true;
+        return new LRESULT(1);
+    }
 
-            if (nCode >= 0)
-            {
-                if (wParam.Value == (int)KeyEvent.WM_KEYDOWN ||
-                    wParam.Value == (int)KeyEvent.WM_KEYUP ||
-                    wParam.Value == (int)KeyEvent.WM_SYSKEYDOWN ||
-                    wParam.Value == (int)KeyEvent.WM_SYSKEYUP)
-                {
-                    if (hookedKeyboardCallback != null)
-                        continues = hookedKeyboardCallback((KeyEvent)wParam.Value, Marshal.ReadInt32(lParam), CheckModifiers());
-                }
-            }
+    public void Dispose()
+    {
+        hookId.Dispose();
+    }
 
-            if (continues)
-            {
-                return PInvoke.CallNextHookEx(hookId, nCode, wParam, lParam);
-            }
-
-            return new LRESULT(1);
-        }
-
-        public void Dispose()
-        {
-            hookId.Dispose();
-        }
-
-        ~GlobalHotkey()
-        {
-            Dispose();
-        }
+    ~GlobalHotkey()
+    {
+        Dispose();
     }
 }

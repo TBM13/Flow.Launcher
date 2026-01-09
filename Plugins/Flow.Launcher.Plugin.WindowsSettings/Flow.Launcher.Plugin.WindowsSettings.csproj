@@ -37,8 +37,10 @@
     <EmbeddedResource Include="WindowsSettings.json">
     </EmbeddedResource>
   </ItemGroup>
+
+
   <ItemGroup>
-    <ProjectReference Include="..\..\Flow.Launcher.Plugin\Flow.Launcher.Plugin.csproj" />
+    <ProjectReference Include="..\..\Flow.Launcher.Infrastructure\Flow.Launcher.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

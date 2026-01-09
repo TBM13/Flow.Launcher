@@ -1,46 +1,45 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Logger;
-using Flow.Launcher.Plugin;
-using Flow.Launcher.Plugin.SharedCommands;
+using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 
-namespace Flow.Launcher.Infrastructure.Storage
+namespace Flow.Launcher.Infrastructure.Storage;
+
+// Expose ISaveable interface in derived class to make sure we are calling the new version of Save method
+public class PluginBinaryStorage<T> : BinaryStorage<T>, ISavable where T : new()
 {
-    // Expose ISaveable interface in derived class to make sure we are calling the new version of Save method
-    public class PluginBinaryStorage<T> : BinaryStorage<T>, ISavable where T : new()
+    private static readonly string ClassName = "PluginBinaryStorage";
+
+    public PluginBinaryStorage(string cacheName, string cacheDirectory)
     {
-        private static readonly string ClassName = "PluginBinaryStorage";
+        DirectoryPath = cacheDirectory;
+        FilesFolders.ValidateDirectory(DirectoryPath);
 
-        public PluginBinaryStorage(string cacheName, string cacheDirectory)
+        FilePath = Path.Combine(DirectoryPath, $"{cacheName}{FileSuffix}");
+    }
+
+    public new void Save()
+    {
+        try
         {
-            DirectoryPath = cacheDirectory;
-            FilesFolders.ValidateDirectory(DirectoryPath);
-
-            FilePath = Path.Combine(DirectoryPath, $"{cacheName}{FileSuffix}");
+            base.Save();
         }
-
-        public new void Save()
+        catch (System.Exception e)
         {
-            try
-            {
-                base.Save();
-            }
-            catch (System.Exception e)
-            {
-                Log.Exception(ClassName, $"Failed to save plugin caches to path: {FilePath}", e);
-            }
+            Log.Exception(ClassName, $"Failed to save plugin caches to path: {FilePath}", e);
         }
+    }
 
-        public new async Task SaveAsync()
+    public new async Task SaveAsync()
+    {
+        try
         {
-            try
-            {
-                await base.SaveAsync();
-            }
-            catch (System.Exception e)
-            {
-                Log.Exception(ClassName, $"Failed to save plugin caches to path: {FilePath}", e);
-            }
+            await base.SaveAsync();
+        }
+        catch (System.Exception e)
+        {
+            Log.Exception(ClassName, $"Failed to save plugin caches to path: {FilePath}", e);
         }
     }
 }

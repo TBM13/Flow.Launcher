@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.UI;
 
 namespace Flow.Launcher.Plugin.Calculator.ViewModels;

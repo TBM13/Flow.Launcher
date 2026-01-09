@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using Flow.Launcher.Infrastructure;
+using Flow.Launcher.Infrastructure.Helpers;
+using Flow.Launcher.Infrastructure.Plugins;
+using Flow.Launcher.Infrastructure.Plugins.Interfaces;
+using Flow.Launcher.Infrastructure.UI;
 using Flow.Launcher.Plugin.Explorer.Search;
-using Flow.Launcher.Plugin.SharedCommands;
 
 namespace Flow.Launcher.Plugin.Explorer
 {

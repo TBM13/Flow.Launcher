@@ -6,7 +6,6 @@ using System.Windows;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.UserSettings;
-using Flow.Launcher.Plugin;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
 
