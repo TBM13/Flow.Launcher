@@ -61,14 +61,6 @@ public partial class SettingsPaneAboutViewModel : BaseModel
     }
 
     [RelayCommand]
-    private void OpenParentOfSettingsFolder(object parameter)
-    {
-        var settingsFolderPath = Path.Combine(DataLocation.SettingsDirectory);
-        var parentFolderPath = Path.GetDirectoryName(settingsFolderPath);
-        App.API.OpenDirectory(parentFolderPath);
-    }
-
-    [RelayCommand]
     private void OpenCacheFolder()
     {
         App.API.OpenDirectory(DataLocation.CacheDirectory);

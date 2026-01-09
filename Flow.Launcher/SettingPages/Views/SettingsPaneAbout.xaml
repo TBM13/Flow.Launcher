@@ -36,17 +36,6 @@
                 </ui:SettingsCard.HeaderIcon>
             </ui:SettingsCard>
 
-            <ui:SettingsCard
-                Margin="0 14 0 0"
-                Description="{DynamicResource userdatapathToolTip}"
-                Header="{DynamicResource userdatapath}">
-                <ui:SettingsCard.HeaderIcon>
-                    <ui:FontIcon Glyph="&#xEC25;" />
-                </ui:SettingsCard.HeaderIcon>
-
-                <Button Command="{Binding OpenParentOfSettingsFolderCommand}" Content="{DynamicResource userdatapathButton}" />
-            </ui:SettingsCard>
-
             <ui:SettingsCard Margin="0 4 0 0" Header="{DynamicResource icons}">
                 <ui:SettingsCard.HeaderIcon>
                     <ui:FontIcon Glyph="&#xE8FE;" />
