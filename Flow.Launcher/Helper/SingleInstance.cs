@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipes;
 using System.Threading;
 using System.Threading.Tasks;
@@ -38,15 +39,62 @@ namespace Flow.Launcher.Helper
         /// </summary>
         private const string ChannelNameSuffix = "SingeInstanceIPCChannel";
         private const string InstanceMutexName = "Flow.Launcher_Unique_Application_Mutex";
+        private static string ApplicationIdentifier => InstanceMutexName + Environment.UserName;
 
         /// <summary>
         /// Application mutex.
         /// </summary>
         internal static Mutex? SingleInstanceMutex { get; set; }
+        private static bool IsFirstInstance = false;
 
         #endregion
 
         #region Public Methods
+        [MemberNotNull(nameof(SingleInstanceMutex))]
+        private static void CreateSingleInstanceMutex(out bool isFirstInstance)
+        {
+            if (SingleInstanceMutex is not null)
+            {
+                isFirstInstance = IsFirstInstance;
+                return;
+            }
+
+            // Create mutex based on unique application Id to check if this is the first instance of the application. 
+            SingleInstanceMutex = new Mutex(true, ApplicationIdentifier, out var firstInstance);
+            isFirstInstance = firstInstance;
+            IsFirstInstance = firstInstance;
+        }
+
+        public static void WaitUntilWeAreFirstInstance()
+        {
+            CreateSingleInstanceMutex(out bool isFirstInstance);
+            if (isFirstInstance)
+                return;
+
+            // Wait until we can acquire the mutex
+            try
+            {
+                SingleInstanceMutex.WaitOne();
+            }
+            catch (AbandonedMutexException)
+            {
+                // Existing instance crashed
+            }
+
+            // We should own the mutex now
+            SingleInstanceMutex.ReleaseMutex();
+            SingleInstanceMutex.Dispose();
+            SingleInstanceMutex = null;
+            CreateSingleInstanceMutex(out isFirstInstance);
+            if (!isFirstInstance)
+            {
+                // We still don't own the mutex, so lets keep waiting
+                WaitUntilWeAreFirstInstance();
+                return;
+            }
+
+            IsFirstInstance = true;
+        }
 
         /// <summary>
         /// Checks if the instance of the application attempting to start is the first instance. 
@@ -55,14 +103,10 @@ namespace Flow.Launcher.Helper
         /// <returns>True if this is the first instance of the application.</returns>
         public static bool InitializeAsFirstInstance()
         {
-            // Build unique application Id and the IPC channel name.
-            string applicationIdentifier = InstanceMutexName + Environment.UserName;
+            CreateSingleInstanceMutex(out bool isFirstInstance);
+            string channelName = string.Concat(ApplicationIdentifier, Delimiter, ChannelNameSuffix);
 
-            string channelName = string.Concat(applicationIdentifier, Delimiter, ChannelNameSuffix);
-
-            // Create mutex based on unique application Id to check if this is the first instance of the application. 
-            SingleInstanceMutex = new Mutex(true, applicationIdentifier, out var firstInstance);
-            if (firstInstance)
+            if (isFirstInstance)
             {
                 _ = CreateRemoteServiceAsync(channelName);
                 return true;

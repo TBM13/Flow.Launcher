@@ -197,6 +197,7 @@ public class Settings : BaseModel, IHotkeySettings
 
     public bool HideOnStartup { get; set; } = true;
     public bool HideWhenDeactivated { get; set; } = true;
+    public bool AlwaysRunAsAdministrator { get; set; } = true;
     public bool ShowTaskbarWhenInvoked { get; set; } = false;
 
     private bool _showAtTopmost = false;

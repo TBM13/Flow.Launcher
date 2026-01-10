@@ -187,16 +187,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
 
                     // Ctrl + Shift + Enter to run as admin
                     bool runAsAdmin = c.SpecialKeyState.ToModifierKeys() == (ModifierKeys.Control | ModifierKeys.Shift);
-
-                    var info = new ProcessStartInfo
-                    {
-                        FileName = FullPath,
-                        WorkingDirectory = ParentDirectory,
-                        UseShellExecute = true,
-                        Verb = runAsAdmin ? "runas" : "",
-                    };
-
-                    _ = Task.Run(() => Main.StartProcess(Process.Start, info));
+                    Launch(runAsAdmin);
 
                     return true;
                 }
@@ -205,6 +196,25 @@ namespace Flow.Launcher.Plugin.Program.Programs
             return result;
         }
 
+        private void Launch(bool runAsAdmin = false)
+        {
+            _ = Task.Run(() =>
+            {
+                bool res = Main.Context.API.StartProcess(
+                   FullPath,
+                   workingDirectory: ParentDirectory,
+                   arguments: string.Empty,
+                   useShellExecute: true,
+                   verb: runAsAdmin ? "runas" : "");
+
+                if (!res)
+                {
+                    Main.Context.API.ShowMsgError(
+                        Localize.Error_Title,
+                        Localize.Error_UnableToRun(FullPath));
+                }
+            });
+        }
 
         public List<Result> ContextMenus(IPublicAPI api)
         {
@@ -231,16 +241,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     Title = Localize.Action_RunAsAdministrator,
                     Action = c =>
                     {
-                        var info = new ProcessStartInfo
-                        {
-                            FileName = FullPath,
-                            WorkingDirectory = ParentDirectory,
-                            Verb = "runas",
-                            UseShellExecute = true
-                        };
-
-                        _ = Task.Run(() => Main.StartProcess(Process.Start, info));
-
+                        Launch(true);
                         return true;
                     },
                     Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xe7ef"),

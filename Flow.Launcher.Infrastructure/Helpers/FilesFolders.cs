@@ -159,35 +159,6 @@ public static class FilesFolders
     }
 
     /// <summary>
-    /// Open a directory window (using the OS's default handler, usually explorer)
-    /// </summary>
-    /// <param name="fileOrFolderPath"></param>
-    /// <param name="messageBoxExShow"></param>
-    public static void OpenPath(string fileOrFolderPath, Func<string, MessageBoxResult>? messageBoxExShow = null)
-    {
-        var psi = new ProcessStartInfo
-        {
-            FileName = FileExplorerProgramName,
-            UseShellExecute = true,
-            Arguments = '"' + fileOrFolderPath + '"'
-        };
-        try
-        {
-            if (LocationExists(fileOrFolderPath) || FileExists(fileOrFolderPath))
-                Process.Start(psi);
-        }
-        catch (Exception)
-        {
-#if DEBUG
-            throw;
-#else
-            messageBoxExShow ??= MessageBox.Show;
-            messageBoxExShow(string.Format("Unable to open the path {0}, please check if it exists", fileOrFolderPath));
-#endif
-        }
-    }
-
-    /// <summary>
     /// Open a file with associated application
     /// </summary>
     /// <param name="filePath">File path</param>
@@ -206,6 +177,7 @@ public static class FilesFolders
         try
         {
             if (FileExists(filePath))
+                // TODO: We should probably de-elevate here
                 Process.Start(psi);
         }
         catch (Exception)

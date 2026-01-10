@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Windows;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Helpers;
@@ -66,5 +68,34 @@ public partial class SettingsPaneGeneralViewModel : BaseModel
     {
         var fileManagerChangeWindow = new SelectFileManagerWindow();
         fileManagerChangeWindow.ShowDialog();
+    }
+
+    public bool AlwaysRunAsAdministrator
+    {
+        get => Settings.AlwaysRunAsAdministrator;
+        set
+        {
+            if (AlwaysRunAsAdministrator == value) return;
+
+            Settings.AlwaysRunAsAdministrator = value;
+            CheckAdminChangeAndAskForRestart();
+        }
+    }
+
+    private void CheckAdminChangeAndAskForRestart()
+    {
+        // When we change from non-admin to admin, we need to restart the app as administrator to apply the changes
+        // Under non-administrator, we cannot delete or set the logon task which is run as administrator
+        if (AlwaysRunAsAdministrator && !Win32Helper.IsAdministrator())
+        {
+            if (App.API.ShowMsgBox(
+                App.API.GetTranslation("runAsAdministratorChangeAndRestart"),
+                App.API.GetTranslation("runAsAdministratorChange"),
+                MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                // Restart the app as administrator
+                App.API.RestartAppAsAdmin();
+            }
+        }
     }
 }

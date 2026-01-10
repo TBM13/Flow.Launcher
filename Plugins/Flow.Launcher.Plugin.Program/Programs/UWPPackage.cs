@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Principal;
@@ -28,7 +27,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
         public string FamilyName { get; }
         public string Location { get; set; }
 
-        public UWPApp[] Apps { get; set; } = Array.Empty<UWPApp>();
+        public UWPApp[] Apps { get; set; } = [];
 
 
         /// <summary>
@@ -451,7 +450,8 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     bool elevated = e.SpecialKeyState.ToModifierKeys() == (ModifierKeys.Control | ModifierKeys.Shift);
 
                     bool shouldRunElevated = elevated && CanRunElevated;
-                    _ = Task.Run(() => Launch(shouldRunElevated)).ConfigureAwait(false);
+                    Launch(shouldRunElevated);
+
                     if (elevated && !shouldRunElevated)
                     {
                         api.ShowMsgError(Localize.Error_Title, Localize.Error_UnableToRunAsAdmin);
@@ -488,7 +488,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     Title = Localize.Action_RunAsAdministrator,
                     Action = c =>
                     {
-                        _ = Task.Run(() => Launch(true)).ConfigureAwait(false);
+                        Launch(true);
                         return true;
                     },
                     Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xe7ef")
@@ -503,9 +503,21 @@ namespace Flow.Launcher.Plugin.Program.Programs
             string command = "shell:AppsFolder\\" + UserModelId;
             command = Environment.ExpandEnvironmentVariables(command.Trim());
 
-            var info = new ProcessStartInfo(command) { UseShellExecute = true, Verb = elevated ? "runas" : "" };
+            _ = Task.Run(() =>
+            {
+                bool res = Main.Context.API.StartProcess(
+                    command,
+                    arguments: string.Empty,
+                    useShellExecute: true,
+                    verb: elevated ? "runas" : "");
 
-            Main.StartProcess(Process.Start, info);
+                if (!res)
+                {
+                    Main.Context.API.ShowMsgError(
+                        Localize.Error_Title,
+                        Localize.Error_UnableToRun(command));
+                }
+            });
         }
 
         internal static bool IfAppCanRunElevated(XmlNode appNode)

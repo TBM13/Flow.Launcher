@@ -13,6 +13,7 @@ public static class Constant
     private static readonly Assembly Assembly = Assembly.GetExecutingAssembly();
     public static readonly string ProgramDirectory = Directory.GetParent(Assembly.Location)?.ToString() ?? throw new NullReferenceException("Failed to get program directory");
     public static readonly string ExecutablePath = Path.Combine(ProgramDirectory, FlowLauncher + ".exe");
+    public static readonly string CommandExecutablePath = Path.Combine(ProgramDirectory, "Command", "Flow.Launcher.Command.exe");
     public static readonly string ApplicationDirectory = Directory.GetParent(ProgramDirectory)?.ToString() ?? throw new NullReferenceException("Failed to get app directory");
 
     public const string IssuesUrl = "https://github.com/TBM13/Flow.Launcher/issues";

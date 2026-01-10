@@ -101,11 +101,7 @@ namespace Flow.Launcher.Plugin.Explorer
                 {
                     try
                     {
-                        Process.Start(new ProcessStartInfo()
-                        {
-                            FileName = shellPath,
-                            WorkingDirectory = record.FullPath
-                        });
+                        Main.Context.API.StartProcess(shellPath, workingDirectory: record.FullPath, arguments: string.Empty);
                         return true;
                     }
                     catch (Exception e)
@@ -128,6 +124,7 @@ namespace Flow.Launcher.Plugin.Explorer
                 SubTitle = Localize.FileResult_OpenWith_Subtitle,
                 Action = _ =>
                 {
+                    // No need to de-elevate since we are opening a windows menu which cannot bring security risks
                     Process.Start("rundll32.exe", $"{Path.Combine(Environment.SystemDirectory, "shell32.dll")},OpenAs_RunDLL {record.FullPath}");
                     return true;
                 },

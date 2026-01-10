@@ -44,59 +44,9 @@ public partial class SelectFileManagerViewModel : BaseModel
 
     public bool SaveSettings()
     {
-        // Check if the selected file manager path is valid
-        if (!IsFileManagerValid(CustomExplorer.Path))
-        {
-            var result = App.API.ShowMsgBox(
-                Localize.fileManagerPathNotFound(CustomExplorer.Name, CustomExplorer.Path),
-                Localize.fileManagerPathError(),
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning);
-
-            if (result == MessageBoxResult.No)
-            {
-                return false;
-            }
-        }
-
         _settings.CustomExplorerList = CustomExplorers.ToList();
         _settings.CustomExplorerIndex = SelectedCustomExplorerIndex;
         return true;
-    }
-
-    private static bool IsFileManagerValid(string path)
-    {
-        if (string.Equals(path, "explorer", StringComparison.OrdinalIgnoreCase))
-            return true;
-
-        if (Path.IsPathRooted(path))
-        {
-            return File.Exists(path);
-        }
-
-        try
-        {
-            var process = new Process
-            {
-                StartInfo = new ProcessStartInfo
-                {
-                    FileName = "where",
-                    Arguments = path,
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                }
-            };
-            process.Start();
-            string output = process.StandardOutput.ReadToEnd();
-            process.WaitForExit();
-
-            return !string.IsNullOrEmpty(output);
-        }
-        catch
-        {
-            return false;
-        }
     }
 
     [RelayCommand]

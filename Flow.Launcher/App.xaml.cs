@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing.Imaging.Effects;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using CommunityToolkit.Mvvm.DependencyInjection;
@@ -8,7 +10,6 @@ using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Image;
 using Flow.Launcher.Infrastructure.Storage;
 using Flow.Launcher.Infrastructure.UserSettings;
@@ -49,6 +50,17 @@ namespace Flow.Launcher
 
         public App()
         {
+            // Check if the application is running as administrator
+            if (_settings.AlwaysRunAsAdministrator && !Win32Helper.IsAdministrator())
+            {
+                // We don't want to restart as admin if we are debugging in Visual Studio
+                if (!Debugger.IsAttached)
+                {
+                    RestartApp(true);
+                    return;
+                }
+            }
+
             // Do not use bitmap cache since it can cause WPF second window freezing issue
             ShadowAssist.UseBitmapCache = false;
 
@@ -102,11 +114,45 @@ namespace Flow.Launcher
 
         #endregion
 
+        #region Restart
+
+        /// <summary>
+        /// Restart the application without changing the user privileges.
+        /// </summary>
+        /// <param name="forceAdmin">
+        /// If true, the application will be restarted as administrator.
+        /// If false, it will be restarted with the same privileges as the current user.
+        /// </param>
+        public static void RestartApp(bool forceAdmin = false)
+        {
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = Constant.ExecutablePath,
+                Arguments = "--restart",
+                UseShellExecute = true,
+                Verb = Win32Helper.IsAdministrator() || forceAdmin ? "runas" : ""
+            };
+            // No need to de-elevate since we are restarting Flow Launcher which cannot bring security risks
+            Process.Start(startInfo);
+            Thread.Sleep(500);
+
+            Current.Shutdown();
+        }
+
+        #endregion
+
         #region Main
 
         [STAThread]
         public static void Main()
         {
+            string[] args = Environment.GetCommandLineArgs();
+            if (args.Length > 1 && args[1] == "--restart")
+            {
+                // Wait until the previous instance closes
+                SingleInstance<App>.WaitUntilWeAreFirstInstance();
+            }
+
             // Initialize settings so that we can get language code
             try
             {

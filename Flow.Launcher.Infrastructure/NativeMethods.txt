@@ -77,3 +77,15 @@ GetMonitorInfo
 MONITORINFOEXW
 GetCursorPos
 MonitorFromPoint
+
+OpenProcessToken
+GetCurrentProcess
+LookupPrivilegeValue
+SE_INCREASE_QUOTA_NAME
+CloseHandle
+TOKEN_PRIVILEGES
+AdjustTokenPrivileges
+OpenProcess
+GetProcessId
+DuplicateTokenEx
+CreateProcessWithTokenW

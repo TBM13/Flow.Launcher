@@ -243,6 +243,7 @@ public static class ServiceHelper
                 WindowStyle = ProcessWindowStyle.Hidden,
             };
 
+            // TODO: Use ArgumentList instead of Arguments
             switch (action)
             {
                 case Action.Start:
@@ -273,6 +274,7 @@ public static class ServiceHelper
                     throw new Exception("Unknown action");
             }
 
+            // No need to de-elevate since we are opening a windows tool which cannot bring security risks
             Process? process = Process.Start(info) ?? throw new Exception("Failed to start process");
             process.WaitForExit();
 

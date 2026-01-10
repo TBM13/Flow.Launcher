@@ -60,6 +60,7 @@ public static class SearchWeb
 
         try
         {
+            // TODO: We should probably de-elevate here
             Process.Start(psi)?.Dispose();
         }
         // This error may be thrown if browser path is incorrect
@@ -67,6 +68,7 @@ public static class SearchWeb
         {
             try
             {
+                // TODO: We should probably de-elevate here
                 Process.Start(new ProcessStartInfo
                 {
                     FileName = url,
@@ -103,6 +105,7 @@ public static class SearchWeb
                 psi.FileName = url;
             }
 
+            // TODO: We should probably de-elevate here
             Process.Start(psi)?.Dispose();
         }
         // This error may be thrown if browser path is incorrect
@@ -110,6 +113,7 @@ public static class SearchWeb
         {
             try
             {
+                // TODO: We should probably de-elevate here
                 Process.Start(new ProcessStartInfo
                 {
                     FileName = url,
