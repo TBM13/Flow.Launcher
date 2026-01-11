@@ -44,20 +44,6 @@ public class Settings : BaseModel, IHotkeySettings
     public string OpenContextMenuHotkey { get; set; } = $"Ctrl+O";
     public string SettingWindowHotkey { get; set; } = $"Ctrl+I";
 
-    private string _theme = Constant.DefaultTheme;
-    public string Theme
-    {
-        get => _theme;
-        set
-        {
-            if (_theme != value)
-            {
-                _theme = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(MaxResultsToShow));
-            }
-        }
-    }
     public bool UseDropShadowEffect { get; set; } = true;
 
     /* Appearance Settings. It should be separated from the setting later.*/

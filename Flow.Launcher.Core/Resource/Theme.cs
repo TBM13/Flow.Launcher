@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Markup;
 using System.Windows.Media.Effects;
 using System.Windows.Shell;
 using System.Windows.Threading;
@@ -13,55 +11,15 @@ using Flow.Launcher.Infrastructure.UserSettings;
 
 namespace Flow.Launcher.Core.Resource
 {
-    public class Theme
+    public class Theme(Settings settings)
     {
-        #region Properties & Fields
-
-        private readonly string ClassName = nameof(Theme);
-
         private const int ShadowExtraMargin = 32;
+        private static readonly string DefaultThemePath = $@"{Constant.ProgramDirectory}\{Constant.Themes}\{Constant.DefaultTheme}.xaml";
 
-        private readonly IPublicAPI _api;
-        private readonly Settings _settings;
-        private ResourceDictionary _oldResource;
-        private string _oldTheme;
-        private const string Extension = ".xaml";
-        private static string DirectoryPath => Path.Combine(Constant.ProgramDirectory, Constant.Themes);
-
+        private readonly Settings _settings = settings;
+        private ResourceDictionary? _oldResource;
         private Thickness _themeResizeBorderThickness;
 
-        #endregion
-
-        #region Constructor
-
-        public Theme(IPublicAPI publicAPI, Settings settings)
-        {
-            _api = publicAPI;
-            _settings = settings;
-
-            var dicts = Application.Current.Resources.MergedDictionaries;
-            _oldResource = dicts.FirstOrDefault(d =>
-            {
-                if (d.Source == null) return false;
-
-                var p = d.Source.AbsolutePath;
-                return p.Contains(Constant.Themes) && Path.GetExtension(p) == Extension;
-            });
-
-            if (_oldResource != null)
-            {
-                _oldTheme = Path.GetFileNameWithoutExtension(_oldResource.Source.AbsolutePath);
-            }
-            else
-            {
-                _api.LogError(ClassName, "Current theme resource not found. Initializing with default theme.");
-                _oldTheme = Constant.DefaultTheme;
-            }
-        }
-
-        #endregion
-
-        #region Theme Resources
         private void UpdateResourceDictionary(ResourceDictionary dictionaryToUpdate)
         {
             // Add new resources
@@ -80,115 +38,40 @@ namespace Flow.Launcher.Core.Resource
             _oldResource = dictionaryToUpdate;
         }
 
-        private ResourceDictionary GetThemeResourceDictionary(string theme)
+        private ResourceDictionary GetResourceDictionary()
         {
-            var uri = GetThemePath(theme);
+            if (!File.Exists(DefaultThemePath))
+                throw new FileNotFoundException($"Theme can't be found <{DefaultThemePath}>");
+
             var dict = new ResourceDictionary
             {
-                Source = new Uri(uri, UriKind.Absolute)
+                Source = new Uri(DefaultThemePath, UriKind.Absolute)
             };
 
-            return dict;
-        }
-
-        private ResourceDictionary GetResourceDictionary(string theme)
-        {
-            var dict = GetThemeResourceDictionary(theme);
-
             /* Ignore Theme Window Width and use setting */
-            var windowStyle = dict["WindowStyle"] as Style;
-            var width = _settings.WindowSize;
+            Style windowStyle = dict["WindowStyle"] as Style ?? throw new NullReferenceException("WindowStyle not found in resource dictionary.");
+            double width = _settings.WindowSize;
             windowStyle.Setters.Add(new Setter(FrameworkElement.WidthProperty, width));
             return dict;
         }
 
-        public ResourceDictionary GetCurrentResourceDictionary()
+        public bool ChangeTheme()
         {
-            return GetResourceDictionary(_settings.Theme);
+            // Retrieve theme resource – always use the resource with font settings applied.
+            var resourceDict = GetResourceDictionary();
+            UpdateResourceDictionary(resourceDict);
+
+            // Apply drop shadow effect so that we do not need to call it again
+            _ = RefreshFrameAsync();
+
+            return true;
         }
-
-        private string GetThemePath(string themeName)
-        {
-            string path = Path.Combine(DirectoryPath, themeName + Extension);
-            if (File.Exists(path))
-            {
-                return path;
-            }
-
-            return string.Empty;
-        }
-
-        #endregion
-
-        #region Change Theme
-        public bool ChangeTheme(string? theme = null)
-        {
-            if (string.IsNullOrEmpty(theme))
-                theme = _settings.Theme;
-
-            string path = GetThemePath(theme);
-            try
-            {
-                if (string.IsNullOrEmpty(path))
-                    throw new DirectoryNotFoundException($"Theme path can't be found <{path}>");
-
-                // Retrieve theme resource – always use the resource with font settings applied.
-                var resourceDict = GetResourceDictionary(theme);
-
-                UpdateResourceDictionary(resourceDict);
-
-                _settings.Theme = theme;
-
-                //always allow re-loading default theme, in case of failure of switching to a new theme from default theme
-                if (_oldTheme != theme || theme == Constant.DefaultTheme)
-                {
-                    _oldTheme = Path.GetFileNameWithoutExtension(_oldResource.Source.AbsolutePath);
-                }
-
-                // Apply drop shadow effect so that we do not need to call it again
-                _ = RefreshFrameAsync();
-
-                return true;
-            }
-            catch (DirectoryNotFoundException)
-            {
-                _api.LogError(ClassName, $"Theme <{theme}> path can't be found");
-                if (theme != Constant.DefaultTheme)
-                {
-                    _api.ShowMsgBox(Localize.Theme_LoadFailure_PathNotExists(theme));
-                    ChangeTheme(Constant.DefaultTheme);
-                }
-                return false;
-            }
-            catch (XamlParseException e)
-            {
-                _api.LogException(ClassName, $"Theme <{theme}> fail to parse xaml", e);
-                if (theme != Constant.DefaultTheme)
-                {
-                    _api.ShowMsgBox(Localize.Theme_LoadFailure_ParseError(theme));
-                    ChangeTheme(Constant.DefaultTheme);
-                }
-                return false;
-            }
-            catch (Exception e)
-            {
-                _api.LogException(ClassName, $"Theme <{theme}> fail to load", e);
-                if (theme != Constant.DefaultTheme)
-                {
-                    _api.ShowMsgBox(Localize.Theme_LoadFailure_ParseError(theme));
-                    ChangeTheme(Constant.DefaultTheme);
-                }
-                return false;
-            }
-        }
-
-        #endregion
 
         #region Shadow Effect
 
         public void AddDropShadowEffectToCurrentTheme()
         {
-            var dict = GetCurrentResourceDictionary();
+            var dict = GetResourceDictionary();
 
             var windowBorderStyle = dict["WindowBorderStyle"] as Style;
 
@@ -236,7 +119,7 @@ namespace Flow.Launcher.Core.Resource
 
         public void RemoveDropShadowEffectFromCurrentTheme()
         {
-            var dict = GetCurrentResourceDictionary();
+            var dict = GetResourceDictionary();
             var windowBorderStyle = dict["WindowBorderStyle"] as Style;
 
             if (windowBorderStyle.Setters.FirstOrDefault(setterBase => setterBase is Setter setter && setter.Property == UIElement.EffectProperty) is Setter effectSetter)
@@ -298,10 +181,6 @@ namespace Flow.Launcher.Core.Resource
             }
         }
 
-        #endregion
-
-        #region Blur Handling
-
         /// <summary>
         /// Refreshes the frame to apply the current theme settings.
         /// </summary>
@@ -325,21 +204,6 @@ namespace Flow.Launcher.Core.Resource
             else
             {
                 RemoveDropShadowEffectFromCurrentTheme();
-            }
-        }
-
-        private void CopyStyle(Style originalStyle, Style targetStyle)
-        {
-            // If the style is based on another style, copy the base style first
-            if (originalStyle.BasedOn != null)
-            {
-                CopyStyle(originalStyle.BasedOn, targetStyle);
-            }
-
-            // Copy the setters from the original style
-            foreach (var setter in originalStyle.Setters.OfType<Setter>())
-            {
-                targetStyle.Setters.Add(new Setter(setter.Property, setter.Value));
             }
         }
 
