@@ -61,16 +61,10 @@ namespace Flow.Launcher.ViewModel
         {
             get
             {
-                // If both glyph and image icons are not available, it will then be the default icon
-                if (!ImgIconAvailable && !GlyphAvailable)
-                    return Visibility.Visible;
+                if (GlyphAvailable)
+                    return Visibility.Collapsed;
 
-                // Although user can choose to use glyph icons, plugins may choose to supply only image icons.
-                // In this case we ignore the setting because otherwise icons will not display as intended
-                if (Settings.UseGlyphIcons && !GlyphAvailable && ImgIconAvailable)
-                    return Visibility.Visible;
-
-                return !Settings.UseGlyphIcons && ImgIconAvailable ? Visibility.Visible : Visibility.Collapsed;
+                return Visibility.Visible;
             }
         }
 
@@ -90,18 +84,14 @@ namespace Flow.Launcher.ViewModel
         {
             get
             {
-                // Although user can choose to not use glyph icons, plugins may choose to supply only glyph icons.
-                // In this case we ignore the setting because otherwise icons will not display as intended
-                if (!Settings.UseGlyphIcons && !ImgIconAvailable && GlyphAvailable)
+                if (GlyphAvailable)
                     return Visibility.Visible;
 
-                return Settings.UseGlyphIcons && GlyphAvailable ? Visibility.Visible : Visibility.Collapsed;
+                return Visibility.Collapsed;
             }
         }
 
         private bool GlyphAvailable => Glyph is not null;
-
-        private bool ImgIconAvailable => !string.IsNullOrEmpty(Result.IcoPath) || Result.Icon is not null;
 
         private bool PreviewImageAvailable => !string.IsNullOrEmpty(Result.Preview.PreviewImagePath) || Result.Preview.PreviewDelegate != null;
 

@@ -74,21 +74,6 @@
                 </ui:SettingsExpander.Items>
             </ui:SettingsExpander>
 
-            <!--  Fonts and icons  -->
-            <ui:SettingsCard
-                Margin="0 18 0 0"
-                Description="{DynamicResource useGlyphUIEffect}"
-                Header="{DynamicResource useGlyphUI}">
-                <ui:SettingsCard.HeaderIcon>
-                    <ui:FontIcon Glyph="&#xf6b8;" />
-                </ui:SettingsCard.HeaderIcon>
-
-                <ui:ToggleSwitch
-                    IsOn="{Binding UseGlyphIcons}"
-                    OffContent="{DynamicResource disable}"
-                    OnContent="{DynamicResource enable}" />
-            </ui:SettingsCard>
-
             <!--  Settings color scheme  -->
             <ui:SettingsCard Margin="0 14 0 0" Header="{DynamicResource ColorScheme}">
                 <ui:SettingsCard.HeaderIcon>

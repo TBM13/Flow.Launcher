@@ -66,8 +66,6 @@ public class Settings : BaseModel, IHotkeySettings
     public double QueryBoxFontSize { get; set; } = 16;
     public double ResultItemFontSize { get; set; } = 16;
     public double ResultSubItemFontSize { get; set; } = 13;
-    public bool UseGlyphIcons { get; set; } = true;
-
     public bool FirstLaunch { get; set; } = true;
 
     public double SettingWindowWidth { get; set; } = 1000;

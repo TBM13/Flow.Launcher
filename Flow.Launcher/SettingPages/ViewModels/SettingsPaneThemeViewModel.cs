@@ -60,10 +60,4 @@ public partial class SettingsPaneThemeViewModel(Settings settings, Theme theme) 
         get => Settings.KeepMaxResults;
         set => Settings.KeepMaxResults = value;
     }
-
-    public bool UseGlyphIcons
-    {
-        get => Settings.UseGlyphIcons;
-        set => Settings.UseGlyphIcons = value;
-    }
 }
