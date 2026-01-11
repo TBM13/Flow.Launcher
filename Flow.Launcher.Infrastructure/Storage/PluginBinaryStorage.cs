@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
-using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Logger;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 
@@ -14,7 +13,8 @@ public class PluginBinaryStorage<T> : BinaryStorage<T>, ISavable where T : new()
     public PluginBinaryStorage(string cacheName, string cacheDirectory)
     {
         DirectoryPath = cacheDirectory;
-        FilesFolders.ValidateDirectory(DirectoryPath);
+        if (!Directory.Exists(DirectoryPath))
+            Directory.CreateDirectory(DirectoryPath);
 
         FilePath = Path.Combine(DirectoryPath, $"{cacheName}{FileSuffix}");
     }

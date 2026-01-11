@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Plugin.Explorer.Exceptions;
 using Flow.Launcher.Plugin.Explorer.Search.DirectoryInfo;
@@ -45,7 +45,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
 
         internal async Task<List<Result>> SearchAsync(Query query, CancellationToken token)
         {
-            bool isPathSearch = query.Search.IsLocationPathString()
+            bool isPathSearch = Path.IsPathFullyQualified(query.Search)
                 || EnvironmentVariables.IsEnvironmentVariableSearch(query.Search)
                 || EnvironmentVariables.HasEnvironmentVar(query.Search);
 
@@ -71,7 +71,8 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             path = path.Replace(Constants.UnixDirectorySeparator, Constants.DirectorySeparator);
 
             // Check that actual location exists, otherwise directory search will throw directory not found exception
-            if (!FilesFolders.ReturnPreviousDirectoryIfIncompleteString(path).LocationExists())
+            string dirPath = Path.GetDirectoryName(path) ?? path;
+            if (!Directory.Exists(dirPath))
                 return [.. results];
 
             if (path.EndsWith('\\'))

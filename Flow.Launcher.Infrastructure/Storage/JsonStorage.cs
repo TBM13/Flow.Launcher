@@ -40,7 +40,8 @@ public class JsonStorage<T> : ISavable where T : new()
         FilePath = filePath;
         DirectoryPath = Path.GetDirectoryName(filePath) ?? throw new ArgumentException("Invalid file path");
 
-        FilesFolders.ValidateDirectory(DirectoryPath);
+        if (!Directory.Exists(DirectoryPath))
+            Directory.CreateDirectory(DirectoryPath);
     }
 
     public bool Exists()
@@ -200,7 +201,8 @@ public class JsonStorage<T> : ISavable where T : new()
     public void Save()
     {
         // User may delete the directory, so we need to check it
-        FilesFolders.ValidateDirectory(DirectoryPath);
+        if (!Directory.Exists(DirectoryPath))
+            Directory.CreateDirectory(DirectoryPath);
 
         var serialized = JsonSerializer.Serialize(Data,
             new JsonSerializerOptions { WriteIndented = true });
@@ -213,7 +215,8 @@ public class JsonStorage<T> : ISavable where T : new()
     public async Task SaveAsync()
     {
         // User may delete the directory, so we need to check it
-        FilesFolders.ValidateDirectory(DirectoryPath);
+        if (!Directory.Exists(DirectoryPath))
+            Directory.CreateDirectory(DirectoryPath);
 
         await using var tempOutput = File.OpenWrite(TempFilePath);
         await JsonSerializer.SerializeAsync(tempOutput, Data,

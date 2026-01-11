@@ -45,14 +45,17 @@ namespace Flow.Launcher.Plugin.Explorer.Search
         private static void LoadEnvironmentStringPaths()
         {
             _envStringPaths = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-            var homedrive = Environment.GetEnvironmentVariable("HOMEDRIVE")?.EnsureTrailingSlash() ?? "C:\\";
+            var homedrive = Environment.GetEnvironmentVariable("HOMEDRIVE") ?? "C:\\";
+            if (!homedrive.EndsWith('\\'))
+                homedrive += '\\';
 
             foreach (DictionaryEntry special in Environment.GetEnvironmentVariables())
             {
-                var path = special.Value!.ToString();
+                var path = special.Value!.ToString()!;
                 // we add a trailing slash to the path to make sure drive paths become valid absolute paths.
                 // for example, if %systemdrive% is C: we turn it to C:\
-                path = path.EnsureTrailingSlash();
+                if (!path.EndsWith('\\'))
+                    path += '\\';
 
                 // if we don't have an absolute path, we use Path.GetFullPath to get one.
                 // for example, if %homepath% is \Users\John we turn it to C:\Users\John

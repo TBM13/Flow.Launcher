@@ -36,7 +36,8 @@ public class BinaryStorage<T> : ISavable
     public BinaryStorage(string filename)
     {
         DirectoryPath = DataLocation.CacheDirectory;
-        FilesFolders.ValidateDirectory(DirectoryPath);
+        if (!Directory.Exists(DirectoryPath))
+            Directory.CreateDirectory(DirectoryPath);
 
         FilePath = Path.Combine(DirectoryPath, $"{filename}{FileSuffix}");
     }
@@ -128,7 +129,8 @@ public class BinaryStorage<T> : ISavable
     public void Save(T data)
     {
         // User may delete the directory, so we need to check it
-        FilesFolders.ValidateDirectory(DirectoryPath);
+        if (!Directory.Exists(DirectoryPath))
+            Directory.CreateDirectory(DirectoryPath);
 
         var serialized = MemoryPackSerializer.Serialize(data);
         File.WriteAllBytes(FilePath, serialized);
@@ -142,7 +144,8 @@ public class BinaryStorage<T> : ISavable
     public async ValueTask SaveAsync(T data)
     {
         // User may delete the directory, so we need to check it
-        FilesFolders.ValidateDirectory(DirectoryPath);
+        if (!Directory.Exists(DirectoryPath))
+            Directory.CreateDirectory(DirectoryPath);
 
         await using var stream = new FileStream(FilePath, FileMode.Create);
         await MemoryPackSerializer.SerializeAsync(stream, data);

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Logger;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 using Flow.Launcher.Infrastructure.UserSettings;
@@ -22,7 +21,8 @@ public class PluginJsonStorage<T> : JsonStorage<T>, ISavable where T : new()
         var dataType = typeof(T);
         AssemblyName = dataType.Assembly.GetName().Name ?? throw new NullReferenceException("Plugin's assembly name was null");
         DirectoryPath = Path.Combine(DataLocation.PluginSettingsDirectory, AssemblyName);
-        FilesFolders.ValidateDirectory(DirectoryPath);
+        if (!Directory.Exists(DirectoryPath))
+            Directory.CreateDirectory(DirectoryPath);
 
         FilePath = Path.Combine(DirectoryPath, $"{dataType.Name}{FileSuffix}");
     }

@@ -240,7 +240,8 @@ namespace Flow.Launcher.Plugin.Program
             var _win32sCount = 0;
             var _uwpsCount = 0;
             var pluginCacheDirectory = Context.CurrentPluginMetadata.PluginCacheDirectoryPath;
-            FilesFolders.ValidateDirectory(pluginCacheDirectory);
+            if (!Directory.Exists(pluginCacheDirectory))
+                Directory.CreateDirectory(pluginCacheDirectory);
 
             static void MoveFile(string sourcePath, string destinationPath)
             {

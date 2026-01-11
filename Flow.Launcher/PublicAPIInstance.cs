@@ -335,7 +335,9 @@ namespace Flow.Launcher
 
         private void OpenUri(Uri uri, bool inPrivate = false, bool forceBrowser = false, bool openInTab = true)
         {
-            if (uri.IsFile && !FilesFolders.FileOrLocationExists(uri.LocalPath))
+            if (uri.IsFile
+                && !File.Exists(uri.LocalPath)
+                && !Directory.Exists(uri.LocalPath))
             {
                 ShowMsgError(Localize.errorTitle(), Localize.fileNotFoundError(uri.LocalPath));
                 return;
@@ -516,12 +518,13 @@ namespace Flow.Launcher
             }
             catch (Exception e)
             {
+                // TODO: Maybe don't handle exceptions? Let the caller do it
                 LogException(ClassName, $"Failed to start process {fileName} with arguments {arguments} under {workingDirectory}", e);
                 return false;
             }
         }
 
-        public bool StartProcess(string fileName, string workingDirectory = "", Collection<string> argumentList = null, bool useShellExecute = false, string verb = "", bool createNoWindow = false) =>
+        public bool StartProcess(string fileName, string workingDirectory = "", Collection<string>? argumentList = null, bool useShellExecute = false, string verb = "", bool createNoWindow = false) =>
             StartProcess(fileName, workingDirectory, JoinArgumentList(argumentList), useShellExecute, verb, createNoWindow);
 
         private static string AddDoubleQuotes(string arg)
@@ -536,7 +539,7 @@ namespace Flow.Launcher
             return $"\"{arg}\"";
         }
 
-        private static string JoinArgumentList(Collection<string> args)
+        private static string JoinArgumentList(Collection<string>? args)
         {
             if (args == null || args.Count == 0)
                 return string.Empty;

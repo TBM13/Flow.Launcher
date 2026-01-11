@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
-using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Logger;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 using Flow.Launcher.Infrastructure.UserSettings;
@@ -15,7 +14,8 @@ public class FlowLauncherJsonStorage<T> : JsonStorage<T>, ISavable where T : new
     public FlowLauncherJsonStorage()
     {
         DirectoryPath = Path.Combine(DataLocation.DataDirectory(), DirectoryName);
-        FilesFolders.ValidateDirectory(DirectoryPath);
+        if (!Directory.Exists(DirectoryPath))
+            Directory.CreateDirectory(DirectoryPath);
 
         var filename = typeof(T).Name;
         FilePath = Path.Combine(DirectoryPath, $"{filename}{FileSuffix}");

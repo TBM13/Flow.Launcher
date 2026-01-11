@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Infrastructure.Helpers;
 
 namespace Flow.Launcher.Plugin.Explorer.Search.DirectoryInfo
 {
@@ -54,8 +53,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search.DirectoryInfo
             string searchCriteria, CancellationToken token)
         {
             var results = new List<SearchResult>();
-
-            var path = FilesFolders.ReturnPreviousDirectoryIfIncompleteString(search);
+            var path = Path.GetDirectoryName(search) ?? search;
 
             try
             {
@@ -71,7 +69,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search.DirectoryInfo
                             System.IO.DirectoryInfo { Parent: null } => ResultType.Volume,
                             System.IO.DirectoryInfo => ResultType.Folder,
                             FileInfo => ResultType.File,
-                            _ => throw new ArgumentOutOfRangeException(nameof(fileSystemInfo))
+                            _ => throw new(nameof(fileSystemInfo))
                         },
                     });
 

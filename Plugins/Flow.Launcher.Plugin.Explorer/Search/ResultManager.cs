@@ -306,7 +306,12 @@ namespace Flow.Launcher.Plugin.Explorer.Search
 
         private static void OpenFile(string filePath, string workingDir = "", bool asAdmin = false)
         {
-            FilesFolders.OpenFile(filePath, workingDir, asAdmin, (string str) => Context.API.ShowMsgBox(str));
+            string verb = asAdmin ? "runas" : string.Empty;
+            bool res = Context.API.StartProcess(filePath, workingDir, arguments: string.Empty, verb: verb);
+            if (!res)
+            {
+                Context.API.ShowMsgError(Localize.Error_OpenFile);
+            }
         }
 
         private static void OpenFolder(string folderPath, string fileNameOrFilePath = null)
