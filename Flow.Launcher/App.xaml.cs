@@ -85,9 +85,6 @@ namespace Flow.Launcher
                         .AddTransient<SettingsPaneHotkeyViewModel>()
                         .AddTransient<SettingsPanePluginsViewModel>()
                         .AddTransient<SettingsPaneThemeViewModel>()
-                        // Use transient instance for dialog view models because
-                        // settings will change and we need to recreate them
-                        .AddTransient<SelectFileManagerViewModel>()
                     ).Build();
                 Ioc.Default.ConfigureServices(host.Services);
             }

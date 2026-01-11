@@ -58,17 +58,9 @@ public partial class SettingsPaneGeneralViewModel : BaseModel
         DropdownDataGeneric<LastQueryMode>.UpdateLabels(LastQueryModes);
         // Since we are using Binding instead of DynamicResource, we need to manually trigger the update
         OnPropertyChanged(nameof(AlwaysPreviewToolTip));
-        Settings.CustomExplorer.OnDisplayNameChanged();
     }
 
     public string AlwaysPreviewToolTip => Localize.AlwaysPreviewToolTip(Settings.PreviewHotkey);
-
-    [RelayCommand]
-    private void SelectFileManager()
-    {
-        var fileManagerChangeWindow = new SelectFileManagerWindow();
-        fileManagerChangeWindow.ShowDialog();
-    }
 
     public bool AlwaysRunAsAdministrator
     {

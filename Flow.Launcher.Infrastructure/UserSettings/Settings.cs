@@ -90,49 +90,6 @@ public class Settings : BaseModel, IHotkeySettings
         }
     }
 
-    public int CustomExplorerIndex { get; set; } = 0;
-
-    [JsonIgnore]
-    public CustomExplorerViewModel CustomExplorer
-    {
-        get => CustomExplorerList[CustomExplorerIndex < CustomExplorerList.Count ? CustomExplorerIndex : 0];
-        set => CustomExplorerList[CustomExplorerIndex] = value;
-    }
-
-    public List<CustomExplorerViewModel> CustomExplorerList { get; set; } =
-    [
-        new()
-        {
-            Name = "Explorer",
-            Path = "explorer",
-            DirectoryArgument = "\"%d\"",
-            FileArgument = "/select, \"%f\"",
-            Editable = false
-        },
-        new()
-        {
-            Name = "Total Commander",
-            Path = @"C:\Program Files\totalcmd\TOTALCMD64.exe",
-            DirectoryArgument = "/O /A /S /T \"%d\"",
-            FileArgument = "/O /A /S /T \"%f\""
-        },
-        new()
-        {
-            Name = "Directory Opus",
-            Path = @"C:\Program Files\GPSoftware\Directory Opus\dopusrt.exe",
-            DirectoryArgument = "/cmd Go \"%d\" NEW",
-            FileArgument = "/cmd Go \"%f\" NEW"
-
-        },
-        new()
-        {
-            Name = "Files",
-            Path = "Files-Stable",
-            DirectoryArgument = "\"%d\"",
-            FileArgument = "-select \"%f\""
-        }
-    ];
-
     public bool AlwaysPreview { get; set; } = false;
 
     private SearchPrecisionScore _querySearchPrecision = SearchPrecisionScore.Regular;

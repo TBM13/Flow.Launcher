@@ -221,22 +221,6 @@
                     OffContent="{DynamicResource disable}"
                     OnContent="{DynamicResource enable}" />
             </ui:SettingsCard>
-
-            <ui:SettingsCard
-                Margin="0 14 0 0"
-                Description="{DynamicResource defaultFileManagerToolTip}"
-                Header="{DynamicResource defaultFileManager}">
-                <ui:SettingsCard.HeaderIcon>
-                    <ui:FontIcon Glyph="&#xe838;" />
-                </ui:SettingsCard.HeaderIcon>
-
-                <Button
-                    Width="160"
-                    MaxWidth="250"
-                    Margin="10 0 0 0"
-                    Command="{Binding SelectFileManagerCommand}"
-                    Content="{Binding Settings.CustomExplorer.DisplayName}" />
-            </ui:SettingsCard>
         </VirtualizingStackPanel>
     </ui:ScrollViewerEx>
 </ui:Page>

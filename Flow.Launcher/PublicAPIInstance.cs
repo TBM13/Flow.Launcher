@@ -272,53 +272,32 @@ namespace Flow.Launcher
             ((PluginJsonStorage<T>)_pluginJsonStorages[type]).Save();
         }
 
-        public void OpenDirectory(string directoryPath, string fileNameOrFilePath = null)
+        public void OpenDirectory(string directoryPath, string? fileNameOrFilePath = null)
         {
             try
             {
-                var explorerInfo = _settings.CustomExplorer;
-                var explorerPath = explorerInfo.Path.Trim().ToLowerInvariant();
                 var targetPath = fileNameOrFilePath is null
                     ? directoryPath
                     : Path.IsPathRooted(fileNameOrFilePath)
                         ? fileNameOrFilePath
                         : Path.Combine(directoryPath, fileNameOrFilePath);
 
-                if (Path.GetFileNameWithoutExtension(explorerPath) == "explorer")
+                // Windows File Manager
+                if (fileNameOrFilePath is null)
                 {
-                    // Windows File Manager
-                    if (fileNameOrFilePath is null)
-                    {
-                        // Only Open the directory
-                        using var explorer = new Process();
-                        explorer.StartInfo = new ProcessStartInfo
-                        {
-                            FileName = directoryPath,
-                            UseShellExecute = true
-                        };
-                        explorer.Start();
-                    }
-                    else
-                    {
-                        // Open the directory and select the file
-                        Win32Helper.OpenFolderAndSelectFile(targetPath);
-                    }
-                }
-                else
-                {
-                    // Custom File Manager
+                    // Only Open the directory
                     using var explorer = new Process();
                     explorer.StartInfo = new ProcessStartInfo
                     {
-                        FileName = explorerInfo.Path.Replace("%d", directoryPath),
-                        UseShellExecute = true,
-                        Arguments = fileNameOrFilePath is null
-                            ? explorerInfo.DirectoryArgument.Replace("%d", directoryPath)
-                            : explorerInfo.FileArgument
-                                .Replace("%d", directoryPath)
-                                .Replace("%f", targetPath)
+                        FileName = directoryPath,
+                        UseShellExecute = true
                     };
                     explorer.Start();
+                }
+                else
+                {
+                    // Open the directory and select the file
+                    Win32Helper.OpenFolderAndSelectFile(targetPath);
                 }
             }
             catch (COMException ex) when (ex.ErrorCode == unchecked((int)0x80004004))
