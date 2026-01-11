@@ -7,7 +7,6 @@ using System.Windows.Controls;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
-using Flow.Launcher.Plugin.Calculator.ViewModels;
 using Flow.Launcher.Plugin.Calculator.Views;
 using Mages.Core;
 
@@ -38,22 +37,20 @@ namespace Flow.Launcher.Plugin.Calculator
         private static readonly Regex LnRegex = MainRegexHelper.GetLnRegex();
         private static readonly Regex FunctionRegex = MainRegexHelper.GetFunctionRegex();
 
-        private static Engine MagesEngine;
+        private static Engine MagesEngine = null!;
         private const string Comma = ",";
         private const string Dot = ".";
-        private static string IcoPath = PluginMetadataDefinition.Metadata.IcoPath;
+        private static readonly string IcoPath = PluginMetadataDefinition.Metadata.IcoPath;
         private static readonly List<Result> EmptyResults = [];
 
         internal static PluginInitContext Context { get; private set; } = null!;
 
-        private Settings _settings;
-        private SettingsViewModel _viewModel;
+        private Settings _settings = null!;
 
         public void Init(PluginInitContext context)
         {
             Context = context;
             _settings = context.API.LoadSettingJsonStorage<Settings>();
-            _viewModel = new SettingsViewModel(_settings);
 
             MagesEngine = new Engine(new Configuration
             {
