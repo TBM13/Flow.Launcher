@@ -17,7 +17,7 @@ public static class PluginMetadataDefinition
     public static readonly PluginMetadata Metadata = new()
     {
         ID = "239acbf0-8488-44ef-9a98-43025a3886ca",
-        ActionKeywords = ["task"],
+        ActionKeywords = ["tsk"],
         Name = "Windows Tasks",
         Description = "Manage Windows tasks from Flow Launcher",
         Author = "TBM13",
