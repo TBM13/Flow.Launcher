@@ -7,7 +7,7 @@ public class CustomPluginHotkey(string hotkey, string actionKeyword) : BaseModel
     public string Hotkey { get; set; } = hotkey;
     public string ActionKeyword { get; set; } = actionKeyword;
 
-    public override bool Equals(object other)
+    public override bool Equals(object? other)
     {
         if (other is CustomPluginHotkey otherHotkey)
         {

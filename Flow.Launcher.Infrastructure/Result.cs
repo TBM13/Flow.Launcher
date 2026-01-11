@@ -7,17 +7,19 @@ using Flow.Launcher.Infrastructure.UI;
 namespace Flow.Launcher.Infrastructure;
 
 /// <summary>
-/// Describes a result of a <see cref="Query"/> executed by a plugin
+/// Describes a result of a <see cref="Query"/>.
 /// </summary>
 public record Result
 {
     /// <summary>
-    /// Maximum score. This can be useful when set one result to the top by default. This is the score for the results set to the topmost by users.
+    /// The maximum score a result can have.
+    /// <para/>
+    /// Useful to make a result appear at the top of the list.
     /// </summary>
     public const int MaxScore = int.MaxValue;
 
     /// <summary>
-    /// The title of the result. This is always required.
+    /// The title of the result.
     /// </summary>
     public required string Title { get; set; }
 
@@ -27,15 +29,10 @@ public record Result
     public string SubTitle { get; set; } = string.Empty;
 
     /// <summary>
-    /// Holds the action keyword that triggered the result.
-    /// If result is triggered by global keyword: *, this should be null.
-    /// </summary>
-    public string? ActionKeywordAssigned { get; set; }
-
-    /// <summary>
-    /// This holds the text which can be provided by plugin to be copied to the
-    /// user's clipboard when Ctrl + C is pressed on a result. If the text is a file/directory path
-    /// flow will copy the actual file/folder instead of just the path text.
+    /// The text that will be copied to the user's clipboard when
+    /// Ctrl + C is pressed on this result.
+    /// <para/>
+    /// If this is the path of a file/directory, flow will copy the actual file/folder.
     /// </summary>
     public string CopyText
     {
@@ -44,61 +41,49 @@ public record Result
     }
 
     /// <summary>
-    /// This holds the text which can be provided by plugin to help Flow autocomplete text
-    /// for user on the plugin result. If autocomplete action for example is tab, pressing tab will have
-    /// the default constructed autocomplete text (result's Title), or the text provided here if not empty.
+    /// If provided, the query will be replaced with the value of this property when
+    /// the user presses TAB (or whatever the autocomplete hotkey is) on this result.
+    /// <para/>
+    /// Please include the action keyword prefix when necessary because we don't prepend it automatically.
     /// </summary>
-    /// <remarks>
-    /// When a value is not set, the <see cref="Title"/> will be used.
-    /// Please include the action keyword prefix when necessary because Flow does not prepend it automatically.
-    /// </remarks>
     public string? AutoCompleteText { get; set; }
 
     /// <summary>
     /// The image to be displayed for the result.
     /// </summary>
-    /// <value>Can be a local file path or a URL.</value>
-    /// <remarks>GlyphInfo is prioritized if not null</remarks>
+    /// <remarks><see cref="Glyph"/> is prioritized if it's not null.</remarks>
     public string? IcoPath { get; set; }
 
-    /// <summary>
-    /// Delegate function that produces an <see cref="ImageSource"/>
-    /// </summary>
-    /// <returns></returns>
     public delegate ImageSource IconDelegate();
 
     /// <summary>
-    /// Delegate to load an icon for this result.
+    /// If provided, the result of this method will be used as the icon for the result.
     /// </summary>
     public IconDelegate? Icon = null;
 
     /// <summary>
-    /// Information for Glyph Icon (Prioritized than IcoPath/Icon if user enable Glyph Icons)
+    /// A glyph that will be displayed with the result, instead of an icon image.
     /// </summary>
     public GlyphInfo? Glyph { get; set; }
 
     /// <summary>
-    /// An action to take in the form of a function call when the result has been selected.
+    /// The action that will be executed when the result is selected.
     /// </summary>
     /// <remarks>
-    /// The function is invoked with an <see cref="ActionContext"/> as the only parameter.
-    /// Its result determines what happens to Flow Launcher's query form:
-    /// when true, the form will be hidden; when false, it will stay in focus.
+    /// If the result of the function is true, Flow Launcher's window will be hidden.
     /// </remarks>
     public Func<ActionContext, bool>? Action { get; set; }
 
     /// <summary>
-    /// An async action to take in the form of a function call when the result has been selected.
+    /// The async action that will be executed when the result is selected.
     /// </summary>
     /// <remarks>
-    /// The function is invoked with an <see cref="ActionContext"/> as the only parameter and awaited.
-    /// Its result determines what happens to Flow Launcher's query form:
-    /// when true, the form will be hidden; when false, it will stay in focus.
+    /// If the result of the function is true, Flow Launcher's window will be hidden.
     /// </remarks>
     public Func<ActionContext, ValueTask<bool>>? AsyncAction { get; set; }
 
     /// <summary>
-    /// Priority of the current result
+    /// Priority of the current result.
     /// </summary>
     /// <value>default: 0</value>
     public int Score { get; set; }
@@ -117,7 +102,7 @@ public record Result
     public object? ContextData { get; set; }
 
     /// <summary>
-    /// Plugin ID that generated this result
+    /// The ID of the plugin that generated this result.
     /// </summary>
     public string? PluginID { get; internal set; }
 

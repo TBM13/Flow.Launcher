@@ -74,7 +74,7 @@ namespace Flow.Launcher.Plugin.PluginIndicator
                 foreach (var actionKeyword in plugin.ActionKeywords)
                 {
                     // Skip global keywords
-                    if (actionKeyword == Infrastructure.Query.GlobalPluginWildcardSign) continue;
+                    if (actionKeyword == Infrastructure.Query.GlobalPluginWildcard) continue;
 
                     // Skip dulpicated keywords
                     if (nonGlobalPlugins.ContainsKey(actionKeyword)) continue;

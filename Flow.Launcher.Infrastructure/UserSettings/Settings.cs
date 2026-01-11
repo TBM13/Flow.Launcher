@@ -276,7 +276,7 @@ public class Settings : BaseModel, IHotkeySettings
         }
     }
 
-    private List<RegisteredHotkeyData> FixedHotkeys()
+    private static List<RegisteredHotkeyData> FixedHotkeys()
     {
         return
         [

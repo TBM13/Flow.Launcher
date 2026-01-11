@@ -17,27 +17,27 @@ public record ActionContext
 /// <summary>
 /// Contains the press state of certain special keys.
 /// </summary>
-public record SpecialKeyState
+public readonly record struct SpecialKeyState
 {
     /// <summary>
     /// True if the Ctrl key is pressed.
     /// </summary>
-    public bool CtrlPressed { get; set; }
+    public bool CtrlPressed { get; init; }
 
     /// <summary>
     /// True if the Shift key is pressed.
     /// </summary>
-    public bool ShiftPressed { get; set; }
+    public bool ShiftPressed { get; init; }
 
     /// <summary>
     /// True if the Alt key is pressed.
     /// </summary>
-    public bool AltPressed { get; set; }
+    public bool AltPressed { get; init; }
 
     /// <summary>
     /// True if the Windows key is pressed.
     /// </summary>
-    public bool WinPressed { get; set; }
+    public bool WinPressed { get; init; }
 
     /// <summary>
     /// Get this object represented as a <see cref="ModifierKeys"/> flag combination.

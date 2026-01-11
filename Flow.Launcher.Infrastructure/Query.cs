@@ -1,4 +1,8 @@
-﻿namespace Flow.Launcher.Infrastructure;
+﻿using System;
+using System.Collections.Generic;
+using Flow.Launcher.Infrastructure.Plugins;
+
+namespace Flow.Launcher.Infrastructure;
 
 /// <summary>
 /// Represents a query that is sent to a plugin.
@@ -6,49 +10,32 @@
 public record Query
 {
     /// <summary>
-    /// Query can be splited into multiple terms by whitespace
+    /// The character that separates terms in a query.
     /// </summary>
-    public const string TermSeparator = " ";
+    public const char TermSeparator = ' ';
     /// <summary>
-    /// User can set multiple action keywords seperated by whitespace
+    /// Plugins whose action keyword is this will be queried on every search.
     /// </summary>
-    public const string ActionKeywordSeparator = TermSeparator;
-    /// <summary>
-    /// Wildcard action keyword. Plugins using this value will be queried on every search.
-    /// </summary>
-    public const string GlobalPluginWildcardSign = "*";
+    public const string GlobalPluginWildcard = "*";
 
     /// <summary>
-    /// Original query, exactly how the user has typed into the search box.
-    /// We don't recommend using this property directly. You should always use Search property.
+    /// The original query, exactly what the user typed into the search box.
+    /// <para/>
+    /// We don't recommend using this property directly. Use <see cref="Search"/> instead.
     /// </summary>
     public required string OriginalQuery { get; init; }
 
     /// <summary>
-    /// Original query but with trimmed whitespace. Includes action keyword.
-    /// It has handled built-in custom query hotkeys and build-in shortcuts.
-    /// If you need the exact original query from the search box, use OriginalQuery property instead.
-    /// We don't recommend using this property directly. You should always use Search property.
+    /// Original query but with whitespaces trimmed. Includes the action keyword.
+    /// <para/>
+    /// If you need the exact original query from the search box, use <see cref="OriginalQuery"/> instead.
+    /// <para/>
+    /// We don't recommend using this property directly. Use <see cref="Search"/> instead.
     /// </summary>
     public required string TrimmedQuery { get; init; }
 
     /// <summary>
-    /// Determines whether the query was forced to execute again.
-    /// For example, the value will be true when the user presses Ctrl + R.
-    /// When this property is true, plugins handling this query should avoid serving cached results.
-    /// </summary>
-    public bool IsReQuery { get; internal set; } = false;
-
-    /// <summary>
-    /// Determines whether the query is a home query.
-    /// </summary>
-    public bool IsHomeQuery { get; init; } = false;
-
-    /// <summary>
-    /// Search part of a query.
-    /// This will not include action keyword if exclusive plugin gets it, otherwise it should be same as TrimmedQuery.
-    /// Since we allow user to switch a exclusive plugin to generic plugin,
-    /// so this property will always give you the "real" query part of the query
+    /// The search part of a query, without the action keyword.
     /// </summary>
     public required string Search { get; init; }
 
@@ -58,6 +45,76 @@ public record Query
     /// </summary>
     public required string ActionKeyword { get; init; }
 
-    /// <inheritdoc />
-    public override string ToString() => TrimmedQuery;
+    /// <summary>
+    /// Determines whether the query was forced to execute again.
+    /// For example, the value will be true when the user presses Ctrl + R.
+    /// <para/>
+    /// When this is <see langword="true"/>, plugins handling this query should avoid serving cached results.
+    /// </summary>
+    public required bool IsReQuery { get; init; }
+
+    /// <summary>
+    /// Determines whether the query is a home query.
+    /// </summary>
+    public required bool IsHomeQuery { get; init; }
+
+    private Query() { }
+
+    internal static Query Build(string originalQuery, bool isRequery, Dictionary<string, PluginMetadata> nonGlobalPlugins)
+    {
+        string trimmedQuery = originalQuery.Trim();
+
+        // home query
+        if (trimmedQuery.Length == 0)
+        {
+            return new Query()
+            {
+                OriginalQuery = string.Empty,
+                TrimmedQuery = string.Empty,
+                Search = string.Empty,
+                ActionKeyword = string.Empty,
+                IsReQuery = isRequery,
+                IsHomeQuery = true,
+            };
+        }
+
+        string[] terms = trimmedQuery.Split(TermSeparator, StringSplitOptions.RemoveEmptyEntries);
+        // Since TermSeparator is a whitespace, terms should never have a length of 0 here
+
+        string actionKeyword, search;
+        string possibleActionKeyword = terms[0];
+
+        if (nonGlobalPlugins.TryGetValue(possibleActionKeyword, out var pluginMetadata) && !pluginMetadata.Disabled)
+        {
+            // use non global plugin for query
+            actionKeyword = possibleActionKeyword;
+            search = terms.Length > 1 ? trimmedQuery[(actionKeyword.Length + 1)..].TrimStart() : string.Empty;
+        }
+        // Allow queries with a single-digit actionKeyword (that isn't a number nor letter), and no spaces.
+        // For example: '>settings' ('>' is the action keyword)
+        else if (possibleActionKeyword.Length >= 2
+                && !char.IsLetterOrDigit(possibleActionKeyword[0])
+                && nonGlobalPlugins.TryGetValue(possibleActionKeyword[0..1], out var pluginMetadata2)
+                && !pluginMetadata2.Disabled)
+        {
+            actionKeyword = possibleActionKeyword[0..1];
+            search = trimmedQuery[1..].TrimStart();
+        }
+        else
+        {
+            // non action keyword
+            actionKeyword = string.Empty;
+            search = trimmedQuery;
+        }
+
+        return new Query()
+        {
+            OriginalQuery = originalQuery,
+            TrimmedQuery = trimmedQuery,
+            Search = search,
+            ActionKeyword = actionKeyword,
+            IsReQuery = isRequery,
+            IsHomeQuery = false,
+        };
+    }
 }

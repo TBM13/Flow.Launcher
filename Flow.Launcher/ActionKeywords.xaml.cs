@@ -21,7 +21,7 @@ namespace Flow.Launcher
 
         private void ActionKeyword_OnLoaded(object sender, RoutedEventArgs e)
         {
-            tbOldActionKeyword.Text = string.Join(Query.ActionKeywordSeparator, _plugin.ActionKeywords);
+            tbOldActionKeyword.Text = string.Join(Query.TermSeparator, _plugin.ActionKeywords);
             tbAction.Text = tbOldActionKeyword.Text;
             tbAction.SelectAll();
             tbAction.Focus();
@@ -36,12 +36,12 @@ namespace Flow.Launcher
         {
             var oldActionKeywords = _plugin.ActionKeywords;
 
-            var newActionKeywords = tbAction.Text.Split(Query.ActionKeywordSeparator)
+            var newActionKeywords = tbAction.Text.Split(Query.TermSeparator)
                                                  .Where(s => !string.IsNullOrEmpty(s))
                                                  .Distinct()
                                                  .ToList();
 
-            newActionKeywords = newActionKeywords.Count > 0 ? newActionKeywords : new() { Query.GlobalPluginWildcardSign };
+            newActionKeywords = newActionKeywords.Count > 0 ? newActionKeywords : new() { Query.GlobalPluginWildcard };
 
             var addedActionKeywords = newActionKeywords.Except(oldActionKeywords).ToList();
             var removedActionKeywords = oldActionKeywords.Except(newActionKeywords).ToList();

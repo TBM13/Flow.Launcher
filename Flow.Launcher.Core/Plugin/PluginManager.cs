@@ -260,7 +260,7 @@ namespace Flow.Launcher.Core.Plugin
             {
                 switch (actionKeyword)
                 {
-                    case Query.GlobalPluginWildcardSign:
+                    case Query.GlobalPluginWildcard:
                         _globalPlugins.TryAdd(metadata.ID, metadata);
                         break;
                     default:
@@ -321,7 +321,6 @@ namespace Flow.Launcher.Core.Plugin
                     SubTitle = Localize.Plugin_StillInitializing_Subtitle,
                     AutoCompleteText = query.TrimmedQuery,
                     IcoPath = metadata.IcoPath,
-                    ActionKeywordAssigned = query.ActionKeyword,
                     PluginID = metadata.ID,
                     OriginQuery = query,
                     Action = _ =>
@@ -358,7 +357,6 @@ namespace Flow.Launcher.Core.Plugin
                     SubTitle = Localize.Plugin_FailedToRespond_Subtitle,
                     AutoCompleteText = query.TrimmedQuery,
                     IcoPath = Constant.ErrorIcon,
-                    ActionKeywordAssigned = query.ActionKeyword,
                     PluginID = metadata.ID,
                     OriginQuery = query,
                     Action = _ => { throw new FlowPluginException(metadata, e); }
@@ -380,7 +378,6 @@ namespace Flow.Launcher.Core.Plugin
                     SubTitle = Localize.Plugin_StillInitializing_Subtitle,
                     AutoCompleteText = query.TrimmedQuery,
                     IcoPath = metadata.IcoPath,
-                    ActionKeywordAssigned = query.ActionKeyword,
                     PluginID = metadata.ID,
                     OriginQuery = query,
                     Action = _ =>
@@ -464,11 +461,6 @@ namespace Flow.Launcher.Core.Plugin
             {
                 r.PluginID = metadata.ID;
                 r.OriginQuery = query;
-
-                // ActionKeywordAssigned is used for constructing MainViewModel's query text auto-complete suggestions
-                // Plugins may have multi-actionkeywords eg. WebSearches. In this scenario it needs to be overriden on the plugin level
-                if (metadata.ActionKeywords.Count == 1)
-                    r.ActionKeywordAssigned = query.ActionKeyword;
             }
         }
 
@@ -591,7 +583,7 @@ namespace Flow.Launcher.Core.Plugin
         {
             // this method is only checking for action keywords (defined as not '*') registration
             // hence the actionKeyword != Query.GlobalPluginWildcardSign logic
-            return actionKeyword != Query.GlobalPluginWildcardSign
+            return actionKeyword != Query.GlobalPluginWildcard
                 && _nonGlobalPlugins.ContainsKey(actionKeyword);
         }
 
@@ -602,7 +594,7 @@ namespace Flow.Launcher.Core.Plugin
         public static void AddActionKeyword(string id, string newActionKeyword)
         {
             var plugin = GetPluginForId(id);
-            if (newActionKeyword == Query.GlobalPluginWildcardSign)
+            if (newActionKeyword == Query.GlobalPluginWildcard)
             {
                 _globalPlugins.TryAdd(id, plugin);
             }
@@ -622,15 +614,15 @@ namespace Flow.Launcher.Core.Plugin
         public static void RemoveActionKeyword(string id, string oldActionkeyword)
         {
             var plugin = GetPluginForId(id);
-            if (oldActionkeyword == Query.GlobalPluginWildcardSign
+            if (oldActionkeyword == Query.GlobalPluginWildcard
                 && // Plugins may have multiple ActionKeywords that are global, eg. WebSearch
                 plugin.ActionKeywords
-                    .Count(x => x == Query.GlobalPluginWildcardSign) == 1)
+                    .Count(x => x == Query.GlobalPluginWildcard) == 1)
             {
                 _globalPlugins.TryRemove(id, out _);
             }
 
-            if (oldActionkeyword != Query.GlobalPluginWildcardSign)
+            if (oldActionkeyword != Query.GlobalPluginWildcard)
             {
                 _nonGlobalPlugins.TryRemove(oldActionkeyword, out _);
             }

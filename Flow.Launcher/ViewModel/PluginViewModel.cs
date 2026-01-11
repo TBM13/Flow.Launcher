@@ -133,7 +133,7 @@ namespace Flow.Launcher.ViewModel
         }
 
         public string Version => Localize.plugin_query_version() + " " + PluginMetadata.Version;
-        public string ActionKeywordsText => string.Join(Query.ActionKeywordSeparator, PluginMetadata.ActionKeywords);
+        public string ActionKeywordsText => string.Join(Query.TermSeparator, PluginMetadata.ActionKeywords);
         public Infrastructure.UserSettings.Plugin PluginSettingsObject { get; init; }
         public bool HomeEnabled => Settings.ShowHomePage && PluginManager.IsHomePlugin(PluginMetadata.ID);
 

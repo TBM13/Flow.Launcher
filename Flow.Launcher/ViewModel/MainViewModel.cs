@@ -283,14 +283,16 @@ namespace Flow.Launcher.ViewModel
         [RelayCommand]
         private void Backspace(object index)
         {
-            var query = QueryBuilder.Build(QueryText, QueryText.Trim(), PluginManager.GetNonGlobalPlugins());
-            var actionKeyword = string.IsNullOrEmpty(query.ActionKeyword) ? string.Empty : $"{query.ActionKeyword} ";
+            var query = Infrastructure.Query.Build(QueryText, isRequery: false, PluginManager.GetNonGlobalPlugins());
+            string actionKeyword = query.ActionKeyword.Length == 0
+                ? string.Empty
+                : query.ActionKeyword + Infrastructure.Query.TermSeparator;
 
             string search = query.Search;
             if (search.EndsWith('\\') || search.EndsWith('/'))
                 search = search[..^1];
 
-            var lastSeparatorIndex = Math.Max(search.LastIndexOf('\\'), search.LastIndexOf('/'));
+            int lastSeparatorIndex = Math.Max(search.LastIndexOf('\\'), search.LastIndexOf('/'));
             search = lastSeparatorIndex >= 0 ? search[..(lastSeparatorIndex + 1)] : string.Empty;
 
             ChangeQueryText($"{actionKeyword}{search}");
@@ -1038,7 +1040,7 @@ namespace Flow.Launcher.ViewModel
 
             App.API.LogDebug(ClassName, $"Start query with text: <{QueryText}>");
 
-            var query = await ConstructQueryAsync(QueryText, Settings.CustomShortcuts, Settings.BuiltinShortcuts);
+            var query = await ConstructQueryAsync(QueryText, isReQuery, Settings.CustomShortcuts, Settings.BuiltinShortcuts);
 
             if (query == null) // shortcut expanded
             {
@@ -1060,9 +1062,6 @@ namespace Flow.Launcher.ViewModel
             await TaskScheduler.Default;
 
             if (currentCancellationToken.IsCancellationRequested) return;
-
-            // Update the query's IsReQuery property to true if this is a re-query
-            query.IsReQuery = isReQuery;
 
             ICollection<PluginMetadata> plugins = Array.Empty<PluginMetadata>();
             if (currentIsHomeQuery)
@@ -1193,12 +1192,14 @@ namespace Flow.Launcher.ViewModel
             }
         }
 
-        private async Task<Query?> ConstructQueryAsync(string queryText, IEnumerable<CustomShortcutModel> customShortcuts,
+        private async Task<Query?> ConstructQueryAsync(
+            string queryText, bool isRequery,
+            IEnumerable<CustomShortcutModel> customShortcuts,
             IEnumerable<BaseBuiltinShortcutModel> builtInShortcuts)
         {
             if (string.IsNullOrWhiteSpace(queryText))
             {
-                return QueryBuilder.Build(string.Empty, string.Empty, PluginManager.GetNonGlobalPlugins());
+                return Infrastructure.Query.Build(string.Empty, isRequery, PluginManager.GetNonGlobalPlugins());
             }
 
             var queryBuilder = new StringBuilder(queryText);
@@ -1215,10 +1216,10 @@ namespace Flow.Launcher.ViewModel
                 queryBuilder.Replace('@' + shortcut.Key, shortcut.Expand());
             }
 
-            // Applying builtin shortcuts
+            // Apply builtin shortcuts
             await BuildQueryAsync(builtInShortcuts, queryBuilder, queryBuilderTmp);
 
-            return QueryBuilder.Build(queryText, queryBuilder.ToString().Trim(), PluginManager.GetNonGlobalPlugins());
+            return Infrastructure.Query.Build(queryBuilder.ToString(), isRequery, PluginManager.GetNonGlobalPlugins());
         }
 
         private async Task BuildQueryAsync(IEnumerable<BaseBuiltinShortcutModel> builtInShortcuts,

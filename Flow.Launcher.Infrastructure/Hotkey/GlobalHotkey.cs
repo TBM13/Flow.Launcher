@@ -38,28 +38,14 @@ public class GlobalHotkey : IDisposable
 
     public static SpecialKeyState CheckModifiers()
     {
-        SpecialKeyState state = new SpecialKeyState();
-        if ((PInvoke.GetKeyState((int)VIRTUAL_KEY.VK_SHIFT) & 0x8000) != 0)
+        SpecialKeyState state = new SpecialKeyState()
         {
-            //SHIFT is pressed
-            state.ShiftPressed = true;
-        }
-        if ((PInvoke.GetKeyState((int)VIRTUAL_KEY.VK_CONTROL) & 0x8000) != 0)
-        {
-            //CONTROL is pressed
-            state.CtrlPressed = true;
-        }
-        if ((PInvoke.GetKeyState((int)VIRTUAL_KEY.VK_MENU) & 0x8000) != 0)
-        {
-            //ALT is pressed
-            state.AltPressed = true;
-        }
-        if ((PInvoke.GetKeyState((int)VIRTUAL_KEY.VK_LWIN) & 0x8000) != 0 ||
-            (PInvoke.GetKeyState((int)VIRTUAL_KEY.VK_RWIN) & 0x8000) != 0)
-        {
-            //WIN is pressed
-            state.WinPressed = true;
-        }
+            ShiftPressed = (PInvoke.GetKeyState((int)VIRTUAL_KEY.VK_SHIFT) & 0x8000) != 0,
+            CtrlPressed = (PInvoke.GetKeyState((int)VIRTUAL_KEY.VK_CONTROL) & 0x8000) != 0,
+            AltPressed = (PInvoke.GetKeyState((int)VIRTUAL_KEY.VK_MENU) & 0x8000) != 0,
+            WinPressed = ((PInvoke.GetKeyState((int)VIRTUAL_KEY.VK_LWIN) & 0x8000) != 0)
+            || ((PInvoke.GetKeyState((int)VIRTUAL_KEY.VK_RWIN) & 0x8000) != 0)
+        };
 
         return state;
     }
