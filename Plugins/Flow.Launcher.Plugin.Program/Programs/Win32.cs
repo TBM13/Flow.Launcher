@@ -165,6 +165,10 @@ namespace Flow.Launcher.Plugin.Program.Programs
 
             string autocompleteText = Extension(FullPath) == ShortcutExtension && !string.IsNullOrEmpty(LnkResolvedPath)
                 ? LnkResolvedPath : FullPath;
+            if (!Path.EndsInDirectorySeparator(autocompleteText) && Directory.Exists(autocompleteText))
+            {
+                autocompleteText += Path.DirectorySeparatorChar;
+            }
 
             var result = new Result
             {
