@@ -4,23 +4,18 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Plugins;
 
 namespace Flow.Launcher.Plugin.Explorer.Search
 {
     public static class EnvironmentVariables
     {
-        private static Dictionary<string, string> _envStringPaths = null;
         private static Dictionary<string, string> EnvStringPaths
         {
             get
             {
-                if (_envStringPaths == null)
-                {
-                    LoadEnvironmentStringPaths();
-                }
-                return _envStringPaths;
+                field ??= LoadEnvironmentStringPaths();
+                return field;
             }
         }
 
@@ -42,9 +37,9 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                                         dir.Split('%').Length == 3);
         }
 
-        private static void LoadEnvironmentStringPaths()
+        private static Dictionary<string, string> LoadEnvironmentStringPaths()
         {
-            _envStringPaths = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+            var dic = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
             var homedrive = Environment.GetEnvironmentVariable("HOMEDRIVE") ?? "C:\\";
             if (!homedrive.EndsWith('\\'))
                 homedrive += '\\';
@@ -66,15 +61,16 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 {
                     // Variables are returned with a mixture of all upper/lower case. 
                     // Call ToUpper() to make the results look consistent
-                    _envStringPaths.Add(special.Key.ToString()!.ToUpper(), path);
+                    dic.Add(special.Key.ToString()!.ToUpper(), path);
                 }
             }
+
+            return dic;
         }
 
         internal static List<Result> GetEnvironmentStringPathSuggestions(string querySearch, Query query, PluginInitContext context)
         {
             var results = new List<Result>();
-
             var search = querySearch;
 
             if (querySearch.EndsWith('%') && search.Length > 1)

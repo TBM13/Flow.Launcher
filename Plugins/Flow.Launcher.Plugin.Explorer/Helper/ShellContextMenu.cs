@@ -34,25 +34,21 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
     /// </example>
     public class ShellContextMenu : NativeWindow
     {
-        #region Constructor
+        private IContextMenu? _oContextMenu;
+        private IShellFolder? _oDesktopFolder;
+        private IShellFolder? _oParentFolder;
+        private IntPtr[]? _arrPIDLs;
+        private string? _strParentFolder;
 
-        /// <summary>Default constructor</summary>
         public ShellContextMenu()
         {
             CreateHandle(new CreateParams());
         }
 
-        #endregion
-
-        #region Destructor
-
-        /// <summary>Ensure all resources get released</summary>
         ~ShellContextMenu()
         {
             ReleaseAll();
         }
-
-        #endregion
 
         #region GetContextMenuInterfaces()
 
@@ -173,7 +169,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
         /// </summary>
         /// <param name="folderName">Folder path</param>
         /// <returns>IShellFolder for the folder (relative from the desktop)</returns>
-        private IShellFolder GetParentFolder(string folderName)
+        private IShellFolder? GetParentFolder(string folderName)
         {
             if (null == _oParentFolder)
             {
@@ -226,14 +222,14 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
         /// </summary>
         /// <param name="arrFI">Array of FileInfo</param>
         /// <returns>Array of PIDLs</returns>
-        protected IntPtr[] GetPIDLs(FileInfo[] arrFI)
+        protected IntPtr[]? GetPIDLs(FileInfo[] arrFI)
         {
             if (null == arrFI || 0 == arrFI.Length)
             {
                 return null;
             }
 
-            IShellFolder oParentFolder = GetParentFolder(arrFI[0].DirectoryName);
+            IShellFolder? oParentFolder = GetParentFolder(arrFI[0].DirectoryName);
             if (null == oParentFolder)
             {
                 return null;
@@ -265,14 +261,14 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
         /// </summary>
         /// <param name="arrFI">Array of DirectoryInfo</param>
         /// <returns>Array of PIDLs</returns>
-        protected IntPtr[] GetPIDLs(DirectoryInfo[] arrFI)
+        protected IntPtr[]? GetPIDLs(DirectoryInfo[] arrFI)
         {
             if (null == arrFI || 0 == arrFI.Length)
             {
                 return null;
             }
 
-            IShellFolder oParentFolder = GetParentFolder(arrFI[0].Parent!.FullName);
+            IShellFolder? oParentFolder = GetParentFolder(arrFI[0].Parent!.FullName);
             if (null == oParentFolder)
             {
                 return null;
@@ -422,16 +418,6 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
                 ReleaseAll();
             }
         }
-
-        #endregion
-
-        #region Local variables
-
-        private IContextMenu _oContextMenu;
-        private IShellFolder _oDesktopFolder;
-        private IShellFolder _oParentFolder;
-        private IntPtr[] _arrPIDLs;
-        private string _strParentFolder;
 
         #endregion
 

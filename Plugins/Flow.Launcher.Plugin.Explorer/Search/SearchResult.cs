@@ -1,6 +1,6 @@
 ﻿namespace Flow.Launcher.Plugin.Explorer.Search
 {
-    public record struct SearchResult
+    public readonly record struct SearchResult
     {
         public string FullPath { get; init; }
         public ResultType Type { get; init; }

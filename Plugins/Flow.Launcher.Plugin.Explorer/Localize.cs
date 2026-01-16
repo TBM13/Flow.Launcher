@@ -8,12 +8,13 @@ public static class Localize
     public const string Error_OpenDir = "Could not open folder";
     public const string Error_OpenFile = "Could not open file";
     public static string Error_FileNotFound(string file) => $"File not found: {file}";
+    public static string Error_DirNotFound(string dir) => $"Directory not found: {dir}";
     public static string Error_OpenWithShell(string filePath, string shellName, string shellPath)
         => $"Failed to open folder {filePath} with Shell {shellName} at {shellPath}";
 
     // General Results
     public const string GeneralResult_CopyPath = "Copy path";
-    public const string GeneralResult_CopyPath_Subtitle = "You can open the containing dir. with CTRL + Click on the result";
+    public const string GeneralResult_CopyPath_Subtitle = "You can open the parent dir. with CTRL + Click on the result";
     public const string GeneralResult_ShowWindowsMenu = "Show Windows Context Menu";
     public const string GeneralResult_ShowWindowsMenu_Subtitle = "You can also open it with Alt + Click on the result";
 

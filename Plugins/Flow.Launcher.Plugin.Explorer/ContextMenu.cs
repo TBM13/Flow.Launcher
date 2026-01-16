@@ -22,6 +22,7 @@ namespace Flow.Launcher.Plugin.Explorer
         public List<Result> LoadContextMenus(Result selectedResult)
         {
             var contextMenus = new List<Result>();
+
             if (selectedResult.ContextData is SearchResult record)
             {
                 contextMenus.Add(new Result
@@ -43,6 +44,7 @@ namespace Flow.Launcher.Plugin.Explorer
 
                 if (record.Type is not ResultType.Volume)
                 {
+                    // Show windows context menu
                     contextMenus.Add(new Result()
                     {
                         Title = Localize.GeneralResult_ShowWindowsMenu,
@@ -54,13 +56,13 @@ namespace Flow.Launcher.Plugin.Explorer
                                 return false;
 
                             ResultManager.ShowNativeContextMenu(record.FullPath, record.Type);
-
                             return false;
                         },
                     });
                 }
 
                 if (record.Type == ResultType.File && CanRunAsDifferentUser(record.FullPath))
+                    // Run as different user
                     contextMenus.Add(new Result
                     {
                         Title = Localize.FileResult_RunAsDifferentUser,
@@ -107,7 +109,7 @@ namespace Flow.Launcher.Plugin.Explorer
                     catch (Exception e)
                     {
                         var message = Localize.Error_OpenWithShell(record.FullPath, Path.GetFileNameWithoutExtension(shellPath), shellPath);
-                        LogException(message, e);
+                        _context.API.LogException(ClassName, message, e);
                         _context.API.ShowMsgError(message);
                         return false;
                     }
@@ -130,11 +132,6 @@ namespace Flow.Launcher.Plugin.Explorer
                 },
                 Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue7ac"),
             };
-        }
-
-        private void LogException(string message, Exception e)
-        {
-            _context.API.LogException(ClassName, message, e);
         }
 
         private static bool CanRunAsDifferentUser(string path)

@@ -5,7 +5,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Helpers;
-using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Plugin.Explorer.Helper;
 using Flow.Launcher.Plugin.Explorer.Views;
 using Path = System.IO.Path;
@@ -14,17 +13,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
 {
     public static class ResultManager
     {
-        private static readonly string ClassName = nameof(ResultManager);
-
-        private static readonly string[] SizeUnits = { "B", "KB", "MB", "GB", "TB" };
-        private static PluginInitContext Context;
-        private static Settings Settings { get; set; }
-
-        public static void Init(PluginInitContext context, Settings settings)
-        {
-            Context = context;
-            Settings = settings;
-        }
+        private static readonly string[] SizeUnits = ["B", "KB", "MB", "GB", "TB"];
 
         public static string GetAutoCompleteText(Query query, string path, ResultType resultType)
         {
@@ -61,7 +50,8 @@ namespace Flow.Launcher.Plugin.Explorer.Search
 
         internal static void ShowNativeContextMenu(string path, ResultType type)
         {
-            var screenWithMouseCursor = MonitorHelper.GetCursorDisplayMonitor();
+            var screenWithMouseCursor = MonitorHelper.GetCursorDisplayMonitor()
+                ?? throw new Exception("Unable to find in which monitor the mouse cursor is in.");
             var xOfScreenCenter = screenWithMouseCursor.WorkingArea.Left + screenWithMouseCursor.WorkingArea.Width / 2;
             var yOfScreenCenter = screenWithMouseCursor.WorkingArea.Top + screenWithMouseCursor.WorkingArea.Height / 2;
             var showPosition = new System.Drawing.Point((int)xOfScreenCenter, (int)yOfScreenCenter);
@@ -93,7 +83,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 {
                     FilePath = path,
                 },
-                PreviewPanel = new Lazy<UserControl>(() => new PreviewPanel(Settings, path, ResultType.Folder)),
+                PreviewPanel = new Lazy<UserControl>(() => new PreviewPanel(Main.Settings, path, ResultType.Folder)),
                 Action = c =>
                 {
                     if (c.SpecialKeyState.ToModifierKeys() == ModifierKeys.Alt)
@@ -111,21 +101,29 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                         }
                         catch (Exception ex)
                         {
-                            Context.API.ShowMsgBox(ex.Message, Localize.Error_OpenDir);
+                            Main.Context.API.ShowMsgBox(ex.Message, Localize.Error_OpenDir);
                             return false;
                         }
                     }
                     // Open containing folder
                     if (c.SpecialKeyState.ToModifierKeys() == ModifierKeys.Control)
                     {
+                        string? dirPath = Path.GetDirectoryName(path);
+                        if (!Directory.Exists(dirPath))
+                        {
+                            string msg = Localize.Error_DirNotFound(dirPath ?? path);
+                            Main.Context.API.ShowMsgBox(msg, Localize.Error_OpenDir);
+                            return false;
+                        }
+
                         try
                         {
-                            Context.API.OpenDirectory(Path.GetDirectoryName(path), path);
+                            Main.Context.API.OpenDirectory(dirPath, path);
                             return true;
                         }
                         catch (Exception ex)
                         {
-                            Context.API.ShowMsgBox(ex.Message, Localize.Error_OpenDir);
+                            Main.Context.API.ShowMsgBox(ex.Message, Localize.Error_OpenDir);
                             return false;
                         }
                     }
@@ -137,7 +135,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                     }
                     catch (Exception ex)
                     {
-                        Context.API.ShowMsgBox(ex.Message, Localize.Error_OpenDir);
+                        Main.Context.API.ShowMsgBox(ex.Message, Localize.Error_OpenDir);
                         return false;
                     }
                 },
@@ -259,7 +257,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 AutoCompleteText = GetAutoCompleteText(query, filePath, ResultType.File),
                 Score = score,
                 CopyText = filePath,
-                PreviewPanel = new Lazy<UserControl>(() => new PreviewPanel(Settings, filePath, ResultType.File)),
+                PreviewPanel = new Lazy<UserControl>(() => new PreviewPanel(Main.Settings, filePath, ResultType.File)),
                 Action = c =>
                 {
                     if (c.SpecialKeyState.ToModifierKeys() == ModifierKeys.Alt)
@@ -271,7 +269,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                     {
                         if (c.SpecialKeyState.ToModifierKeys() == (ModifierKeys.Control | ModifierKeys.Shift))
                         {
-                            OpenFile(filePath, Settings.UseLocationAsWorkingDir ? directory : string.Empty, true);
+                            OpenFile(filePath, Main.Settings.UseLocationAsWorkingDir ? directory : string.Empty, true);
                         }
                         else if (c.SpecialKeyState.ToModifierKeys() == ModifierKeys.Control)
                         {
@@ -279,12 +277,12 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                         }
                         else
                         {
-                            OpenFile(filePath, Settings.UseLocationAsWorkingDir ? directory : string.Empty);
+                            OpenFile(filePath, Main.Settings.UseLocationAsWorkingDir ? directory : string.Empty);
                         }
                     }
                     catch (Exception ex)
                     {
-                        Context.API.ShowMsgBox(ex.Message, Localize.Error_OpenFile);
+                        Main.Context.API.ShowMsgBox(ex.Message, Localize.Error_OpenFile);
                     }
 
                     return true;
@@ -307,16 +305,16 @@ namespace Flow.Launcher.Plugin.Explorer.Search
         private static void OpenFile(string filePath, string workingDir = "", bool asAdmin = false)
         {
             string verb = asAdmin ? "runas" : string.Empty;
-            bool res = Context.API.StartProcess(filePath, workingDir, arguments: string.Empty, verb: verb);
+            bool res = Main.Context.API.StartProcess(filePath, workingDir, arguments: string.Empty, verb: verb);
             if (!res)
             {
-                Context.API.ShowMsgError(Localize.Error_OpenFile);
+                Main.Context.API.ShowMsgError(Localize.Error_OpenFile);
             }
         }
 
-        private static void OpenFolder(string folderPath, string fileNameOrFilePath = null)
+        private static void OpenFolder(string folderPath, string? fileNameOrFilePath = null)
         {
-            Context.API.OpenDirectory(folderPath, fileNameOrFilePath);
+            Main.Context.API.OpenDirectory(folderPath, fileNameOrFilePath);
         }
 
         private static readonly string[] MediaExtensions =

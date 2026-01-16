@@ -30,45 +30,41 @@ namespace Flow.Launcher.Plugin.Explorer
 
     public class Main : ISettingProvider, IAsyncPlugin, IContextMenu
     {
-        internal static PluginInitContext Context { get; set; }
+        internal static PluginInitContext Context { get; private set; } = null!;
 
-        internal static Settings Settings { get; set; }
+        internal static Settings Settings { get; private set; } = null!;
 
-        private SettingsViewModel viewModel;
-
-        private ContextMenu contextMenu;
-
-        private SearchManager searchManager;
+        private SettingsViewModel _viewModel = null!;
+        private ContextMenu _contextMenu = null!;
+        private SearchManager _searchManager = null!;
 
         public Control CreateSettingPanel()
         {
-            return new ExplorerSettings(viewModel);
+            return new ExplorerSettings(_viewModel);
         }
 
         public Task InitAsync(PluginInitContext context)
         {
             Context = context;
-
             Settings = context.API.LoadSettingJsonStorage<Settings>();
 
-            viewModel = new SettingsViewModel(context, Settings);
-            contextMenu = new ContextMenu(Context, Settings);
-            searchManager = new SearchManager(Settings, Context);
-            ResultManager.Init(Context, Settings);
+            _viewModel = new SettingsViewModel(context, Settings);
+            _contextMenu = new ContextMenu(Context, Settings);
+            _searchManager = new SearchManager(Settings, Context);
 
             return Task.CompletedTask;
         }
 
         public List<Result> LoadContextMenus(Result selectedResult)
         {
-            return contextMenu.LoadContextMenus(selectedResult);
+            return _contextMenu.LoadContextMenus(selectedResult);
         }
 
         public async Task<List<Result>> QueryAsync(Query query, CancellationToken token)
         {
             try
             {
-                return await searchManager.SearchAsync(query, token);
+                return await _searchManager.SearchAsync(query, token);
             }
             catch (SearchException e)
             {

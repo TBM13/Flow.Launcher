@@ -11,28 +11,23 @@ using Flow.Launcher.Plugin.Explorer.Search.DirectoryInfo;
 
 namespace Flow.Launcher.Plugin.Explorer.Search
 {
-    public class SearchManager
+    public class SearchManager(Settings settings, PluginInitContext context)
     {
-        internal PluginInitContext Context;
-
-        internal Settings Settings;
-
-        public SearchManager(Settings settings, PluginInitContext context)
-        {
-            Context = context;
-            Settings = settings;
-        }
+        internal PluginInitContext Context = context;
+        internal Settings Settings = settings;
 
         /// <summary>
         /// Note: A path that ends with "\" and one that doesn't will not be regarded as equal.
         /// </summary>
         public class PathEqualityComparator : IEqualityComparer<Result>
         {
-            private static PathEqualityComparator instance;
-            public static PathEqualityComparator Instance => instance ??= new PathEqualityComparator();
+            public static PathEqualityComparator Instance => field ??= new PathEqualityComparator();
 
-            public bool Equals(Result x, Result y)
+            public bool Equals(Result? x, Result? y)
             {
+                if (ReferenceEquals(x, y)) return true;
+                if (x is null || y is null) return false;
+
                 return x.Title.Equals(y.Title, StringComparison.OrdinalIgnoreCase)
                     && string.Equals(x.SubTitle, y.SubTitle, StringComparison.OrdinalIgnoreCase);
             }

@@ -14,7 +14,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search.DirectoryInfo
         internal static IEnumerable<SearchResult> TopLevelDirectorySearch(Query query, string search, CancellationToken token, out bool isRecursive)
         {
             var criteria = ConstructSearchCriteria(search);
-            int wildcardPos = search.LastIndexOf(Constants.AllFilesFolderSearchWildcard);
+            int wildcardPos = search.LastIndexOf(Constants.RecursiveWildcard);
 
             if (wildcardPos > 0 && search[wildcardPos - 1] == Constants.DirectorySeparator)
             {
@@ -40,7 +40,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search.DirectoryInfo
 
                 incompleteName = search[(indexOfSeparator + 1)..].ToLower();
 
-                if (incompleteName.StartsWith(Constants.AllFilesFolderSearchWildcard))
+                if (incompleteName.StartsWith(Constants.RecursiveWildcard))
                     incompleteName = string.Concat("*", incompleteName.AsSpan(1));
             }
 

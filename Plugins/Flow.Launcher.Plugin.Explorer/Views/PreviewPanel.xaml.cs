@@ -14,8 +14,6 @@ using Flow.Launcher.Plugin.Explorer.Search;
 
 namespace Flow.Launcher.Plugin.Explorer.Views;
 
-#nullable enable
-
 [INotifyPropertyChanged]
 public partial class PreviewPanel : UserControl
 {
