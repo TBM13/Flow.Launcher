@@ -195,7 +195,14 @@ public static class ImageLoader
 
     public static async ValueTask<ImageSource> LoadAsync(string path, bool loadFullImage = false, bool cacheImage = true)
     {
+        // If the path is relative combine it with FlowLauncher's directory,
+        // since the working directory may be different
+        if (!Path.IsPathFullyQualified(path))
+        {
+            path = Path.Combine(Constant.ProgramDirectory, path);
+        }
         path = path.ToLowerInvariant();
+
         // Use cached image if available
         if (ImageCache.TryGetValue(path, loadFullImage, out ImageSource? cachedImage))
             return cachedImage;
