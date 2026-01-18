@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Windows;
-using System.Windows.Forms;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Plugin.Explorer.Search;
+using Microsoft.Win32;
 
 namespace Flow.Launcher.Plugin.Explorer.ViewModels
 {
@@ -157,15 +157,15 @@ namespace Flow.Launcher.Plugin.Explorer.ViewModels
 
             if (type is ResultType.Folder)
             {
-                var folderBrowserDialog = new FolderBrowserDialog();
+                var folderBrowserDialog = new OpenFolderDialog();
 
                 if (initialDirectory is not null)
                     folderBrowserDialog.InitialDirectory = initialDirectory;
 
-                if (folderBrowserDialog.ShowDialog() != DialogResult.OK)
+                if (folderBrowserDialog.ShowDialog() != true)
                     return path;
 
-                path = folderBrowserDialog.SelectedPath;
+                path = folderBrowserDialog.FolderName;
             }
             else if (type is ResultType.File)
             {
@@ -173,7 +173,7 @@ namespace Flow.Launcher.Plugin.Explorer.ViewModels
                 if (initialDirectory is not null)
                     openFileDialog.InitialDirectory = initialDirectory;
 
-                if (openFileDialog.ShowDialog() != DialogResult.OK)
+                if (openFileDialog.ShowDialog() != true)
                     return path;
 
                 path = openFileDialog.FileName;
