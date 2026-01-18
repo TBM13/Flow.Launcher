@@ -2,756 +2,320 @@
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
+using System.Windows.Input;
 using Windows.Win32;
 using Windows.Win32.Foundation;
+using Windows.Win32.UI.Shell;
 using Windows.Win32.UI.Shell.Common;
 using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Flow.Launcher.Plugin.Explorer.Helper
 {
-    //  Code from https://www.codeproject.com/Articles/22012/Explorer-Shell-Context-Menu:
     /// <summary>
-    /// "Stand-alone" shell context menu
-    /// 
-    /// It isn't really debugged but is mostly working.
-    /// Create an instance and call ShowContextMenu with a list of FileInfo for the files.
-    /// Limitation is that it only handles files in the same directory but it can be fixed
-    /// by changing the way files are translated into PIDLs.
-    /// 
-    /// Based on FileBrowser in C# from CodeProject
-    /// http://www.codeproject.com/useritems/FileBrowser.asp
-    /// 
-    /// Hooking class taken from MSDN Magazine Cutting Edge column
-    /// http://msdn.microsoft.com/msdnmag/issues/02/10/CuttingEdge/
-    /// 
-    /// Andreas Johansson
-    /// afjohansson@hotmail.com
-    /// http://afjohansson.spaces.live.com
+    /// Shows the Windows Explorer shell context menu for files or folders.
+    /// Based on code from https://www.codeproject.com/Articles/22012/Explorer-Shell-Context-Menu
     /// </summary>
-    /// <example>
-    ///    ShellContextMenu scm = new ShellContextMenu();
-    ///    FileInfo[] files = new FileInfo[1];
-    ///    files[0] = new FileInfo(@"c:\windows\notepad.exe");
-    ///    scm.ShowContextMenu(this.Handle, files, Cursor.Position);
-    /// </example>
-    public class ShellContextMenu : NativeWindow
+    /// <remarks>
+    /// Limitation: Only handles files/folders in the same directory.
+    /// </remarks>
+    public sealed class ShellContextMenu : IDisposable
     {
-        private IContextMenu? _oContextMenu;
-        private IShellFolder? _oDesktopFolder;
-        private IShellFolder? _oParentFolder;
-        private IntPtr[]? _arrPIDLs;
-        private string? _strParentFolder;
+        // CMIC_MASK constants - C preprocessor defines not exposed by CsWin32
+        private const uint CMIC_MASK_UNICODE = 0x00004000;
+        private const uint CMIC_MASK_PTINVOKE = 0x20000000;
+        private const uint CMIC_MASK_SHIFT_DOWN = 0x10000000;
+        private const uint CMIC_MASK_CONTROL_DOWN = 0x40000000;
 
-        public ShellContextMenu()
-        {
-            CreateHandle(new CreateParams());
-        }
-
-        ~ShellContextMenu()
-        {
-            ReleaseAll();
-        }
-
-        #region GetContextMenuInterfaces()
-
-        /// <summary>Gets the interfaces to the context menu</summary>
-        /// <param name="oParentFolder">Parent folder</param>
-        /// <param name="arrPIDLs">PIDLs</param>
-        /// <returns>true if it got the interfaces, otherwise false</returns>
-        private bool GetContextMenuInterfaces(IShellFolder oParentFolder, IntPtr[] arrPIDLs, out IntPtr ctxMenuPtr)
-        {
-            int nResult = oParentFolder.GetUIObjectOf(
-                IntPtr.Zero,
-                (uint)arrPIDLs.Length,
-                arrPIDLs,
-                ref IID_IContextMenu,
-                IntPtr.Zero,
-                out ctxMenuPtr);
-
-            if (HRESULT.S_OK == nResult)
-            {
-                _oContextMenu = (IContextMenu)Marshal.GetTypedObjectForIUnknown(ctxMenuPtr, typeof(IContextMenu));
-
-                return true;
-            }
-            else
-            {
-                ctxMenuPtr = IntPtr.Zero;
-                _oContextMenu = null;
-                return false;
-            }
-        }
-
-        #endregion
-
-        #region InvokeCommand
-
-        private static void InvokeCommand(IContextMenu oContextMenu, uint nCmd, string strFolder, Point pointInvoke)
-        {
-            CMINVOKECOMMANDINFOEX invoke = new CMINVOKECOMMANDINFOEX
-            {
-                cbSize = cbInvokeCommand,
-                lpVerb = (IntPtr)(nCmd - CMD_FIRST),
-                lpDirectory = strFolder,
-                lpVerbW = (IntPtr)(nCmd - CMD_FIRST),
-                lpDirectoryW = strFolder,
-                fMask = CMIC.UNICODE | CMIC.PTINVOKE |
-                               ((Control.ModifierKeys & Keys.Control) != 0 ? CMIC.CONTROL_DOWN : 0) |
-                               ((Control.ModifierKeys & Keys.Shift) != 0 ? CMIC.SHIFT_DOWN : 0),
-                ptInvoke = new Point(pointInvoke.X, pointInvoke.Y),
-                nShow = SW.SHOWNORMAL
-            };
-
-            oContextMenu.InvokeCommand(ref invoke);
-        }
-
-        #endregion
-
-        #region ReleaseAll()
-
-        /// <summary>
-        /// Release all allocated interfaces, PIDLs 
-        /// </summary>
-        private void ReleaseAll()
-        {
-            if (null != _oContextMenu)
-            {
-                Marshal.ReleaseComObject(_oContextMenu);
-                _oContextMenu = null;
-            }
-            if (null != _oDesktopFolder)
-            {
-                Marshal.ReleaseComObject(_oDesktopFolder);
-                _oDesktopFolder = null;
-            }
-            if (null != _oParentFolder)
-            {
-                Marshal.ReleaseComObject(_oParentFolder);
-                _oParentFolder = null;
-            }
-            if (null != _arrPIDLs)
-            {
-                FreePIDLs(_arrPIDLs);
-                _arrPIDLs = null;
-            }
-        }
-
-        #endregion
-
-        #region GetDesktopFolder()
-
-        /// <summary>
-        /// Gets the desktop folder
-        /// </summary>
-        /// <returns>IShellFolder for desktop folder</returns>
-        private IShellFolder GetDesktopFolder()
-        {
-            IntPtr pUnkownDesktopFolder = IntPtr.Zero;
-
-            if (null == _oDesktopFolder)
-            {
-                // Get desktop IShellFolder
-                int nResult = SHGetDesktopFolder(out pUnkownDesktopFolder);
-                if (HRESULT.S_OK != nResult)
-                {
-                    throw new Exception("Failed to get the desktop shell folder");
-                }
-                _oDesktopFolder = (IShellFolder)Marshal.GetTypedObjectForIUnknown(pUnkownDesktopFolder, typeof(IShellFolder));
-            }
-
-            return _oDesktopFolder;
-        }
-
-        #endregion
-
-        #region GetParentFolder()
-
-        /// <summary>
-        /// Gets the parent folder
-        /// </summary>
-        /// <param name="folderName">Folder path</param>
-        /// <returns>IShellFolder for the folder (relative from the desktop)</returns>
-        private unsafe IShellFolder? GetParentFolder(string folderName)
-        {
-            if (null == _oParentFolder)
-            {
-                IShellFolder oDesktopFolder = GetDesktopFolder();
-                if (null == oDesktopFolder)
-                {
-                    return null;
-                }
-
-                // Get the PIDL for the folder file is in
-                IntPtr pPIDL = IntPtr.Zero;
-                uint pchEaten = 0;
-                SFGAO pdwAttributes = 0;
-                int nResult = oDesktopFolder.ParseDisplayName(IntPtr.Zero, IntPtr.Zero, folderName, ref pchEaten, out pPIDL, ref pdwAttributes);
-                if (HRESULT.S_OK != nResult)
-                {
-                    return null;
-                }
-
-
-                STRRET strRet = default;
-                nResult = _oDesktopFolder.GetDisplayNameOf(pPIDL, SHGNO.FORPARSING, (IntPtr)(&strRet));
-                Span<char> folderBuffer = stackalloc char[MAX_PATH];
-                PInvoke.StrRetToBuf(ref strRet, null, folderBuffer);
-                _strParentFolder = folderBuffer.TrimEnd('\0').ToString();
-
-                // Get the IShellFolder for folder
-                IntPtr pUnknownParentFolder = IntPtr.Zero;
-                nResult = oDesktopFolder.BindToObject(pPIDL, IntPtr.Zero, ref IID_IShellFolder, out pUnknownParentFolder);
-                // Free the PIDL first
-                Marshal.FreeCoTaskMem(pPIDL);
-                if (HRESULT.S_OK != nResult)
-                {
-                    return null;
-                }
-                _oParentFolder = (IShellFolder)Marshal.GetTypedObjectForIUnknown(pUnknownParentFolder, typeof(IShellFolder));
-            }
-
-            return _oParentFolder;
-        }
-
-        #endregion
-
-        #region GetPIDLs()
-
-        /// <summary>
-        /// Get the PIDLs
-        /// </summary>
-        /// <param name="arrFI">Array of FileInfo</param>
-        /// <returns>Array of PIDLs</returns>
-        protected IntPtr[]? GetPIDLs(FileInfo[] arrFI)
-        {
-            if (null == arrFI || 0 == arrFI.Length)
-            {
-                return null;
-            }
-
-            IShellFolder? oParentFolder = GetParentFolder(arrFI[0].DirectoryName);
-            if (null == oParentFolder)
-            {
-                return null;
-            }
-
-            IntPtr[] arrPIDLs = new IntPtr[arrFI.Length];
-            int n = 0;
-            foreach (FileInfo fi in arrFI)
-            {
-                // Get the file relative to folder
-                uint pchEaten = 0;
-                SFGAO pdwAttributes = 0;
-                IntPtr pPIDL = IntPtr.Zero;
-                int nResult = oParentFolder.ParseDisplayName(IntPtr.Zero, IntPtr.Zero, fi.Name, ref pchEaten, out pPIDL, ref pdwAttributes);
-                if (HRESULT.S_OK != nResult)
-                {
-                    FreePIDLs(arrPIDLs);
-                    return null;
-                }
-                arrPIDLs[n] = pPIDL;
-                n++;
-            }
-
-            return arrPIDLs;
-        }
-
-        /// <summary>
-        /// Get the PIDLs
-        /// </summary>
-        /// <param name="arrFI">Array of DirectoryInfo</param>
-        /// <returns>Array of PIDLs</returns>
-        protected IntPtr[]? GetPIDLs(DirectoryInfo[] arrFI)
-        {
-            if (null == arrFI || 0 == arrFI.Length)
-            {
-                return null;
-            }
-
-            IShellFolder? oParentFolder = GetParentFolder(arrFI[0].Parent!.FullName);
-            if (null == oParentFolder)
-            {
-                return null;
-            }
-
-            IntPtr[] arrPIDLs = new IntPtr[arrFI.Length];
-            int n = 0;
-            foreach (DirectoryInfo fi in arrFI)
-            {
-                // Get the file relative to folder
-                uint pchEaten = 0;
-                SFGAO pdwAttributes = 0;
-                IntPtr pPIDL = IntPtr.Zero;
-                int nResult = oParentFolder.ParseDisplayName(IntPtr.Zero, IntPtr.Zero, fi.Name, ref pchEaten, out pPIDL, ref pdwAttributes);
-                if (HRESULT.S_OK != nResult)
-                {
-                    FreePIDLs(arrPIDLs);
-                    return null;
-                }
-                arrPIDLs[n] = pPIDL;
-                n++;
-            }
-
-            return arrPIDLs;
-        }
-
-        #endregion
-
-        #region FreePIDLs()
-
-        /// <summary>
-        /// Free the PIDLs
-        /// </summary>
-        /// <param name="arrPIDLs">Array of PIDLs (IntPtr)</param>
-        protected static void FreePIDLs(IntPtr[] arrPIDLs)
-        {
-            if (null != arrPIDLs)
-            {
-                for (int n = 0; n < arrPIDLs.Length; n++)
-                {
-                    if (arrPIDLs[n] != IntPtr.Zero)
-                    {
-                        Marshal.FreeCoTaskMem(arrPIDLs[n]);
-                        arrPIDLs[n] = IntPtr.Zero;
-                    }
-                }
-            }
-        }
-
-        #endregion
-
-        #region ShowContextMenu()
-
-        /// <summary>
-        /// Shows the context menu
-        /// </summary>
-        /// <param name="files">FileInfos (should all be in same directory)</param>
-        /// <param name="pointScreen">Where to show the menu</param>
-        public void ShowContextMenu(FileInfo[] files, Point pointScreen)
-        {
-            // Release all resources first.
-            ReleaseAll();
-            _arrPIDLs = GetPIDLs(files);
-            ShowContextMenu(pointScreen);
-        }
-
-        /// <summary>
-        /// Shows the context menu
-        /// </summary>
-        /// <param name="dirs">DirectoryInfos (should all be in same directory)</param>
-        /// <param name="pointScreen">Where to show the menu</param>
-        public unsafe void ShowContextMenu(DirectoryInfo[] dirs, Point pointScreen)
-        {
-            // Release all resources first.
-            ReleaseAll();
-            _arrPIDLs = GetPIDLs(dirs);
-            ShowContextMenu(pointScreen);
-        }
-
-        /// <summary>
-        /// Shows the context menu
-        /// </summary>
-        /// <param name="arrFI">FileInfos (should all be in same directory)</param>
-        /// <param name="pointScreen">Where to show the menu</param>
-        private unsafe void ShowContextMenu(Point pointScreen)
-        {
-            HMENU menu = default;
-            IntPtr iContextMenuPtr = IntPtr.Zero;
-
-            try
-            {
-                if (null == _arrPIDLs)
-                {
-                    ReleaseAll();
-                    return;
-                }
-
-                if (false == GetContextMenuInterfaces(_oParentFolder, _arrPIDLs, out iContextMenuPtr))
-                {
-                    ReleaseAll();
-                    return;
-                }
-
-                menu = PInvoke.CreatePopupMenu();
-
-                int nResult = _oContextMenu.QueryContextMenu(
-                    menu,
-                    0,
-                    CMD_FIRST,
-                    CMD_LAST,
-                    CMF.EXPLORE |
-                    CMF.NORMAL |
-                    ((Control.ModifierKeys & Keys.Shift) != 0 ? CMF.EXTENDEDVERBS : 0));
-
-
-                uint nSelected = (uint)PInvoke.TrackPopupMenuEx(
-                    menu,
-                    (uint)TRACK_POPUP_MENU_FLAGS.TPM_RETURNCMD,
-                    pointScreen.X,
-                    pointScreen.Y,
-                    (HWND)Handle,
-                    null).Value;
-
-                PInvoke.DestroyMenu(menu);
-                menu = HMENU.Null;
-
-                if (nSelected != 0)
-                {
-                    InvokeCommand(_oContextMenu, nSelected, _strParentFolder, pointScreen);
-                }
-            }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                //hook.Uninstall();
-                if (menu != HMENU.Null)
-                {
-                    PInvoke.DestroyMenu(menu);
-                }
-
-                if (iContextMenuPtr != IntPtr.Zero)
-                    Marshal.Release(iContextMenuPtr);
-
-                ReleaseAll();
-            }
-        }
-
-        #endregion
-
-        #region Variables and Constants
+        // CMF flags for QueryContextMenu - C preprocessor defines not exposed by CsWin32
+        private const uint CMF_NORMAL = 0x00000000;
+        private const uint CMF_EXPLORE = 0x00000004;
+        private const uint CMF_EXTENDEDVERBS = 0x00000100;
 
         private const int MAX_PATH = 260;
         private const uint CMD_FIRST = 1;
         private const uint CMD_LAST = 30000;
 
-        private static readonly int cbInvokeCommand = Marshal.SizeOf<CMINVOKECOMMANDINFOEX>();
+        private IContextMenu? _contextMenu;
+        private IShellFolder? _desktopFolder;
+        private IShellFolder? _parentFolder;
+        private IntPtr[]? _pidls;
+        private string? _parentFolderPath;
+        private bool _disposed;
 
-        #endregion
-
-        #region DLL Import
-
-        // Retrieves the IShellFolder interface for the desktop folder, which is the root of the Shell's namespace.
-        [DllImport("shell32.dll")]
-        private static extern int SHGetDesktopFolder(out IntPtr ppshf);
-        #endregion
-
-        #region Shell GUIDs
-
-        private static Guid IID_IShellFolder = new("{000214E6-0000-0000-C000-000000000046}");
-        private static Guid IID_IContextMenu = new("{000214e4-0000-0000-c000-000000000046}");
-
-        #endregion
-
-        #region Structs
-
-        // Contains extended information about a shortcut menu command
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        private struct CMINVOKECOMMANDINFOEX
+        public void Dispose()
         {
-            public int cbSize;
-            public CMIC fMask;
-            public IntPtr hwnd;
-            public IntPtr lpVerb;
-            [MarshalAs(UnmanagedType.LPStr)]
-            public string lpParameters;
-            [MarshalAs(UnmanagedType.LPStr)]
-            public string lpDirectory;
-            public SW nShow;
-            public int dwHotKey;
-            public IntPtr hIcon;
-            [MarshalAs(UnmanagedType.LPStr)]
-            public string lpTitle;
-            public IntPtr lpVerbW;
-            [MarshalAs(UnmanagedType.LPWStr)]
-            public string lpParametersW;
-            [MarshalAs(UnmanagedType.LPWStr)]
-            public string lpDirectoryW;
-            [MarshalAs(UnmanagedType.LPWStr)]
-            public string lpTitleW;
-            public Point ptInvoke;
+            if (_disposed) return;
+            _disposed = true;
+
+            ReleaseAll();
+            GC.SuppressFinalize(this);
         }
 
-        #endregion
-
-        #region Enums
-
-        // Defines the values used with the IShellFolder::GetDisplayNameOf and IShellFolder::SetNameOf 
-        // methods to specify the type of file or folder names used by those methods
-        [Flags]
-        private enum SHGNO
+        /// <summary>
+        /// Shows the context menu for the specified files.
+        /// </summary>
+        /// <param name="files">Files to show context menu for (must be in the same directory)</param>
+        /// <param name="screenPoint">Screen coordinates where to show the menu</param>
+        public void ShowContextMenu(FileInfo[] files, Point screenPoint)
         {
-            NORMAL = 0x0000,
-            INFOLDER = 0x0001,
-            FOREDITING = 0x1000,
-            FORADDRESSBAR = 0x4000,
-            FORPARSING = 0x8000
+            if (files is null || files.Length == 0) return;
+
+            ReleaseAll();
+            _pidls = GetPIDLs(files[0].DirectoryName, files, static fi => fi.Name);
+            ShowContextMenuCore(screenPoint);
         }
 
-        // The attributes that the caller is requesting, when calling IShellFolder::GetAttributesOf
-        [Flags]
-        private enum SFGAO : uint
+        /// <summary>
+        /// Shows the context menu for the specified directories.
+        /// </summary>
+        /// <param name="directories">Directories to show context menu for (must have the same parent)</param>
+        /// <param name="screenPoint">Screen coordinates where to show the menu</param>
+        public void ShowContextMenu(DirectoryInfo[] directories, Point screenPoint)
         {
-            BROWSABLE = 0x8000000,
-            CANCOPY = 1,
-            CANDELETE = 0x20,
-            CANLINK = 4,
-            CANMONIKER = 0x400000,
-            CANMOVE = 2,
-            CANRENAME = 0x10,
-            CAPABILITYMASK = 0x177,
-            COMPRESSED = 0x4000000,
-            CONTENTSMASK = 0x80000000,
-            DISPLAYATTRMASK = 0xfc000,
-            DROPTARGET = 0x100,
-            ENCRYPTED = 0x2000,
-            FILESYSANCESTOR = 0x10000000,
-            FILESYSTEM = 0x40000000,
-            FOLDER = 0x20000000,
-            GHOSTED = 0x8000,
-            HASPROPSHEET = 0x40,
-            HASSTORAGE = 0x400000,
-            HASSUBFOLDER = 0x80000000,
-            HIDDEN = 0x80000,
-            ISSLOW = 0x4000,
-            LINK = 0x10000,
-            NEWCONTENT = 0x200000,
-            NONENUMERATED = 0x100000,
-            READONLY = 0x40000,
-            REMOVABLE = 0x2000000,
-            SHARE = 0x20000,
-            STORAGE = 8,
-            STORAGEANCESTOR = 0x800000,
-            STORAGECAPMASK = 0x70c50008,
-            STREAM = 0x400000,
-            VALIDATE = 0x1000000
+            if (directories is null || directories.Length == 0) return;
+
+            ReleaseAll();
+            _pidls = GetPIDLs(directories[0].Parent?.FullName, directories, static di => di.Name);
+            ShowContextMenuCore(screenPoint);
         }
 
-        // Determines the type of items included in an enumeration. 
-        // These values are used with the IShellFolder::EnumObjects method
-        [Flags]
-        private enum SHCONTF
+        private unsafe void ShowContextMenuCore(Point screenPoint)
         {
-            FOLDERS = 0x0020,
-            NONFOLDERS = 0x0040,
-            INCLUDEHIDDEN = 0x0080,
-            INIT_ON_FIRST_NEXT = 0x0100,
-            NETPRINTERSRCH = 0x0200,
-            SHAREABLE = 0x0400,
-            STORAGE = 0x0800,
+            if (_pidls is null || _parentFolder is null)
+            {
+                ReleaseAll();
+                return;
+            }
+
+            IntPtr contextMenuPtr = IntPtr.Zero;
+            HMENU menu = default;
+
+            try
+            {
+                if (!TryGetContextMenu(_parentFolder, _pidls, out contextMenuPtr))
+                    return;
+
+                menu = PInvoke.CreatePopupMenu();
+
+                uint flags = CMF_EXPLORE | CMF_NORMAL;
+                if (Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
+                    flags |= CMF_EXTENDEDVERBS;
+
+                _contextMenu!.QueryContextMenu(menu, 0, CMD_FIRST, CMD_LAST, flags);
+
+                // Use the foreground window as owner for the popup menu
+                HWND ownerWindow = PInvoke.GetForegroundWindow();
+
+                uint selectedCmd = (uint)PInvoke.TrackPopupMenuEx(
+                    menu,
+                    (uint)TRACK_POPUP_MENU_FLAGS.TPM_RETURNCMD,
+                    screenPoint.X,
+                    screenPoint.Y,
+                    ownerWindow,
+                    null).Value;
+
+                PInvoke.DestroyMenu(menu);
+                menu = HMENU.Null;
+
+                if (selectedCmd != 0)
+                    InvokeCommand(_contextMenu, selectedCmd, _parentFolderPath!, screenPoint);
+            }
+            finally
+            {
+                if (menu != HMENU.Null)
+                    PInvoke.DestroyMenu(menu);
+
+                if (contextMenuPtr != IntPtr.Zero)
+                    Marshal.Release(contextMenuPtr);
+
+                ReleaseAll();
+            }
         }
 
-        // Specifies how the shortcut menu can be changed when calling IContextMenu::QueryContextMenu
-        [Flags]
-        private enum CMF : uint
+        private unsafe bool TryGetContextMenu(IShellFolder parentFolder, IntPtr[] pidls, out IntPtr contextMenuPtr)
         {
-            NORMAL = 0x00000000,
-            DEFAULTONLY = 0x00000001,
-            VERBSONLY = 0x00000002,
-            EXPLORE = 0x00000004,
-            NOVERBS = 0x00000008,
-            CANRENAME = 0x00000010,
-            NODEFAULT = 0x00000020,
-            INCLUDESTATIC = 0x00000040,
-            EXTENDEDVERBS = 0x00000100,
-            RESERVED = 0xffff0000
+            contextMenuPtr = IntPtr.Zero;
+
+            try
+            {
+                fixed (IntPtr* pPIDLs = pidls)
+                {
+                    Guid iid = typeof(IContextMenu).GUID;
+                    parentFolder.GetUIObjectOf(
+                        HWND.Null,
+                        (uint)pidls.Length,
+                        (ITEMIDLIST**)pPIDLs,
+                        &iid,
+                        null,
+                        out object result);
+
+                    if (result is IContextMenu contextMenu)
+                    {
+                        _contextMenu = contextMenu;
+                        contextMenuPtr = Marshal.GetIUnknownForObject(result);
+                        return true;
+                    }
+
+                    // If result is not IContextMenu but is a COM object, release it
+                    if (result is not null)
+                        Marshal.ReleaseComObject(result);
+                }
+            }
+            catch
+            {
+                // GetUIObjectOf throws on failure
+            }
+
+            _contextMenu = null;
+            return false;
         }
 
-        // Flags specifying the information to return when calling IContextMenu::GetCommandString
-        [Flags]
-        private enum GCS : uint
+        private static unsafe void InvokeCommand(IContextMenu contextMenu, uint cmd, string folder, Point point)
         {
-            VERBA = 0,
-            HELPTEXTA = 1,
-            VALIDATEA = 2,
-            VERBW = 4,
-            HELPTEXTW = 5,
-            VALIDATEW = 6
+            fixed (char* pFolder = folder)
+            {
+                var cmdOffset = (nuint)(cmd - CMD_FIRST);
+                var modifiers = Keyboard.Modifiers;
+                CMINVOKECOMMANDINFOEX invoke = new()
+                {
+                    cbSize = (uint)sizeof(CMINVOKECOMMANDINFOEX),
+                    lpVerb = new PCSTR((byte*)cmdOffset),
+                    lpVerbW = new PCWSTR((char*)cmdOffset),
+                    lpDirectoryW = pFolder,
+                    fMask = CMIC_MASK_UNICODE | CMIC_MASK_PTINVOKE |
+                            (modifiers.HasFlag(ModifierKeys.Control) ? CMIC_MASK_CONTROL_DOWN : 0) |
+                            (modifiers.HasFlag(ModifierKeys.Shift) ? CMIC_MASK_SHIFT_DOWN : 0),
+                    ptInvoke = point,
+                    nShow = (int)SHOW_WINDOW_CMD.SW_SHOWNORMAL
+                };
+
+                contextMenu.InvokeCommand((CMINVOKECOMMANDINFO*)&invoke);
+            }
         }
 
-        // Flags used with the CMINVOKECOMMANDINFOEX structure
-        [Flags]
-        private enum CMIC : uint
+        private unsafe IntPtr[]? GetPIDLs<T>(string? parentPath, T[] items, Func<T, string> getName)
         {
-            HOTKEY = 0x00000020,
-            ICON = 0x00000010,
-            FLAG_NO_UI = 0x00000400,
-            UNICODE = 0x00004000,
-            NO_CONSOLE = 0x00008000,
-            ASYNCOK = 0x00100000,
-            NOZONECHECKS = 0x00800000,
-            SHIFT_DOWN = 0x10000000,
-            CONTROL_DOWN = 0x40000000,
-            FLAG_LOG_USAGE = 0x04000000,
-            PTINVOKE = 0x20000000
+            if (string.IsNullOrEmpty(parentPath)) return null;
+
+            if (!TryGetParentFolder(parentPath))
+                return null;
+
+            var pidls = new IntPtr[items.Length];
+            int allocatedCount = 0;
+
+            try
+            {
+                for (int i = 0; i < items.Length; i++)
+                {
+                    string name = getName(items[i]);
+                    fixed (char* pName = name)
+                    {
+                        uint attrs = 0;
+                        ITEMIDLIST* pidl = null;
+                        _parentFolder!.ParseDisplayName(HWND.Null, null, pName, null, &pidl, ref attrs);
+
+                        if (pidl == null)
+                        {
+                            FreePIDLs(pidls, allocatedCount);
+                            return null;
+                        }
+                        pidls[i] = (IntPtr)pidl;
+                        allocatedCount++;
+                    }
+                }
+
+                return pidls;
+            }
+            catch
+            {
+                FreePIDLs(pidls, allocatedCount);
+                throw;
+            }
         }
 
-        // Specifies how the window is to be shown
-        [Flags]
-        private enum SW
+        private unsafe bool TryGetParentFolder(string folderPath)
         {
-            HIDE = 0,
-            SHOWNORMAL = 1,
-            NORMAL = 1,
-            SHOWMINIMIZED = 2,
-            SHOWMAXIMIZED = 3,
-            MAXIMIZE = 3,
-            SHOWNOACTIVATE = 4,
-            SHOW = 5,
-            MINIMIZE = 6,
-            SHOWMINNOACTIVE = 7,
-            SHOWNA = 8,
-            RESTORE = 9,
-            SHOWDEFAULT = 10,
+            if (_parentFolder is not null) return true;
+
+            IShellFolder desktop = GetDesktopFolder();
+
+            fixed (char* pPath = folderPath)
+            {
+                Guid iid = typeof(IShellFolder).GUID;
+                ITEMIDLIST* pidl = null;
+                uint attrs = 0;
+
+                desktop.ParseDisplayName(HWND.Null, null, pPath, null, &pidl, ref attrs);
+                if (pidl == null) return false;
+
+                try
+                {
+                    // Get display name for the folder
+                    STRRET strRet = default;
+                    _desktopFolder!.GetDisplayNameOf(pidl, SHGDNF.SHGDN_FORPARSING, &strRet);
+                    Span<char> buffer = stackalloc char[MAX_PATH];
+                    PInvoke.StrRetToBuf(ref strRet, null, buffer);
+                    _parentFolderPath = buffer.TrimEnd('\0').ToString();
+
+                    // Get IShellFolder for the parent
+                    desktop.BindToObject(pidl, null, &iid, out object result);
+                    _parentFolder = (IShellFolder)result;
+                    return true;
+                }
+                finally
+                {
+                    Marshal.FreeCoTaskMem((IntPtr)pidl);
+                }
+            }
         }
 
-        #endregion
-
-        #region IShellFolder
-
-        [ComImport, Guid("000214E6-0000-0000-C000-000000000046")]
-        [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        private interface IShellFolder
+        private IShellFolder GetDesktopFolder()
         {
-            // Translates a file object's or folder's display name into an item identifier list.
-            // Return value: error code, if any
-            [PreserveSig]
-            int ParseDisplayName(
-                IntPtr hwnd,
-                IntPtr pbc,
-                [MarshalAs(UnmanagedType.LPWStr)] string pszDisplayName,
-                ref uint pchEaten,
-                out IntPtr ppidl,
-                ref SFGAO pdwAttributes);
-
-            // Allows a client to determine the contents of a folder by creating an item
-            // identifier enumeration object and returning its IEnumIDList interface.
-            // Return value: error code, if any
-            [PreserveSig]
-            int EnumObjects(
-                IntPtr hwnd,
-                SHCONTF grfFlags,
-                out IntPtr enumIDList);
-
-            // Retrieves an IShellFolder object for a subfolder.
-            // Return value: error code, if any
-            [PreserveSig]
-            int BindToObject(
-                IntPtr pidl,
-                IntPtr pbc,
-                ref Guid riid,
-                out IntPtr ppv);
-
-            // Requests a pointer to an object's storage interface. 
-            // Return value: error code, if any
-            [PreserveSig]
-            int BindToStorage(
-                IntPtr pidl,
-                IntPtr pbc,
-                ref Guid riid,
-                out IntPtr ppv);
-
-            // Determines the relative order of two file objects or folders, given their
-            // item identifier lists. Return value: If this method is successful, the
-            // CODE field of the HRESULT contains one of the following values (the code
-            // can be retrived using the helper function GetHResultCode): Negative A
-            // negative return value indicates that the first item should precede
-            // the second (pidl1 < pidl2). 
-
-            // Positive A positive return value indicates that the first item should
-            // follow the second (pidl1 > pidl2).  Zero A return value of zero
-            // indicates that the two items are the same (pidl1 = pidl2). 
-            [PreserveSig]
-            int CompareIDs(
-                IntPtr lParam,
-                IntPtr pidl1,
-                IntPtr pidl2);
-
-            // Requests an object that can be used to obtain information from or interact
-            // with a folder object.
-            // Return value: error code, if any
-            [PreserveSig]
-            int CreateViewObject(
-                IntPtr hwndOwner,
-                Guid riid,
-                out IntPtr ppv);
-
-            // Retrieves the attributes of one or more file objects or subfolders. 
-            // Return value: error code, if any
-            [PreserveSig]
-            int GetAttributesOf(
-                uint cidl,
-                [MarshalAs(UnmanagedType.LPArray)] IntPtr[] apidl,
-                ref SFGAO rgfInOut);
-
-            // Retrieves an OLE interface that can be used to carry out actions on the
-            // specified file objects or folders.
-            // Return value: error code, if any
-            [PreserveSig]
-            int GetUIObjectOf(
-                IntPtr hwndOwner,
-                uint cidl,
-                [MarshalAs(UnmanagedType.LPArray)] IntPtr[] apidl,
-                ref Guid riid,
-                IntPtr rgfReserved,
-                out IntPtr ppv);
-
-            // Retrieves the display name for the specified file object or subfolder. 
-            // Return value: error code, if any
-            [PreserveSig()]
-            int GetDisplayNameOf(
-                IntPtr pidl,
-                SHGNO uFlags,
-                IntPtr lpName);
-
-            // Sets the display name of a file object or subfolder, changing the item
-            // identifier in the process.
-            // Return value: error code, if any
-            [PreserveSig]
-            int SetNameOf(
-                IntPtr hwnd,
-                IntPtr pidl,
-                [MarshalAs(UnmanagedType.LPWStr)] string pszName,
-                SHGNO uFlags,
-                out IntPtr ppidlOut);
+            if (_desktopFolder is null)
+            {
+                int hr = PInvoke.SHGetDesktopFolder(out IShellFolder folder);
+                if (HRESULT.S_OK != hr)
+                    throw new COMException("Failed to get desktop shell folder", hr);
+                _desktopFolder = folder;
+            }
+            return _desktopFolder;
         }
 
-        #endregion
-
-        #region IContextMenu
-
-        [ComImport, Guid("000214e4-0000-0000-c000-000000000046")]
-        [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        private interface IContextMenu
+        private void ReleaseAll()
         {
-            // Adds commands to a shortcut menu
-            [PreserveSig()]
-            int QueryContextMenu(
-                IntPtr hmenu,
-                uint iMenu,
-                uint idCmdFirst,
-                uint idCmdLast,
-                CMF uFlags);
-
-            // Carries out the command associated with a shortcut menu item
-            [PreserveSig()]
-            int InvokeCommand(
-                ref CMINVOKECOMMANDINFOEX info);
-
-            // Retrieves information about a shortcut menu command, 
-            // including the help string and the language-independent, 
-            // or canonical, name for the command
-            [PreserveSig()]
-            int GetCommandString(
-                uint idcmd,
-                GCS uflags,
-                uint reserved,
-                [MarshalAs(UnmanagedType.LPArray)] byte[] commandstring,
-                int cch);
+            if (_contextMenu is not null)
+            {
+                Marshal.ReleaseComObject(_contextMenu);
+                _contextMenu = null;
+            }
+            if (_desktopFolder is not null)
+            {
+                Marshal.ReleaseComObject(_desktopFolder);
+                _desktopFolder = null;
+            }
+            if (_parentFolder is not null)
+            {
+                Marshal.ReleaseComObject(_parentFolder);
+                _parentFolder = null;
+            }
+            if (_pidls is not null)
+            {
+                FreePIDLs(_pidls, _pidls.Length);
+                _pidls = null;
+            }
+            _parentFolderPath = null;
         }
-        #endregion
+
+        private static void FreePIDLs(IntPtr[] pidls, int count)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                if (pidls[i] != IntPtr.Zero)
+                {
+                    Marshal.FreeCoTaskMem(pidls[i]);
+                    pidls[i] = IntPtr.Zero;
+                }
+            }
+        }
     }
 }
