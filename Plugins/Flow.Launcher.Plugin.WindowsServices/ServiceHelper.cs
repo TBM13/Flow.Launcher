@@ -243,31 +243,54 @@ public static class ServiceHelper
                 WindowStyle = ProcessWindowStyle.Hidden,
             };
 
-            // TODO: Use ArgumentList instead of Arguments
             switch (action)
             {
                 case Action.Start:
-                    info.Arguments = $"start \"{serviceResult.ServiceName}\"";
+                    info.ArgumentList.Add("start");
+                    info.ArgumentList.Add(serviceResult.ServiceName);
                     break;
                 case Action.Stop:
-                    info.Arguments = $"stop \"{serviceResult.ServiceName}\"";
+                    info.ArgumentList.Add("stop");
+                    info.ArgumentList.Add(serviceResult.ServiceName);
                     break;
                 case Action.Restart:
                     info.FileName = "cmd";
-                    info.Arguments = $"/c sc stop \"{serviceResult.ServiceName}\" && timeout 1 && sc start \"{serviceResult.ServiceName}\"";
+                    info.ArgumentList.Add("/c");
+                    info.ArgumentList.Add("sc");
+                    info.ArgumentList.Add("stop");
+                    info.ArgumentList.Add(serviceResult.ServiceName);
+                    info.ArgumentList.Add("&&");
+                    info.ArgumentList.Add("timeout");
+                    info.ArgumentList.Add("1");
+                    info.ArgumentList.Add("&&");
+                    info.ArgumentList.Add("sc");
+                    info.ArgumentList.Add("start");
+                    info.ArgumentList.Add(serviceResult.ServiceName);
                     break;
 
                 case Action.Disable:
-                    info.Arguments = $"config \"{serviceResult.ServiceName}\" start= disabled";
+                    info.ArgumentList.Add("config");
+                    info.ArgumentList.Add(serviceResult.ServiceName);
+                    info.ArgumentList.Add("start=");
+                    info.ArgumentList.Add("disabled");
                     break;
                 case Action.EnableManual:
-                    info.Arguments = $"config \"{serviceResult.ServiceName}\" start= demand";
+                    info.ArgumentList.Add("config");
+                    info.ArgumentList.Add(serviceResult.ServiceName);
+                    info.ArgumentList.Add("start=");
+                    info.ArgumentList.Add("demand");
                     break;
                 case Action.EnableAutomatic:
-                    info.Arguments = $"config \"{serviceResult.ServiceName}\" start= auto";
+                    info.ArgumentList.Add("config");
+                    info.ArgumentList.Add(serviceResult.ServiceName);
+                    info.ArgumentList.Add("start=");
+                    info.ArgumentList.Add("auto");
                     break;
                 case Action.EnableAutomaticDelayed:
-                    info.Arguments = $"config \"{serviceResult.ServiceName}\" start= delayed-auto";
+                    info.ArgumentList.Add("config");
+                    info.ArgumentList.Add(serviceResult.ServiceName);
+                    info.ArgumentList.Add("start=");
+                    info.ArgumentList.Add("delayed-auto");
                     break;
 
                 default:

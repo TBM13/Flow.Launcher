@@ -100,9 +100,10 @@ public class Main : IPlugin, IContextMenu
 
     public List<Result> LoadContextMenus(Result result)
     {
-        var service = (ServiceResult)result.ContextData;
-        List<Result> results = [];
+        if (result.ContextData is not ServiceResult service)
+            throw new InvalidOperationException("Unexpected context data type");
 
+        List<Result> results = [];
         if (service.IsRunning)
         {
             if (service.StartType != ServiceStartMode.Disabled)
