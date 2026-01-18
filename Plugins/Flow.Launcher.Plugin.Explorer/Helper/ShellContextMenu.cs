@@ -253,14 +253,32 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
                     // Get display name for the folder
                     STRRET strRet = default;
                     _desktopFolder!.GetDisplayNameOf(pidl, SHGDNF.SHGDN_FORPARSING, &strRet);
-                    Span<char> buffer = stackalloc char[MAX_PATH];
-                    PInvoke.StrRetToBuf(ref strRet, null, buffer);
-                    _parentFolderPath = buffer.TrimEnd('\0').ToString();
+
+                    try
+                    {
+                        Span<char> buffer = stackalloc char[MAX_PATH];
+                        PInvoke.StrRetToBuf(ref strRet, null, buffer);
+                        _parentFolderPath = buffer.TrimEnd('\0').ToString();
+                    }
+                    finally
+                    {
+                        // Free STRRET if it contains a CoTaskMemAlloc'd string
+                        if (strRet.uType == (uint)STRRET_TYPE.STRRET_WSTR)
+                            Marshal.FreeCoTaskMem((IntPtr)strRet.Anonymous.pOleStr.Value);
+                    }
 
                     // Get IShellFolder for the parent
                     desktop.BindToObject(pidl, null, &iid, out object result);
-                    _parentFolder = (IShellFolder)result;
-                    return true;
+                    if (result is IShellFolder shellFolder)
+                    {
+                        _parentFolder = shellFolder;
+                        return true;
+                    }
+
+                    // Unexpected result type - release it
+                    if (result is not null)
+                        Marshal.ReleaseComObject(result);
+                    return false;
                 }
                 finally
                 {
