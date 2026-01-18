@@ -2,8 +2,11 @@
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Windows.Forms;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.Shell.Common;
+using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Flow.Launcher.Plugin.Explorer.Helper
 {
@@ -66,7 +69,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
                 IntPtr.Zero,
                 out ctxMenuPtr);
 
-            if (S_OK == nResult)
+            if (HRESULT.S_OK == nResult)
             {
                 _oContextMenu = (IContextMenu)Marshal.GetTypedObjectForIUnknown(ctxMenuPtr, typeof(IContextMenu));
 
@@ -150,7 +153,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
             {
                 // Get desktop IShellFolder
                 int nResult = SHGetDesktopFolder(out pUnkownDesktopFolder);
-                if (S_OK != nResult)
+                if (HRESULT.S_OK != nResult)
                 {
                     throw new Exception("Failed to get the desktop shell folder");
                 }
@@ -169,7 +172,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
         /// </summary>
         /// <param name="folderName">Folder path</param>
         /// <returns>IShellFolder for the folder (relative from the desktop)</returns>
-        private IShellFolder? GetParentFolder(string folderName)
+        private unsafe IShellFolder? GetParentFolder(string folderName)
         {
             if (null == _oParentFolder)
             {
@@ -184,26 +187,24 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
                 uint pchEaten = 0;
                 SFGAO pdwAttributes = 0;
                 int nResult = oDesktopFolder.ParseDisplayName(IntPtr.Zero, IntPtr.Zero, folderName, ref pchEaten, out pPIDL, ref pdwAttributes);
-                if (S_OK != nResult)
+                if (HRESULT.S_OK != nResult)
                 {
                     return null;
                 }
 
-                IntPtr pStrRet = Marshal.AllocCoTaskMem(MAX_PATH * 2 + 4);
-                Marshal.WriteInt32(pStrRet, 0, 0);
-                nResult = _oDesktopFolder.GetDisplayNameOf(pPIDL, SHGNO.FORPARSING, pStrRet);
-                StringBuilder strFolder = new StringBuilder(MAX_PATH);
-                StrRetToBuf(pStrRet, pPIDL, strFolder, MAX_PATH);
-                Marshal.FreeCoTaskMem(pStrRet);
-                pStrRet = IntPtr.Zero;
-                _strParentFolder = strFolder.ToString();
+
+                STRRET strRet = default;
+                nResult = _oDesktopFolder.GetDisplayNameOf(pPIDL, SHGNO.FORPARSING, (IntPtr)(&strRet));
+                Span<char> folderBuffer = stackalloc char[MAX_PATH];
+                PInvoke.StrRetToBuf(ref strRet, null, folderBuffer);
+                _strParentFolder = folderBuffer.TrimEnd('\0').ToString();
 
                 // Get the IShellFolder for folder
                 IntPtr pUnknownParentFolder = IntPtr.Zero;
                 nResult = oDesktopFolder.BindToObject(pPIDL, IntPtr.Zero, ref IID_IShellFolder, out pUnknownParentFolder);
                 // Free the PIDL first
                 Marshal.FreeCoTaskMem(pPIDL);
-                if (S_OK != nResult)
+                if (HRESULT.S_OK != nResult)
                 {
                     return null;
                 }
@@ -244,7 +245,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
                 SFGAO pdwAttributes = 0;
                 IntPtr pPIDL = IntPtr.Zero;
                 int nResult = oParentFolder.ParseDisplayName(IntPtr.Zero, IntPtr.Zero, fi.Name, ref pchEaten, out pPIDL, ref pdwAttributes);
-                if (S_OK != nResult)
+                if (HRESULT.S_OK != nResult)
                 {
                     FreePIDLs(arrPIDLs);
                     return null;
@@ -283,7 +284,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
                 SFGAO pdwAttributes = 0;
                 IntPtr pPIDL = IntPtr.Zero;
                 int nResult = oParentFolder.ParseDisplayName(IntPtr.Zero, IntPtr.Zero, fi.Name, ref pchEaten, out pPIDL, ref pdwAttributes);
-                if (S_OK != nResult)
+                if (HRESULT.S_OK != nResult)
                 {
                     FreePIDLs(arrPIDLs);
                     return null;
@@ -340,7 +341,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
         /// </summary>
         /// <param name="dirs">DirectoryInfos (should all be in same directory)</param>
         /// <param name="pointScreen">Where to show the menu</param>
-        public void ShowContextMenu(DirectoryInfo[] dirs, Point pointScreen)
+        public unsafe void ShowContextMenu(DirectoryInfo[] dirs, Point pointScreen)
         {
             // Release all resources first.
             ReleaseAll();
@@ -353,10 +354,10 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
         /// </summary>
         /// <param name="arrFI">FileInfos (should all be in same directory)</param>
         /// <param name="pointScreen">Where to show the menu</param>
-        private void ShowContextMenu(Point pointScreen)
+        private unsafe void ShowContextMenu(Point pointScreen)
         {
-            IntPtr pMenu = IntPtr.Zero,
-                iContextMenuPtr = IntPtr.Zero;
+            HMENU menu = default;
+            IntPtr iContextMenuPtr = IntPtr.Zero;
 
             try
             {
@@ -372,10 +373,10 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
                     return;
                 }
 
-                pMenu = CreatePopupMenu();
+                menu = PInvoke.CreatePopupMenu();
 
                 int nResult = _oContextMenu.QueryContextMenu(
-                    pMenu,
+                    menu,
                     0,
                     CMD_FIRST,
                     CMD_LAST,
@@ -384,16 +385,16 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
                     ((Control.ModifierKeys & Keys.Shift) != 0 ? CMF.EXTENDEDVERBS : 0));
 
 
-                uint nSelected = TrackPopupMenuEx(
-                    pMenu,
-                    TPM.RETURNCMD,
+                uint nSelected = (uint)PInvoke.TrackPopupMenuEx(
+                    menu,
+                    (uint)TRACK_POPUP_MENU_FLAGS.TPM_RETURNCMD,
                     pointScreen.X,
                     pointScreen.Y,
-                    Handle,
-                    IntPtr.Zero);
+                    (HWND)Handle,
+                    null).Value;
 
-                DestroyMenu(pMenu);
-                pMenu = IntPtr.Zero;
+                PInvoke.DestroyMenu(menu);
+                menu = HMENU.Null;
 
                 if (nSelected != 0)
                 {
@@ -407,9 +408,9 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
             finally
             {
                 //hook.Uninstall();
-                if (pMenu != IntPtr.Zero)
+                if (menu != HMENU.Null)
                 {
-                    DestroyMenu(pMenu);
+                    PInvoke.DestroyMenu(menu);
                 }
 
                 if (iContextMenuPtr != IntPtr.Zero)
@@ -427,8 +428,6 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
         private const uint CMD_FIRST = 1;
         private const uint CMD_LAST = 30000;
 
-        private const int S_OK = 0;
-
         private static readonly int cbInvokeCommand = Marshal.SizeOf<CMINVOKECOMMANDINFOEX>();
 
         #endregion
@@ -438,22 +437,6 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
         // Retrieves the IShellFolder interface for the desktop folder, which is the root of the Shell's namespace.
         [DllImport("shell32.dll")]
         private static extern int SHGetDesktopFolder(out IntPtr ppshf);
-
-        // Takes a STRRET structure returned by IShellFolder::GetDisplayNameOf, converts it to a string, and places the result in a buffer. 
-        [DllImport("shlwapi.dll", EntryPoint = "StrRetToBuf", ExactSpelling = false, CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern int StrRetToBuf(IntPtr pstr, IntPtr pidl, StringBuilder pszBuf, int cchBuf);
-
-        // The TrackPopupMenuEx function displays a shortcut menu at the specified location and tracks the selection of items on the shortcut menu. The shortcut menu can appear anywhere on the screen.
-        [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
-        private static extern uint TrackPopupMenuEx(IntPtr hmenu, TPM flags, int x, int y, IntPtr hwnd, IntPtr lptpm);
-
-        // The CreatePopupMenu function creates a drop-down menu, submenu, or shortcut menu. The menu is initially empty. You can insert or append menu items by using the InsertMenuItem function. You can also use the InsertMenu function to insert menu items and the AppendMenu function to append menu items.
-        [DllImport("user32", SetLastError = true, CharSet = CharSet.Auto)]
-        private static extern IntPtr CreatePopupMenu();
-
-        // The DestroyMenu function destroys the specified menu and frees any memory that the menu occupies.
-        [DllImport("user32", SetLastError = true, CharSet = CharSet.Auto)]
-        private static extern bool DestroyMenu(IntPtr hMenu);
         #endregion
 
         #region Shell GUIDs
@@ -587,31 +570,6 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
             VERBW = 4,
             HELPTEXTW = 5,
             VALIDATEW = 6
-        }
-
-        // Specifies how TrackPopupMenuEx positions the shortcut menu horizontally
-        [Flags]
-        private enum TPM : uint
-        {
-            LEFTBUTTON = 0x0000,
-            RIGHTBUTTON = 0x0002,
-            LEFTALIGN = 0x0000,
-            CENTERALIGN = 0x0004,
-            RIGHTALIGN = 0x0008,
-            TOPALIGN = 0x0000,
-            VCENTERALIGN = 0x0010,
-            BOTTOMALIGN = 0x0020,
-            HORIZONTAL = 0x0000,
-            VERTICAL = 0x0040,
-            NONOTIFY = 0x0080,
-            RETURNCMD = 0x0100,
-            RECURSE = 0x0001,
-            HORPOSANIMATION = 0x0400,
-            HORNEGANIMATION = 0x0800,
-            VERPOSANIMATION = 0x1000,
-            VERNEGANIMATION = 0x2000,
-            NOANIMATION = 0x4000,
-            LAYOUTRTL = 0x8000
         }
 
         // Flags used with the CMINVOKECOMMANDINFOEX structure

@@ -1,0 +1,6 @@
+﻿S_OK
+StrRetToBuf
+CreatePopupMenu
+DestroyMenu
+TrackPopupMenuEx
+TRACK_POPUP_MENU_FLAGS
