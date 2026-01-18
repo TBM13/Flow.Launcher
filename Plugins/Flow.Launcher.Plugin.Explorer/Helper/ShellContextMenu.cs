@@ -96,7 +96,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
                 fMask = CMIC.UNICODE | CMIC.PTINVOKE |
                                ((Control.ModifierKeys & Keys.Control) != 0 ? CMIC.CONTROL_DOWN : 0) |
                                ((Control.ModifierKeys & Keys.Shift) != 0 ? CMIC.SHIFT_DOWN : 0),
-                ptInvoke = new POINT(pointInvoke.X, pointInvoke.Y),
+                ptInvoke = new Point(pointInvoke.X, pointInvoke.Y),
                 nShow = SW.SHOWNORMAL
             };
 
@@ -429,7 +429,6 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
 
         private const int S_OK = 0;
 
-        private static readonly int cbMenuItemInfo = Marshal.SizeOf<MENUITEMINFO>();
         private static readonly int cbInvokeCommand = Marshal.SizeOf<CMINVOKECOMMANDINFOEX>();
 
         #endregion
@@ -490,34 +489,7 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
             public string lpDirectoryW;
             [MarshalAs(UnmanagedType.LPWStr)]
             public string lpTitleW;
-            public POINT ptInvoke;
-        }
-
-        // Contains information about a menu item
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-        private struct MENUITEMINFO(string text)
-        {
-            public int cbSize = cbMenuItemInfo;
-            public MIIM fMask = 0;
-            public MFT fType = 0;
-            public MFS fState = 0;
-            public uint wID = 0;
-            public IntPtr hSubMenu = IntPtr.Zero;
-            public IntPtr hbmpChecked = IntPtr.Zero;
-            public IntPtr hbmpUnchecked = IntPtr.Zero;
-            public IntPtr dwItemData = IntPtr.Zero;
-            [MarshalAs(UnmanagedType.LPTStr)]
-            public string dwTypeData = text;
-            public int cch = text.Length;
-            public IntPtr hbmpItem = IntPtr.Zero;
-        }
-
-        // Defines the x- and y-coordinates of a point
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-        private struct POINT(int x, int y)
-        {
-            public int x = x;
-            public int y = y;
+            public Point ptInvoke;
         }
 
         #endregion
@@ -676,54 +648,6 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
             SHOWNA = 8,
             RESTORE = 9,
             SHOWDEFAULT = 10,
-        }
-
-        // Specifies the content of the new menu item
-        [Flags]
-        private enum MFT : uint
-        {
-            GRAYED = 0x00000003,
-            DISABLED = 0x00000003,
-            CHECKED = 0x00000008,
-            SEPARATOR = 0x00000800,
-            RADIOCHECK = 0x00000200,
-            BITMAP = 0x00000004,
-            OWNERDRAW = 0x00000100,
-            MENUBARBREAK = 0x00000020,
-            MENUBREAK = 0x00000040,
-            RIGHTORDER = 0x00002000,
-            BYCOMMAND = 0x00000000,
-            BYPOSITION = 0x00000400,
-            POPUP = 0x00000010
-        }
-
-        // Specifies the state of the new menu item
-        [Flags]
-        private enum MFS : uint
-        {
-            GRAYED = 0x00000003,
-            DISABLED = 0x00000003,
-            CHECKED = 0x00000008,
-            HILITE = 0x00000080,
-            ENABLED = 0x00000000,
-            UNCHECKED = 0x00000000,
-            UNHILITE = 0x00000000,
-            DEFAULT = 0x00001000
-        }
-
-        // Specifies the content of the new menu item
-        [Flags]
-        private enum MIIM : uint
-        {
-            BITMAP = 0x80,
-            CHECKMARKS = 0x08,
-            DATA = 0x20,
-            FTYPE = 0x100,
-            ID = 0x02,
-            STATE = 0x01,
-            STRING = 0x40,
-            SUBMENU = 0x04,
-            TYPE = 0x10
         }
 
         #endregion
