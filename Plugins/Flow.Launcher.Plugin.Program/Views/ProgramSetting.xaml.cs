@@ -207,13 +207,13 @@ namespace Flow.Launcher.Plugin.Program.Views
                 {
                     if (selectedProgramSource.Enabled)
                     {
-                        await ProgramSettingDisplay.SetProgramSourcesStatusAsync(new List<ProgramSource> { selectedProgramSource },
+                        await ProgramSettingDisplay.SetProgramSourcesStatusAsync([selectedProgramSource],
                             true); // sync status in win32, uwp and disabled
                         ProgramSettingDisplay.RemoveDisabledFromSettings();
                     }
                     else
                     {
-                        await ProgramSettingDisplay.SetProgramSourcesStatusAsync(new List<ProgramSource> { selectedProgramSource },
+                        await ProgramSettingDisplay.SetProgramSourcesStatusAsync([selectedProgramSource],
                             false);
                         ProgramSettingDisplay.StoreDisabledInSettings();
                     }

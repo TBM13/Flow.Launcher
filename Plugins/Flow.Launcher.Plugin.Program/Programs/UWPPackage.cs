@@ -66,7 +66,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 }
             }
 
-            Apps = apps.ToArray();
+            Apps = [.. apps];
 
             try
             {
@@ -213,7 +213,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     catch (Exception e)
                     {
                         Log.Exception(nameof(UWPPackage), $"|UWP|All|{p.InstalledLocation}|An unexpected error occurred and unable to convert Package to UWP for {p.Id.FullName}", e);
-                        return Array.Empty<UWPApp>();
+                        return [];
                     }
 #endif
 #if DEBUG //make developer aware and implement handling
@@ -229,11 +229,11 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     .Where(t1 => !Main._settings.DisabledProgramSources
                         .Any(x => x.UniqueIdentifier == t1.UniqueIdentifier));
 
-                return updatedListWithoutDisabledApps.ToArray();
+                return [.. updatedListWithoutDisabledApps];
             }
             else
             {
-                return Array.Empty<UWPApp>();
+                return [];
             }
         }
 
@@ -284,7 +284,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
             }
             else
             {
-                return Array.Empty<Package>();
+                return [];
             }
         }
 
@@ -574,7 +574,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
 
                     var logoNamePrefix = Path.GetFileNameWithoutExtension(uri); // e.g Square44x44
                     var logoDir = Path.GetDirectoryName(path); // e.g ..\..\Assets
-                    if (String.IsNullOrEmpty(logoNamePrefix) || !Directory.Exists(logoDir))
+                    if (string.IsNullOrEmpty(logoNamePrefix) || !Directory.Exists(logoDir))
                     {
                         // Known issue: Edge always triggers it since logo is not at uri
                         Log.Exception(GetType().FullName, $"|UWP|LogoPathFromUri|{Location}" +

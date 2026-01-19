@@ -8,9 +8,9 @@ using Flow.Launcher.Plugin.Program.Views.Models;
 
 namespace Flow.Launcher.Plugin.Program.ViewModels
 {
-    public class AddProgramSourceViewModel : BaseModel
+    public class AddProgramSourceViewModel(PluginInitContext context, Settings settings) : BaseModel
     {
-        private readonly Settings Settings;
+        private readonly Settings Settings = settings;
 
         private bool enabled = true;
         public bool Enabled
@@ -36,19 +36,12 @@ namespace Flow.Launcher.Plugin.Program.ViewModels
         }
 
         public ProgramSource Source { get; init; }
-        public IPublicAPI API { get; init; }
-        public string AddBtnText { get; init; }
+        public IPublicAPI API { get; init; } = context.API;
+        public string AddBtnText { get; init; } = Localize.Settings_Add;
         private bool LocationModified = false;
         private bool StatusModified = false;
         public bool IsCustomSource { get; init; } = true;
         public bool IsNotCustomSource => !IsCustomSource;
-
-        public AddProgramSourceViewModel(PluginInitContext context, Settings settings)
-        {
-            API = context.API;
-            Settings = settings;
-            AddBtnText = Localize.Settings_Add;
-        }
 
         public AddProgramSourceViewModel(PluginInitContext context, Settings settings, ProgramSource programSource) : this(context, settings)
         {

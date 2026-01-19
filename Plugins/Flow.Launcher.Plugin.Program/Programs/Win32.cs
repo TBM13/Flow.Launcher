@@ -129,7 +129,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 }
             }
 
-            List<string> candidates = new List<string>();
+            List<string> candidates = [];
 
             if (!matchResult.IsSearchPrecisionScoreMet() && !string.IsNullOrEmpty(query))
             {
@@ -288,7 +288,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
             return Name;
         }
 
-        private static readonly List<FileSystemWatcher> Watchers = new();
+        private static readonly List<FileSystemWatcher> Watchers = [];
 
         private static Win32 Win32Program(string path)
         {
@@ -446,7 +446,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
             bool recursive = true)
         {
             if (!Directory.Exists(directory))
-                return Enumerable.Empty<string>();
+                return [];
 
             return Directory.EnumerateFiles(
                     directory, "*",
@@ -497,9 +497,9 @@ namespace Flow.Launcher.Plugin.Program.Programs
             List<string> commonParents)
         {
             var pathEnv = Environment.GetEnvironmentVariable("Path");
-            if (String.IsNullOrEmpty(pathEnv))
+            if (string.IsNullOrEmpty(pathEnv))
             {
-                return Array.Empty<Win32>();
+                return [];
             }
 
             var paths = pathEnv.Split(";", StringSplitOptions.RemoveEmptyEntries).DistinctBy(p => p.ToLowerInvariant());
@@ -513,12 +513,12 @@ namespace Flow.Launcher.Plugin.Program.Programs
             return programs;
         }
 
-        private static IEnumerable<Win32> AppPathsPrograms(string[] suffixes, string[] protocols)
+        private static List<Win32> AppPathsPrograms(string[] suffixes, string[] protocols)
         {
             // https://msdn.microsoft.com/en-us/library/windows/desktop/ee872121
             const string appPaths = @"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths";
 
-            IEnumerable<string> toFilter = Enumerable.Empty<string>();
+            IEnumerable<string> toFilter = [];
 
             using var rootMachine = Registry.LocalMachine.OpenSubKey(appPaths);
             using var rootUser = Registry.CurrentUser.OpenSubKey(appPaths);
@@ -592,7 +592,6 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 UrlExtension => UrlProgram(path, protocols),
                 _ => Win32Program(path)
             };
-            ;
         }
 
         public static IEnumerable<string> ExceptDisabledSource(IEnumerable<string> paths)
@@ -630,7 +629,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
             }
         }
 
-        private static IEnumerable<Win32> ProgramsHasher(IEnumerable<Win32> programs)
+        private static ParallelQuery<Win32> ProgramsHasher(IEnumerable<Win32> programs)
         {
             var startMenuPaths = GetStartMenuPaths();
             return programs.GroupBy(p => (p.ExecutablePath + p.Args).ToLowerInvariant())
@@ -642,12 +641,12 @@ namespace Flow.Launcher.Plugin.Program.Programs
                             g.LnkResolvedPath != null &&
                             startMenuPaths.Any(x => FilesFolders.PathContains(x, g.FullPath)))
                         .ToList();
-                    if (startMenu.Any())
+                    if (startMenu.Count != 0)
                         return startMenu.Take(1);
 
                     // distinct by description
                     var temp = g.Where(g => !string.IsNullOrEmpty(g.Description)).ToList();
-                    if (temp.Any())
+                    if (temp.Count != 0)
                         return temp.Take(1);
                     return g.Take(1);
                 });
@@ -692,7 +691,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
 
                 autoIndexPrograms = ProgramsHasher(autoIndexPrograms).ToArray();
 
-                return programs.Concat(autoIndexPrograms).Where(x => x.Valid).Distinct().ToArray();
+                return [.. programs.Concat(autoIndexPrograms).Where(x => x.Valid).Distinct()];
             }
 #if DEBUG //This is to make developer aware of any unhandled exception and add in handling.
             catch (Exception)
@@ -706,7 +705,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
             {
                 Log.Exception(nameof(Win32), "|Win32|All|Not available|An unexpected error occurred", e);
 
-                return Array.Empty<Win32>();
+                return [];
             }
 #endif
         }
@@ -736,20 +735,20 @@ namespace Flow.Launcher.Plugin.Program.Programs
             }
         }
 
-        private static IEnumerable<string> GetStartMenuPaths()
+        private static string[] GetStartMenuPaths()
         {
             var userStartMenu = Environment.GetFolderPath(Environment.SpecialFolder.StartMenu);
             var commonStartMenu = Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu);
 
-            return new[] { userStartMenu, commonStartMenu };
+            return [userStartMenu, commonStartMenu];
         }
 
-        private static IEnumerable<string> GetStartupPaths()
+        private static string[] GetStartupPaths()
         {
             var userStartup = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
             var commonStartup = Environment.GetFolderPath(Environment.SpecialFolder.CommonStartup);
 
-            return new[] { userStartup, commonStartup };
+            return [userStartup, commonStartup];
         }
 
         public static void WatchProgramUpdate(Settings settings)
@@ -820,10 +819,10 @@ namespace Flow.Launcher.Plugin.Program.Programs
             // To avoid unnecessary io
             // like c:\windows and c:\windows\system32
             var grouped = programSources.GroupBy(p => p.Location.ToLowerInvariant()[0]); // group by disk
-            List<string> result = new();
+            List<string> result = [];
             foreach (var group in grouped)
             {
-                HashSet<ProgramSource> parents = group.ToHashSet();
+                HashSet<ProgramSource> parents = [.. group];
                 foreach (var source in group)
                 {
                     if (parents.Any(p => FilesFolders.PathContains(p.Location, source.Location)))
@@ -835,7 +834,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 result.AddRange(parents.Select(x => x.Location));
             }
 
-            return result.DistinctBy(x => x.ToLowerInvariant()).ToList();
+            return [.. result.DistinctBy(x => x.ToLowerInvariant())];
         }
     }
 }

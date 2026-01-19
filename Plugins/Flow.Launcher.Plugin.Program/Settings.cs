@@ -13,17 +13,15 @@ namespace Flow.Launcher.Plugin.Program
         /// <summary>
         /// User-added program sources' directories
         /// </summary>
-        public List<ProgramSource> ProgramSources { get; set; } = new List<ProgramSource>();
+        public List<ProgramSource> ProgramSources { get; set; } = [];
 
         /// <summary>
         /// Disabled single programs, not including User-added directories
         /// </summary>
-        public List<ProgramSource> DisabledProgramSources { get; set; } = new List<ProgramSource>();
+        public List<ProgramSource> DisabledProgramSources { get; set; } = [];
 
-        [Obsolete("Should use GetSuffixes() instead."), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string[] ProgramSuffixes { get; set; } = null;
-        public string[] CustomSuffixes { get; set; } = Array.Empty<string>();  // Custom suffixes only
-        public string[] CustomProtocols { get; set; } = Array.Empty<string>();
+        public string[] CustomSuffixes { get; set; } = [];  // Custom suffixes only
+        public string[] CustomProtocols { get; set; } = [];
 
         public Dictionary<string, bool> BuiltinSuffixesStatus { get; set; } = new Dictionary<string, bool>{
             { "exe", true }, { "appref-ms", true }, { "lnk", true }
@@ -43,8 +41,7 @@ namespace Flow.Launcher.Plugin.Program
 
         public string[] GetSuffixes()
         {
-            RemoveRedundantSuffixes();
-            List<string> extensions = new List<string>();
+            List<string> extensions = [];
             foreach (var item in BuiltinSuffixesStatus)
             {
                 if (item.Value)
@@ -60,17 +57,17 @@ namespace Flow.Launcher.Plugin.Program
 
             if (UseCustomSuffixes)
             {
-                return extensions.Concat(CustomSuffixes).DistinctBy(x => x.ToLower()).ToArray();
+                return [.. extensions.Concat(CustomSuffixes).DistinctBy(x => x.ToLower())];
             }
             else
             {
-                return extensions.DistinctBy(x => x.ToLower()).ToArray();
+                return [.. extensions.DistinctBy(x => x.ToLower())];
             }
         }
 
         public string[] GetProtocols()
         {
-            List<string> protocols = new List<string>();
+            List<string> protocols = [];
             foreach (var item in BuiltinProtocolsStatus)
             {
                 if (item.Value)
@@ -88,30 +85,12 @@ namespace Flow.Launcher.Plugin.Program
 
             if (UseCustomProtocols)
             {
-                return protocols.Concat(CustomProtocols).DistinctBy(x => x.ToLower()).ToArray();
+                return [.. protocols.Concat(CustomProtocols).DistinctBy(x => x.ToLower())];
             }
             else
             {
-                return protocols.DistinctBy(x => x.ToLower()).ToArray();
+                return [.. protocols.DistinctBy(x => x.ToLower())];
             }
-        }
-
-        private void RemoveRedundantSuffixes()
-        {
-            // Migrate to new settings
-            // CustomSuffixes no longer contains custom suffixes
-            // users has tweaked the settings
-            // or this function has been executed once
-            if (UseCustomSuffixes == true || ProgramSuffixes == null)
-                return;
-            var suffixes = ProgramSuffixes.ToList();
-            foreach(var item in BuiltinSuffixesStatus)
-            {
-                suffixes.Remove(item.Key);
-            }
-            CustomSuffixes = suffixes.ToArray(); // Custom suffixes
-            UseCustomSuffixes = CustomSuffixes.Length != 0; // Search custom suffixes or not
-            ProgramSuffixes = null;
         }
 
         public bool EnableStartMenuSource { get; set; } = true;

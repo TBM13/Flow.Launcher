@@ -10,10 +10,9 @@ namespace Flow.Launcher.Plugin.Program.Views.Commands
         internal static List<ProgramSource> LoadProgramSources()
         {
             // Even though these are disabled, we still want to display them so users can enable later on
-            return Main._settings
+            return [.. Main._settings
                        .DisabledProgramSources
-                       .Union(Main._settings.ProgramSources)
-                       .ToList();
+                       .Union(Main._settings.ProgramSources)];
         }
 
         internal static async Task DisplayAllProgramsAsync()
