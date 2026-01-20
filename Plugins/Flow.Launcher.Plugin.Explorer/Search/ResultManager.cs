@@ -7,7 +7,6 @@ using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Plugin.Explorer.Helper;
 using Flow.Launcher.Plugin.Explorer.Views;
-using Path = System.IO.Path;
 
 namespace Flow.Launcher.Plugin.Explorer.Search
 {
@@ -66,6 +65,11 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 case ResultType.Folder:
                     var folderInfo = new System.IO.DirectoryInfo[] { new(path) };
                     new ShellContextMenu().ShowContextMenu(folderInfo, showPosition);
+                    break;
+
+                case ResultType.Volume:
+                    var driveInfo = new DriveInfo[] { new(path) };
+                    new ShellContextMenu().ShowContextMenu(driveInfo, showPosition);
                     break;
             }
         }
@@ -157,7 +161,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
 
             return new Result
             {
-                Title = path,
+                Title = path.ToUpper(),
                 SubTitle = subtitle,
                 AutoCompleteText = GetAutoCompleteText(query, path, ResultType.Volume),
                 IcoPath = path,
@@ -166,8 +170,14 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 {
                     FilePath = path,
                 },
-                Action = _ =>
+                Action = c =>
                 {
+                    if (c.SpecialKeyState.ToModifierKeys() == ModifierKeys.Alt)
+                    {
+                        ShowNativeContextMenu(path, ResultType.Volume);
+                        return false;
+                    }
+
                     OpenFolder(path);
                     return true;
                 },

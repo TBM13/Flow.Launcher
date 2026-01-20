@@ -42,24 +42,18 @@ namespace Flow.Launcher.Plugin.Explorer
                 else if (record.Type == ResultType.File)
                     contextMenus.Add(CreateOpenWithMenu(record));
 
-                if (record.Type is not ResultType.Volume)
+                // Show windows context menu
+                contextMenus.Add(new Result()
                 {
-                    // Show windows context menu
-                    contextMenus.Add(new Result()
+                    Title = Localize.GeneralResult_ShowWindowsMenu,
+                    SubTitle = Localize.GeneralResult_ShowWindowsMenu_Subtitle,
+                    Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue700"),
+                    Action = _ =>
                     {
-                        Title = Localize.GeneralResult_ShowWindowsMenu,
-                        SubTitle = Localize.GeneralResult_ShowWindowsMenu_Subtitle,
-                        Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue700"),
-                        Action = _ =>
-                        {
-                            if (record.Type is ResultType.Volume)
-                                return false;
-
-                            ResultManager.ShowNativeContextMenu(record.FullPath, record.Type);
-                            return false;
-                        },
-                    });
-                }
+                        ResultManager.ShowNativeContextMenu(record.FullPath, record.Type);
+                        return false;
+                    },
+                });
 
                 if (record.Type == ResultType.File && CanRunAsDifferentUser(record.FullPath))
                     // Run as different user

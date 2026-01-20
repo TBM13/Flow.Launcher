@@ -12,7 +12,7 @@ using Windows.Win32.UI.WindowsAndMessaging;
 namespace Flow.Launcher.Plugin.Explorer.Helper
 {
     /// <summary>
-    /// Shows the Windows Explorer shell context menu for files or folders.
+    /// Shows the Windows Explorer shell context menu for files, folders or drives.
     /// Based on code from https://www.codeproject.com/Articles/22012/Explorer-Shell-Context-Menu
     /// </summary>
     /// <remarks>
@@ -76,6 +76,20 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
 
             ReleaseAll();
             _pidls = GetPIDLs(directories[0].Parent?.FullName, directories, static di => di.Name);
+            ShowContextMenuCore(screenPoint);
+        }
+
+        /// <summary>
+        /// Shows the context menu for the specified drives.
+        /// </summary>
+        /// <param name="drives">Drives to show context menu for</param>
+        /// <param name="screenPoint">Screen coordinates where to show the menu</param>
+        public unsafe void ShowContextMenu(DriveInfo[] drives, Point screenPoint)
+        {
+            if (drives is null || drives.Length == 0) return;
+
+            ReleaseAll();
+            _pidls = GetDrivePIDLs(drives);
             ShowContextMenuCore(screenPoint);
         }
 
@@ -213,6 +227,49 @@ namespace Flow.Launcher.Plugin.Explorer.Helper
                         uint attrs = 0;
                         ITEMIDLIST* pidl = null;
                         _parentFolder!.ParseDisplayName(HWND.Null, null, pName, null, &pidl, ref attrs);
+
+                        if (pidl == null)
+                        {
+                            FreePIDLs(pidls, allocatedCount);
+                            return null;
+                        }
+                        pidls[i] = (IntPtr)pidl;
+                        allocatedCount++;
+                    }
+                }
+
+                return pidls;
+            }
+            catch
+            {
+                FreePIDLs(pidls, allocatedCount);
+                throw;
+            }
+        }
+
+        private unsafe IntPtr[]? GetDrivePIDLs(DriveInfo[] drives)
+        {
+            if (drives.Length == 0) return null;
+
+            // Get the "My Computer" virtual folder using its shell CLSID
+            const string myComputerPath = "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}";
+            if (!TryGetParentFolder(myComputerPath))
+                return null;
+
+            var pidls = new IntPtr[drives.Length];
+            int allocatedCount = 0;
+
+            try
+            {
+                for (int i = 0; i < drives.Length; i++)
+                {
+                    // Use the drive root path (e.g., "C:\") for parsing
+                    string drivePath = drives[i].Name;
+                    fixed (char* pPath = drivePath)
+                    {
+                        uint attrs = 0;
+                        ITEMIDLIST* pidl = null;
+                        _parentFolder!.ParseDisplayName(HWND.Null, null, pPath, null, &pidl, ref attrs);
 
                         if (pidl == null)
                         {
