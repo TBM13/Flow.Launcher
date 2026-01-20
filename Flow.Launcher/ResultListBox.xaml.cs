@@ -4,6 +4,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using Flow.Launcher.ViewModel;
 
 namespace Flow.Launcher
@@ -76,6 +77,48 @@ namespace Flow.Launcher
                     if (!item.IsSelected)
                         item.IsSelected = true;
                 }
+            }
+        }
+
+        private void OnItemLoaded(object sender, RoutedEventArgs e)
+        {
+            if (sender is not FrameworkElement element)
+                return;
+
+            element.DataContextChanged += OnItemDataContextChanged;
+            SetupScreenPositionDelegate(element);
+        }
+
+        private void OnItemDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (sender is not FrameworkElement element)
+                return;
+
+            if (e.OldValue is ResultViewModel oldViewModel)
+                oldViewModel.GetScreenCenterPoint = null;
+
+            SetupScreenPositionDelegate(element);
+        }
+
+        private static void SetupScreenPositionDelegate(FrameworkElement element)
+        {
+            if (element.DataContext is ResultViewModel viewModel)
+                viewModel.GetScreenCenterPoint = () => CalculateScreenCenterPoint(element);
+        }
+
+        private static Point? CalculateScreenCenterPoint(FrameworkElement element)
+        {
+            if (!element.IsLoaded || PresentationSource.FromVisual(element) is null)
+                return null;
+
+            try
+            {
+                var centerPoint = new Point(element.ActualWidth / 2, element.ActualHeight / 2);
+                return element.PointToScreen(centerPoint);
+            }
+            catch (InvalidOperationException)
+            {
+                return null;
             }
         }
 

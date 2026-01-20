@@ -322,24 +322,22 @@ namespace Flow.Launcher.ViewModel
         }
 
         [RelayCommand]
-        private async Task OpenResultAsync(string index)
+        private async Task OpenResultAsync()
         {
-            var results = SelectedResults;
-            if (index is not null)
-            {
-                results.SelectedIndex = int.Parse(index);
-            }
-
-            var result = results.SelectedItem?.Result;
-            if (result == null)
-            {
+            var selectedItem = SelectedResults.SelectedItem;
+            if (selectedItem is null)
                 return;
-            }
+
+            var result = selectedItem.Result;
+            var positionFunc = selectedItem.GetScreenCenterPoint
+                ?? throw new NullReferenceException(nameof(selectedItem.GetScreenCenterPoint));
+            var position = positionFunc();
 
             var hideWindow = await result.ExecuteAsync(new ActionContext
             {
                 // not null means pressing modifier key + number, should ignore the modifier key
-                SpecialKeyState = index is not null ? new SpecialKeyState() : GlobalHotkey.CheckModifiers()
+                SpecialKeyState = GlobalHotkey.CheckModifiers(),
+                ResultPosition = position ?? throw new Exception("Failed to get result position")
             }).ConfigureAwait(false);
 
             if (hideWindow)

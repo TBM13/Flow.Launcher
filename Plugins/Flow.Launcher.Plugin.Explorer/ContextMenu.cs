@@ -48,9 +48,9 @@ namespace Flow.Launcher.Plugin.Explorer
                     Title = Localize.GeneralResult_ShowWindowsMenu,
                     SubTitle = Localize.GeneralResult_ShowWindowsMenu_Subtitle,
                     Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue700"),
-                    Action = _ =>
+                    Action = c =>
                     {
-                        ResultManager.ShowNativeContextMenu(record.FullPath, record.Type);
+                        ResultManager.ShowNativeContextMenu(record.FullPath, record.Type, c.ResultPosition);
                         return false;
                     },
                 });

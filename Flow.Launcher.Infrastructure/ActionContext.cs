@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System.Windows;
+using System.Windows.Input;
 
 namespace Flow.Launcher.Infrastructure;
 
@@ -12,6 +13,13 @@ public record ActionContext
     /// Contains the press state of certain special keys.
     /// </summary>
     public required SpecialKeyState SpecialKeyState { get; init; }
+
+    /// <summary>
+    /// The screen coordinates of the result's center.
+    /// <para/>
+    /// Useful to show a popup, like a context menu.
+    /// </summary>
+    public required Point ResultPosition { get; init; }
 }
 
 /// <summary>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Flow.Launcher.Infrastructure;
@@ -47,29 +48,25 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             };
         }
 
-        internal static void ShowNativeContextMenu(string path, ResultType type)
+        internal static void ShowNativeContextMenu(string path, ResultType type, Point showPosition)
         {
-            var screenWithMouseCursor = MonitorHelper.GetCursorDisplayMonitor()
-                ?? throw new Exception("Unable to find in which monitor the mouse cursor is in.");
-            var xOfScreenCenter = screenWithMouseCursor.WorkingArea.Left + screenWithMouseCursor.WorkingArea.Width / 2;
-            var yOfScreenCenter = screenWithMouseCursor.WorkingArea.Top + screenWithMouseCursor.WorkingArea.Height / 2;
-            var showPosition = new System.Drawing.Point((int)xOfScreenCenter, (int)yOfScreenCenter);
+            System.Drawing.Point point = new((int)showPosition.X, (int)showPosition.Y);
 
             switch (type)
             {
                 case ResultType.File:
                     var fileInfo = new FileInfo[] { new(path) };
-                    new ShellContextMenu().ShowContextMenu(fileInfo, showPosition);
+                    new ShellContextMenu().ShowContextMenu(fileInfo, point);
                     break;
 
                 case ResultType.Folder:
                     var folderInfo = new System.IO.DirectoryInfo[] { new(path) };
-                    new ShellContextMenu().ShowContextMenu(folderInfo, showPosition);
+                    new ShellContextMenu().ShowContextMenu(folderInfo, point);
                     break;
 
                 case ResultType.Volume:
                     var driveInfo = new DriveInfo[] { new(path) };
-                    new ShellContextMenu().ShowContextMenu(driveInfo, showPosition);
+                    new ShellContextMenu().ShowContextMenu(driveInfo, point);
                     break;
             }
         }
@@ -92,7 +89,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 {
                     if (c.SpecialKeyState.ToModifierKeys() == ModifierKeys.Alt)
                     {
-                        ShowNativeContextMenu(path, ResultType.Folder);
+                        ShowNativeContextMenu(path, ResultType.Folder, c.ResultPosition);
                         return false;
                     }
                     // open folder
@@ -174,7 +171,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 {
                     if (c.SpecialKeyState.ToModifierKeys() == ModifierKeys.Alt)
                     {
-                        ShowNativeContextMenu(path, ResultType.Volume);
+                        ShowNativeContextMenu(path, ResultType.Volume, c.ResultPosition);
                         return false;
                     }
 
@@ -233,7 +230,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 {
                     if (c.SpecialKeyState.ToModifierKeys() == ModifierKeys.Alt)
                     {
-                        ShowNativeContextMenu(folderPath, ResultType.Folder);
+                        ShowNativeContextMenu(folderPath, ResultType.Folder, c.ResultPosition);
                         return false;
                     }
                     OpenFolder(folderPath);
@@ -272,7 +269,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 {
                     if (c.SpecialKeyState.ToModifierKeys() == ModifierKeys.Alt)
                     {
-                        ShowNativeContextMenu(filePath, ResultType.File);
+                        ShowNativeContextMenu(filePath, ResultType.File, c.ResultPosition);
                         return false;
                     }
                     try

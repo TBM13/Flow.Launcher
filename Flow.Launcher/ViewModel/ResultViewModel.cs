@@ -57,6 +57,12 @@ namespace Flow.Launcher.ViewModel
 
         public Settings Settings { get; }
 
+        /// <summary>
+        /// Gets the center point of this result's UI element in screen coordinates.
+        /// Returns null if the element is not loaded or not connected to a visual tree.
+        /// </summary>
+        public Func<Point?>? GetScreenCenterPoint { get; set; }
+
         public Visibility ShowIcon
         {
             get
