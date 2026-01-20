@@ -77,14 +77,7 @@
             Key="OemMinus"
             Command="{Binding DecreaseMaxResultCommand}"
             Modifiers="Control" />
-        <KeyBinding
-            Key="Enter"
-            Command="{Binding OpenResultCommand}"
-            Modifiers="Ctrl+Shift" />
-        <KeyBinding
-            Key="Enter"
-            Command="{Binding LoadContextMenuCommand}"
-            Modifiers="Shift" />
+
         <KeyBinding Key="Enter" Command="{Binding OpenResultCommand}" />
         <KeyBinding
             Key="Enter"
@@ -94,6 +87,14 @@
             Key="Enter"
             Command="{Binding OpenResultCommand}"
             Modifiers="Alt" />
+        <KeyBinding
+            Key="Enter"
+            Command="{Binding OpenResultCommand}"
+            Modifiers="Shift" />
+        <KeyBinding
+            Key="Enter"
+            Command="{Binding OpenResultCommand}"
+            Modifiers="Shift+Ctrl" />
         <KeyBinding
             Key="Enter"
             Command="{Binding OpenResultCommand}"
