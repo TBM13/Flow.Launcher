@@ -95,6 +95,10 @@
             Command="{Binding OpenResultCommand}"
             Modifiers="Alt" />
         <KeyBinding
+            Key="Enter"
+            Command="{Binding OpenResultCommand}"
+            Modifiers="Shift+Alt" />
+        <KeyBinding
             Key="F12"
             Command="{Binding ToggleGameModeCommand}"
             Modifiers="Ctrl" />
