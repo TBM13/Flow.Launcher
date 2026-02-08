@@ -1,97 +1,126 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
 using Flow.Launcher.Infrastructure.Logger;
+using Microsoft.Extensions.Logging;
+using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Storage.FileSystem;
+using Windows.Win32.System.Com;
 using Windows.Win32.UI.Shell;
+using ZLogger;
 
 namespace Flow.Launcher.Infrastructure.Helpers;
 
 public static class ShellLinkHelper
 {
     public const string SHELL_LINK_EXTENSION = ".lnk";
-    private static string CLASS_NAME => typeof(ShellLinkHelper).FullName ?? nameof(ShellLinkHelper);
+    private static readonly ILogger Logger = LogManager.GetLogger(nameof(ShellLinkHelper));
 
-    // Reference : http://www.pinvoke.net/default.aspx/Interfaces.IShellLinkW
-    [ComImport(), Guid("00021401-0000-0000-C000-000000000046")]
-    public class ShellLink
-    {
-    }
-
-    // TODO: Review this code
-    public static unsafe string RetrieveTargetPath(string path)
+    /// <summary>
+    /// Creates a ShellLink COM object, loads the .lnk file, and returns the <see cref="IShellLinkW"/> interface.
+    /// <para/>
+    /// Caller must release the returned object via <see cref="Marshal.ReleaseComObject"/> when done.
+    /// </summary>
+    private static IShellLinkW? LoadShellLink(string path)
     {
         var link = new ShellLink();
-        const int STGM_READ = 0;
-        ((IPersistFile)link).Load(path, STGM_READ);
-        var hwnd = new HWND(IntPtr.Zero);
-        // Use SLR_NO_UI to avoid showing any UI during resolution, like Problem with Shortcut dialogs
-        // https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ishelllinka-resolve
-        ((IShellLinkW)link).Resolve(hwnd, (uint)SLR_FLAGS.SLR_NO_UI);
-
-        const int MAX_PATH = 260;
-        Span<char> buffer = stackalloc char[MAX_PATH];
-
-        var data = new WIN32_FIND_DATAW();
-        var target = string.Empty;
         try
         {
+            ((IPersistFile)link).Load(path, STGM.STGM_READ);
+            return (IShellLinkW)link;
+        }
+        catch (COMException e)
+        {
+            Logger.ZLogError(e, $"Failed to load shell link from path: {path}");
+            return null;
+        }
+        finally
+        {
+            if (Marshal.IsComObject(link))
+                Marshal.ReleaseComObject(link);
+        }
+    }
+
+    public static unsafe string? RetrieveTargetPath(string path)
+    {
+        var link = LoadShellLink(path);
+        if (link is null)
+            return null;
+
+        try
+        {
+            // SLR_NO_UI: avoid showing any UI during resolution (e.g. "Problem with Shortcut" dialogs)
+            // https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ishelllinka-resolve
+            link.Resolve(HWND.Null, (uint)SLR_FLAGS.SLR_NO_UI);
+
+            Span<char> buffer = stackalloc char[(int)PInvoke.MAX_PATH];
+            var data = new WIN32_FIND_DATAW();
             fixed (char* bufferPtr = buffer)
             {
-                ((IShellLinkW)link).GetPath((PWSTR)bufferPtr, MAX_PATH, &data, 0);
-                target = MemoryMarshal.CreateReadOnlySpanFromNullTerminated(bufferPtr).ToString();
+                link.GetPath(bufferPtr, (int)PInvoke.MAX_PATH, &data, 0);
+                return MemoryMarshal.CreateReadOnlySpanFromNullTerminated(bufferPtr).ToString();
             }
         }
         catch (COMException e)
         {
-            Log.Exception(CLASS_NAME, $"|IShellLinkW|retrieveTargetPath|{path}" +
-                "|Error occurred while getting program arguments", e);
+            Logger.ZLogError(e, $"Failed to retrieve target path from shell link: {path}");
+            return null;
         }
-
-        // To release unmanaged memory
-        Marshal.ReleaseComObject(link);
-
-        return target;
+        finally
+        {
+            if (Marshal.IsComObject(link))
+                Marshal.ReleaseComObject(link);
+        }
     }
 
-    // TODO: Review this code
     public static unsafe (string? description, string? args) RetrieveDescriptionAndArgs(string path)
     {
-        var link = new ShellLink();
-        const int STGM_READ = 0;
-        ((IPersistFile)link).Load(path, STGM_READ);
-
-        const int MAX_PATH = 260;
-        Span<char> buffer = stackalloc char[MAX_PATH];
-
-        string? description = null;
-        string? args = null;
+        var link = LoadShellLink(path);
+        if (link is null)
+            return (null, null);
 
         try
         {
-            fixed (char* bufferPtr = buffer)
+            Span<char> buffer = stackalloc char[(int)PInvoke.MAX_PATH];
+            string? description = null;
+            string? args = null;
+
+            try
             {
-                ((IShellLinkW)link).GetDescription(bufferPtr, MAX_PATH);
-                description = MemoryMarshal.CreateReadOnlySpanFromNullTerminated(bufferPtr).ToString();
+                fixed (char* bufferPtr = buffer)
+                {
+                    link.GetDescription(bufferPtr, (int)PInvoke.MAX_PATH);
+                    description = MemoryMarshal.CreateReadOnlySpanFromNullTerminated(bufferPtr).ToString();
+                }
             }
+            catch (COMException e)
+            {
+                // C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\MiracastView.lnk always causes an exception
+                Logger.ZLogError(e, $"Failed to get description from shell link: {path}");
+            }
+
+            // Clear buffer to avoid bleeding of data
+            buffer.Clear();
+
+            try
+            {
+                fixed (char* bufferPtr = buffer)
+                {
+                    link.GetArguments(bufferPtr, (int)PInvoke.MAX_PATH);
+                    args = MemoryMarshal.CreateReadOnlySpanFromNullTerminated(bufferPtr).ToString();
+                }
+            }
+            catch (COMException e)
+            {
+                Logger.ZLogError(e, $"Failed to get args from shell link: {path}");
+            }
+
+            return (description, args);
         }
-        catch (COMException e)
+        finally
         {
-            // C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\MiracastView.lnk always cause exception
-            Log.Exception(CLASS_NAME, $"|IShellLinkW|retrieveTargetPath|{path}" +
-                "|Error caused likely due to trying to get the description of the program", e);
+            if (Marshal.IsComObject(link))
+                Marshal.ReleaseComObject(link);
         }
-
-        fixed (char* bufferPtr = buffer)
-        {
-            ((IShellLinkW)link).GetArguments(bufferPtr, MAX_PATH);
-            args = MemoryMarshal.CreateReadOnlySpanFromNullTerminated(bufferPtr).ToString();
-        }
-
-        // To release unmanaged memory
-        Marshal.ReleaseComObject(link);
-
-        return (description, args);
     }
 }

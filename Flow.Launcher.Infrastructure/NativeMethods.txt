@@ -50,7 +50,10 @@ SHParseDisplayName
 SHOpenFolderAndSelectItems
 CoTaskMemFree
 
+ShellLink
 IShellLinkW
+IPersistFile
+STGM_READ
 SLR_FLAGS
 WIN32_FIND_DATAW
 
