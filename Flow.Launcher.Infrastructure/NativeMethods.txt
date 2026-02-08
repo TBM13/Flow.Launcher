@@ -92,3 +92,17 @@ OpenProcess
 GetProcessId
 DuplicateTokenEx
 CreateProcessWithTokenW
+
+StrRetToBuf
+CreatePopupMenu
+DestroyMenu
+TrackPopupMenuEx
+TRACK_POPUP_MENU_FLAGS
+SHGetDesktopFolder
+IContextMenu
+CMINVOKECOMMANDINFO
+CMINVOKECOMMANDINFOEX
+SHGDNF
+SFGAO_FLAGS
+SHOW_WINDOW_CMD
+STRRET_TYPE

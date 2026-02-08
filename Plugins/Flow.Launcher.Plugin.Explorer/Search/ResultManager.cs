@@ -6,7 +6,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Results;
-using Flow.Launcher.Plugin.Explorer.Helper;
 using Flow.Launcher.Plugin.Explorer.Views;
 
 namespace Flow.Launcher.Plugin.Explorer.Search
