@@ -80,7 +80,6 @@ namespace Flow.Launcher.Plugin.Explorer.Search.DirectoryInfo
             catch (Exception e)
             {
                 Main.Context.API.LogException(ClassName, "Error occurred while searching path", e);
-
                 throw;
             }
 

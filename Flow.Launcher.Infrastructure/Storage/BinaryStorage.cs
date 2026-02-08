@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Logger;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 using Flow.Launcher.Infrastructure.UserSettings;
 using MemoryPack;
+using Microsoft.Extensions.Logging;
+using ZLogger;
 
 namespace Flow.Launcher.Infrastructure.Storage;
 
@@ -18,7 +19,7 @@ namespace Flow.Launcher.Infrastructure.Storage;
 /// </remarks>
 public class BinaryStorage<T> : ISavable
 {
-    private static readonly string ClassName = "BinaryStorage";
+    private static readonly ILogger<BinaryStorage<T>> Logger = LogManager.GetLogger<BinaryStorage<T>>();
 
     protected T? Data;
 
@@ -50,7 +51,7 @@ public class BinaryStorage<T> : ISavable
         {
             if (new FileInfo(FilePath).Length == 0)
             {
-                Log.Error(ClassName, $"Zero length cache file <{FilePath}>");
+                Logger.ZLogError($"Zero length cache file <{FilePath}>");
                 Data = defaultData;
                 Save();
             }
@@ -60,7 +61,7 @@ public class BinaryStorage<T> : ISavable
         }
         else
         {
-            Log.Info(ClassName, "Cache file not exist, load default data");
+            Logger.ZLogInformation($"Cache file not exist, load default data");
             Data = defaultData;
             Save();
         }
@@ -74,9 +75,9 @@ public class BinaryStorage<T> : ISavable
             var t = MemoryPackSerializer.Deserialize<T>(bytes);
             return t ?? defaultData;
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
-            Log.Exception(ClassName, $"Deserialize error for file <{FilePath}>", e);
+            Logger.ZLogError(e, $"Deserialize error for file <{FilePath}>");
             return defaultData;
         }
     }
@@ -89,7 +90,7 @@ public class BinaryStorage<T> : ISavable
         {
             if (new FileInfo(FilePath).Length == 0)
             {
-                Log.Error(ClassName, $"Zero length cache file <{FilePath}>");
+                Logger.ZLogError($"Zero length cache file <{FilePath}>");
                 Data = defaultData;
                 await SaveAsync();
             }
@@ -99,7 +100,7 @@ public class BinaryStorage<T> : ISavable
         }
         else
         {
-            Log.Info(ClassName, "Cache file not exist, load default data");
+            Logger.ZLogInformation($"Cache file not exist, load default data");
             Data = defaultData;
             await SaveAsync();
         }
@@ -114,9 +115,9 @@ public class BinaryStorage<T> : ISavable
             var t = await MemoryPackSerializer.DeserializeAsync<T>(stream);
             return t ?? defaultData;
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
-            Log.Exception(ClassName, $"Deserialize error for file <{FilePath}>", e);
+            Logger.ZLogError(e, $"Deserialize error for file <{FilePath}>");
             return defaultData;
         }
     }

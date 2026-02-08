@@ -14,8 +14,6 @@ namespace Flow.Launcher.Plugin.Explorer
 {
     internal class ContextMenu(PluginInitContext context, Settings settings) : IContextMenu
     {
-        private static readonly string ClassName = nameof(ContextMenu);
-
         private readonly PluginInitContext _context = context;
         private readonly Settings _settings = settings;
 
@@ -103,7 +101,7 @@ namespace Flow.Launcher.Plugin.Explorer
                     catch (Exception e)
                     {
                         var message = Localize.Error_OpenWithShell(record.FullPath, Path.GetFileNameWithoutExtension(shellPath), shellPath);
-                        _context.API.LogException(ClassName, message, e);
+                        // TODO: Make ShowMsgError log the exception
                         _context.API.ShowMsgError(message);
                         return false;
                     }

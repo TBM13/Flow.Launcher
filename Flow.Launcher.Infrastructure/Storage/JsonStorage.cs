@@ -3,9 +3,10 @@ using System.Globalization;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Logger;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
+using Microsoft.Extensions.Logging;
+using ZLogger;
 
 namespace Flow.Launcher.Infrastructure.Storage;
 
@@ -14,7 +15,7 @@ namespace Flow.Launcher.Infrastructure.Storage;
 /// </summary>
 public class JsonStorage<T> : ISavable where T : new()
 {
-    private static readonly string ClassName = "JsonStorage";
+    private static readonly ILogger<JsonStorage<T>> Logger = LogManager.GetLogger<JsonStorage<T>>();
 
     protected T? Data;
 
@@ -121,7 +122,7 @@ public class JsonStorage<T> : ISavable where T : new()
 
     private void RestoreBackup()
     {
-        Log.Info(ClassName, $"Failed to load settings.json, {BackupFilePath} restored successfully");
+        Logger.ZLogInformation($"Failed to load settings.json, {BackupFilePath} restored successfully");
 
         if (File.Exists(FilePath))
             File.Replace(BackupFilePath, FilePath, null);

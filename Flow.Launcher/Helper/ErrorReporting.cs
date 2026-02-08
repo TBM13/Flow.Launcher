@@ -4,14 +4,18 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Logger;
+using Microsoft.Extensions.Logging;
+using ZLogger;
 
 namespace Flow.Launcher.Helper;
 
 public static class ErrorReporting
 {
+    private static readonly ILogger Logger = LogManager.GetLogger(nameof(ErrorReporting));
+
     private static void Report(Exception e, bool silent = false, [CallerMemberName] string methodName = "UnHandledException")
     {
-        Log.Exception(nameof(ErrorReporting), "Unhandled Exception", e, methodName);
+        Logger.ZLogError(e, $"Unhandled exception in {methodName}");
         if (silent) return;
 
         // Workaround for issue https://github.com/Flow-Launcher/Flow.Launcher/issues/4016
@@ -44,7 +48,7 @@ public static class ErrorReporting
     {
         // log exception but do not handle unobserved task exceptions on UI thread
         //Application.Current.Dispatcher.Invoke(() => Report(e.Exception, true));
-        Log.Exception(nameof(ErrorReporting), "Unobserved task exception occurred.", e.Exception);
+        Logger.ZLogError(e.Exception, $"Unobserved task exception occurred.");
         // prevent application exit, so the user can copy the prompted error info
         e.SetObserved();
     }

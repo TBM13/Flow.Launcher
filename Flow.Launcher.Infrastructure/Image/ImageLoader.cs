@@ -7,12 +7,14 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Flow.Launcher.Infrastructure.Logger;
+using Microsoft.Extensions.Logging;
+using ZLogger;
 
 namespace Flow.Launcher.Infrastructure.Image;
 
 public static class ImageLoader
 {
-    private static readonly string ClassName = nameof(ImageLoader);
+    private static readonly ILogger Logger = LogManager.GetLogger(nameof(ImageLoader));
 
     private static readonly ImageCache ImageCache = new();
     private static readonly ConcurrentDictionary<string, string> GuidToKey = new();
@@ -132,7 +134,7 @@ public static class ImageLoader
                     {
                         image = Image;
                         type = ImageType.Error;
-                        Log.Exception(ClassName, $"Failed to load image file from path {path}: {ex.Message}", ex);
+                        Logger.ZLogError(ex, $"Failed to load image file from {path}");
                     }
                 }
                 else
@@ -181,8 +183,8 @@ public static class ImageLoader
             }
             catch (Exception e2)
             {
-                Log.Exception(ClassName, $"Failed to get thumbnail for {path} on first try", e);
-                Log.Exception(ClassName, $"Failed to get thumbnail for {path} on second try", e2);
+                Logger.ZLogError(e2, $"Failed to get thumbnail for {path} on first try");
+                Logger.ZLogError(e2, $"Failed to get thumbnail for {path} on second try");
 
                 ImageSource image = MissingImage;
                 ImageCache[path, false] = image;

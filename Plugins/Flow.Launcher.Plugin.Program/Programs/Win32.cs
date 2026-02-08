@@ -15,13 +15,17 @@ using Flow.Launcher.Infrastructure.Logger;
 using Flow.Launcher.Infrastructure.UI;
 using Flow.Launcher.Plugin.Program.Views.Models;
 using MemoryPack;
+using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
+using ZLogger;
 
 namespace Flow.Launcher.Plugin.Program.Programs
 {
     [MemoryPackable]
     public partial class Win32 : IProgram, IEquatable<Win32>
     {
+        private static readonly ILogger<Win32> Logger = LogManager.GetLogger<Win32>();
+
         public string Name { get; set; }
 
         public string UniqueIdentifier
@@ -309,17 +313,13 @@ namespace Flow.Launcher.Plugin.Program.Programs
             }
             catch (Exception e) when (e is SecurityException || e is UnauthorizedAccessException)
             {
-                Log.Exception(nameof(Win32), $"|Win32|Win32Program|{path}" +
-                    $"|Permission denied when trying to load the program from {path}", e);
-
+                Logger.ZLogError(e, $"Permission denied when trying to load the program from {path}");
                 return Default;
             }
 #if !DEBUG
             catch (Exception e)
             {
-                Log.Exception(nameof(Win32), $"|Win32|Win32Program|{path}" +
-                    "|An unexpected error occurred in the calling method Win32Program", e);
-
+                Logger.ZLogError(e, $"An unexpected error occurred in the calling method Win32Program for path {path}");
                 return Default;
             }
 #endif
@@ -365,17 +365,13 @@ namespace Flow.Launcher.Plugin.Program.Programs
             }
             catch (FileNotFoundException e)
             {
-                Log.Exception(nameof(Win32), $"|Win32|LnkProgram|{path}" +
-                                           "|An unexpected error occurred in the calling method LnkProgram", e);
-
+                Logger.ZLogError(e, $"An unexpected error occurred in the calling method LnkProgram for path {path}");
                 return Default;
             }
 #if !DEBUG //Only do a catch all in production. This is so make developer aware of any unhandled exception and add the exception handling in.
             catch (Exception e)
             {
-                Log.Exception(nameof(Win32), $"|Win32|LnkProgram|{path}" +
-                                                "|An unexpected error occurred in the calling method LnkProgram", e);
-
+                Logger.ZLogError(e, $"An unexpected error occurred in the calling method LnkProgram for path {path}");
                 return Default;
             }
 #endif
@@ -428,16 +424,12 @@ namespace Flow.Launcher.Plugin.Program.Programs
             }
             catch (FileNotFoundException e)
             {
-                Log.Exception(nameof(Win32), $"|Win32|ExeProgram|{path}" +
-                                           $"|File not found when trying to load the program from {path}", e);
-
+                Logger.ZLogError(e, $"File not found when trying to load the program from {path}");
                 return Default;
             }
             catch (Exception e) when (e is SecurityException || e is UnauthorizedAccessException)
             {
-                Log.Exception(nameof(Win32), $"|Win32|ExeProgram|{path}" +
-                                           $"|Permission denied when trying to load the program from {path}", e);
-
+                Logger.ZLogError(e, $"Permission denied when trying to load the program from {path}", e);
                 return Default;
             }
         }
@@ -571,9 +563,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
             }
             catch (Exception e) when (e is SecurityException || e is UnauthorizedAccessException)
             {
-                Log.Exception(nameof(Win32), $"|Win32|GetProgramPathFromRegistrySubKeys|{path}" +
-                                           $"|Permission denied when trying to load the program from {path}", e);
-
+                Logger.ZLogError(e, $"Permission denied when trying to load the program from {path}");
                 return string.Empty;
             }
         }
@@ -703,8 +693,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
 #if !DEBUG //Only do a catch all in production.
             catch (Exception e)
             {
-                Log.Exception(nameof(Win32), "|Win32|All|Not available|An unexpected error occurred", e);
-
+                Logger.ZLogError(e, $"An unexpected error occurred in the calling method All");
                 return [];
             }
 #endif

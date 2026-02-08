@@ -13,15 +13,19 @@ using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Logger;
 using Flow.Launcher.Infrastructure.UI;
 using MemoryPack;
+using Microsoft.Extensions.Logging;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Core;
 using Windows.Management.Deployment;
+using ZLogger;
 
 namespace Flow.Launcher.Plugin.Program.Programs
 {
     [MemoryPackable]
     public partial class UWPPackage
     {
+        private static readonly ILogger<UWPPackage> Logger = LogManager.GetLogger<UWPPackage>();
+
         public string Name { get; }
         public string FullName { get; }
         public string FamilyName { get; }
@@ -60,9 +64,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 }
                 catch (Exception e)
                 {
-                    Log.Exception(GetType().FullName, $"|UWP|InitAppsInPackage|{Location}" +
-                                               "|Unexpected exception occurs when trying to construct a Application from package"
-                                               + $"{FullName} from location {Location}", e);
+                    Logger.ZLogError(e, $"Failed to construct app from package '{FullName}' at '{Location}'");
                 }
             }
 
@@ -119,9 +121,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
             }
             catch (Exception e)
             {
-                Log.Exception(GetType().FullName, $"|UWP|InitAppsInPackage|{Location}" +
-                    "|Unexpected exception occurs when trying to construct a Application from package"
-                    + $"{FullName} from location {Location}", e);
+                Logger.ZLogError(e, $"Failed to parse manifest from package '{FullName}' at '{Location}'");
             }
         }
 
@@ -137,12 +137,12 @@ namespace Flow.Launcher.Plugin.Program.Programs
             }
             catch (FileNotFoundException e)
             {
-                Log.Exception(GetType().FullName, $"{Location}: AppxManifest.xml not found.", e);
+                Logger.ZLogError(e, $"{Location}: AppxManifest.xml not found.");
                 return null;
             }
             catch (Exception e)
             {
-                Log.Exception(GetType().FullName, $"{Location}: An unexpected error occurred and unable to parse AppxManifest.xml", e);
+                Logger.ZLogError(e, $"{Location}: Failed to load AppxManifest.xml");
                 return null;
             }
         }
@@ -160,17 +160,12 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     }
                 }
 
-                Log.Exception(GetType().FullName, $"|UWP|GetPackageVersionFromManifest|{Location}" +
-                                           "|Trying to get the package version of the UWP program, but an unknown UWP app-manifest version in package "
-                                           + $"{FullName} from location {Location}", new FormatException());
+                Logger.ZLogError($"Unknown app-manifest version in package '{FullName}' at '{Location}'");
                 return PackageVersion.Unknown;
             }
             else
             {
-                Log.Exception(GetType().FullName, $"|UWP|GetPackageVersionFromManifest|{Location}" +
-                                           "|Can't parse AppManifest.xml of package "
-                                           + $"{FullName} from location {Location}",
-                    new ArgumentNullException(nameof(xmlRoot)));
+                Logger.ZLogError($"Can't parse AppManifest.xml of package '{FullName}' at '{Location}'");
                 return PackageVersion.Unknown;
             }
         }
@@ -212,7 +207,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
 #if !DEBUG
                     catch (Exception e)
                     {
-                        Log.Exception(nameof(UWPPackage), $"|UWP|All|{p.InstalledLocation}|An unexpected error occurred and unable to convert Package to UWP for {p.Id.FullName}", e);
+                        Logger.ZLogError(e, $"{p.InstalledLocation}: Failed to convert Package to UWP for {p.Id.FullName}");
                         return [];
                     }
 #endif
@@ -275,8 +270,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     }
                     catch (Exception e)
                     {
-                        Log.Exception(nameof(UWPPackage), $"{p.Id.FullName}: " +
-                            "An unexpected error occurred and unable to verify if package is valid", e);
+                        Logger.ZLogError(e, $"{p.Id.FullName}: Failed to verify if package is valid");
                         return false;
                     }
                 });
@@ -356,6 +350,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
     [MemoryPackable]
     public partial class UWPApp : IProgram
     {
+        private static readonly ILogger<UWPApp> Logger = LogManager.GetLogger<UWPApp>();
         private string _uid = string.Empty;
 
         public string UniqueIdentifier
@@ -538,9 +533,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
 
             if (string.IsNullOrWhiteSpace(uri))
             {
-                Log.Exception(GetType().FullName, $"|UWP|LogoPathFromUri|{Location}" +
-                                           $"|{UserModelId} 's logo uri is null or empty: {Location}",
-                    new ArgumentException(null, nameof(uri)));
+                Logger.ZLogError($"{UserModelId} 's logo uri is null or empty: {Location}");
                 return string.Empty;
             }
 
@@ -577,9 +570,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     if (string.IsNullOrEmpty(logoNamePrefix) || !Directory.Exists(logoDir))
                     {
                         // Known issue: Edge always triggers it since logo is not at uri
-                        Log.Exception(GetType().FullName, $"|UWP|LogoPathFromUri|{Location}" +
-                                                   $"|{UserModelId} can't find logo uri for {uri} in package location (logo name or directory not found): {Location}",
-                            new FileNotFoundException());
+                        Logger.ZLogError($"{UserModelId} can't find logo uri for {uri} in package location (logo name or directory not found): {Location}");
                         return string.Empty;
                     }
 
@@ -619,17 +610,13 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     }
                     else
                     {
-                        Log.Exception(GetType().FullName, $"|UWP|LogoPathFromUri|{Location}" +
-                                                   $"|{UserModelId} can't find logo uri for {uri} in package location (can't find specified logo): {Location}",
-                            new FileNotFoundException());
+                        Logger.ZLogError($"{UserModelId} can't find logo uri for {uri} in package location (can't find specified logo): {Location}");
                         return string.Empty;
                     }
                 }
                 else
                 {
-                    Log.Exception(GetType().FullName, $"|UWP|LogoPathFromUri|{Location}" +
-                                               $"|Unable to find extension from {uri} for {UserModelId} " +
-                                               $"in package location {Location}", new FileNotFoundException());
+                    Logger.ZLogError($"Failed to find extension from {uri} for {UserModelId} in package location {Location}");
                     return string.Empty;
                 }
             }

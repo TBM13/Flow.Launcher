@@ -229,20 +229,20 @@ namespace Flow.Launcher
         public void RemoveActionKeyword(string pluginId, string oldActionKeyword) =>
             PluginManager.RemoveActionKeyword(pluginId, oldActionKeyword);
 
-        public void LogDebug(string className, string message, [CallerMemberName] string methodName = "") =>
-            Log.Debug(className, message, methodName);
+        [Obsolete("TODO: Remove me, use new logging system directly")]
+        public void LogDebug(string className, string message, [CallerMemberName] string methodName = "") { }
 
-        public void LogInfo(string className, string message, [CallerMemberName] string methodName = "") =>
-            Log.Info(className, message, methodName);
+        [Obsolete("TODO: Remove me, use new logging system directly")]
+        public void LogInfo(string className, string message, [CallerMemberName] string methodName = "") { }
 
-        public void LogWarn(string className, string message, [CallerMemberName] string methodName = "") =>
-            Log.Warn(className, message, methodName);
+        [Obsolete("TODO: Remove me, use new logging system directly")]
+        public void LogWarn(string className, string message, [CallerMemberName] string methodName = "") { }
 
-        public void LogError(string className, string message, [CallerMemberName] string methodName = "") =>
-            Log.Error(className, message, methodName);
+        [Obsolete("TODO: Remove me, use new logging system directly")]
+        public void LogError(string className, string message, [CallerMemberName] string methodName = "") { }
 
-        public void LogException(string className, string message, Exception e, [CallerMemberName] string methodName = "") =>
-            Log.Exception(className, message, e, methodName);
+        [Obsolete("TODO: Remove me, use new logging system directly")]
+        public void LogException(string className, string message, Exception e, [CallerMemberName] string methodName = "") { }
 
         private readonly ConcurrentDictionary<Type, ISavable> _pluginJsonStorages = new();
 

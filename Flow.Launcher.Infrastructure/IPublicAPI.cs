@@ -279,27 +279,32 @@ public interface IPublicAPI
     /// Log debug message
     /// Message will only be logged in Debug mode
     /// </summary>
+    [Obsolete("TODO: Remove me, use new logging system directly")]
     void LogDebug(string className, string message, [CallerMemberName] string methodName = "");
 
     /// <summary>
     /// Log info message
     /// </summary>
+    [Obsolete("TODO: Remove me, use new logging system directly")]
     void LogInfo(string className, string message, [CallerMemberName] string methodName = "");
 
     /// <summary>
     /// Log warning message
     /// </summary>
+    [Obsolete("TODO: Remove me, use new logging system directly")]
     void LogWarn(string className, string message, [CallerMemberName] string methodName = "");
 
     /// <summary>
     /// Log error message. Preferred error logging method for plugins.
     /// </summary>
+    [Obsolete("TODO: Remove me, use new logging system directly")]
     void LogError(string className, string message, [CallerMemberName] string methodName = "");
 
     /// <summary>
     /// Log an Exception. Will throw if in debug mode so developer will be aware,
     /// otherwise logs the eror message. This is the primary logging method used for Flow
     /// </summary>
+    [Obsolete("TODO: Remove me, use new logging system directly")]
     void LogException(string className, string message, Exception e, [CallerMemberName] string methodName = "");
 
     /// <summary>

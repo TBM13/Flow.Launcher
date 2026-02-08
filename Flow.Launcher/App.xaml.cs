@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Drawing.Imaging.Effects;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,6 +10,7 @@ using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Image;
+using Flow.Launcher.Infrastructure.Logger;
 using Flow.Launcher.Infrastructure.Storage;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.SettingPages.ViewModels;
@@ -18,21 +18,18 @@ using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Threading;
+using ZLogger;
 
 namespace Flow.Launcher
 {
     public partial class App : IDisposable, ISingleInstanceApp
     {
-        #region Public Properties
-
         public static IPublicAPI API { get; private set; }
         public static bool LoadingOrExiting => _mainWindow == null || _mainWindow.CanClose;
 
-        #endregion
-
-        #region Private Fields
-
+        private static ILogger<App> Logger => field ??= LogManager.GetLogger<App>();
         private static readonly string ClassName = nameof(App);
 
         private static bool _disposed;
@@ -44,10 +41,8 @@ namespace Flow.Launcher
         // To prevent two disposals running at the same time.
         private static readonly object _disposingLock = new();
 
-        #endregion
-
-        #region Constructor
-
+        // TODO: Log to file
+        // TODO: Figure out if we should somehow flush the logger on app exit
         public App()
         {
             // Check if the application is running as administrator
@@ -68,6 +63,11 @@ namespace Flow.Launcher
             try
             {
                 var host = Host.CreateDefaultBuilder()
+                    .ConfigureLogging(logging =>
+                    {
+                        logging.ClearProviders();
+                        logging.AddZLoggerConsole();
+                    })
                     .UseContentRoot(AppContext.BaseDirectory)
                     .ConfigureServices(services => services
                         .AddSingleton(_ => _settings)
@@ -86,6 +86,10 @@ namespace Flow.Launcher
                         .AddTransient<SettingsPanePluginsViewModel>()
                         .AddTransient<SettingsPaneThemeViewModel>()
                     ).Build();
+
+                var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
+                LogManager.Init(loggerFactory);
+
                 Ioc.Default.ConfigureServices(host.Services);
             }
             catch (Exception e)
@@ -109,10 +113,6 @@ namespace Flow.Launcher
             }
         }
 
-        #endregion
-
-        #region Restart
-
         /// <summary>
         /// Restart the application without changing the user privileges.
         /// </summary>
@@ -122,6 +122,8 @@ namespace Flow.Launcher
         /// </param>
         public static void RestartApp(bool forceAdmin = false)
         {
+            Logger.ZLogInformation($"Restarting app, forceAdmin={forceAdmin}");
+
             var startInfo = new ProcessStartInfo
             {
                 FileName = Constant.ExecutablePath,
@@ -136,13 +138,21 @@ namespace Flow.Launcher
             Current.Shutdown();
         }
 
-        #endregion
-
-        #region Main
-
         [STAThread]
         public static void Main()
         {
+            // Setup temporary logger factory
+            // TODO: Maybe make the app use this logger factory?
+            // Otherwise loggers created during Flow init won't use the app's factory
+            using var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.ClearProviders();
+                builder.AddZLoggerConsole();
+                if (Debugger.IsAttached)
+                    builder.AddDebug();
+            });
+            LogManager.Init(loggerFactory);
+
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length > 1 && args[1] == "--restart")
             {
@@ -172,22 +182,12 @@ namespace Flow.Launcher
             }
         }
 
-        #endregion
-
-        #region Fail Fast
-
         private static void ShowErrorMsgBoxAndFailFast(string message, Exception e)
         {
-            // Firstly show users the message
+            Logger.ZLogCritical(e, $"{message}");
             MessageBox.Show(e.ToString(), message, MessageBoxButton.OK, MessageBoxImage.Error);
-
-            // Flow cannot construct its App instance, so ensure Flow crashes w/ the exception info.
             Environment.FailFast(message, e);
         }
-
-        #endregion
-
-        #region App Events
 
 #pragma warning disable VSTHRD100 // Avoid async void methods
 
@@ -254,10 +254,6 @@ namespace Flow.Launcher
 
 #pragma warning restore VSTHRD100 // Avoid async void methods
 
-        #endregion
-
-        #region Register Events
-
         private void RegisterExitEvents()
         {
             AppDomain.CurrentDomain.ProcessExit += (s, e) =>
@@ -305,10 +301,6 @@ namespace Flow.Launcher
             TaskScheduler.UnobservedTaskException += ErrorReporting.TaskSchedulerUnobservedTaskException;
         }
 
-        #endregion
-
-        #region IDisposable
-
         protected virtual void Dispose(bool disposing)
         {
             // Prevent two disposes at the same time.
@@ -353,15 +345,9 @@ namespace Flow.Launcher
             GC.SuppressFinalize(this);
         }
 
-        #endregion
-
-        #region ISingleInstanceApp
-
         public void OnSecondAppStarted()
         {
             API.ShowMainWindow();
         }
-
-        #endregion
     }
 }
