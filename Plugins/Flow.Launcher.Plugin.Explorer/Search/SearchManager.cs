@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Results;
-using Flow.Launcher.Plugin.Explorer.Exceptions;
 using Flow.Launcher.Plugin.Explorer.Search.DirectoryInfo;
 
 namespace Flow.Launcher.Plugin.Explorer.Search
@@ -85,18 +84,10 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             if (token.IsCancellationRequested)
                 return [];
 
-            try
+            await foreach (var directory in directoryResult.WithCancellation(token).ConfigureAwait(false))
             {
-                await foreach (var directory in directoryResult.WithCancellation(token).ConfigureAwait(false))
-                {
-                    results.Add(ResultManager.CreateResult(query, directory, isRecursive));
-                }
+                results.Add(ResultManager.CreateResult(query, directory, isRecursive));
             }
-            catch (Exception e)
-            {
-                throw new SearchException(e.Message, e);
-            }
-
 
             return [.. results];
         }

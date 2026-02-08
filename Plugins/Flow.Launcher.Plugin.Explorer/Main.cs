@@ -5,7 +5,6 @@ using System.Windows.Controls;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 using Flow.Launcher.Infrastructure.Results;
-using Flow.Launcher.Plugin.Explorer.Exceptions;
 using Flow.Launcher.Plugin.Explorer.Search;
 using Flow.Launcher.Plugin.Explorer.ViewModels;
 using Flow.Launcher.Plugin.Explorer.Views;
@@ -62,27 +61,7 @@ namespace Flow.Launcher.Plugin.Explorer
 
         public async Task<List<Result>> QueryAsync(Query query, CancellationToken token)
         {
-            try
-            {
-                return await _searchManager.SearchAsync(query, token);
-            }
-            catch (SearchException e)
-            {
-                return
-                [
-                    new()
-                    {
-                        Title = e.Message,
-                        SubTitle = "Enter to copy the message to clipboard",
-                        Score = 501,
-                        AsyncAction =  _ =>
-                        {
-                            Context.API.CopyToClipboard(e.ToString());
-                            return new ValueTask<bool>(true);
-                        }
-                    }
-                ];
-            }
+            return await _searchManager.SearchAsync(query, token);
         }
     }
 }

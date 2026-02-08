@@ -32,7 +32,7 @@ namespace Flow.Launcher.Plugin.Explorer
                         _context.API.CopyToClipboard(record.FullPath, showDefaultNotification: false);
                         return true;
                     },
-                    Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue8c8")
+                    Glyph = new GlyphInfo("\ue8c8")
                 });
 
                 if (record.Type == ResultType.Folder)
@@ -45,7 +45,7 @@ namespace Flow.Launcher.Plugin.Explorer
                 {
                     Title = Localize.GeneralResult_ShowWindowsMenu,
                     SubTitle = Localize.GeneralResult_ShowWindowsMenu_Subtitle,
-                    Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue700"),
+                    Glyph = new GlyphInfo("\ue700"),
                     Action = c =>
                     {
                         ResultManager.ShowNativeContextMenu(record.FullPath, record.Type, c.ResultPosition);
@@ -75,7 +75,7 @@ namespace Flow.Launcher.Plugin.Explorer
 
                             return true;
                         },
-                        Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue748"),
+                        Glyph = new GlyphInfo("\ue748"),
                     });
             }
 
@@ -106,7 +106,7 @@ namespace Flow.Launcher.Plugin.Explorer
                         return false;
                     }
                 },
-                Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue756")
+                Glyph = new GlyphInfo("\ue756")
             };
         }
 
@@ -122,7 +122,7 @@ namespace Flow.Launcher.Plugin.Explorer
                     Process.Start("rundll32.exe", $"{Path.Combine(Environment.SystemDirectory, "shell32.dll")},OpenAs_RunDLL {record.FullPath}");
                     return true;
                 },
-                Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\ue7ac"),
+                Glyph = new GlyphInfo("\ue7ac"),
             };
         }
 
