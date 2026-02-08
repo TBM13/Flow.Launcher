@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using Flow.Launcher.Infrastructure.UI;
 
-namespace Flow.Launcher.Infrastructure;
+namespace Flow.Launcher.Infrastructure.Results;
 
 /// <summary>
 /// Describes a result of a <see cref="Query"/>.

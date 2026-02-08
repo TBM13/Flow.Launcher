@@ -15,7 +15,7 @@ public class FlowLauncherJsonStorage<T> : JsonStorage<T>, ISavable where T : new
 
     public FlowLauncherJsonStorage()
     {
-        DirectoryPath = Path.Combine(DataLocation.DataDirectory(), DirectoryName);
+        DirectoryPath = Path.Combine(DataLocation.DataDirectory, DirectoryName);
         if (!Directory.Exists(DirectoryPath))
             Directory.CreateDirectory(DirectoryPath);
 

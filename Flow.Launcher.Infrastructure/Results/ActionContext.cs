@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 
-namespace Flow.Launcher.Infrastructure;
+namespace Flow.Launcher.Infrastructure.Results;
 
 /// <summary>
 /// Context provided as a parameter when invoking a

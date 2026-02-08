@@ -1,4 +1,5 @@
-﻿using Windows.Win32;
+﻿using Flow.Launcher.Infrastructure.Results;
+using Windows.Win32;
 
 namespace Flow.Launcher.Infrastructure.Hotkey;
 

@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Media;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Image;
+using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Infrastructure.UI;
 using Flow.Launcher.Infrastructure.UserSettings;
 

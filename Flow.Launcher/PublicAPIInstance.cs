@@ -22,6 +22,7 @@ using Flow.Launcher.Infrastructure.Image;
 using Flow.Launcher.Infrastructure.Logger;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
+using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Infrastructure.Storage;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.ViewModel;
@@ -472,7 +473,7 @@ namespace Flow.Launcher
             remove => _mainVM.ActualApplicationThemeChanged -= value;
         }
 
-        public string GetDataDirectory() => DataLocation.DataDirectory();
+        public string GetDataDirectory() => DataLocation.DataDirectory;
 
         public bool StartProcess(string fileName, string workingDirectory = "", string arguments = "", bool useShellExecute = false, string verb = "", bool createNoWindow = false)
         {

@@ -4,9 +4,9 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
-using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
+using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Plugin.Calculator.Views;
 using Mages.Core;
 

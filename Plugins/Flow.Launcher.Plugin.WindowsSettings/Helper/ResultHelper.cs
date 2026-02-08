@@ -27,6 +27,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Flow.Launcher.Infrastructure;
+using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Plugin.WindowsSettings.Classes;
 using Flow.Launcher.Plugin.WindowsSettings.Properties;
 

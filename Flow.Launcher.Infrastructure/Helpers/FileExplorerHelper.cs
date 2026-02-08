@@ -15,18 +15,12 @@ public static class FileExplorerHelper
     {
         var explorerWindow = GetActiveExplorer();
         string? locationUrl = explorerWindow?.LocationURL;
-        return !string.IsNullOrEmpty(locationUrl) ? GetDirectoryPath(new Uri(locationUrl).LocalPath) : null;
-    }
+        if (locationUrl is null)
+            return null;
 
-    /// <summary>
-    /// Get directory path from a file path
-    /// </summary>
-    private static string GetDirectoryPath(string path)
-    {
-        if (!path.EndsWith('\\'))
-        {
-            return path + "\\";
-        }
+        string path = new Uri(locationUrl).LocalPath;
+        if (!Path.EndsInDirectorySeparator(path))
+            path += Path.DirectorySeparatorChar;
 
         return path;
     }

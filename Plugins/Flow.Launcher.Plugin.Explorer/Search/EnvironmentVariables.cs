@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Plugins;
+using Flow.Launcher.Infrastructure.Results;
 
 namespace Flow.Launcher.Plugin.Explorer.Search
 {

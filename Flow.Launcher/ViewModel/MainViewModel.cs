@@ -19,6 +19,7 @@ using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Hotkey;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
+using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Infrastructure.Storage;
 using Flow.Launcher.Infrastructure.UI;
 using Flow.Launcher.Infrastructure.UserSettings;
@@ -283,10 +284,10 @@ namespace Flow.Launcher.ViewModel
         [RelayCommand]
         private void Backspace(object index)
         {
-            var query = Infrastructure.Query.Build(QueryText, isRequery: false, PluginManager.GetNonGlobalPlugins());
+            var query = Infrastructure.Results.Query.Build(QueryText, isRequery: false, PluginManager.GetNonGlobalPlugins());
             string actionKeyword = query.ActionKeyword.Length == 0
                 ? string.Empty
-                : query.ActionKeyword + Infrastructure.Query.TermSeparator;
+                : query.ActionKeyword + Infrastructure.Results.Query.TermSeparator;
 
             string search = query.Search;
             if (search.EndsWith('\\') || search.EndsWith('/'))
@@ -1197,7 +1198,7 @@ namespace Flow.Launcher.ViewModel
         {
             if (string.IsNullOrWhiteSpace(queryText))
             {
-                return Infrastructure.Query.Build(string.Empty, isRequery, PluginManager.GetNonGlobalPlugins());
+                return Infrastructure.Results.Query.Build(string.Empty, isRequery, PluginManager.GetNonGlobalPlugins());
             }
 
             var queryBuilder = new StringBuilder(queryText);
@@ -1217,7 +1218,7 @@ namespace Flow.Launcher.ViewModel
             // Apply builtin shortcuts
             await BuildQueryAsync(builtInShortcuts, queryBuilder, queryBuilderTmp);
 
-            return Infrastructure.Query.Build(queryBuilder.ToString(), isRequery, PluginManager.GetNonGlobalPlugins());
+            return Infrastructure.Results.Query.Build(queryBuilder.ToString(), isRequery, PluginManager.GetNonGlobalPlugins());
         }
 
         private async Task BuildQueryAsync(IEnumerable<BaseBuiltinShortcutModel> builtInShortcuts,

@@ -6,8 +6,8 @@ using System.Windows.Input;
 using ChefKeys;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Helper;
-using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Hotkey;
+using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Infrastructure.UserSettings;
 using iNKORE.UI.WPF.Modern.Controls;
 

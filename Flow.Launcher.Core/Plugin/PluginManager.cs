@@ -9,6 +9,7 @@ using Flow.Launcher.Core.ExternalPlugins;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
+using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Infrastructure.UserSettings;
 using ISavable = Flow.Launcher.Infrastructure.Plugins.Interfaces.ISavable;
 

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Plugins;
+using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.ViewModel;
 
 namespace Flow.Launcher

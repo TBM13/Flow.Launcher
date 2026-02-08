@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Flow.Launcher.Infrastructure.Plugins;
 
-namespace Flow.Launcher.Infrastructure;
+namespace Flow.Launcher.Infrastructure.Results;
 
 /// <summary>
 /// Represents a query that is sent to a plugin.
@@ -58,6 +58,7 @@ public record Query
     /// </summary>
     public required bool IsHomeQuery { get; init; }
 
+    // Force use of the Build method
     private Query() { }
 
     internal static Query Build(string originalQuery, bool isRequery, Dictionary<string, PluginMetadata> nonGlobalPlugins)

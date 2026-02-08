@@ -10,6 +10,7 @@ using System.Windows.Media;
 using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Hotkey;
 using Flow.Launcher.Infrastructure.Plugins;
+using Flow.Launcher.Infrastructure.Results;
 
 namespace Flow.Launcher.Infrastructure;
 

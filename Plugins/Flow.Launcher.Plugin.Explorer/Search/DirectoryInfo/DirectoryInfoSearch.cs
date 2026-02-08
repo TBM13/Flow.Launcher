@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using Flow.Launcher.Infrastructure;
+using Flow.Launcher.Infrastructure.Results;
 
 namespace Flow.Launcher.Plugin.Explorer.Search.DirectoryInfo
 {

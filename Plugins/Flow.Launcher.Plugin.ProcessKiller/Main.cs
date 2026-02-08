@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Controls;
-using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
+using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Plugin.ProcessKiller.ViewModels;
 using Flow.Launcher.Plugin.ProcessKiller.Views;
 
@@ -178,7 +178,7 @@ namespace Flow.Launcher.Plugin.ProcessKiller
                     SubTitle = path,
                     Score = pr.Score,
                     ContextData = p.ProcessName,
-                    AutoCompleteText = $"{query.ActionKeyword}{Infrastructure.Query.TermSeparator}{p.ProcessName}",
+                    AutoCompleteText = $"{query.ActionKeyword}{Infrastructure.Results.Query.TermSeparator}{p.ProcessName}",
                     Action = (c) =>
                     {
                         ProcessHelper.TryKill(p);

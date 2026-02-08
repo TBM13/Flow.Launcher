@@ -1,7 +1,5 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
 using System.Threading;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -13,14 +11,6 @@ namespace Flow.Launcher.Infrastructure.Helpers;
 /// </summary>
 public static class ShellCommand
 {
-    /// <summary>
-    /// Delegate for EnumThreadWindows
-    /// </summary>
-    /// <param name="hwnd"></param>
-    /// <param name="lParam"></param>
-    /// <returns></returns>
-    public delegate bool EnumThreadDelegate(IntPtr hwnd, IntPtr lParam);
-
     private static bool containsSecurityWindow;
 
     /// <summary>
@@ -101,27 +91,5 @@ public static class ShellCommand
         };
 
         return info;
-    }
-
-    /// <summary>
-    /// Runs a windows command using the provided ProcessStartInfo
-    /// </summary>
-    /// <exception cref="FileNotFoundException">Thrown when unable to find the file specified in the command </exception>
-    /// <exception cref="Win32Exception">Thrown when error occurs during the execution of the command </exception>
-    public static void Execute(ProcessStartInfo info)
-    {
-        Execute(Process.Start, info);
-    }
-
-    /// <summary>
-    /// Runs a windows command using the provided ProcessStartInfo using a custom execute command function
-    /// </summary>
-    /// <param name="startProcess">allows you to pass in a custom command execution function</param>
-    /// <param name="info">allows you to pass in the info that will be passed to startProcess</param>
-    /// <exception cref="FileNotFoundException">Thrown when unable to find the file specified in the command </exception>
-    /// <exception cref="Win32Exception">Thrown when error occurs during the execution of the command </exception>
-    public static void Execute(Func<ProcessStartInfo, Process?> startProcess, ProcessStartInfo info)
-    {
-        startProcess(info);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Flow.Launcher.Infrastructure.Results;
 
 namespace Flow.Launcher.Infrastructure.Plugins.Interfaces;
 

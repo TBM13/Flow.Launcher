@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
+using Flow.Launcher.Infrastructure.Results;
 
 namespace Flow.Launcher.Plugin.PluginIndicator
 {
@@ -56,10 +56,10 @@ namespace Flow.Launcher.Plugin.PluginIndicator
                     SubTitle = Localize.ResultSubtitle(plugin.Name),
                     Score = score,
                     IcoPath = plugin.IcoPath,
-                    AutoCompleteText = $"{keyword}{Infrastructure.Query.TermSeparator}",
+                    AutoCompleteText = $"{keyword}{Infrastructure.Results.Query.TermSeparator}",
                     Action = c =>
                     {
-                        Context.API.ChangeQuery($"{keyword}{Infrastructure.Query.TermSeparator}");
+                        Context.API.ChangeQuery($"{keyword}{Infrastructure.Results.Query.TermSeparator}");
                         return false;
                     }
                 };
@@ -74,7 +74,7 @@ namespace Flow.Launcher.Plugin.PluginIndicator
                 foreach (var actionKeyword in plugin.ActionKeywords)
                 {
                     // Skip global keywords
-                    if (actionKeyword == Infrastructure.Query.GlobalPluginWildcard) continue;
+                    if (actionKeyword == Infrastructure.Results.Query.GlobalPluginWildcard) continue;
 
                     // Skip dulpicated keywords
                     if (nonGlobalPlugins.ContainsKey(actionKeyword)) continue;

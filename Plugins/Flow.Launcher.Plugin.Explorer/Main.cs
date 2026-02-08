@@ -2,9 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
+using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Plugin.Explorer.Exceptions;
 using Flow.Launcher.Plugin.Explorer.Search;
 using Flow.Launcher.Plugin.Explorer.ViewModels;

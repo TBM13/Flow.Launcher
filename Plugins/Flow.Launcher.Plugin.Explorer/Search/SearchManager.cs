@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Plugins;
+using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Plugin.Explorer.Exceptions;
 using Flow.Launcher.Plugin.Explorer.Search.DirectoryInfo;
 
