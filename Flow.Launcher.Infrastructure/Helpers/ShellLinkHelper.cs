@@ -32,12 +32,10 @@ public static class ShellLinkHelper
         catch (COMException e)
         {
             Logger.ZLogError(e, $"Failed to load shell link from path: {path}");
-            return null;
-        }
-        finally
-        {
             if (Marshal.IsComObject(link))
                 Marshal.ReleaseComObject(link);
+
+            return null;
         }
     }
 
