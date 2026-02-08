@@ -17,12 +17,9 @@ using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Helpers;
-using Flow.Launcher.Infrastructure.Hotkey;
 using Flow.Launcher.Infrastructure.Image;
-using Flow.Launcher.Infrastructure.Logger;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
-using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Infrastructure.Storage;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.ViewModel;
@@ -43,7 +40,6 @@ namespace Flow.Launcher
         {
             _settings = settings;
             _mainVM = mainVM;
-            GlobalHotkey.hookedKeyboardCallback = KListener_hookedKeyboardCallback;
 
             IPublicAPI.Instance = this;
         }
@@ -411,14 +407,6 @@ namespace Flow.Launcher
             return _mainVM.GameModeStatus;
         }
 
-        private readonly List<Func<int, int, SpecialKeyState, bool>> _globalKeyboardHandlers = new();
-
-        public void RegisterGlobalKeyboardCallback(Func<int, int, SpecialKeyState, bool> callback) =>
-            _globalKeyboardHandlers.Add(callback);
-
-        public void RemoveGlobalKeyboardCallback(Func<int, int, SpecialKeyState, bool> callback) =>
-            _globalKeyboardHandlers.Remove(callback);
-
         public void ReQuery(bool reselect = true) => _mainVM.ReQuery(reselect);
 
         public void BackToQueryResults() => _mainVM.BackToQueryResults();
@@ -554,21 +542,6 @@ namespace Flow.Launcher
                 return AddDoubleQuotes(arg);
             }));
         }
-        #endregion
-
-        #region Private Methods
-
-        private bool KListener_hookedKeyboardCallback(KeyEvent keyevent, int vkcode, SpecialKeyState state)
-        {
-            var continueHook = true;
-            foreach (var x in _globalKeyboardHandlers)
-            {
-                continueHook &= x((int)keyevent, vkcode, state);
-            }
-
-            return continueHook;
-        }
-
         #endregion
     }
 }

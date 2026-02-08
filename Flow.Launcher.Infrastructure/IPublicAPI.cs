@@ -8,9 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using Flow.Launcher.Infrastructure.Helpers;
-using Flow.Launcher.Infrastructure.Hotkey;
 using Flow.Launcher.Infrastructure.Plugins;
-using Flow.Launcher.Infrastructure.Results;
 
 namespace Flow.Launcher.Infrastructure;
 
@@ -197,50 +195,6 @@ public interface IPublicAPI
     /// </param>
     /// <returns></returns>
     List<PluginMetadata> GetAllInitializedPlugins(bool includeFailed);
-
-    /// <summary>
-    /// Registers a callback function for global keyboard events.
-    /// </summary>
-    /// <param name="callback">
-    /// The callback function to invoke when a global keyboard event occurs.
-    /// <para>
-    /// Parameters:
-    /// <list type="number">
-    ///   <item><description>int: The type of <see cref="KeyEvent"/> (key down, key up, etc.)</description></item>
-    ///   <item><description>int: The virtual key code of the pressed/released key</description></item>
-    ///   <item><description><see cref="SpecialKeyState"/>: The state of modifier keys (Ctrl, Alt, Shift, etc.)</description></item>
-    /// </list>
-    /// </para>
-    /// <para>
-    /// Returns: <c>true</c> to allow normal system processing of the key event,
-    /// or <c>false</c> to intercept and prevent default handling.
-    /// </para>
-    /// </param>
-    /// <remarks>
-    /// This callback will be invoked for all keyboard events system-wide.
-    /// Use with caution as intercepting system keys may affect normal system operation.
-    /// </remarks>
-    public void RegisterGlobalKeyboardCallback(Func<int, int, SpecialKeyState, bool> callback);
-
-    /// <summary>
-    /// Remove a callback for Global Keyboard Event
-    /// </summary>
-    /// <param name="callback">
-    /// The callback function to invoke when a global keyboard event occurs.
-    /// <para>
-    /// Parameters:
-    /// <list type="number">
-    ///   <item><description>int: The type of <see cref="KeyEvent"/> (key down, key up, etc.)</description></item>
-    ///   <item><description>int: The virtual key code of the pressed/released key</description></item>
-    ///   <item><description><see cref="SpecialKeyState"/>: The state of modifier keys (Ctrl, Alt, Shift, etc.)</description></item>
-    /// </list>
-    /// </para>
-    /// <para>
-    /// Returns: <c>true</c> to allow normal system processing of the key event,
-    /// or <c>false</c> to intercept and prevent default handling.
-    /// </para>
-    /// </param>
-    public void RemoveGlobalKeyboardCallback(Func<int, int, SpecialKeyState, bool> callback);
 
     /// <summary>
     /// Fuzzy Search the string with the given query. This is the core search mechanism Flow uses

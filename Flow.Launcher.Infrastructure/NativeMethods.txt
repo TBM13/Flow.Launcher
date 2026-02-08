@@ -4,10 +4,6 @@ IShellItem
 IShellItemImageFactory
 S_OK
 
-SetWindowsHookEx
-UnhookWindowsHookEx
-CallNextHookEx
-GetModuleHandle
 GetKeyState
 VIRTUAL_KEY
 

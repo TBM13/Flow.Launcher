@@ -108,7 +108,7 @@ public record struct HotkeyModel
             {
                 try
                 {
-                    CharKey = (Key)Enum.Parse(typeof(Key), charKey);
+                    CharKey = Enum.Parse<Key>(charKey);
                 }
                 catch (ArgumentException)
                 {
@@ -178,7 +178,7 @@ public record struct HotkeyModel
                     {
                         KeyGesture keyGesture = new KeyGesture(CharKey, ModifierKeys);
                     }
-                    catch (System.Exception e) when
+                    catch (Exception e) when
                         (e is NotSupportedException || e is InvalidEnumArgumentException)
                     {
                         return false;
