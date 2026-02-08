@@ -1,7 +1,7 @@
 ﻿using System;
 using Flow.Launcher.Infrastructure.Plugins;
 
-namespace Flow.Launcher.Core.ExternalPlugins
+namespace Flow.Launcher.Core.Plugin
 {
     public class FlowPluginException(PluginMetadata metadata, Exception e) : Exception(e.Message, e)
     {

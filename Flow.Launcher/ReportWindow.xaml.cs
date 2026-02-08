@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Documents;
-using Flow.Launcher.Core.ExternalPlugins;
 using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Helpers;
-using Flow.Launcher.Infrastructure.Logger;
-using Flow.Launcher.Infrastructure.UserSettings;
 
 namespace Flow.Launcher
 {

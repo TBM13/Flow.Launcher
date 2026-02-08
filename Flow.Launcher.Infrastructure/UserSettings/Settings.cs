@@ -27,22 +27,22 @@ public class Settings : BaseModel, IHotkeySettings
         _storage.Save();
     }
 
-    public string Hotkey { get; set; } = $"{KeyConstant.Alt} + {KeyConstant.Space}";
+    public string Hotkey { get; set; } = "Alt + Space";
 
     public string ColorScheme { get; set; } = "System";
 
     public double WindowSize { get; set; } = 580;
-    public string PreviewHotkey { get; set; } = $"F1";
-    public string AutoCompleteHotkey { get; set; } = $"Tab";
-    public string AutoCompleteHotkey2 { get; set; } = $"";
-    public string SelectNextItemHotkey { get; set; } = $"";
-    public string SelectNextItemHotkey2 { get; set; } = $"";
-    public string SelectPrevItemHotkey { get; set; } = $"";
-    public string SelectPrevItemHotkey2 { get; set; } = $"";
-    public string SelectNextPageHotkey { get; set; } = $"PageUp";
-    public string SelectPrevPageHotkey { get; set; } = $"PageDown";
-    public string OpenContextMenuHotkey { get; set; } = $"Ctrl+O";
-    public string SettingWindowHotkey { get; set; } = $"Ctrl+I";
+    public string PreviewHotkey { get; set; } = "F1";
+    public string AutoCompleteHotkey { get; set; } = "Tab";
+    public string AutoCompleteHotkey2 { get; set; } = "";
+    public string SelectNextItemHotkey { get; set; } = "";
+    public string SelectNextItemHotkey2 { get; set; } = "";
+    public string SelectPrevItemHotkey { get; set; } = "";
+    public string SelectPrevItemHotkey2 { get; set; } = "";
+    public string SelectNextPageHotkey { get; set; } = "PageUp";
+    public string SelectPrevPageHotkey { get; set; } = "PageDown";
+    public string OpenContextMenuHotkey { get; set; } = "Ctrl+O";
+    public string SettingWindowHotkey { get; set; } = "Ctrl+I";
 
     public bool UseDropShadowEffect { get; set; } = true;
 
