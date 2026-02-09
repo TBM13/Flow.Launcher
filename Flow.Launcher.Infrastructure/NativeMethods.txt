@@ -102,3 +102,11 @@ SHGDNF
 SFGAO_FLAGS
 SHOW_WINDOW_CMD
 STRRET_TYPE
+
+GetAsyncKeyState
+SetWindowsHookEx
+UnhookWindowsHookEx
+CallNextHookEx
+GetModuleHandle
+keybd_event
+VIRTUAL_KEY

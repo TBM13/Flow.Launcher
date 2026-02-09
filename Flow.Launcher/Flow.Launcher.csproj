@@ -126,7 +126,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ChefKeys" Version="0.1.2" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="Flow.Launcher.Localization" Version="0.0.6" />
     <PackageReference Include="Fody" Version="6.9.3">

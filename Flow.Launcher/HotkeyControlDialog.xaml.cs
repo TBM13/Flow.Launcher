@@ -3,17 +3,14 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using ChefKeys;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure.Hotkey;
-using Flow.Launcher.Infrastructure.Results;
+using Flow.Launcher.Infrastructure.Hotkey.ChefKeys;
 using Flow.Launcher.Infrastructure.UserSettings;
 using iNKORE.UI.WPF.Modern.Controls;
 
 namespace Flow.Launcher;
-
-#nullable enable
 
 public partial class HotkeyControlDialog : ContentDialog
 {
@@ -52,7 +49,7 @@ public partial class HotkeyControlDialog : ContentDialog
 
         // TODO: This is a temporary way to enforce changing only the open flow hotkey to Win, and will be removed by PR #3157
         isOpenFlowHotkey = _hotkeySettings.RegisteredHotkeys
-                             .Any(x => x.DescriptionResourceKey == "flowlauncherHotkey" 
+                             .Any(x => x.DescriptionResourceKey == "flowlauncherHotkey"
                                     && x.Hotkey.ToString() == hotkey);
 
         ChefKeysManager.StartMenuEnableBlocking = true;

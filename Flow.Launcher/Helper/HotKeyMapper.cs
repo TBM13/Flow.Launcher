@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
-using ChefKeys;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Infrastructure.Hotkey;
+using Flow.Launcher.Infrastructure.Hotkey.ChefKeys;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.ViewModel;
 
