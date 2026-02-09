@@ -499,7 +499,7 @@ public static partial class Win32Helper
             }
         };
 
-        PInvoke.AdjustTokenPrivileges((HANDLE)hProcessToken.DangerousGetHandle(), false, &tp, 0, null, null);
+        PInvoke.AdjustTokenPrivileges(hProcessToken, false, &tp, null, out var _);
         var lastError = Marshal.GetLastWin32Error();
         hProcessToken.Dispose();
 
