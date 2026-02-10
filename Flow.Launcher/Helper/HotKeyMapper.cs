@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Infrastructure.Hotkey;
 using Flow.Launcher.Infrastructure.Hotkey.ChefKeys;
@@ -20,7 +19,6 @@ internal static class HotKeyMapper
         _mainViewModel = Ioc.Default.GetRequiredService<MainViewModel>();
         _settings = Ioc.Default.GetRequiredService<Settings>();
 
-        ChefKeysManager.Start();
         SetHotkey(_settings.Hotkey, OnToggleHotkey);
         LoadCustomPluginHotkey();
     }
@@ -31,23 +29,24 @@ internal static class HotKeyMapper
             _mainViewModel.ToggleFlowLauncher();
     }
 
-    private static void SetHotkey(string hotkeyStr, Action action)
+    internal static void SetHotkey(string hotkey, Action action)
     {
-        var hotkey = new HotkeyModel(hotkeyStr);
-        SetHotkey(hotkey, action);
+        HotkeyModel model = new(hotkey);
+        SetHotkey(model.ToSequence(), action);
+    }
+    internal static void SetHotkey(KeySequence hotkey, Action action)
+    {
+        ChefKeysManager.RegisterHotkey(hotkey, action);
     }
 
-    internal static void SetHotkey(HotkeyModel hotkey, Action action)
+    internal static void RemoveHotkey(string hotkey)
     {
-        string hotkeyStr = hotkey.ToString();
-        Trace.WriteLine($"Registering hotkey: {hotkey}");
-        ChefKeysManager.RegisterHotkey(hotkeyStr, action);
+        HotkeyModel model = new(hotkey);
+        RemoveHotkey(model.ToSequence());
     }
-
-    internal static void RemoveHotkey(string hotkeyStr)
+    internal static void RemoveHotkey(KeySequence hotkey)
     {
-        Trace.WriteLine($"Unregistering hotkey: {hotkeyStr}");
-        ChefKeysManager.UnregisterHotkey(hotkeyStr);
+        ChefKeysManager.UnregisterHotkey(hotkey);
     }
 
     internal static void LoadCustomPluginHotkey()
@@ -75,10 +74,9 @@ internal static class HotKeyMapper
         });
     }
 
-    internal static bool CheckAvailability(HotkeyModel currentHotkey)
+    internal static bool CheckAvailability(KeySequence hotkey)
     {
-        var res = ChefKeysManager.IsAvailable(currentHotkey.ToString());
-        Trace.WriteLine($"Checking availability for hotkey: {currentHotkey}, result: {res}");
+        var res = ChefKeysManager.CanRegisterHotkey(hotkey);
         return res;
     }
 }

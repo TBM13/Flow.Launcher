@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -47,13 +48,12 @@ public partial class HotkeyControlDialog : ContentDialog
 
         InitializeComponent();
 
-        // TODO: This is a temporary way to enforce changing only the open flow hotkey to Win, and will be removed by PR #3157
-        isOpenFlowHotkey = _hotkeySettings.RegisteredHotkeys
-                             .Any(x => x.DescriptionResourceKey == "flowlauncherHotkey"
-                                    && x.Hotkey.ToString() == hotkey);
+        HashSet<KeySequence> blockExceptions = [
+            new KeySequence() { Keys = [Key.Escape] }
+        ];
 
-        ChefKeysManager.StartMenuEnableBlocking = true;
-        ChefKeysManager.Start();
+        // TODO: Handle key press
+        ChefKeysManager.BlockAllKeys(blockExceptions, null);
     }
 
     private void Reset(object sender, RoutedEventArgs routedEventArgs)
@@ -69,8 +69,7 @@ public partial class HotkeyControlDialog : ContentDialog
 
     private void Cancel(object sender, RoutedEventArgs routedEventArgs)
     {
-        ChefKeysManager.StartMenuEnableBlocking = false;
-        ChefKeysManager.Stop();
+        ChefKeysManager.ReleaseAllKeys();
 
         ResultType = EResultType.Cancel;
         Hide();
@@ -78,8 +77,7 @@ public partial class HotkeyControlDialog : ContentDialog
 
     private void Save(object sender, RoutedEventArgs routedEventArgs)
     {
-        ChefKeysManager.StartMenuEnableBlocking = false;
-        ChefKeysManager.Stop();
+        ChefKeysManager.ReleaseAllKeys();
 
         if (KeysToDisplay.Count == 1 && KeysToDisplay[0] == EmptyHotkey)
         {
@@ -92,6 +90,8 @@ public partial class HotkeyControlDialog : ContentDialog
         Hide();
     }
 
+    // TODO: Depending on if we are editing a WPF hotkey or system-wide hotkey (like open flow hotkey),
+    // use WPF like now or use ChefKeysManager with all keys blocked
     private void OnPreviewKeyDown(object sender, KeyEventArgs e)
     {
         e.Handled = true;
@@ -99,8 +99,8 @@ public partial class HotkeyControlDialog : ContentDialog
         //when alt is pressed, the real key should be e.SystemKey
         Key key = e.Key == Key.System ? e.SystemKey : e.Key;
 
-        if (ChefKeysManager.StartMenuBlocked && key.ToString() == ChefKeysManager.StartMenuSimulatedKey)
-            return;
+        /* if (ChefKeysManager.StartMenuBlocked && key.ToString() == ChefKeysManager.STARTMENU_SIMULATED_KEY)
+             return;*/
 
         SpecialKeyState specialKeyState = GlobalHotkey.CheckModifiers();
 
@@ -184,7 +184,7 @@ public partial class HotkeyControlDialog : ContentDialog
         if (isOpenFlowHotkey && (hotkey.ToString() == "LWin" || hotkey.ToString() == "RWin"))
             return true;
 
-        return hotkey.Validate(validateKeyGesture) && HotKeyMapper.CheckAvailability(hotkey);
+        return hotkey.Validate(validateKeyGesture) && HotKeyMapper.CheckAvailability(hotkey.ToSequence());
     }
 
     private void Overwrite(object sender, RoutedEventArgs e)

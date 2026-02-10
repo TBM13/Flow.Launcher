@@ -213,7 +213,7 @@ namespace Flow.Launcher
         }
 
         private static bool CheckHotkeyAvailability(HotkeyModel hotkey, bool validateKeyGesture) =>
-            hotkey.Validate(validateKeyGesture) && HotKeyMapper.CheckAvailability(hotkey);
+            hotkey.Validate(validateKeyGesture) && HotKeyMapper.CheckAvailability(hotkey.ToSequence());
 
         public static string EmptyHotkey => Localize.none();
 

@@ -23,7 +23,7 @@ public partial class SettingsPaneHotkeyViewModel : BaseModel
     [RelayCommand]
     private void SetTogglingHotkey(HotkeyModel hotkey)
     {
-        HotKeyMapper.SetHotkey(hotkey, HotKeyMapper.OnToggleHotkey);
+        HotKeyMapper.SetHotkey(hotkey.ToSequence(), HotKeyMapper.OnToggleHotkey);
     }
 
     [RelayCommand]

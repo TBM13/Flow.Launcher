@@ -105,7 +105,6 @@ STRRET_TYPE
 
 GetAsyncKeyState
 SetWindowsHookEx
-UnhookWindowsHookEx
 CallNextHookEx
 GetModuleHandle
 keybd_event

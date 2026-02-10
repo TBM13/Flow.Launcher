@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
+using Flow.Launcher.Infrastructure.Hotkey.ChefKeys;
 
 namespace Flow.Launcher.Infrastructure.Hotkey;
 
@@ -220,6 +221,24 @@ public record struct HotkeyModel
                key == Key.Subtract ||
                key == Key.Oem102 ||
                key == Key.Decimal;
+    }
+
+    public readonly KeySequence ToSequence()
+    {
+        Key[] keys = [.. new Key[]
+        {
+            Ctrl ? Key.LeftCtrl : Key.None,
+            Alt ? Key.LeftAlt : Key.None,
+            Shift ? Key.LeftShift : Key.None,
+            Win ? Key.LWin : Key.None,
+            CharKey
+        }.Where(k => k != Key.None)];
+
+        return new KeySequence
+        {
+            Keys = keys,
+            LongPress = false
+        };
     }
 
     public override readonly int GetHashCode()
