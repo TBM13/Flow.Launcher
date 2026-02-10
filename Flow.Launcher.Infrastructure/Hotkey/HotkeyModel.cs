@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
-using Flow.Launcher.Infrastructure.Hotkey.ChefKeys;
 
 namespace Flow.Launcher.Infrastructure.Hotkey;
 

@@ -10,9 +10,9 @@ namespace Flow.Launcher.Infrastructure.Results;
 public record ActionContext
 {
     /// <summary>
-    /// Contains the press state of certain special keys.
+    /// Contains the keys that were pressed when the result was triggered (excluding the key(s) that triggered it).
     /// </summary>
-    public required SpecialKeyState SpecialKeyState { get; init; }
+    public required PressedKeys PressedKeys { get; init; }
 
     /// <summary>
     /// The screen coordinates of the result's center.

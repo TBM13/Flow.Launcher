@@ -7,7 +7,6 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure.Hotkey;
-using Flow.Launcher.Infrastructure.Hotkey.ChefKeys;
 using Flow.Launcher.Infrastructure.UserSettings;
 using iNKORE.UI.WPF.Modern.Controls;
 
@@ -102,13 +101,12 @@ public partial class HotkeyControlDialog : ContentDialog
         /* if (ChefKeysManager.StartMenuBlocked && key.ToString() == ChefKeysManager.STARTMENU_SIMULATED_KEY)
              return;*/
 
-        SpecialKeyState specialKeyState = GlobalHotkey.CheckModifiers();
-
+        PressedKeys pressedKeys = ChefKeysManager.GetPressedKeys();
         var hotkeyModel = new HotkeyModel(
-            specialKeyState.AltPressed,
-            specialKeyState.ShiftPressed,
-            specialKeyState.WinPressed,
-            specialKeyState.CtrlPressed,
+            pressedKeys.AltPressed,
+            pressedKeys.ShiftPressed,
+            pressedKeys.WindowsPressed,
+            pressedKeys.CtrlPressed,
             key);
 
         CurrentHotkey = hotkeyModel;

@@ -109,3 +109,4 @@ CallNextHookEx
 GetModuleHandle
 keybd_event
 VIRTUAL_KEY
+GetKeyboardState

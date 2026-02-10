@@ -312,12 +312,6 @@ namespace Flow.Launcher.ViewModel
                     autoCompleteText = result.AutoCompleteText;
                 }
 
-                var specialKeyState = GlobalHotkey.CheckModifiers();
-                if (specialKeyState.ShiftPressed)
-                {
-                    autoCompleteText = result.SubTitle;
-                }
-
                 ChangeQueryText(autoCompleteText);
             }
         }
@@ -337,7 +331,7 @@ namespace Flow.Launcher.ViewModel
             var hideWindow = await result.ExecuteAsync(new ActionContext
             {
                 // not null means pressing modifier key + number, should ignore the modifier key
-                SpecialKeyState = GlobalHotkey.CheckModifiers(),
+                PressedKeys = ChefKeysManager.GetPressedKeys(),
                 ResultPosition = position ?? throw new Exception("Failed to get result position")
             }).ConfigureAwait(false);
 

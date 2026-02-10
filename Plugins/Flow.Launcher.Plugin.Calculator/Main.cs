@@ -154,7 +154,7 @@ namespace Flow.Launcher.Plugin.Calculator
                             CopyText = newResult,
                             Action = c =>
                             {
-                                if (c.SpecialKeyState.CtrlPressed)
+                                if (c.PressedKeys.CtrlPressed)
                                 {
                                     if (!string.IsNullOrEmpty(hex))
                                     {

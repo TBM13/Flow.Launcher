@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -292,7 +293,6 @@ namespace Flow.Launcher
 
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
-            var specialKeyState = GlobalHotkey.CheckModifiers();
             switch (e.Key)
             {
                 case Key.Down:
@@ -330,7 +330,7 @@ namespace Flow.Launcher
                     }
                     break;
                 case Key.Back:
-                    if (specialKeyState.CtrlPressed)
+                    if (ChefKeysManager.IsKeyPressed(Key.LeftCtrl) || ChefKeysManager.IsKeyPressed(Key.RightCtrl))
                     {
                         if (_viewModel.QueryResultsSelected()
                             && QueryTextBox.Text.Length > 0

@@ -86,8 +86,8 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 PreviewPanel = new Lazy<UserControl>(() => new PreviewPanel(Main.Settings, path, ResultType.Folder)),
                 Action = c =>
                 {
-                    var keys = c.SpecialKeyState.ToModifierKeys();
-                    if (keys == ModifierKeys.Alt || keys == (ModifierKeys.Alt | ModifierKeys.Shift))
+                    var keys = c.PressedKeys;
+                    if (keys.AltPressed)
                     {
                         ShowNativeContextMenu(path, ResultType.Folder, c.ResultPosition);
                         return false;
@@ -169,8 +169,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 },
                 Action = c =>
                 {
-                    var keys = c.SpecialKeyState.ToModifierKeys();
-                    if (keys == ModifierKeys.Alt || keys == (ModifierKeys.Alt | ModifierKeys.Shift))
+                    if (c.PressedKeys.AltPressed)
                     {
                         ShowNativeContextMenu(path, ResultType.Volume, c.ResultPosition);
                         return false;
@@ -229,8 +228,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 CopyText = folderPath,
                 Action = c =>
                 {
-                    var keys = c.SpecialKeyState.ToModifierKeys();
-                    if (keys == ModifierKeys.Alt || keys == (ModifierKeys.Alt | ModifierKeys.Shift))
+                    if (c.PressedKeys.AltPressed)
                     {
                         ShowNativeContextMenu(folderPath, ResultType.Folder, c.ResultPosition);
                         return false;
@@ -269,8 +267,8 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 PreviewPanel = new Lazy<UserControl>(() => new PreviewPanel(Main.Settings, filePath, ResultType.File)),
                 Action = c =>
                 {
-                    var keys = c.SpecialKeyState.ToModifierKeys();
-                    if (keys == ModifierKeys.Alt || keys == (ModifierKeys.Alt | ModifierKeys.Shift))
+                    var keys = c.PressedKeys;
+                    if (keys.AltPressed)
                     {
                         ShowNativeContextMenu(filePath, ResultType.File, c.ResultPosition);
                         return false;

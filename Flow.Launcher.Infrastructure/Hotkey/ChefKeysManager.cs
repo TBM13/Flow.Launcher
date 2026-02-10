@@ -24,7 +24,7 @@ using Windows.Win32.Foundation;
 using Windows.Win32.UI.Input.KeyboardAndMouse;
 using Windows.Win32.UI.WindowsAndMessaging;
 
-namespace Flow.Launcher.Infrastructure.Hotkey.ChefKeys;
+namespace Flow.Launcher.Infrastructure.Hotkey;
 
 public static class ChefKeysManager
 {
@@ -168,5 +168,28 @@ public static class ChefKeysManager
     {
         bool hasDuplicates = sequence.Keys.Length != sequence.Keys.Distinct().Count();
         return !hasDuplicates && sequence.Keys.Length >= 0;
+    }
+
+    /// <returns>True if the key is currently down.</returns>
+    public static bool IsKeyPressed(Key key)
+        => (PInvoke.GetKeyState(KeyInterop.VirtualKeyFromKey(key)) & 0x80) != 0;
+
+    /// <returns>All the keys that are currently down.</returns>
+    public static PressedKeys GetPressedKeys()
+    {
+        HashSet<Key> pressedKeys = [];
+
+        byte[] keyState = new byte[256];
+        PInvoke.GetKeyboardState(keyState);
+
+        for (int i = 0; i < keyState.Length; i++)
+        {
+            if ((keyState[i] & 0x80) != 0)
+            {
+                pressedKeys.Add(KeyInterop.KeyFromVirtualKey(i));
+            }
+        }
+
+        return new PressedKeys(pressedKeys);
     }
 }

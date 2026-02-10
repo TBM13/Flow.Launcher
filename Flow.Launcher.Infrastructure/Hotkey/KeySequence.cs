@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace Flow.Launcher.Infrastructure.Hotkey.ChefKeys;
+namespace Flow.Launcher.Infrastructure.Hotkey;
 
 public record KeySequence
 {
