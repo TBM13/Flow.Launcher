@@ -1,6 +1,6 @@
 ﻿using System;
+using Flow.Launcher.Core;
 using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Infrastructure.UserSettings;
 
 namespace Flow.Launcher.ViewModel;
 

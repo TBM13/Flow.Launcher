@@ -8,6 +8,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     xmlns:vm="clr-namespace:Flow.Launcher.ViewModel"
+    xmlns:core="clr-namespace:Flow.Launcher.Core;assembly=Flow.Launcher.Core"
+    xmlns:infsUi="clr-namespace:Flow.Launcher.Infrastructure.UI;assembly=Flow.Launcher.Infrastructure"
     Name="FlowMainWindow"
     Title="Flow Launcher"
     Width="{Binding MainWindowWidth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -44,7 +46,6 @@
         <converters:BorderClipConverter x:Key="BorderClipConverter" />
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:SplitterConverter x:Key="SplitterConverter" />
-        <converters:StringToKeyBindingConverter x:Key="StringToKeyBindingConverter" />
     </Window.Resources>
     <Window.InputBindings>
         <KeyBinding Key="Escape" Command="{Binding EscCommand}" />
@@ -107,50 +108,24 @@
             Key="C"
             Command="{Binding CopyAlternativeCommand}"
             Modifiers="Ctrl+Shift" />
-        <KeyBinding
-            Key="{Binding PreviewHotkey, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='key'}"
+        <infsUi:KeyBinding
             Command="{Binding TogglePreviewCommand}"
-            Modifiers="{Binding PreviewHotkey, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='modifiers'}" />
-        <KeyBinding
-            Key="{Binding AutoCompleteHotkey, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='key'}"
+            BindableGesture="{Binding Path=Gesture, Source={x:Static core:DefaultHotkeys.TogglePreview}}"/>
+        <infsUi:KeyBinding
             Command="{Binding AutocompleteQueryCommand}"
-            Modifiers="{Binding AutoCompleteHotkey, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='modifiers'}" />
-        <KeyBinding
-            Key="{Binding AutoCompleteHotkey2, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='key'}"
-            Command="{Binding AutocompleteQueryCommand}"
-            Modifiers="{Binding AutoCompleteHotkey2, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='modifiers'}" />
-        <KeyBinding
-            Key="{Binding SelectNextItemHotkey, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='key'}"
+            BindableGesture="{Binding Path=Gesture, Source={x:Static core:DefaultHotkeys.Autocomplete}}"/>
+        <infsUi:KeyBinding
             Command="{Binding SelectNextItemCommand}"
-            Modifiers="{Binding SelectNextItemHotkey, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='modifiers'}" />
-        <KeyBinding
-            Key="{Binding SelectPrevItemHotkey, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='key'}"
+            BindableGesture="{Binding Path=Gesture, Source={x:Static core:DefaultHotkeys.SelectNextResult}}"/>
+        <infsUi:KeyBinding
             Command="{Binding SelectPrevItemCommand}"
-            Modifiers="{Binding SelectPrevItemHotkey, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='modifiers'}" />
-        <KeyBinding
-            Key="{Binding SelectNextItemHotkey2, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='key'}"
-            Command="{Binding SelectNextItemCommand}"
-            Modifiers="{Binding SelectNextItemHotkey2, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='modifiers'}" />
-        <KeyBinding
-            Key="{Binding SelectPrevItemHotkey2, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='key'}"
-            Command="{Binding SelectPrevItemCommand}"
-            Modifiers="{Binding SelectPrevItemHotkey2, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='modifiers'}" />
-        <KeyBinding
-            Key="{Binding SettingWindowHotkey, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='key'}"
-            Command="{Binding OpenSettingCommand}"
-            Modifiers="{Binding SettingWindowHotkey, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='modifiers'}" />
-        <KeyBinding
-            Key="{Binding OpenContextMenuHotkey, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='key'}"
-            Command="{Binding LoadContextMenuCommand}"
-            Modifiers="{Binding OpenContextMenuHotkey, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='modifiers'}" />
-        <KeyBinding
-            Key="{Binding SelectNextPageHotkey, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='key'}"
+            BindableGesture="{Binding Path=Gesture, Source={x:Static core:DefaultHotkeys.SelectPreviousResult}}"/>
+        <infsUi:KeyBinding
             Command="{Binding SelectNextPageCommand}"
-            Modifiers="{Binding SelectNextPageHotkey, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='modifiers'}" />
-        <KeyBinding
-            Key="{Binding SelectPrevPageHotkey, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='key'}"
+            BindableGesture="{Binding Path=Gesture, Source={x:Static core:DefaultHotkeys.SelectNextPage}}"/>
+        <infsUi:KeyBinding
             Command="{Binding SelectPrevPageCommand}"
-            Modifiers="{Binding SelectPrevPageHotkey, Converter={StaticResource StringToKeyBindingConverter}, ConverterParameter='modifiers'}" />
+            BindableGesture="{Binding Path=Gesture, Source={x:Static core:DefaultHotkeys.SelectPreviousPage}}"/>
     </Window.InputBindings>
 
     <Border MouseDown="OnMouseDown" Style="{DynamicResource WindowBorderStyle}">

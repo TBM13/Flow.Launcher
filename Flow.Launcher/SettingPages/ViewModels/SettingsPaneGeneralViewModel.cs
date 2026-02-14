@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Windows;
-using CommunityToolkit.Mvvm.Input;
+using Flow.Launcher.Core;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Helpers;
-using Flow.Launcher.Infrastructure.UserSettings;
+using static Flow.Launcher.Core.Settings;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
 
@@ -21,7 +20,7 @@ public partial class SettingsPaneGeneralViewModel : BaseModel
     public class SearchWindowScreenData : DropdownDataGeneric<SearchWindowScreens> { }
     public class SearchWindowAlignData : DropdownDataGeneric<SearchWindowAligns> { }
     public class SearchPrecisionData : DropdownDataGeneric<SearchPrecisionScore> { }
-    public class LastQueryModeData : DropdownDataGeneric<LastQueryMode> { }
+    public class LastQueryModeData : DropdownDataGeneric<LastQueryModes> { }
 
     public List<SearchWindowScreenData> SearchWindowScreens { get; } =
         DropdownDataGeneric<SearchWindowScreens>.GetValues<SearchWindowScreenData>("SearchWindowScreen");
@@ -48,19 +47,20 @@ public partial class SettingsPaneGeneralViewModel : BaseModel
     }
 
     public List<LastQueryModeData> LastQueryModes { get; } =
-        DropdownDataGeneric<LastQueryMode>.GetValues<LastQueryModeData>("LastQuery");
+        DropdownDataGeneric<LastQueryModes>.GetValues<LastQueryModeData>("LastQuery");
 
     private void UpdateEnumDropdownLocalizations()
     {
         DropdownDataGeneric<SearchWindowScreens>.UpdateLabels(SearchWindowScreens);
         DropdownDataGeneric<SearchWindowAligns>.UpdateLabels(SearchWindowAligns);
         DropdownDataGeneric<SearchPrecisionScore>.UpdateLabels(SearchPrecisionScores);
-        DropdownDataGeneric<LastQueryMode>.UpdateLabels(LastQueryModes);
+        DropdownDataGeneric<LastQueryModes>.UpdateLabels(LastQueryModes);
         // Since we are using Binding instead of DynamicResource, we need to manually trigger the update
         OnPropertyChanged(nameof(AlwaysPreviewToolTip));
     }
 
-    public string AlwaysPreviewToolTip => Localize.AlwaysPreviewToolTip(Settings.PreviewHotkey);
+    public static string AlwaysPreviewToolTip
+        => Localize.AlwaysPreviewToolTip(DefaultHotkeys.TogglePreview.Hotkey.ToString());
 
     public bool AlwaysRunAsAdministrator
     {

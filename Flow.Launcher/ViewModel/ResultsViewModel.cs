@@ -6,9 +6,9 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using Flow.Launcher.Core;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Results;
-using Flow.Launcher.Infrastructure.UserSettings;
 
 namespace Flow.Launcher.ViewModel
 {

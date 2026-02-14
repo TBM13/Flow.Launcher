@@ -37,10 +37,7 @@
                 </ui:SettingsCard.HeaderIcon>
 
                 <flowlauncher:HotkeyControl
-                    ChangeHotkey="{Binding SetTogglingHotkeyCommand}"
-                    DefaultHotkey="Alt+Space"
-                    Type="Hotkey"
-                    ValidateKeyGesture="True"
+                    Id="ToggleFlowLauncher"
                     WindowTitle="{DynamicResource flowlauncherHotkey}" />
             </ui:SettingsCard>
 
@@ -53,9 +50,7 @@
                 </ui:SettingsCard.HeaderIcon>
 
                 <flowlauncher:HotkeyControl
-                    DefaultHotkey="F1"
-                    Type="PreviewHotkey"
-                    ValidateKeyGesture="False"
+                    Id="TogglePreview"
                     WindowTitle="{DynamicResource previewHotkey}" />
             </ui:SettingsCard>
 
@@ -94,16 +89,6 @@
                             <ui:FontIcon Glyph="&#xede3;" />
                         </ui:SettingsCard.HeaderIcon>
 
-                        <flowlauncher:HotkeyControl
-                            DefaultHotkey="Ctrl+I"
-                            Type="OpenContextMenuHotkey"
-                            ValidateKeyGesture="False" />
-                    </ui:SettingsCard>
-                    <ui:SettingsCard Header="{DynamicResource OpenContextMenuHotkey}">
-                        <ui:SettingsCard.HeaderIcon>
-                            <ui:FontIcon Glyph="&#xede3;" />
-                        </ui:SettingsCard.HeaderIcon>
-
                         <cc:HotkeyDisplay Keys="Shift+Enter" />
                     </ui:SettingsCard>
                     <ui:SettingsCard Header="{DynamicResource OpenNativeContextMenuHotkey}">
@@ -112,16 +97,6 @@
                         </ui:SettingsCard.HeaderIcon>
 
                         <cc:HotkeyDisplay Keys="Alt+Enter" />
-                    </ui:SettingsCard>
-                    <ui:SettingsCard Header="{DynamicResource SettingWindowHotkey}">
-                        <ui:SettingsCard.HeaderIcon>
-                            <ui:FontIcon Glyph="&#xe713;" />
-                        </ui:SettingsCard.HeaderIcon>
-
-                        <flowlauncher:HotkeyControl
-                            DefaultHotkey="Ctrl+I"
-                            Type="SettingWindowHotkey"
-                            ValidateKeyGesture="False" />
                     </ui:SettingsCard>
                     <ui:SettingsCard Header="{DynamicResource ToggleGameModeHotkey}">
                         <ui:SettingsCard.HeaderIcon>
@@ -149,20 +124,14 @@
                             <ui:FontIcon Glyph="&#xf0ad;" />
                         </ui:SettingsCard.HeaderIcon>
 
-                        <flowlauncher:HotkeyControl
-                            DefaultHotkey=""
-                            Type="SelectPrevPageHotkey"
-                            ValidateKeyGesture="False" />
+                        <flowlauncher:HotkeyControl Id="SelectPreviousPage"/>
                     </ui:SettingsCard>
                     <ui:SettingsCard Header="{DynamicResource SelectNextPageHotkey}">
                         <ui:SettingsCard.HeaderIcon>
                             <ui:FontIcon Glyph="&#xf0ae;" />
                         </ui:SettingsCard.HeaderIcon>
 
-                        <flowlauncher:HotkeyControl
-                            DefaultHotkey=""
-                            Type="SelectNextPageHotkey"
-                            ValidateKeyGesture="False" />
+                        <flowlauncher:HotkeyControl Id="SelectNextPage"/>
                     </ui:SettingsCard>
 
                     <ui:SettingsCard Header="{DynamicResource QuickWidthHotkey}">
@@ -196,19 +165,7 @@
                     <ui:FontIcon Glyph="&#xe893;" />
                 </ui:SettingsExpander.HeaderIcon>
 
-                <flowlauncher:HotkeyControl
-                    DefaultHotkey="Ctrl+Tab"
-                    Type="AutoCompleteHotkey"
-                    ValidateKeyGesture="False" />
-
-                <ui:SettingsExpander.Items>
-                    <ui:SettingsCard Description="{DynamicResource AdditionalHotkeyToolTip}" Header="{DynamicResource autoCompleteHotkey}">
-                        <flowlauncher:HotkeyControl
-                            DefaultHotkey=""
-                            Type="AutoCompleteHotkey2"
-                            ValidateKeyGesture="False" />
-                    </ui:SettingsCard>
-                </ui:SettingsExpander.Items>
+                <flowlauncher:HotkeyControl Id="Autocomplete"/>
             </ui:SettingsExpander>
 
             <ui:SettingsExpander Margin="0 4 0 0" Header="{DynamicResource SelectPrevItemHotkey}">
@@ -216,19 +173,7 @@
                     <ui:FontIcon Glyph="&#xe74a;" />
                 </ui:SettingsExpander.HeaderIcon>
 
-                <flowlauncher:HotkeyControl
-                    DefaultHotkey="Shift+Tab"
-                    Type="SelectPrevItemHotkey"
-                    ValidateKeyGesture="False" />
-
-                <ui:SettingsExpander.Items>
-                    <ui:SettingsCard Description="{DynamicResource AdditionalHotkeyToolTip}" Header="{DynamicResource SelectPrevItemHotkey}">
-                        <flowlauncher:HotkeyControl
-                            DefaultHotkey=""
-                            Type="SelectPrevItemHotkey2"
-                            ValidateKeyGesture="False" />
-                    </ui:SettingsCard>
-                </ui:SettingsExpander.Items>
+                <flowlauncher:HotkeyControl Id="SelectPreviousResult"/>
             </ui:SettingsExpander>
 
             <ui:SettingsExpander Margin="0 4 0 0" Header="{DynamicResource SelectNextItemHotkey}">
@@ -236,19 +181,7 @@
                     <ui:FontIcon Glyph="&#xe74b;" />
                 </ui:SettingsExpander.HeaderIcon>
 
-                <flowlauncher:HotkeyControl
-                    DefaultHotkey="Tab"
-                    Type="SelectNextItemHotkey"
-                    ValidateKeyGesture="False" />
-
-                <ui:SettingsExpander.Items>
-                    <ui:SettingsCard Description="{DynamicResource AdditionalHotkeyToolTip}" Header="{DynamicResource SelectNextItemHotkey}">
-                        <flowlauncher:HotkeyControl
-                            DefaultHotkey=""
-                            Type="SelectNextItemHotkey2"
-                            ValidateKeyGesture="False" />
-                    </ui:SettingsCard>
-                </ui:SettingsExpander.Items>
+                <flowlauncher:HotkeyControl Id="SelectNextResult"/>
             </ui:SettingsExpander>
 
             <ui:SettingsExpander Margin="0 20 0 0" Header="{DynamicResource customQueryHotkey}">

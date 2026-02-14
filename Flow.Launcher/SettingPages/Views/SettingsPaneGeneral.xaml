@@ -9,7 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:settingsViewModels="clr-namespace:Flow.Launcher.SettingPages.ViewModels"
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
-    xmlns:userSettings="clr-namespace:Flow.Launcher.Infrastructure.UserSettings;assembly=Flow.Launcher.Infrastructure"
+    xmlns:core="clr-namespace:Flow.Launcher.Core;assembly=Flow.Launcher.Core"
     Title="General"
     d:DataContext="{d:DesignInstance settingsViewModels:SettingsPaneGeneralViewModel}"
     d:DesignHeight="450"
@@ -108,7 +108,7 @@
                         ItemsSource="{Binding ScreenNumbers}"
                         SelectedValue="{Binding Settings.CustomScreenNumber}"
                         Visibility="{ext:VisibleWhen {Binding Settings.SearchWindowScreen},
-                                                     IsEqualTo={x:Static userSettings:SearchWindowScreens.Custom}}" />
+                                                     IsEqualTo={x:Static core:SearchWindowScreens.Custom}}" />
                 </StackPanel>
             </ui:SettingsCard>
 
@@ -116,7 +116,7 @@
                 Margin="0 4 0 0"
                 Header="{DynamicResource SearchWindowAlign}"
                 Visibility="{ext:CollapsedWhen {Binding Settings.SearchWindowScreen},
-                                               IsEqualTo={x:Static userSettings:SearchWindowScreens.RememberLastLaunchLocation}}">
+                                               IsEqualTo={x:Static core:SearchWindowScreens.RememberLastLaunchLocation}}">
                 <ui:SettingsCard.HeaderIcon>
                     <ui:FontIcon Glyph="&#xe7f4;" />
                 </ui:SettingsCard.HeaderIcon>
@@ -136,7 +136,7 @@
                         VerticalAlignment="Center"
                         Orientation="Horizontal"
                         Visibility="{ext:VisibleWhen {Binding Settings.SearchWindowAlign},
-                                                     IsEqualTo={x:Static userSettings:SearchWindowAligns.Custom}}">
+                                                     IsEqualTo={x:Static core:SearchWindowAligns.Custom}}">
                         <TextBox
                             MinWidth="80"
                             VerticalAlignment="Center"

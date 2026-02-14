@@ -16,7 +16,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Input;
 using Windows.Win32;
@@ -24,21 +23,26 @@ using Windows.Win32.Foundation;
 using Windows.Win32.UI.Input.KeyboardAndMouse;
 using Windows.Win32.UI.WindowsAndMessaging;
 
-namespace Flow.Launcher.Infrastructure.Hotkey;
+namespace Flow.Launcher.Infrastructure.Hotkeys;
 
-public static class ChefKeysManager
+/// <summary>
+/// Manages global hotkeys that are active even when the app is not focused.
+/// <para/>
+/// It's not suggested to interact with this class directly.
+/// </summary>
+internal static class GlobalHotkeyManager
 {
     private static readonly UnhookWindowsHookExSafeHandle? _hookID;
     private static readonly HOOKPROC _proc;
 
-    private static readonly Dictionary<KeySequence, Action> _registeredHotkeys = [];
-    private static readonly HashSet<Key> _pressedKeys = [];
+    private static readonly Dictionary<Hotkey, Action> _registeredHotkeys = [];
+    private static ModifierKeys _pressedModifiers;
     private static bool _isSimulatingKeyPress = false;
     private static bool _blockAllKeys = false;
-    private static HashSet<KeySequence> _blockKeysExceptions = [];
-    private static Action<KeySequence>? _onKeyBlocked;
+    private static HashSet<Hotkey> _blockKeysExceptions = [];
+    private static Action<Hotkey>? _onKeyBlocked;
 
-    static ChefKeysManager()
+    static GlobalHotkeyManager()
     {
         // Keep a reference to the delegate as a field to prevent it from being garbage collected
         _proc = HookCallback;
@@ -53,17 +57,22 @@ public static class ChefKeysManager
     }
 
     /// <summary>
-    /// Blocks ALL the key sequences from doing anything at the OS level, except for those in <paramref name="exceptions"/>.
+    /// Blocks ALL the keys and hotkeys from doing anything at the OS level, except for those in <paramref name="exceptions"/>.
     /// <para/>
-    /// Whenever a blocked sequence is released, <paramref name="onSequenceBlocked"/> will be called with it.
+    /// Whenever a blocked key/hotkey is released, <paramref name="onHotkeyBlocked"/> will be called with it.
     /// </summary>
-    public static void BlockAllKeys(HashSet<KeySequence> exceptions, Action<KeySequence>? onSequenceBlocked)
+    public static void BlockAllKeys(HashSet<Hotkey> exceptions, Action<Hotkey>? onHotkeyBlocked)
     {
         if (_blockAllKeys)
             throw new InvalidOperationException("BlockAllKeys can only be called once.");
+        foreach (Hotkey hotkey in exceptions)
+        {
+            if (!hotkey.IsValid)
+                throw new ArgumentException($"Invalid hotkey: {hotkey}", nameof(exceptions));
+        }
 
         _blockKeysExceptions = exceptions;
-        _onKeyBlocked = onSequenceBlocked;
+        _onKeyBlocked = onHotkeyBlocked;
         _blockAllKeys = true;
     }
 
@@ -84,38 +93,51 @@ public static class ChefKeysManager
         {
             int vkCode = Marshal.ReadInt32(lParam);
             Key key = KeyInterop.KeyFromVirtualKey(vkCode);
+            bool isKeyModifier = key.ToModifierKey(out ModifierKeys? modKey);
 
-            if (wParam == PInvoke.WM_KEYDOWN || wParam == PInvoke.WM_SYSKEYDOWN)
+            if (key != Key.None)
             {
-                _pressedKeys.Add(key);
-            }
-            else if (wParam == PInvoke.WM_KEYUP || wParam == PInvoke.WM_SYSKEYUP)
-            {
-                _pressedKeys.Remove(key);
-
-                Key[] sequence = new Key[_pressedKeys.Count + 1];
-                _pressedKeys.CopyTo(sequence);
-                sequence[^1] = key;
-
-                _pressedKeys.Clear();
-                KeySequence keySequence = new KeySequence { Keys = sequence, LongPress = false };
-                if (_blockAllKeys && !_blockKeysExceptions.Contains(keySequence))
+                if (wParam == PInvoke.WM_KEYDOWN || wParam == PInvoke.WM_SYSKEYDOWN)
                 {
-                    if (key == Key.LWin || key == Key.RWin)
-                        BlockStartMenu();
-
-                    _onKeyBlocked?.Invoke(keySequence);
-                    return (LRESULT)1; // Block the key event from reaching the OS or any other app
+                    if (isKeyModifier)
+                        _pressedModifiers |= modKey!.Value;
                 }
-
-                if (_registeredHotkeys.TryGetValue(keySequence, out var action))
+                else if (wParam == PInvoke.WM_KEYUP || wParam == PInvoke.WM_SYSKEYUP)
                 {
-                    action.Invoke();
+                    if (isKeyModifier)
+                    {
+                        // There's a small chance we didn't detect the modifier key's key down event
+                        _pressedModifiers |= modKey!.Value;
+                    }
 
-                    if (key == Key.LWin || key == Key.RWin)
-                        BlockStartMenu();
+                    Hotkey hotkey = new()
+                    {
+                        Modifiers = _pressedModifiers,
+                        MainKey = isKeyModifier ? Key.None : key,
+                        LongPress = false
+                    };
 
-                    return (LRESULT)1; // Block the key event from reaching the OS or any other app
+                    // Reset
+                    _pressedModifiers = ModifierKeys.None;
+
+                    if (_blockAllKeys && !_blockKeysExceptions.Contains(hotkey))
+                    {
+                        if (key == Key.LWin || key == Key.RWin)
+                            BlockStartMenu();
+
+                        _onKeyBlocked?.Invoke(hotkey);
+                        return (LRESULT)1; // Block the key event from reaching the OS or any other app
+                    }
+
+                    if (_registeredHotkeys.TryGetValue(hotkey, out var action))
+                    {
+                        action.Invoke();
+
+                        if (key == Key.LWin || key == Key.RWin)
+                            BlockStartMenu();
+
+                        return (LRESULT)1; // Block the key event from reaching the OS or any other app
+                    }
                 }
             }
         }
@@ -142,10 +164,10 @@ public static class ChefKeysManager
     /// Registers the given hotkey to perform the given action whenever it's released.
     /// </summary>
     /// <exception cref="ArgumentException"></exception>
-    public static void RegisterHotkey(KeySequence hotkey, Action action)
+    public static void RegisterHotkey(Hotkey hotkey, Action action)
     {
         if (!CanRegisterHotkey(hotkey))
-            throw new ArgumentException("Tried to register an invalid hotkey or one that was already registered.", nameof(hotkey));
+            throw new ArgumentException($"Tried to register an invalid or already-registered hotkey '{hotkey}'", nameof(hotkey));
 
         _registeredHotkeys[hotkey] = action;
     }
@@ -153,21 +175,15 @@ public static class ChefKeysManager
     /// <summary>
     /// Tries to unregister the hotkey. Does nothing if it wasn't registered in the first place.
     /// </summary>
-    public static void UnregisterHotkey(KeySequence hotkey)
+    public static void UnregisterHotkey(Hotkey hotkey)
     {
         _registeredHotkeys.Remove(hotkey);
     }
 
-    /// <returns>True if the sequence is valid and isn't registered already.</returns>
-    public static bool CanRegisterHotkey(KeySequence sequence)
+    /// <returns>True if the hotkey is valid and isn't registered already.</returns>
+    public static bool CanRegisterHotkey(Hotkey hotkey)
     {
-        return IsValidHotkey(sequence) && !_registeredHotkeys.ContainsKey(sequence);
-    }
-    /// <returns>True if the sequence is valid.</returns>
-    public static bool IsValidHotkey(KeySequence sequence)
-    {
-        bool hasDuplicates = sequence.Keys.Length != sequence.Keys.Distinct().Count();
-        return !hasDuplicates && sequence.Keys.Length >= 0;
+        return hotkey.IsValid && !_registeredHotkeys.ContainsKey(hotkey);
     }
 
     /// <returns>True if the key is currently down.</returns>

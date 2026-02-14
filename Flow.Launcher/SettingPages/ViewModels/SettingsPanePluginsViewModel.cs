@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using CommunityToolkit.Mvvm.Input;
+using Flow.Launcher.Core;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern.Controls;
 

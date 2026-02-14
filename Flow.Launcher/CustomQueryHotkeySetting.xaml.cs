@@ -26,7 +26,9 @@ namespace Flow.Launcher
             ActionKeyword = originalCustomHotkey.ActionKeyword;
             InitializeComponent();
             tbUpdate.Visibility = Visibility.Visible;
-            HotkeyControl.SetHotkey(originalCustomHotkey.Hotkey, false);
+
+            // TODO
+            //HotkeyControl.SetHotkey(originalCustomHotkey.Hotkey, false);
         }
 
         private void BtnCancel_OnClick(object sender, RoutedEventArgs e)
@@ -37,7 +39,8 @@ namespace Flow.Launcher
 
         private void btnAdd_OnClick(object sender, RoutedEventArgs e)
         {
-            Hotkey = HotkeyControl.CurrentHotkey.ToString();
+            // TODO
+            //Hotkey = HotkeyControl.CurrentHotkey.ToString();
 
             if (string.IsNullOrEmpty(Hotkey) && string.IsNullOrEmpty(ActionKeyword))
             {

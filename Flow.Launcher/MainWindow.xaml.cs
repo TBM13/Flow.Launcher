@@ -1,7 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -10,15 +8,16 @@ using System.Windows.Interop;
 using System.Windows.Shell;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using Flow.Launcher.Core;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Helpers;
-using Flow.Launcher.Infrastructure.Hotkey;
-using Flow.Launcher.Infrastructure.UserSettings;
+using Flow.Launcher.Infrastructure.Hotkeys;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern;
+using static Flow.Launcher.Core.Settings;
 using DataObject = System.Windows.DataObject;
 using Key = System.Windows.Input.Key;
 
@@ -330,7 +329,7 @@ namespace Flow.Launcher
                     }
                     break;
                 case Key.Back:
-                    if (ChefKeysManager.IsKeyPressed(Key.LeftCtrl) || ChefKeysManager.IsKeyPressed(Key.RightCtrl))
+                    if (GlobalHotkeyManager.IsKeyPressed(Key.LeftCtrl) || GlobalHotkeyManager.IsKeyPressed(Key.RightCtrl))
                     {
                         if (_viewModel.QueryResultsSelected()
                             && QueryTextBox.Text.Length > 0

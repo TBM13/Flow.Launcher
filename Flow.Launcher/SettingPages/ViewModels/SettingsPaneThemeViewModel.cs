@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Flow.Launcher.Core;
 using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Infrastructure.UserSettings;
 using iNKORE.UI.WPF.Modern;
+using static Flow.Launcher.Core.Settings;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
 

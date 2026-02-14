@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using Flow.Launcher.Core;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Helper;
@@ -12,7 +13,6 @@ using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Image;
 using Flow.Launcher.Infrastructure.Logger;
 using Flow.Launcher.Infrastructure.Storage;
-using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.SettingPages.ViewModels;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern.Common;
@@ -223,7 +223,7 @@ namespace Flow.Launcher
 
             // Initialize hotkey mapper instantly after main window is created because
             // it will steal focus from main window which causes window hide
-            HotKeyMapper.Initialize();
+            HotkeyManager.Initialize();
 
             // Initialize theme for main window
             Ioc.Default.GetRequiredService<Theme>().ChangeTheme();

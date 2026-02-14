@@ -7,7 +7,6 @@ using System.Windows.Media.Effects;
 using System.Windows.Shell;
 using System.Windows.Threading;
 using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Infrastructure.UserSettings;
 
 namespace Flow.Launcher.Core.Resource
 {

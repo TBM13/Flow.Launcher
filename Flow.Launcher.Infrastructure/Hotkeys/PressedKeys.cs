@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Windows.Input;
 
-namespace Flow.Launcher.Infrastructure.Hotkey;
+namespace Flow.Launcher.Infrastructure.Hotkeys;
 
 /// <summary>
-/// Contains the keys that were pressed (down) at a specific moment in time.
+/// Represents the keys that were pressed (down) at a specific moment in time.
 /// <para/>
-/// Extendes the <see langword="=="/> and <see langword="!="/> operators to compare with:
+/// Extends the <see langword="=="/> and <see langword="!="/> operators to compare with:
 /// <list type="bullet">
 ///     <item>A single <see cref="Key"/> (true if only that key was pressed).</item>
 ///     <item>An IEnumerable&lt;Key&gt;(true if only those keys were pressed).</item>
-///     <item>A <see cref="ModifierKeys"/> (true when the given modifiers were the only keys pressed.).</item>
+///     <item>A <see cref="ModifierKeys"/> (true when the given modifiers were the only keys pressed).</item>
 /// </list>
 /// </summary>
 public class PressedKeys(HashSet<Key> pressedKeys)
@@ -36,6 +36,39 @@ public class PressedKeys(HashSet<Key> pressedKeys)
     public bool WindowsPressed { get; } = pressedKeys.Contains(Key.LWin) || pressedKeys.Contains(Key.RWin);
 
     public bool IsKeyPressed(Key key) => _pressedKeys.Contains(key);
+
+    /// <summary>
+    /// Tries to generate a valid hotkey from the currently pressed keys.
+    /// <para/>
+    /// Returns null if it's not possible (e.g. multiple non-modifier keys pressed).
+    /// </summary>
+    public Hotkey? ToHotkey()
+    {
+        ModifierKeys modifiers = ModifierKeys.None;
+        Key key = Key.None;
+
+        foreach (var pressedKey in _pressedKeys)
+        {
+            if (pressedKey.ToModifierKey(out ModifierKeys? mod))
+                modifiers |= mod.Value;
+            else
+            {
+                if (key != Key.None)
+                {
+                    // More than 1 non-modifier key is pressed, can't convert to hotkey
+                    return null;
+                }
+
+                key = pressedKey;
+            }
+        }
+
+        return new Hotkey()
+        {
+            Modifiers = modifiers,
+            MainKey = key
+        };
+    }
 
     public static bool operator ==(PressedKeys pressedKeys, Key key)
         => pressedKeys._pressedKeys.Count == 1 && pressedKeys._pressedKeys.Contains(key);

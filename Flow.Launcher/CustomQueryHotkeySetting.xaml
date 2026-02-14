@@ -102,9 +102,7 @@
                         Margin="10 0 10 0"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
-                        HorizontalContentAlignment="Left"
-                        DefaultHotkey=""
-                        Type="CustomQueryHotkey" />
+                        HorizontalContentAlignment="Left" />
                     <TextBlock
                         Grid.Row="1"
                         Grid.Column="0"

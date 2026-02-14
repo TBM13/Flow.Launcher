@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using CommunityToolkit.Mvvm.Input;
+using Flow.Launcher.Core;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.UserSettings;
 

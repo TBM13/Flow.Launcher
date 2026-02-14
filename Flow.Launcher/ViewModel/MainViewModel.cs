@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
@@ -14,9 +13,10 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
+using Flow.Launcher.Core;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Infrastructure.Hotkey;
+using Flow.Launcher.Infrastructure.Hotkeys;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 using Flow.Launcher.Infrastructure.Results;
@@ -26,6 +26,7 @@ using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Storage;
 using iNKORE.UI.WPF.Modern;
 using Microsoft.VisualStudio.Threading;
+using static Flow.Launcher.Core.Settings;
 
 namespace Flow.Launcher.ViewModel
 {
@@ -86,39 +87,6 @@ namespace Flow.Launcher.ViewModel
                         break;
                     case nameof(Settings.ResultSubItemFontSize):
                         OnPropertyChanged(nameof(ResultSubItemFontSize));
-                        break;
-                    case nameof(Settings.PreviewHotkey):
-                        OnPropertyChanged(nameof(PreviewHotkey));
-                        break;
-                    case nameof(Settings.AutoCompleteHotkey):
-                        OnPropertyChanged(nameof(AutoCompleteHotkey));
-                        break;
-                    case nameof(Settings.AutoCompleteHotkey2):
-                        OnPropertyChanged(nameof(AutoCompleteHotkey2));
-                        break;
-                    case nameof(Settings.SelectNextItemHotkey):
-                        OnPropertyChanged(nameof(SelectNextItemHotkey));
-                        break;
-                    case nameof(Settings.SelectNextItemHotkey2):
-                        OnPropertyChanged(nameof(SelectNextItemHotkey2));
-                        break;
-                    case nameof(Settings.SelectPrevItemHotkey):
-                        OnPropertyChanged(nameof(SelectPrevItemHotkey));
-                        break;
-                    case nameof(Settings.SelectPrevItemHotkey2):
-                        OnPropertyChanged(nameof(SelectPrevItemHotkey2));
-                        break;
-                    case nameof(Settings.SelectNextPageHotkey):
-                        OnPropertyChanged(nameof(SelectNextPageHotkey));
-                        break;
-                    case nameof(Settings.SelectPrevPageHotkey):
-                        OnPropertyChanged(nameof(SelectPrevPageHotkey));
-                        break;
-                    case nameof(Settings.OpenContextMenuHotkey):
-                        OnPropertyChanged(nameof(OpenContextMenuHotkey));
-                        break;
-                    case nameof(Settings.SettingWindowHotkey):
-                        OnPropertyChanged(nameof(SettingWindowHotkey));
                         break;
                 }
             };
@@ -331,7 +299,7 @@ namespace Flow.Launcher.ViewModel
             var hideWindow = await result.ExecuteAsync(new ActionContext
             {
                 // not null means pressing modifier key + number, should ignore the modifier key
-                PressedKeys = ChefKeysManager.GetPressedKeys(),
+                PressedKeys = GlobalHotkeyManager.GetPressedKeys(),
                 ResultPosition = position ?? throw new Exception("Failed to get result position")
             }).ConfigureAwait(false);
 
@@ -697,33 +665,6 @@ namespace Flow.Launcher.ViewModel
         public ImageSource? PluginIconSource { get; private set; } = null;
 
         public string? PluginIconPath { get; set; } = null;
-
-        private static string VerifyOrSetDefaultHotkey(string hotkey, string defaultHotkey)
-        {
-            try
-            {
-                var converter = new KeyGestureConverter();
-                var key = (KeyGesture?)converter.ConvertFromString(hotkey);
-            }
-            catch (Exception e) when (e is NotSupportedException || e is InvalidEnumArgumentException)
-            {
-                return defaultHotkey;
-            }
-
-            return hotkey;
-        }
-
-        public string PreviewHotkey => VerifyOrSetDefaultHotkey(Settings.PreviewHotkey, "F1");
-        public string AutoCompleteHotkey => VerifyOrSetDefaultHotkey(Settings.AutoCompleteHotkey, "Ctrl+Tab");
-        public string AutoCompleteHotkey2 => VerifyOrSetDefaultHotkey(Settings.AutoCompleteHotkey2, "");
-        public string SelectNextItemHotkey => VerifyOrSetDefaultHotkey(Settings.SelectNextItemHotkey, "Tab");
-        public string SelectNextItemHotkey2 => VerifyOrSetDefaultHotkey(Settings.SelectNextItemHotkey2, "");
-        public string SelectPrevItemHotkey => VerifyOrSetDefaultHotkey(Settings.SelectPrevItemHotkey, "Shift+Tab");
-        public string SelectPrevItemHotkey2 => VerifyOrSetDefaultHotkey(Settings.SelectPrevItemHotkey2, "");
-        public string SelectNextPageHotkey => VerifyOrSetDefaultHotkey(Settings.SelectNextPageHotkey, "");
-        public string SelectPrevPageHotkey => VerifyOrSetDefaultHotkey(Settings.SelectPrevPageHotkey, "");
-        public string OpenContextMenuHotkey => VerifyOrSetDefaultHotkey(Settings.OpenContextMenuHotkey, "Ctrl+O");
-        public string SettingWindowHotkey => VerifyOrSetDefaultHotkey(Settings.SettingWindowHotkey, "Ctrl+I");
 
         #endregion
 
@@ -1376,30 +1317,6 @@ namespace Flow.Launcher.ViewModel
 
         #endregion
 
-        #region Hotkey
-
-        public void ToggleFlowLauncher()
-        {
-            if (!MainWindowVisibilityStatus)
-            {
-                Show();
-            }
-            else
-            {
-                Hide();
-            }
-        }
-
-        /// <summary>
-        /// Checks if Flow Launcher should ignore any hotkeys
-        /// </summary>
-        public bool ShouldIgnoreHotkeys()
-        {
-            return Settings.IgnoreHotkeysOnFullscreen && Win32Helper.IsForegroundWindowFullscreen() || GameModeStatus;
-        }
-
-        #endregion
-
         #region Public Methods
 
 #pragma warning disable VSTHRD100 // Avoid async void methods
@@ -1444,22 +1361,22 @@ namespace Flow.Launcher.ViewModel
 
             switch (Settings.LastQueryMode)
             {
-                case LastQueryMode.Empty:
+                case LastQueryModes.Empty:
                     await ChangeQueryTextAsync(string.Empty);
                     break;
-                case LastQueryMode.Preserved:
-                case LastQueryMode.Selected:
-                    LastQuerySelected = Settings.LastQueryMode == LastQueryMode.Preserved;
+                case LastQueryModes.Preserved:
+                case LastQueryModes.Selected:
+                    LastQuerySelected = Settings.LastQueryMode == LastQueryModes.Preserved;
                     break;
-                case LastQueryMode.ActionKeywordPreserved:
-                case LastQueryMode.ActionKeywordSelected:
+                case LastQueryModes.ActionKeywordPreserved:
+                case LastQueryModes.ActionKeywordSelected:
                     var newQuery = _lastQuery?.ActionKeyword;
 
                     if (!string.IsNullOrEmpty(newQuery))
                         newQuery += " ";
                     await ChangeQueryTextAsync(newQuery);
 
-                    if (Settings.LastQueryMode == LastQueryMode.ActionKeywordSelected)
+                    if (Settings.LastQueryMode == LastQueryModes.ActionKeywordSelected)
                         LastQuerySelected = false;
                     break;
             }

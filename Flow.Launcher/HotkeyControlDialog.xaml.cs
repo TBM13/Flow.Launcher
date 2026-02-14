@@ -5,20 +5,19 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.DependencyInjection;
-using Flow.Launcher.Helper;
-using Flow.Launcher.Infrastructure.Hotkey;
-using Flow.Launcher.Infrastructure.UserSettings;
+using Flow.Launcher.Core;
+using Flow.Launcher.Infrastructure.Hotkeys;
 using iNKORE.UI.WPF.Modern.Controls;
 
 namespace Flow.Launcher;
 
 public partial class HotkeyControlDialog : ContentDialog
 {
-    private static readonly IHotkeySettings _hotkeySettings = Ioc.Default.GetRequiredService<Settings>();
+    private static readonly Settings _hotkeySettings = Ioc.Default.GetRequiredService<Settings>();
     private Action? _overwriteOtherHotkey;
     private string DefaultHotkey { get; }
     public string WindowTitle { get; }
-    public HotkeyModel CurrentHotkey { get; private set; }
+    public Hotkey? CurrentHotkey { get; private set; }
     public ObservableCollection<string> KeysToDisplay { get; } = new();
 
     public enum EResultType
@@ -42,22 +41,22 @@ public partial class HotkeyControlDialog : ContentDialog
             _ => windowTitle
         };
         DefaultHotkey = defaultHotkey;
-        CurrentHotkey = new HotkeyModel(hotkey);
+        CurrentHotkey = Hotkey.FromString(hotkey);
         SetKeysToDisplay(CurrentHotkey);
 
         InitializeComponent();
 
-        HashSet<KeySequence> blockExceptions = [
-            new KeySequence() { Keys = [Key.Escape] }
+        HashSet<Hotkey> blockExceptions = [
+            new Hotkey() { MainKey = Key.Escape, Modifiers = ModifierKeys.None }
         ];
 
         // TODO: Handle key press
-        ChefKeysManager.BlockAllKeys(blockExceptions, null);
+        GlobalHotkeyManager.BlockAllKeys(blockExceptions, null);
     }
 
     private void Reset(object sender, RoutedEventArgs routedEventArgs)
     {
-        SetKeysToDisplay(new HotkeyModel(DefaultHotkey));
+        SetKeysToDisplay(Hotkey.FromString(DefaultHotkey));
     }
 
     private void Delete(object sender, RoutedEventArgs routedEventArgs)
@@ -68,7 +67,7 @@ public partial class HotkeyControlDialog : ContentDialog
 
     private void Cancel(object sender, RoutedEventArgs routedEventArgs)
     {
-        ChefKeysManager.ReleaseAllKeys();
+        GlobalHotkeyManager.ReleaseAllKeys();
 
         ResultType = EResultType.Cancel;
         Hide();
@@ -76,7 +75,7 @@ public partial class HotkeyControlDialog : ContentDialog
 
     private void Save(object sender, RoutedEventArgs routedEventArgs)
     {
-        ChefKeysManager.ReleaseAllKeys();
+        GlobalHotkeyManager.ReleaseAllKeys();
 
         if (KeysToDisplay.Count == 1 && KeysToDisplay[0] == EmptyHotkey)
         {
@@ -101,30 +100,26 @@ public partial class HotkeyControlDialog : ContentDialog
         /* if (ChefKeysManager.StartMenuBlocked && key.ToString() == ChefKeysManager.STARTMENU_SIMULATED_KEY)
              return;*/
 
-        PressedKeys pressedKeys = ChefKeysManager.GetPressedKeys();
-        var hotkeyModel = new HotkeyModel(
-            pressedKeys.AltPressed,
-            pressedKeys.ShiftPressed,
-            pressedKeys.WindowsPressed,
-            pressedKeys.CtrlPressed,
-            key);
+        PressedKeys pressedKeys = GlobalHotkeyManager.GetPressedKeys();
+        Hotkey? hotkey = pressedKeys.ToHotkey();
 
-        CurrentHotkey = hotkeyModel;
+        CurrentHotkey = hotkey;
         SetKeysToDisplay(CurrentHotkey);
     }
 
-    private void SetKeysToDisplay(HotkeyModel? hotkey)
+    private void SetKeysToDisplay(Hotkey? hotkey)
     {
-        _overwriteOtherHotkey = null;
+        // TODO
+        /*_overwriteOtherHotkey = null;
         KeysToDisplay.Clear();
 
-        if (hotkey == null || hotkey == default(HotkeyModel))
+        if (!hotkey.HasValue || !hotkey.Value.IsValid)
         {
             KeysToDisplay.Add(EmptyHotkey);
             return;
         }
 
-        foreach (var key in hotkey.Value.EnumerateDisplayKeys()!)
+        foreach (var key in hotkey.Value.ToString().Split('+'))
         {
             KeysToDisplay.Add(key);
         }
@@ -162,7 +157,7 @@ public partial class HotkeyControlDialog : ContentDialog
         OverwriteBtn.IsEnabled = false;
         OverwriteBtn.Visibility = Visibility.Collapsed;
 
-        if (!CheckHotkeyAvailability(hotkey.Value, true))
+        if (!CheckHotkeyAvailability(hotkey.Value))
         {
             tbMsg.Text = Localize.hotkeyUnavailable();
             Alert.Visibility = Visibility.Visible;
@@ -174,15 +169,14 @@ public partial class HotkeyControlDialog : ContentDialog
             Alert.Visibility = Visibility.Collapsed;
             SaveBtn.IsEnabled = true;
             SaveBtn.Visibility = Visibility.Visible;
-        }
+        }*/
     }
 
-    private static bool CheckHotkeyAvailability(HotkeyModel hotkey, bool validateKeyGesture)
+    private static bool CheckHotkeyAvailability(Hotkey hotkey)
     {
-        if (isOpenFlowHotkey && (hotkey.ToString() == "LWin" || hotkey.ToString() == "RWin"))
-            return true;
-
-        return hotkey.Validate(validateKeyGesture) && HotKeyMapper.CheckAvailability(hotkey.ToSequence());
+        // TODO
+        // return HotkeyManager.CheckAvailability(hotkey);
+        return true;
     }
 
     private void Overwrite(object sender, RoutedEventArgs e)

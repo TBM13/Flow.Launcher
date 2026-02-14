@@ -1,5 +1,5 @@
 ﻿using System.Windows;
-using Flow.Launcher.Infrastructure.Hotkey;
+using Flow.Launcher.Infrastructure.Hotkeys;
 
 namespace Flow.Launcher.Infrastructure.Results;
 
