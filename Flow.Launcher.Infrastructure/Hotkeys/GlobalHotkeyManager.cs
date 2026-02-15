@@ -208,23 +208,21 @@ internal static class GlobalHotkeyManager
 
     /// <returns>True if the key is currently down.</returns>
     public static bool IsKeyPressed(Key key)
-        => (PInvoke.GetKeyState(KeyInterop.VirtualKeyFromKey(key)) & 0x80) != 0;
+        => _pressedKeys.Contains(key) || (key.ToModifierKey(out ModifierKeys? modKey) && _pressedModifiers.HasFlag(modKey.Value));
 
     /// <returns>All the keys that are currently down.</returns>
     public static PressedKeys GetPressedKeys()
     {
-        HashSet<Key> pressedKeys = [];
-
-        byte[] keyState = new byte[256];
-        PInvoke.GetKeyboardState(keyState);
-
-        for (int i = 0; i < keyState.Length; i++)
-        {
-            if ((keyState[i] & 0x80) != 0)
-            {
-                pressedKeys.Add(KeyInterop.KeyFromVirtualKey(i));
-            }
-        }
+        HashSet<Key> pressedKeys = [.. _pressedKeys];
+        if (_pressedModifiers.HasFlag(ModifierKeys.Alt))
+            // We can't know if it's left or right, but it doesn't matter since we treat them the same
+            pressedKeys.Add(Key.LeftAlt);
+        if (_pressedModifiers.HasFlag(ModifierKeys.Control))
+            pressedKeys.Add(Key.LeftCtrl);
+        if (_pressedModifiers.HasFlag(ModifierKeys.Shift))
+            pressedKeys.Add(Key.LeftShift);
+        if (_pressedModifiers.HasFlag(ModifierKeys.Windows))
+            pressedKeys.Add(Key.LWin);
 
         return new PressedKeys(pressedKeys);
     }

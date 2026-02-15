@@ -4,9 +4,6 @@ IShellItem
 IShellItemImageFactory
 S_OK
 
-GetKeyState
-VIRTUAL_KEY
-
 EnumWindows
 
 DwmSetWindowAttribute
@@ -109,7 +106,6 @@ CallNextHookEx
 GetModuleHandle
 keybd_event
 VIRTUAL_KEY
-GetKeyboardState
 GetMessage
 TranslateMessage
 DispatchMessage
