@@ -12,6 +12,12 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <Nullable>enable</Nullable>
+
+    <!-- 
+    Required by CommunityToolkit.Mvvm to use the 'field' keyword
+    for some reason, even though it's available by default on .NET 10
+    -->
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
   
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -37,15 +43,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <None Remove="FodyWeavers.xml" />
-  </ItemGroup>
-  
-  <ItemGroup>
     <Compile Include="..\SolutionAssemblyInfo.cs" Link="Properties\SolutionAssemblyInfo.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="FodyWeavers.xml" />
   </ItemGroup>
 
   <PropertyGroup>

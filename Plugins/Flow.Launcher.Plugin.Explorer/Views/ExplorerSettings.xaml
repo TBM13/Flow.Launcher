@@ -173,7 +173,7 @@
                         Width="{StaticResource SettingPanelPathTextBoxWidth}"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
-                        Text="{Binding ShellPath}"
+                        Text="{Binding Settings.ShellPath}"
                         TextWrapping="NoWrap" />
                     <Button
                         Margin="{StaticResource SettingPanelItemLeftMargin}"
@@ -196,7 +196,7 @@
                     MinWidth="{StaticResource SettingPanelTextBoxMinWidth}"
                     Margin="{StaticResource SettingPanelItemLeftTopBottomMargin}"
                     HorizontalAlignment="Left"
-                    Text="{Binding ExcludedFileTypes}"
+                    Text="{Binding Settings.ExcludedFileTypes}"
                     ToolTip="{x:Static root:Localize.Settings_General_ExcludedFileTypes_Tooltip}" />
 
                 <TextBlock
@@ -215,7 +215,7 @@
                     VerticalAlignment="Center"
                     MaxLength="6"
                     PreviewTextInput="AllowOnlyNumericInput"
-                    Text="{Binding MaxResult}" />
+                    Text="{Binding Settings.MaxResult}" />
             </Grid>
         </Expander>
 
@@ -254,19 +254,19 @@
                         <CheckBox
                             Margin="{StaticResource SettingPanelItemLeftTopBottomMargin}"
                             Content="{x:Static root:Localize.Settings_Preview_Size}"
-                            IsChecked="{Binding ShowFileSizeInPreviewPanel}" />
+                            IsChecked="{Binding Settings.ShowFileSizeInPreviewPanel}" />
                         <CheckBox
                             Margin="{StaticResource SettingPanelItemLeftTopBottomMargin}"
                             Content="{x:Static root:Localize.Settings_Preview_DateCreated}"
-                            IsChecked="{Binding ShowCreatedDateInPreviewPanel}" />
+                            IsChecked="{Binding Settings.ShowCreatedDateInPreviewPanel}" />
                         <CheckBox
                             Margin="{StaticResource SettingPanelItemLeftTopBottomMargin}"
                             Content="{x:Static root:Localize.Settings_Preview_DateModified}"
-                            IsChecked="{Binding ShowModifiedDateInPreviewPanel}" />
+                            IsChecked="{Binding Settings.ShowModifiedDateInPreviewPanel}" />
                         <CheckBox
                             Margin="{StaticResource SettingPanelItemLeftTopBottomMargin}"
                             Content="{x:Static root:Localize.Settings_Preview_FileAge}"
-                            IsChecked="{Binding ShowFileAgeInPreviewPanel}" />
+                            IsChecked="{Binding Settings.ShowFileAgeInPreviewPanel}" />
                     </WrapPanel>
                 </DockPanel>
 
@@ -293,7 +293,7 @@
                             <ComboBox
                                 Margin="{StaticResource SettingPanelItemLeftMargin}"
                                 ItemsSource="{Binding DateFormatList}"
-                                SelectedItem="{Binding PreviewPanelDateFormat}" />
+                                SelectedItem="{Binding Settings.PreviewPanelDateFormat}" />
                             <TextBlock
                                 Margin="{StaticResource SettingPanelItemLeftMargin}"
                                 VerticalAlignment="Center"
@@ -304,7 +304,7 @@
                             <ComboBox
                                 Margin="{StaticResource SettingPanelItemLeftMargin}"
                                 ItemsSource="{Binding TimeFormatList}"
-                                SelectedItem="{Binding PreviewPanelTimeFormat}" />
+                                SelectedItem="{Binding Settings.PreviewPanelTimeFormat}" />
                             <TextBlock
                                 Margin="{StaticResource SettingPanelItemLeftMargin}"
                                 VerticalAlignment="Center"

@@ -39,7 +39,7 @@
             VerticalAlignment="Center"
             DisplayMemberPath="Description"
             ItemsSource="{Binding AllDecimalSeparator}"
-            SelectedValue="{Binding SelectedDecimalSeparator, Mode=TwoWay}"
+            SelectedValue="{Binding Settings.DecimalSeparator, Mode=TwoWay}"
             SelectedValuePath="Value" />
 
         <TextBlock

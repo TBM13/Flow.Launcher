@@ -1,9 +1,13 @@
-﻿namespace Flow.Launcher.Plugin.ProcessKiller
-{
-    public class Settings
-    {
-        public bool ShowWindowTitle { get; set; } = true;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-        public bool PutVisibleWindowProcessesTop { get; set; } = false;
+namespace Flow.Launcher.Plugin.ProcessKiller
+{
+    public partial class Settings : ObservableObject
+    {
+        [ObservableProperty]
+        public partial bool ShowWindowTitle { get; set; } = true;
+
+        [ObservableProperty]
+        public partial bool PutVisibleWindowProcessesTop { get; set; } = false;
     }
 }

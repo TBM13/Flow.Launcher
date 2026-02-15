@@ -3,18 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Flow.Launcher.Core;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.UserSettings;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
 
-public partial class SettingsPaneAboutViewModel : BaseModel
+public partial class SettingsPaneAboutViewModel : ObservableObject
 {
     private static readonly string ClassName = nameof(SettingsPaneAboutViewModel);
-
-    private readonly Settings _settings;
 
     public string CacheFolderSize
     {
@@ -30,11 +28,6 @@ public partial class SettingsPaneAboutViewModel : BaseModel
         "1.0.0" => Constant.Dev,
         _ => Constant.Version
     };
-
-    public SettingsPaneAboutViewModel(Settings settings)
-    {
-        _settings = settings;
-    }
 
     [RelayCommand]
     private void AskClearCacheFolderConfirmation()

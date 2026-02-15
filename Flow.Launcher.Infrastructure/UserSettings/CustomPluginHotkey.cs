@@ -1,11 +1,14 @@
 ﻿using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Flow.Launcher.Infrastructure.UserSettings;
 
-public class CustomPluginHotkey(string hotkey, string actionKeyword) : BaseModel
+public partial class CustomPluginHotkey(string hotkey, string actionKeyword) : ObservableObject
 {
-    public string Hotkey { get; set; } = hotkey;
-    public string ActionKeyword { get; set; } = actionKeyword;
+    [ObservableProperty]
+    public partial string Hotkey { get; set; } = hotkey;
+    [ObservableProperty]
+    public partial string ActionKeyword { get; set; } = actionKeyword;
 
     public override bool Equals(object? other)
     {

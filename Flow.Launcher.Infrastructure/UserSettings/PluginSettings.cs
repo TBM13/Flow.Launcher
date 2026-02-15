@@ -4,7 +4,7 @@ using Flow.Launcher.Infrastructure.Plugins;
 
 namespace Flow.Launcher.Infrastructure.UserSettings;
 
-public class PluginsSettings : BaseModel
+public class PluginsSettings
 {
     /// <summary>
     /// Only used for serialization

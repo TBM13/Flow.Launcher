@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using Flow.Launcher.Infrastructure;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
 
-public class DropdownDataGeneric<TValue> : BaseModel where TValue : Enum
+public partial class DropdownDataGeneric<TValue> : ObservableObject where TValue : Enum
 {
-    public string Display { get; set; }
+    [ObservableProperty]
+    public partial string Display { get; set; }
     public TValue Value { get; private init; }
-    public string LocalizationKey { get; set; }
+    [ObservableProperty]
+    public partial string LocalizationKey { get; set; }
 
     public static List<TR> GetValues<TR>(string keyPrefix) where TR : DropdownDataGeneric<TValue>, new()
     {

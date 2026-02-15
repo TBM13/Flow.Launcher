@@ -1,39 +1,24 @@
 ﻿using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Flow.Launcher.Core;
-using Flow.Launcher.Infrastructure;
 
 namespace Flow.Launcher.ViewModel;
 
-public partial class SettingWindowViewModel : BaseModel
+public partial class SettingWindowViewModel(Settings settings) : ObservableObject
 {
-    private readonly Settings _settings;
-
-    public SettingWindowViewModel(Settings settings)
-    {
-        _settings = settings;
-    }
+    private readonly Settings _settings = settings;
 
     public bool SetPageType(Type pageType)
     {
-        if (_pageType == pageType) return false;
+        if (PageType == pageType)
+            return false;
 
-        _pageType = pageType;
+        PageType = pageType;
         return true;
     }
 
-    private Type _pageType = null;
-    public Type PageType
-    {
-        get => _pageType;
-        set
-        {
-            if (_pageType != value)
-            {
-                _pageType = value;
-                OnPropertyChanged();
-            }
-        }
-    }
+    [ObservableProperty]
+    public partial Type PageType { get; set; }
 
     public double SettingWindowWidth
     {

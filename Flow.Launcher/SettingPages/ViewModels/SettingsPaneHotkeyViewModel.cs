@@ -1,23 +1,20 @@
 ﻿using System.Linq;
 using System.Windows;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core;
-using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.UserSettings;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
 
-public partial class SettingsPaneHotkeyViewModel : BaseModel
+public partial class SettingsPaneHotkeyViewModel(Settings settings) : ObservableObject
 {
-    public Settings Settings { get; }
+    public Settings Settings { get; } = settings;
 
-    public CustomPluginHotkey SelectedCustomPluginHotkey { get; set; }
-    public CustomShortcutModel SelectedCustomShortcut { get; set; }
-
-    public SettingsPaneHotkeyViewModel(Settings settings)
-    {
-        Settings = settings;
-    }
+    [ObservableProperty]
+    public partial CustomPluginHotkey SelectedCustomPluginHotkey { get; set; }
+    [ObservableProperty]
+    public partial CustomShortcutModel SelectedCustomShortcut { get; set; }
 
     [RelayCommand]
     private void CustomHotkeyDelete()

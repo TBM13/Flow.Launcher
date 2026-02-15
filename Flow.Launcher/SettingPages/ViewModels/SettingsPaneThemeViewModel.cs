@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Flow.Launcher.Core;
 using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Infrastructure;
 using iNKORE.UI.WPF.Modern;
-using static Flow.Launcher.Core.Settings;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
 
-public partial class SettingsPaneThemeViewModel(Settings settings, Theme theme) : BaseModel
+public partial class SettingsPaneThemeViewModel(Settings settings, Theme theme) : ObservableObject
 {
     public Settings Settings { get; } = settings;
 
@@ -29,7 +29,7 @@ public partial class SettingsPaneThemeViewModel(Settings settings, Theme theme) 
             }
 
             Settings.UseDropShadowEffect = value;
-            OnPropertyChanged(nameof(DropShadowEffect));
+            OnPropertyChanged();
         }
     }
 

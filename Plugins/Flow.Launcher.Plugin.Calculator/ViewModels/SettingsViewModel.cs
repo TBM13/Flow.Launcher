@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.UI;
 
 namespace Flow.Launcher.Plugin.Calculator.ViewModels;
 
-public class SettingsViewModel(Settings settings) : BaseModel
+public class SettingsViewModel(Settings settings)
 {
     public Settings Settings { get; } = settings;
 
@@ -13,17 +12,4 @@ public class SettingsViewModel(Settings settings) : BaseModel
 
     public static IEnumerable<LocalizedEnumItem<DecimalSeparator>> AllDecimalSeparator
         => EnumLocalization.GetLocalizedEnumItems<DecimalSeparator>();
-
-    public DecimalSeparator SelectedDecimalSeparator
-    {
-        get => Settings.DecimalSeparator;
-        set
-        {
-            if (Settings.DecimalSeparator != value)
-            {
-                Settings.DecimalSeparator = value;
-                OnPropertyChanged();
-            }
-        }
-    }
 }

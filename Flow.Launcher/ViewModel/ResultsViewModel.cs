@@ -6,13 +6,13 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Flow.Launcher.Core;
-using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Results;
 
 namespace Flow.Launcher.ViewModel
 {
-    public class ResultsViewModel : BaseModel
+    public partial class ResultsViewModel : ObservableObject
     {
         private readonly string ClassName = nameof(ResultsViewModel);
 
@@ -38,14 +38,14 @@ namespace Flow.Launcher.ViewModel
                         OnPropertyChanged(nameof(MaxHeight));
                         break;
                     case nameof(_settings.ItemHeightSize):
-                        OnPropertyChanged(nameof(ItemHeightSize));
                         OnPropertyChanged(nameof(MaxHeight));
                         break;
                 }
             };
         }
 
-        public bool IsPreviewOn { get; set; }
+        [ObservableProperty]
+        public partial bool IsPreviewOn { get; set; }
 
         public double MaxHeight
         {
@@ -64,17 +64,15 @@ namespace Flow.Launcher.ViewModel
             }
         }
 
-        public double ItemHeightSize
-        {
-            get => _settings.ItemHeightSize;
-            set => _settings.ItemHeightSize = value;
-        }
+        [ObservableProperty]
+        public partial int SelectedIndex { get; set; }
 
-        public int SelectedIndex { get; set; }
-
-        public ResultViewModel? SelectedItem { get; set; }
-        public Thickness Margin { get; set; }
-        public Visibility Visibility { get; set; } = Visibility.Collapsed;
+        [ObservableProperty]
+        public partial ResultViewModel? SelectedItem { get; set; }
+        [ObservableProperty]
+        public partial Thickness Margin { get; set; }
+        [ObservableProperty]
+        public partial Visibility Visibility { get; set; } = Visibility.Collapsed;
 
         public required ICommand RightClickResultCommand { get; init; }
         public required ICommand LeftClickResultCommand { get; init; }

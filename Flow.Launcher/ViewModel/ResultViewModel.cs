@@ -5,15 +5,15 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Flow.Launcher.Core;
-using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Image;
 using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Infrastructure.UI;
 
 namespace Flow.Launcher.ViewModel
 {
-    public class ResultViewModel : BaseModel
+    public partial class ResultViewModel : ObservableObject
     {
         private static readonly string ClassName = nameof(ResultViewModel);
 
@@ -62,7 +62,8 @@ namespace Flow.Launcher.ViewModel
         /// Gets the center point of this result's UI element in screen coordinates.
         /// Returns null if the element is not loaded or not connected to a visual tree.
         /// </summary>
-        public Func<Point?>? GetScreenCenterPoint { get; set; }
+        [ObservableProperty]
+        public partial Func<Point?>? GetScreenCenterPoint { get; set; }
 
         public Visibility ShowIcon
         {

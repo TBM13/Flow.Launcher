@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Plugin.Program.Views;
@@ -8,46 +9,46 @@ using Flow.Launcher.Plugin.Program.Views.Models;
 
 namespace Flow.Launcher.Plugin.Program.ViewModels
 {
-    public class AddProgramSourceViewModel(PluginInitContext context, Settings settings) : BaseModel
+    public class AddProgramSourceViewModel(PluginInitContext context, Settings settings) : ObservableObject
     {
-        private readonly Settings Settings = settings;
-
-        private bool enabled = true;
+        private bool _enabled = true;
         public bool Enabled
         {
-            get => enabled;
+            get => _enabled;
             set
             {
-                enabled = value;
+                _enabled = value;
                 StatusModified = true;
+                OnPropertyChanged();
             }
         }
 
-        private string location = string.Empty;
+        private string _location = string.Empty;
         public string Location
         {
-            get => location;
+            get => _location;
             set
             {
-                location = value;
+                _location = value;
                 LocationModified = true;
                 OnPropertyChanged();
             }
         }
 
-        public ProgramSource Source { get; init; }
-        public IPublicAPI API { get; init; } = context.API;
-        public string AddBtnText { get; init; } = Localize.Settings_Add;
+        public Settings Settings { get; } = settings;
+        public ProgramSource Source { get; }
+        public IPublicAPI API { get; } = context.API;
+        public string AddBtnText { get; } = Localize.Settings_Add;
         private bool LocationModified = false;
         private bool StatusModified = false;
-        public bool IsCustomSource { get; init; } = true;
+        public bool IsCustomSource { get; } = true;
         public bool IsNotCustomSource => !IsCustomSource;
 
         public AddProgramSourceViewModel(PluginInitContext context, Settings settings, ProgramSource programSource) : this(context, settings)
         {
             Source = programSource;
-            enabled = Source.Enabled;
-            location = Source.Location;
+            _enabled = Source.Enabled;
+            _location = Source.Location;
             AddBtnText = Localize.Settings_Update;
             IsCustomSource = Settings.ProgramSources.Any(x => x.UniqueIdentifier == Source.UniqueIdentifier);
         }

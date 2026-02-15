@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Flow.Launcher.Core;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Helpers;
-using static Flow.Launcher.Core.Settings;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
 
-public partial class SettingsPaneGeneralViewModel : BaseModel
+public partial class SettingsPaneGeneralViewModel : ObservableObject
 {
     public Settings Settings { get; }
 
@@ -70,6 +70,7 @@ public partial class SettingsPaneGeneralViewModel : BaseModel
             if (AlwaysRunAsAdministrator == value) return;
 
             Settings.AlwaysRunAsAdministrator = value;
+            OnPropertyChanged();
             CheckAdminChangeAndAskForRestart();
         }
     }

@@ -3,18 +3,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core;
-using Flow.Launcher.Core.Plugin;
-using Flow.Launcher.Infrastructure;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern.Controls;
 
-#nullable enable
-
 namespace Flow.Launcher.SettingPages.ViewModels;
 
-public partial class SettingsPanePluginsViewModel : BaseModel
+public partial class SettingsPanePluginsViewModel : ObservableObject
 {
     private readonly Settings _settings;
 
@@ -23,62 +20,27 @@ public partial class SettingsPanePluginsViewModel : BaseModel
     public List<DisplayModeData> DisplayModes { get; } =
         DropdownDataGeneric<DisplayMode>.GetValues<DisplayModeData>("DisplayMode");
 
-    private DisplayMode _selectedDisplayMode = DisplayMode.OnOff;
     public DisplayMode SelectedDisplayMode
     {
-        get => _selectedDisplayMode;
+        get => field;
         set
         {
-            if (_selectedDisplayMode != value)
+            if (field != value)
             {
-                _selectedDisplayMode = value;
+                field = value;
                 OnPropertyChanged();
                 UpdateDisplayModeFromSelection();
             }
         }
     }
 
-    private bool _isOnOffSelected = true;
-    public bool IsOnOffSelected
-    {
-        get => _isOnOffSelected;
-        set
-        {
-            if (_isOnOffSelected != value)
-            {
-                _isOnOffSelected = value;
-                OnPropertyChanged();
-            }
-        }
-    }
+    [ObservableProperty]
+    public partial bool IsOnOffSelected { get; set; }
 
-    private bool _isPrioritySelected;
-    public bool IsPrioritySelected
-    {
-        get => _isPrioritySelected;
-        set
-        {
-            if (_isPrioritySelected != value)
-            {
-                _isPrioritySelected = value;
-                OnPropertyChanged();
-            }
-        }
-    }
-
-    private bool _isHomeOnOffSelected;
-    public bool IsHomeOnOffSelected
-    {
-        get => _isHomeOnOffSelected;
-        set
-        {
-            if (_isHomeOnOffSelected != value)
-            {
-                _isHomeOnOffSelected = value;
-                OnPropertyChanged();
-            }
-        }
-    }
+    [ObservableProperty]
+    public partial bool IsPrioritySelected { get; set; }
+    [ObservableProperty]
+    public partial bool IsHomeOnOffSelected { get; set; }
 
     public SettingsPanePluginsViewModel(Settings settings)
     {
@@ -86,19 +48,8 @@ public partial class SettingsPanePluginsViewModel : BaseModel
         UpdateEnumDropdownLocalizations();
     }
 
-    private string filterText = string.Empty;
-    public string FilterText
-    {
-        get => filterText;
-        set
-        {
-            if (filterText != value)
-            {
-                filterText = value;
-                OnPropertyChanged();
-            }
-        }
-    }
+    [ObservableProperty]
+    public partial string FilterText { get; set; }
 
     private List<PluginViewModel>? _pluginViewModels;
     // Get all plugins: Initializing & Initialized & Init failed plugins

@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core;
@@ -26,11 +27,10 @@ using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Storage;
 using iNKORE.UI.WPF.Modern;
 using Microsoft.VisualStudio.Threading;
-using static Flow.Launcher.Core.Settings;
 
 namespace Flow.Launcher.ViewModel
 {
-    public partial class MainViewModel : BaseModel, ISavable, IDisposable
+    public partial class MainViewModel : ObservableObject, ISavable, IDisposable
     {
         #region Private Fields
 
@@ -425,7 +425,8 @@ namespace Flow.Launcher.ViewModel
         #region ViewModel Properties
         public Settings Settings { get; }
 
-        public bool GameModeStatus { get; set; } = false;
+        [ObservableProperty]
+        public partial bool GameModeStatus { get; set; } = false;
 
         private string _queryText;
         public string QueryText
@@ -547,10 +548,12 @@ namespace Flow.Launcher.ViewModel
             QueryTextCursorMovedToEnd = true;
         }
 
-        public bool LastQuerySelected { get; set; }
+        [ObservableProperty]
+        public partial bool LastQuerySelected { get; set; }
 
         // This is not a reliable indicator of the cursor's position, it is manually set for a specific purpose.
-        public bool QueryTextCursorMovedToEnd { get; set; }
+        [ObservableProperty]
+        public partial bool QueryTextCursorMovedToEnd { get; set; }
 
         private ResultsViewModel _selectedResults;
 
@@ -586,6 +589,7 @@ namespace Flow.Launcher.ViewModel
                     _queryTextBeforeLeaveResults = QueryText;
                     QueryText = string.Empty;
 
+                    // TODO: Confirm if this also happens with MVVM
                     // Because of Fody's optimization
                     // setter won't be called when property value is not changed.
                     // so we need manually call Query()
@@ -613,11 +617,13 @@ namespace Flow.Launcher.ViewModel
         public Visibility MiddleSeparatorVisibility
             => _selectedResults.Results.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
 
-        public Visibility MainWindowVisibility { get; set; }
+        [ObservableProperty]
+        public partial Visibility MainWindowVisibility { get; set; }
 
         // This is to be used for determining the visibility status of the main window instead of MainWindowVisibility
         // because it is more accurate and reliable representation than using Visibility as a condition check
-        public bool MainWindowVisibilityStatus { get; set; } = true;
+        [ObservableProperty]
+        public partial bool MainWindowVisibilityStatus { get; set; } = true;
 
         public event VisibilityChangedEventHandler? VisibilityChanged;
         public event ActualApplicationThemeChangedEventHandler? ActualApplicationThemeChanged;
@@ -662,9 +668,11 @@ namespace Flow.Launcher.ViewModel
             set => Settings.ResultSubItemFontSize = value;
         }
 
-        public ImageSource? PluginIconSource { get; private set; } = null;
+        [ObservableProperty]
+        public partial ImageSource? PluginIconSource { get; private set; } = null;
 
-        public string? PluginIconPath { get; set; } = null;
+        [ObservableProperty]
+        public partial string? PluginIconPath { get; set; } = null;
 
         #endregion
 
@@ -674,16 +682,8 @@ namespace Flow.Launcher.ViewModel
         private static readonly int ResultAreaColumnPreviewHidden = 3;
 
         private readonly DefaultPreview _defaultPreview = new();
-        private ResultViewModel? _previewSelectedItem;
-        public ResultViewModel? PreviewSelectedItem
-        {
-            get => _previewSelectedItem;
-            set
-            {
-                _previewSelectedItem = value;
-                OnPropertyChanged();
-            }
-        }
+        [ObservableProperty]
+        public partial ResultViewModel? PreviewSelectedItem { get; set; }
 
         public bool InternalPreviewVisible
         {
@@ -724,12 +724,14 @@ namespace Flow.Launcher.ViewModel
         public double PreviewMinHeight =>
             PreviewVisibility == Visibility.Visible ? 380 : 0;
 
-        public int ResultAreaColumn { get; set; } = ResultAreaColumnPreviewHidden;
+        [ObservableProperty]
+        public partial int ResultAreaColumn { get; set; } = ResultAreaColumnPreviewHidden;
 
         // This is not a reliable indicator of whether external preview is visible due to the
         // ability of manually closing/exiting the external preview program which, does not inform flow that
         // preview is no longer available.
-        public bool ExternalPreviewVisible { get; private set; }
+        [ObservableProperty]
+        public partial bool ExternalPreviewVisible { get; private set; }
 
         private async Task ShowPreviewAsync()
         {
@@ -1489,7 +1491,7 @@ namespace Flow.Launcher.ViewModel
             _results.AddResults(resultsForUpdates, token, reSelect);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>")]
+        [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>")]
         public void FocusQueryTextBox()
         {
             // When application is exiting, the Application.Current will be null

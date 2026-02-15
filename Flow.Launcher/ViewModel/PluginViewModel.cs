@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core;
 using Flow.Launcher.Core.Plugin;
-using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Image;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
@@ -16,7 +16,7 @@ using Flow.Launcher.Resources.Controls;
 
 namespace Flow.Launcher.ViewModel
 {
-    public partial class PluginViewModel : BaseModel
+    public partial class PluginViewModel : ObservableObject
     {
         private static readonly string ClassName = nameof(PluginViewModel);
 

@@ -3,19 +3,47 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Windows;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Plugin.Explorer.Search;
 using Microsoft.Win32;
 
 namespace Flow.Launcher.Plugin.Explorer.ViewModels
 {
-    public partial class SettingsViewModel(PluginInitContext context, Settings settings) : BaseModel
+    public partial class SettingsViewModel : ObservableObject
     {
-        public Settings Settings { get; set; } = settings;
+        public Settings Settings { get; }
 
-        internal PluginInitContext Context { get; set; } = context;
+        internal PluginInitContext Context { get; }
+
+        public SettingsViewModel(PluginInitContext context, Settings settings)
+        {
+            Settings = settings;
+            Context = context;
+
+            Settings.PropertyChanged += (_, e) =>
+            {
+                switch (e.PropertyName)
+                {
+                    case nameof(Settings.ShowCreatedDateInPreviewPanel):
+                    case nameof(Settings.ShowModifiedDateInPreviewPanel):
+                        OnPropertyChanged(nameof(ShowPreviewPanelDateTimeChoices));
+                        OnPropertyChanged(nameof(PreviewPanelDateTimeChoicesVisibility));
+                        break;
+
+                    case nameof(Settings.PreviewPanelDateFormat):
+                        OnPropertyChanged(nameof(PreviewPanelDateFormatDemo));
+                        break;
+                    case nameof(Settings.PreviewPanelTimeFormat):
+                        OnPropertyChanged(nameof(PreviewPanelTimeFormatDemo));
+                        break;
+
+                    default:
+                        break;
+                }
+            };
+        }
 
         public void Save()
         {
@@ -23,82 +51,16 @@ namespace Flow.Launcher.Plugin.Explorer.ViewModels
         }
 
         #region Preview Panel
+        public string PreviewPanelDateFormatDemo
+            => DateTime.Now.ToString(Settings.PreviewPanelDateFormat, CultureInfo.CurrentCulture);
+        public string PreviewPanelTimeFormatDemo
+            => DateTime.Now.ToString(Settings.PreviewPanelTimeFormat, CultureInfo.CurrentCulture);
 
-        public bool ShowFileSizeInPreviewPanel
-        {
-            get => Settings.ShowFileSizeInPreviewPanel;
-            set
-            {
-                Settings.ShowFileSizeInPreviewPanel = value;
-                OnPropertyChanged();
-            }
-        }
+        public bool ShowPreviewPanelDateTimeChoices
+            => Settings.ShowCreatedDateInPreviewPanel || Settings.ShowModifiedDateInPreviewPanel;
 
-        public bool ShowCreatedDateInPreviewPanel
-        {
-            get => Settings.ShowCreatedDateInPreviewPanel;
-            set
-            {
-                Settings.ShowCreatedDateInPreviewPanel = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(ShowPreviewPanelDateTimeChoices));
-                OnPropertyChanged(nameof(PreviewPanelDateTimeChoicesVisibility));
-            }
-        }
-
-        public bool ShowModifiedDateInPreviewPanel
-        {
-            get => Settings.ShowModifiedDateInPreviewPanel;
-            set
-            {
-                Settings.ShowModifiedDateInPreviewPanel = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(ShowPreviewPanelDateTimeChoices));
-                OnPropertyChanged(nameof(PreviewPanelDateTimeChoicesVisibility));
-            }
-        }
-
-        public bool ShowFileAgeInPreviewPanel
-        {
-            get => Settings.ShowFileAgeInPreviewPanel;
-            set
-            {
-                Settings.ShowFileAgeInPreviewPanel = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(ShowPreviewPanelDateTimeChoices));
-                OnPropertyChanged(nameof(PreviewPanelDateTimeChoicesVisibility));
-            }
-        }
-
-        public string PreviewPanelDateFormat
-        {
-            get => Settings.PreviewPanelDateFormat;
-            set
-            {
-                Settings.PreviewPanelDateFormat = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(PreviewPanelDateFormatDemo));
-            }
-        }
-
-        public string PreviewPanelTimeFormat
-        {
-            get => Settings.PreviewPanelTimeFormat;
-            set
-            {
-                Settings.PreviewPanelTimeFormat = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(PreviewPanelTimeFormatDemo));
-            }
-        }
-
-        public string PreviewPanelDateFormatDemo => DateTime.Now.ToString(PreviewPanelDateFormat, CultureInfo.CurrentCulture);
-        public string PreviewPanelTimeFormatDemo => DateTime.Now.ToString(PreviewPanelTimeFormat, CultureInfo.CurrentCulture);
-
-        public bool ShowPreviewPanelDateTimeChoices => ShowCreatedDateInPreviewPanel || ShowModifiedDateInPreviewPanel;
-
-        public Visibility PreviewPanelDateTimeChoicesVisibility => ShowCreatedDateInPreviewPanel || ShowModifiedDateInPreviewPanel ? Visibility.Visible : Visibility.Collapsed;
-
+        public Visibility PreviewPanelDateTimeChoicesVisibility
+            => Settings.ShowCreatedDateInPreviewPanel || Settings.ShowModifiedDateInPreviewPanel ? Visibility.Visible : Visibility.Collapsed;
 
         public List<string> TimeFormatList { get; } =
         [
@@ -113,7 +75,6 @@ namespace Flow.Launcher.Plugin.Explorer.ViewModels
             "hh:mm:ss tt",
             "HH:mm:ss"
         ];
-
 
         public List<string> DateFormatList { get; } =
         [
@@ -148,7 +109,6 @@ namespace Flow.Launcher.Plugin.Explorer.ViewModels
             "yyyy-MMM-dd ddd",
             "yyyy-MMM-dd, dddd",
         ];
-
         #endregion
 
         private static string? PromptUserSelectPath(ResultType type, string? initialDirectory = null)
@@ -188,42 +148,7 @@ namespace Flow.Launcher.Plugin.Explorer.ViewModels
             if (path is null)
                 return;
 
-            ShellPath = path;
-        }
-
-        public string ShellPath
-        {
-            get => Settings.ShellPath;
-            set
-            {
-                Settings.ShellPath = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string ExcludedFileTypes
-        {
-            get => Settings.ExcludedFileTypes;
-            set
-            {
-                // remove spaces and dots from the string before saving
-                string sanitized = string.IsNullOrEmpty(value) ? "" : value.Replace(" ", "").Replace(".", "");
-                Settings.ExcludedFileTypes = sanitized;
-                OnPropertyChanged();
-            }
-        }
-
-        public int MaxResultLowerLimit { get; } = 1;
-        public int MaxResultUpperLimit { get; } = 100000;
-
-        public int MaxResult
-        {
-            get => Settings.MaxResult;
-            set
-            {
-                Settings.MaxResult = Math.Clamp(value, MaxResultLowerLimit, MaxResultUpperLimit);
-                OnPropertyChanged();
-            }
+            Settings.ShellPath = path;
         }
     }
 }

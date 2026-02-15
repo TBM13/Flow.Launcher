@@ -1,10 +1,15 @@
-﻿namespace Flow.Launcher.Plugin.Calculator;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-public class Settings
+namespace Flow.Launcher.Plugin.Calculator;
+
+public partial class Settings : ObservableObject
 {
-    public DecimalSeparator DecimalSeparator { get; set; } = DecimalSeparator.UseSystemLocale;
+    [ObservableProperty]
+    public partial DecimalSeparator DecimalSeparator { get; set; } = DecimalSeparator.UseSystemLocale;
 
-    public int MaxDecimalPlaces { get; set; } = 10;
+    [ObservableProperty]
+    public partial int MaxDecimalPlaces { get; set; } = 10;
 
-    public bool ShowErrorMessage { get; set; } = false;
+    [ObservableProperty]
+    public partial bool ShowErrorMessage { get; set; } = false;
 }
