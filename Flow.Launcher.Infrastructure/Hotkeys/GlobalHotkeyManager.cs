@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Input;
 using Windows.Win32;
@@ -36,8 +37,10 @@ internal static class GlobalHotkeyManager
     private static readonly HOOKPROC _proc;
 
     private static readonly Dictionary<Hotkey, Action> _registeredHotkeys = [];
+    private static readonly HashSet<Key> _pressedKeys = [];
     private static ModifierKeys _pressedModifiers;
-    private static bool _isSimulatingKeyPress = false;
+    private static bool _keyPressedBeforeModifiers;
+    private static bool _isSimulatingKeyPress;
 
     /// <summary>
     /// The last hotkey that was triggered.
@@ -79,36 +82,57 @@ internal static class GlobalHotkeyManager
                     LastHotkey = null;
                     if (isKeyModifier)
                         _pressedModifiers |= modKey!.Value;
+                    else
+                    {
+                        if (_pressedModifiers == ModifierKeys.None)
+                            _keyPressedBeforeModifiers = true;
+
+                        _pressedKeys.Add(key);
+                    }
                 }
                 else if (wParam == PInvoke.WM_KEYUP || wParam == PInvoke.WM_SYSKEYUP)
                 {
+                    // If we are releasing a key from the last triggered hotkey,
+                    // lets not consider this a hotkey
                     bool isKeyFromLastHotkey = LastHotkey.HasValue
                         && (LastHotkey.Value.MainKey == key || isKeyModifier && LastHotkey.Value.Modifiers.HasFlag(modKey!.Value));
 
-                    // If we are releasing a key from the last triggered hotkey,
-                    // we don't want to update LastHotkey nor trigger a hotkey action
-                    if (!isKeyFromLastHotkey)
-                    {
-                        LastHotkey = new()
-                        {
-                            Modifiers = _pressedModifiers,
-                            MainKey = isKeyModifier ? Key.None : key,
-                            LongPress = false
-                        };
-                    }
+                    // If we somehow missed a key down event or more than one
+                    // non-modifier keys are up, lets not consider this a hotkey
+                    bool validState = (isKeyModifier && _pressedModifiers.HasFlag(modKey!.Value) && _pressedKeys.Count <= 1)
+                        || (!isKeyModifier && _pressedKeys.Count == 1 && _pressedKeys.Contains(key));
+
+                    // Space+Alt (in that order) shouldn't trigger Alt+Space
+                    validState &= !_keyPressedBeforeModifiers;
 
                     if (isKeyModifier)
                         _pressedModifiers &= ~modKey!.Value;
-
-                    if (!isKeyFromLastHotkey && _registeredHotkeys.TryGetValue(LastHotkey!.Value, out var action))
+                    else
                     {
-                        if (!IgnoreRegisteredHotkeys)
-                            action.Invoke();
+                        _pressedKeys.Remove(key);
+                        if (_pressedKeys.Count == 0)
+                            _keyPressedBeforeModifiers = false;
+                    }
 
-                        if (key == Key.LWin || key == Key.RWin)
+                    if (!isKeyFromLastHotkey && validState)
+                    {
+                        LastHotkey = new()
                         {
-                            FixWindowsKey();
-                            return (LRESULT)1; // Block the key event from reaching the OS or any other app
+                            Modifiers = _pressedModifiers | (isKeyModifier ? modKey!.Value : ModifierKeys.None),
+                            MainKey = isKeyModifier ? _pressedKeys.FirstOrDefault(Key.None) : key,
+                            LongPress = false
+                        };
+
+                        if (_registeredHotkeys.TryGetValue(LastHotkey!.Value, out var action))
+                        {
+                            if (!IgnoreRegisteredHotkeys)
+                                action.Invoke();
+
+                            if (key == Key.LWin || key == Key.RWin)
+                            {
+                                FixWindowsKey();
+                                return (LRESULT)1; // Block the key event from reaching the OS or any other app
+                            }
                         }
                     }
                 }
