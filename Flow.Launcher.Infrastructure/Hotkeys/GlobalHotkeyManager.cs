@@ -103,14 +103,14 @@ internal static class GlobalHotkeyManager
                 {
                     LastHotkey = null;
                     if (isKeyModifier)
-                        _pressedModifiers |= modKey!.Value;
-                    else
                     {
-                        if (_pressedModifiers == ModifierKeys.None)
+                        if (_pressedKeys.Count > 0)
                             _keyPressedBeforeModifiers = true;
 
-                        _pressedKeys.Add(key);
+                        _pressedModifiers |= modKey!.Value;
                     }
+                    else
+                        _pressedKeys.Add(key);
                 }
                 else if (wParam == PInvoke.WM_KEYUP || wParam == PInvoke.WM_SYSKEYUP)
                 {
@@ -124,7 +124,8 @@ internal static class GlobalHotkeyManager
                     bool validState = (isKeyModifier && _pressedModifiers.HasFlag(modKey!.Value) && _pressedKeys.Count <= 1)
                         || (!isKeyModifier && _pressedKeys.Count == 1 && _pressedKeys.Contains(key));
 
-                    // Space+Alt (in that order) shouldn't trigger Alt+Space
+                    // Space+Alt (in that order) shouldn't be a valid hotkey
+                    // The same applies to something like Shift+K+Alt
                     validState &= !_keyPressedBeforeModifiers;
 
                     if (isKeyModifier)
