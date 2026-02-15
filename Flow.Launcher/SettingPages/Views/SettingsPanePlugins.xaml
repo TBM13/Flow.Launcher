@@ -54,7 +54,7 @@
                     MaxWidth="150"
                     HorizontalContentAlignment="Left"
                     Background="{DynamicResource Color00B}"
-                    DisplayMemberPath="Display"
+                    DisplayMemberPath="Description"
                     ItemsSource="{Binding DisplayModes}"
                     SelectedValue="{Binding SelectedDisplayMode, Mode=TwoWay}"
                     SelectedValuePath="Value" />

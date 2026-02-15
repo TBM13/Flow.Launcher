@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -6,31 +7,26 @@ using System.Windows.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core;
+using Flow.Launcher.Infrastructure.UI;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern.Controls;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
 
-public partial class SettingsPanePluginsViewModel : ObservableObject
+public partial class SettingsPanePluginsViewModel(Settings settings) : ObservableObject
 {
-    private readonly Settings _settings;
+    private readonly Settings _settings = settings;
 
-    public class DisplayModeData : DropdownDataGeneric<DisplayMode> { }
-
-    public List<DisplayModeData> DisplayModes { get; } =
-        DropdownDataGeneric<DisplayMode>.GetValues<DisplayModeData>("DisplayMode");
+    public List<LocalizedEnumItem<DisplayMode>> DisplayModes { get; } =
+        EnumLocalization.GetLocalizedEnumItems<DisplayMode>();
 
     public DisplayMode SelectedDisplayMode
     {
         get => field;
         set
         {
-            if (field != value)
-            {
-                field = value;
-                OnPropertyChanged();
-                UpdateDisplayModeFromSelection();
-            }
+            SetProperty(ref field, value);
+            UpdateDisplayModeFromSelection();
         }
     }
 
@@ -41,12 +37,6 @@ public partial class SettingsPanePluginsViewModel : ObservableObject
     public partial bool IsPrioritySelected { get; set; }
     [ObservableProperty]
     public partial bool IsHomeOnOffSelected { get; set; }
-
-    public SettingsPanePluginsViewModel(Settings settings)
-    {
-        _settings = settings;
-        UpdateEnumDropdownLocalizations();
-    }
 
     [ObservableProperty]
     public partial string FilterText { get; set; }
@@ -117,11 +107,6 @@ public partial class SettingsPanePluginsViewModel : ObservableObject
         await helpDialog.ShowAsync();
     }
 
-    private void UpdateEnumDropdownLocalizations()
-    {
-        DropdownDataGeneric<DisplayMode>.UpdateLabels(DisplayModes);
-    }
-
     private void UpdateDisplayModeFromSelection()
     {
         switch (SelectedDisplayMode)
@@ -147,7 +132,10 @@ public partial class SettingsPanePluginsViewModel : ObservableObject
 
 public enum DisplayMode
 {
+    [Description("Enabled")]
     OnOff,
+    [Description("Priority")]
     Priority,
+    [Description("Home Page")]
     HomeOnOff
 }

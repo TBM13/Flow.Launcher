@@ -4,32 +4,22 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Flow.Launcher.Core;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Helpers;
+using Flow.Launcher.Infrastructure.UI;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
 
-public partial class SettingsPaneGeneralViewModel : ObservableObject
+public partial class SettingsPaneGeneralViewModel(Settings settings) : ObservableObject
 {
-    public Settings Settings { get; }
+    public Settings Settings { get; } = settings;
 
-    public SettingsPaneGeneralViewModel(Settings settings)
-    {
-        Settings = settings;
-        UpdateEnumDropdownLocalizations();
-    }
+    public List<LocalizedEnumItem<SearchWindowScreens>> SearchWindowScreens { get; } =
+        EnumLocalization.GetLocalizedEnumItems<SearchWindowScreens>();
 
-    public class SearchWindowScreenData : DropdownDataGeneric<SearchWindowScreens> { }
-    public class SearchWindowAlignData : DropdownDataGeneric<SearchWindowAligns> { }
-    public class SearchPrecisionData : DropdownDataGeneric<SearchPrecisionScore> { }
-    public class LastQueryModeData : DropdownDataGeneric<LastQueryModes> { }
+    public List<LocalizedEnumItem<SearchWindowAligns>> SearchWindowAligns { get; } =
+        EnumLocalization.GetLocalizedEnumItems<SearchWindowAligns>();
 
-    public List<SearchWindowScreenData> SearchWindowScreens { get; } =
-        DropdownDataGeneric<SearchWindowScreens>.GetValues<SearchWindowScreenData>("SearchWindowScreen");
-
-    public List<SearchWindowAlignData> SearchWindowAligns { get; } =
-        DropdownDataGeneric<SearchWindowAligns>.GetValues<SearchWindowAlignData>("SearchWindowAlign");
-
-    public List<SearchPrecisionData> SearchPrecisionScores { get; } =
-        DropdownDataGeneric<SearchPrecisionScore>.GetValues<SearchPrecisionData>("SearchPrecision");
+    public List<LocalizedEnumItem<SearchPrecisionScore>> SearchPrecisionScores { get; } =
+        EnumLocalization.GetLocalizedEnumItems<SearchPrecisionScore>();
 
     public List<int> ScreenNumbers
     {
@@ -46,18 +36,8 @@ public partial class SettingsPaneGeneralViewModel : ObservableObject
         }
     }
 
-    public List<LastQueryModeData> LastQueryModes { get; } =
-        DropdownDataGeneric<LastQueryModes>.GetValues<LastQueryModeData>("LastQuery");
-
-    private void UpdateEnumDropdownLocalizations()
-    {
-        DropdownDataGeneric<SearchWindowScreens>.UpdateLabels(SearchWindowScreens);
-        DropdownDataGeneric<SearchWindowAligns>.UpdateLabels(SearchWindowAligns);
-        DropdownDataGeneric<SearchPrecisionScore>.UpdateLabels(SearchPrecisionScores);
-        DropdownDataGeneric<LastQueryModes>.UpdateLabels(LastQueryModes);
-        // Since we are using Binding instead of DynamicResource, we need to manually trigger the update
-        OnPropertyChanged(nameof(AlwaysPreviewToolTip));
-    }
+    public List<LocalizedEnumItem<LastQueryModes>> LastQueryModes { get; } =
+        EnumLocalization.GetLocalizedEnumItems<LastQueryModes>();
 
     public static string AlwaysPreviewToolTip
         => Localize.AlwaysPreviewToolTip(DefaultHotkeys.TogglePreview.Hotkey.ToString());

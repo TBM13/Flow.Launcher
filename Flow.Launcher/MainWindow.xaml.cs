@@ -487,7 +487,7 @@ namespace Flow.Launcher
                         if (!_settings.KeepMaxResults)
                         {
                             // Update width
-                            _viewModel.MainWindowWidth = Width;
+                            _settings.WindowSize = Width;
                         }
 
                         SizeToContent = SizeToContent.Height;

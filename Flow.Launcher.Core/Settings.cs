@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Text.Json.Serialization;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -12,35 +13,53 @@ namespace Flow.Launcher.Core;
 
 public enum LastQueryModes
 {
+    [Description("Select last Query")]
     Selected,
+    [Description("Empty last Query")]
     Empty,
+    [Description("Preserve Last Query")]
     Preserved,
+    [Description("Preserve Last Action Keyword")]
     ActionKeywordPreserved,
+    [Description("Select Last Action Keyword")]
     ActionKeywordSelected
 }
 
 public enum ColorSchemes
 {
+    [Description("System Default")]
     System,
+    [Description("Light")]
     Light,
+    [Description("Dark")]
     Dark
 }
 
 public enum SearchWindowScreens
 {
+    [Description("Remember Last Position")]
     RememberLastLaunchLocation,
+    [Description("Monitor with Mouse Cursor")]
     Cursor,
+    [Description("Monitor with Focused Window")]
     Focus,
+    [Description("Primary Monitor")]
     Primary,
+    [Description("Custom Monitor")]
     Custom
 }
 
 public enum SearchWindowAligns
 {
+    [Description("Center")]
     Center,
+    [Description("Center Top")]
     CenterTop,
+    [Description("Left Top")]
     LeftTop,
+    [Description("Right Top")]
     RightTop,
+    [Description("Custom Position")]
     Custom
 }
 

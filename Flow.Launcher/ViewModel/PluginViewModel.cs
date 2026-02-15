@@ -20,12 +20,11 @@ namespace Flow.Launcher.ViewModel
     {
         private static readonly string ClassName = nameof(PluginViewModel);
 
-        private static readonly Settings Settings = Ioc.Default.GetRequiredService<Settings>();
+        private static readonly Settings _settings = Ioc.Default.GetRequiredService<Settings>();
+        private static readonly Thickness _settingPanelMargin = (Thickness)Application.Current.FindResource("SettingPanelMargin");
+        private static readonly Thickness _settingPanelItemTopBottomMargin = (Thickness)Application.Current.FindResource("SettingPanelItemTopBottomMargin");
 
-        private static readonly Thickness SettingPanelMargin = (Thickness)Application.Current.FindResource("SettingPanelMargin");
-        private static readonly Thickness SettingPanelItemTopBottomMargin = (Thickness)Application.Current.FindResource("SettingPanelItemTopBottomMargin");
-
-        public PluginMetadata PluginMetadata { get; init; }
+        public required PluginMetadata PluginMetadata { get; init; }
 
         private async Task LoadIconAsync()
         {
@@ -34,7 +33,6 @@ namespace Flow.Launcher.ViewModel
         }
 
         private bool _imageLoaded = false;
-
         public ImageSource Image
         {
             get
@@ -47,7 +45,7 @@ namespace Flow.Launcher.ViewModel
 
                 return _image;
             }
-            set => _image = value;
+            set => SetProperty(ref _image, value);
         }
 
         public bool PluginState
@@ -57,6 +55,7 @@ namespace Flow.Launcher.ViewModel
             {
                 PluginMetadata.Disabled = !value;
                 PluginSettingsObject.Disabled = !value;
+                OnPropertyChanged();
             }
         }
 
@@ -67,20 +66,15 @@ namespace Flow.Launcher.ViewModel
             {
                 PluginMetadata.HomeDisabled = !value;
                 PluginSettingsObject.HomeDisabled = !value;
-            }
-        }
-
-        public bool IsExpanded
-        {
-            get => _isExpanded;
-            set
-            {
-                _isExpanded = value;
-
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(SettingControl));
             }
         }
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(SettingControl))]
+        [NotifyPropertyChangedFor(nameof(BottomPart1))]
+        [NotifyPropertyChangedFor(nameof(BottomPart2))]
+        public partial bool IsExpanded { get; set; }
 
         public int Priority
         {
@@ -89,24 +83,20 @@ namespace Flow.Launcher.ViewModel
             {
                 PluginMetadata.Priority = value;
                 PluginSettingsObject.Priority = value;
+                OnPropertyChanged();
             }
         }
 
-        private Control _settingControl;
-        private bool _isExpanded;
-
-        private Control _bottomPart1;
-        public Control BottomPart1 => IsExpanded ? _bottomPart1 ??= new InstalledPluginDisplayKeyword() : null;
-
-        private Control _bottomPart2;
-        public Control BottomPart2 => IsExpanded ? _bottomPart2 ??= new InstalledPluginDisplayBottomData() : null;
+        private Control? _settingControl;
+        public Control? BottomPart1 => IsExpanded ? field ??= new InstalledPluginDisplayKeyword() : null;
+        public Control? BottomPart2 => IsExpanded ? field ??= new InstalledPluginDisplayBottomData() : null;
 
         public bool HasSettingControl =>
             // Here we do not check if the plugin is initialized successfully
             // So we can let users change settings for initializing or initialization failed plugins
             PluginMetadata.Plugin is ISettingProvider;
 
-        public Control SettingControl
+        public Control? SettingControl
             => IsExpanded
                 ? _settingControl
                     ??= HasSettingControl
@@ -135,8 +125,8 @@ namespace Flow.Launcher.ViewModel
 
         public string Version => Localize.plugin_query_version() + " " + PluginMetadata.Version;
         public string ActionKeywordsText => string.Join(Query.TermSeparator, PluginMetadata.ActionKeywords);
-        public Infrastructure.UserSettings.Plugin PluginSettingsObject { get; init; }
-        public bool HomeEnabled => Settings.ShowHomePage && PluginManager.IsHomePlugin(PluginMetadata.ID);
+        public Infrastructure.UserSettings.Plugin? PluginSettingsObject { get; init; }
+        public bool HomeEnabled => _settings.ShowHomePage && PluginManager.IsHomePlugin(PluginMetadata.ID);
 
         public void OnActionKeywordsTextChanged()
         {
@@ -154,7 +144,7 @@ namespace Flow.Launcher.ViewModel
         {
             var grid = new Grid()
             {
-                Margin = SettingPanelMargin
+                Margin = _settingPanelMargin
             };
             var textBox = new TextBox
             {
@@ -163,7 +153,7 @@ namespace Flow.Launcher.ViewModel
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Top,
                 TextWrapping = TextWrapping.Wrap,
-                Margin = SettingPanelItemTopBottomMargin
+                Margin = _settingPanelItemTopBottomMargin
             };
             textBox.SetResourceReference(TextBox.ForegroundProperty, "Color04B");
             grid.Children.Add(textBox);

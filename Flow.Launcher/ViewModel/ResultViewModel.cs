@@ -17,8 +17,8 @@ namespace Flow.Launcher.ViewModel
     {
         private static readonly string ClassName = nameof(ResultViewModel);
 
-        private static readonly PrivateFontCollection FontCollection = new();
-        private static readonly Dictionary<string, string> Fonts = [];
+        private static readonly PrivateFontCollection _fontCollection = new();
+        private static readonly Dictionary<string, string> _fonts = [];
 
         public ResultViewModel(Result result, Settings settings)
         {
@@ -32,7 +32,7 @@ namespace Flow.Launcher.ViewModel
                 {
                     var fontFamilyPath = glyph.FontFamily;
 
-                    if (Fonts.TryGetValue(fontFamilyPath, out var value))
+                    if (_fonts.TryGetValue(fontFamilyPath, out var value))
                     {
                         Glyph = glyph with
                         {
@@ -41,11 +41,11 @@ namespace Flow.Launcher.ViewModel
                     }
                     else
                     {
-                        FontCollection.AddFontFile(fontFamilyPath);
-                        Fonts[fontFamilyPath] = $"{Path.GetDirectoryName(fontFamilyPath)}/#{FontCollection.Families[^1].Name}";
+                        _fontCollection.AddFontFile(fontFamilyPath);
+                        _fonts[fontFamilyPath] = $"{Path.GetDirectoryName(fontFamilyPath)}/#{_fontCollection.Families[^1].Name}";
                         Glyph = glyph with
                         {
-                            FontFamily = Fonts[fontFamilyPath]
+                            FontFamily = _fonts[fontFamilyPath]
                         };
                     }
                 }
@@ -101,7 +101,8 @@ namespace Flow.Launcher.ViewModel
 
         private bool GlyphAvailable => Glyph is not null;
 
-        private bool PreviewImageAvailable => !string.IsNullOrEmpty(Result.Preview.PreviewImagePath) || Result.Preview.PreviewDelegate != null;
+        private bool PreviewImageAvailable
+            => !string.IsNullOrEmpty(Result.Preview.PreviewImagePath) || Result.Preview.PreviewDelegate != null;
 
         public string ShowTitleToolTip => string.IsNullOrEmpty(Result.TitleToolTip)
             ? Result.Title
@@ -129,7 +130,7 @@ namespace Flow.Launcher.ViewModel
 
                 return _image;
             }
-            private set => _image = value;
+            private set => SetProperty(ref _image, value);
         }
 
         public ImageSource PreviewImage
@@ -144,7 +145,7 @@ namespace Flow.Launcher.ViewModel
 
                 return _previewImage;
             }
-            private set => _previewImage = value;
+            private set => SetProperty(ref _previewImage, value);
         }
 
         public string PreviewDescription => Result.Preview.Description ?? Result.SubTitle;
@@ -154,7 +155,7 @@ namespace Flow.Launcher.ViewModel
         /// </summary>
         public bool UseBigThumbnail => Result.Preview.IsMedia;
 
-        public GlyphInfo? Glyph { get; set; }
+        public GlyphInfo? Glyph { get; init; }
 
         private async Task<ImageSource> LoadImageInternalAsync(string? imagePath, Result.IconDelegate? icon, bool loadFullImage)
         {

@@ -95,7 +95,7 @@
                     <ComboBox
                         MinWidth="220"
                         VerticalAlignment="Center"
-                        DisplayMemberPath="Display"
+                        DisplayMemberPath="Description"
                         FontSize="14"
                         ItemsSource="{Binding SearchWindowScreens}"
                         SelectedValue="{Binding Settings.SearchWindowScreen}"
@@ -125,7 +125,7 @@
                     <ComboBox
                         MinWidth="160"
                         VerticalAlignment="Center"
-                        DisplayMemberPath="Display"
+                        DisplayMemberPath="Description"
                         FontSize="14"
                         ItemsSource="{Binding SearchWindowAligns}"
                         SelectedValue="{Binding Settings.SearchWindowAlign}"
@@ -190,7 +190,7 @@
 
                 <ComboBox
                     MaxWidth="200"
-                    DisplayMemberPath="Display"
+                    DisplayMemberPath="Description"
                     ItemsSource="{Binding SearchPrecisionScores}"
                     SelectedValue="{Binding Settings.QuerySearchPrecision}"
                     SelectedValuePath="Value" />
@@ -202,7 +202,7 @@
                 Header="{DynamicResource lastQueryMode}">
                 <ComboBox
                     MinWidth="210"
-                    DisplayMemberPath="Display"
+                    DisplayMemberPath="Description"
                     ItemsSource="{Binding LastQueryModes}"
                     SelectedValue="{Binding Settings.LastQueryMode}"
                     SelectedValuePath="Value" />

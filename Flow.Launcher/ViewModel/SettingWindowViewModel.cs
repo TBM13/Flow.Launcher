@@ -6,7 +6,7 @@ namespace Flow.Launcher.ViewModel;
 
 public partial class SettingWindowViewModel(Settings settings) : ObservableObject
 {
-    private readonly Settings _settings = settings;
+    public Settings Settings { get; } = settings;
 
     public bool SetPageType(Type pageType)
     {
@@ -19,28 +19,4 @@ public partial class SettingWindowViewModel(Settings settings) : ObservableObjec
 
     [ObservableProperty]
     public partial Type PageType { get; set; }
-
-    public double SettingWindowWidth
-    {
-        get => _settings.SettingWindowWidth;
-        set => _settings.SettingWindowWidth = value;
-    }
-
-    public double SettingWindowHeight
-    {
-        get => _settings.SettingWindowHeight;
-        set => _settings.SettingWindowHeight = value;
-    }
-
-    public double? SettingWindowTop
-    {
-        get => _settings.SettingWindowTop;
-        set => _settings.SettingWindowTop = value;
-    }
-
-    public double? SettingWindowLeft
-    {
-        get => _settings.SettingWindowLeft;
-        set => _settings.SettingWindowLeft = value;
-    }
 }

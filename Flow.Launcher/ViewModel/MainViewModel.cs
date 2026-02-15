@@ -66,30 +66,6 @@ namespace Flow.Launcher.ViewModel
             _ignoredQueryText = null; // null as invalid value
 
             Settings = Ioc.Default.GetRequiredService<Settings>();
-            Settings.PropertyChanged += (_, args) =>
-            {
-                switch (args.PropertyName)
-                {
-                    case nameof(Settings.WindowSize):
-                        OnPropertyChanged(nameof(MainWindowWidth));
-                        break;
-                    case nameof(Settings.WindowHeightSize):
-                        OnPropertyChanged(nameof(MainWindowHeight));
-                        break;
-                    case nameof(Settings.QueryBoxFontSize):
-                        OnPropertyChanged(nameof(QueryBoxFontSize));
-                        break;
-                    case nameof(Settings.ItemHeightSize):
-                        OnPropertyChanged(nameof(ItemHeightSize));
-                        break;
-                    case nameof(Settings.ResultItemFontSize):
-                        OnPropertyChanged(nameof(ResultItemFontSize));
-                        break;
-                    case nameof(Settings.ResultSubItemFontSize):
-                        OnPropertyChanged(nameof(ResultSubItemFontSize));
-                        break;
-                }
-            };
 
             _userSelectedRecordStorage = new FlowLauncherJsonStorage<UserSelectedRecord>();
             _topMostRecord = new FlowLauncherJsonStorageTopMostRecord();
@@ -442,25 +418,22 @@ namespace Flow.Launcher.ViewModel
         [RelayCommand]
         private void IncreaseWidth()
         {
-            MainWindowWidth += 100;
+            Settings.WindowSize += 100;
             Settings.WindowLeft -= 50;
-            OnPropertyChanged(nameof(MainWindowWidth));
         }
 
         [RelayCommand]
         private void DecreaseWidth()
         {
-            if (MainWindowWidth - 100 < 400 || MainWindowWidth == 400)
+            if (Settings.WindowSize - 100 < 400 || Settings.WindowSize == 400)
             {
-                MainWindowWidth = 400;
+                Settings.WindowSize = 400;
             }
             else
             {
-                MainWindowWidth -= 100;
+                Settings.WindowSize -= 100;
                 Settings.WindowLeft += 50;
             }
-
-            OnPropertyChanged(nameof(MainWindowWidth));
         }
 
         [RelayCommand]
@@ -628,46 +601,6 @@ namespace Flow.Launcher.ViewModel
         public event VisibilityChangedEventHandler? VisibilityChanged;
         public event ActualApplicationThemeChangedEventHandler? ActualApplicationThemeChanged;
 
-        public double MainWindowWidth
-        {
-            get => Settings.WindowSize;
-            set
-            {
-                if (!MainWindowVisibilityStatus) return;
-                Settings.WindowSize = value;
-            }
-        }
-
-        public double MainWindowHeight
-        {
-            get => Settings.WindowHeightSize;
-            set => Settings.WindowHeightSize = value;
-        }
-
-        public double QueryBoxFontSize
-        {
-            get => Settings.QueryBoxFontSize;
-            set => Settings.QueryBoxFontSize = value;
-        }
-
-        public double ItemHeightSize
-        {
-            get => Settings.ItemHeightSize;
-            set => Settings.ItemHeightSize = value;
-        }
-
-        public double ResultItemFontSize
-        {
-            get => Settings.ResultItemFontSize;
-            set => Settings.ResultItemFontSize = value;
-        }
-
-        public double ResultSubItemFontSize
-        {
-            get => Settings.ResultSubItemFontSize;
-            set => Settings.ResultSubItemFontSize = value;
-        }
-
         [ObservableProperty]
         public partial ImageSource? PluginIconSource { get; private set; } = null;
 
@@ -678,21 +611,24 @@ namespace Flow.Launcher.ViewModel
 
         #region Preview
 
-        private static readonly int ResultAreaColumnPreviewShown = 1;
-        private static readonly int ResultAreaColumnPreviewHidden = 3;
+        private const int RESULTAREA_COLUMN_PREVIEWSHOWN = 1;
+        private const int RESULTAREA_COLUMN_PREVIEWHIDDEN = 3;
 
         private readonly DefaultPreview _defaultPreview = new();
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(PreviewContent))]
+        [NotifyPropertyChangedFor(nameof(PreviewVisibility))]
+        [NotifyPropertyChangedFor(nameof(PreviewMinHeight))]
         public partial ResultViewModel? PreviewSelectedItem { get; set; }
 
         public bool InternalPreviewVisible
         {
             get
             {
-                if (ResultAreaColumn == ResultAreaColumnPreviewShown)
+                if (ResultAreaColumn == RESULTAREA_COLUMN_PREVIEWSHOWN)
                     return true;
 
-                if (ResultAreaColumn == ResultAreaColumnPreviewHidden)
+                if (ResultAreaColumn == RESULTAREA_COLUMN_PREVIEWHIDDEN)
                     return false;
 #if DEBUG
                 throw new NotImplementedException("ResultAreaColumn should match ResultAreaColumnPreviewShown/ResultAreaColumnPreviewHidden value");
@@ -725,7 +661,11 @@ namespace Flow.Launcher.ViewModel
             PreviewVisibility == Visibility.Visible ? 380 : 0;
 
         [ObservableProperty]
-        public partial int ResultAreaColumn { get; set; } = ResultAreaColumnPreviewHidden;
+        [NotifyPropertyChangedFor(nameof(InternalPreviewVisible))]
+        [NotifyPropertyChangedFor(nameof(PreviewContent))]
+        [NotifyPropertyChangedFor(nameof(PreviewVisibility))]
+        [NotifyPropertyChangedFor(nameof(PreviewMinHeight))]
+        public partial int ResultAreaColumn { get; set; } = RESULTAREA_COLUMN_PREVIEWHIDDEN;
 
         // This is not a reliable indicator of whether external preview is visible due to the
         // ability of manually closing/exiting the external preview program which, does not inform flow that
@@ -803,13 +743,13 @@ namespace Flow.Launcher.ViewModel
 
         private void ShowInternalPreview()
         {
-            ResultAreaColumn = ResultAreaColumnPreviewShown;
+            ResultAreaColumn = RESULTAREA_COLUMN_PREVIEWSHOWN;
             PreviewSelectedItem?.LoadPreviewImage();
         }
 
         private void HideInternalPreview()
         {
-            ResultAreaColumn = ResultAreaColumnPreviewHidden;
+            ResultAreaColumn = RESULTAREA_COLUMN_PREVIEWHIDDEN;
         }
 
         public void ResetPreview()

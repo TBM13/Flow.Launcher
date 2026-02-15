@@ -21,7 +21,6 @@ namespace Flow.Launcher.ViewModel
         private readonly object _collectionLock = new();
         private readonly Settings _settings;
         private readonly MainViewModel _mainVM;
-        private int MaxResults => _settings?.MaxResultsToShow ?? 6;
 
         public ResultsViewModel(Settings settings, MainViewModel mainVM)
         {
@@ -51,13 +50,13 @@ namespace Flow.Launcher.ViewModel
         {
             get
             {
-                var newResultsCount = MaxResults;
+                var newResultsCount = _settings.MaxResultsToShow;
                 if (IsPreviewOn)
                 {
                     newResultsCount = (int)Math.Ceiling(380 / _settings.ItemHeightSize);
-                    if (newResultsCount < MaxResults)
+                    if (newResultsCount < _settings.MaxResultsToShow)
                     {
-                        newResultsCount = MaxResults;
+                        newResultsCount = _settings.MaxResultsToShow;
                     }
                 }
                 return newResultsCount * _settings.ItemHeightSize;
@@ -104,12 +103,12 @@ namespace Flow.Launcher.ViewModel
 
         public void SelectNextPage()
         {
-            SelectedIndex = NewIndex(SelectedIndex + MaxResults);
+            SelectedIndex = NewIndex(SelectedIndex + _settings.MaxResultsToShow);
         }
 
         public void SelectPrevPage()
         {
-            SelectedIndex = NewIndex(SelectedIndex - MaxResults);
+            SelectedIndex = NewIndex(SelectedIndex - _settings.MaxResultsToShow);
         }
 
         public void SelectFirstResult()

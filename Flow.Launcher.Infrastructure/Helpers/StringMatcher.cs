@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Flow.Launcher.Infrastructure.Helpers;
@@ -85,16 +86,19 @@ public enum SearchPrecisionScore
     /// <summary>
     /// The highest search precision score.
     /// </summary>
+    [Description("Regular")]
     Regular = 50,
 
     /// <summary>
     /// The medium search precision score.
     /// </summary>
+    [Description("Low")]
     Low = 20,
 
     /// <summary>
     /// The lowest search precision score.
     /// </summary>
+    [Description("None")]
     None = 0
 }
 

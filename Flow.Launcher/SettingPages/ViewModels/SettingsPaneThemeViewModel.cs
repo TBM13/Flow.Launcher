@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Flow.Launcher.Core;
 using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Infrastructure;
+using Flow.Launcher.Infrastructure.UI;
 using iNKORE.UI.WPF.Modern;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
@@ -33,9 +34,8 @@ public partial class SettingsPaneThemeViewModel(Settings settings, Theme theme) 
         }
     }
 
-    public class ColorSchemeData : DropdownDataGeneric<ColorSchemes> { }
-
-    public List<ColorSchemeData> ColorSchemes { get; } = DropdownDataGeneric<ColorSchemes>.GetValues<ColorSchemeData>("ColorScheme");
+    public List<LocalizedEnumItem<ColorSchemes>> ColorSchemes { get; }
+        = EnumLocalization.GetLocalizedEnumItems<ColorSchemes>();
     public string ColorScheme
     {
         get => Settings.ColorScheme;
