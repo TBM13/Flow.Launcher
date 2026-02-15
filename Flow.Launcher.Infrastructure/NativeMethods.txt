@@ -110,3 +110,6 @@ GetModuleHandle
 keybd_event
 VIRTUAL_KEY
 GetKeyboardState
+GetMessage
+TranslateMessage
+DispatchMessage

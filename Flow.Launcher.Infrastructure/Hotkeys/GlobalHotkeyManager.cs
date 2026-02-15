@@ -18,6 +18,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Windows;
 using System.Windows.Input;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -33,7 +35,7 @@ namespace Flow.Launcher.Infrastructure.Hotkeys;
 /// </summary>
 internal static class GlobalHotkeyManager
 {
-    private static readonly UnhookWindowsHookExSafeHandle? _hookID;
+    private static UnhookWindowsHookExSafeHandle? _hookID;
     private static readonly HOOKPROC _proc;
 
     private static readonly Dictionary<Hotkey, Action> _registeredHotkeys = [];
@@ -56,7 +58,27 @@ internal static class GlobalHotkeyManager
     {
         // Keep a reference to the delegate as a field to prevent it from being garbage collected
         _proc = HookCallback;
+
+        // Run the hook on a dedicated thread so that
+        // we don't miss any key events when the main thread is busy
+        var hookThread = new Thread(HookThreadProc)
+        {
+            Name = "GlobalHotkeyHookThread",
+            IsBackground = true
+        };
+        hookThread.Start();
+    }
+
+    private static void HookThreadProc()
+    {
         _hookID = SetHook(_proc);
+
+        // A low-level keyboard hook requires a message loop on the thread that installed it
+        while (PInvoke.GetMessage(out var msg, HWND.Null, 0, 0))
+        {
+            PInvoke.TranslateMessage(in msg);
+            PInvoke.DispatchMessage(in msg);
+        }
     }
 
     private static UnhookWindowsHookExSafeHandle SetHook(HOOKPROC proc)
@@ -126,7 +148,7 @@ internal static class GlobalHotkeyManager
                         if (_registeredHotkeys.TryGetValue(LastHotkey!.Value, out var action))
                         {
                             if (!IgnoreRegisteredHotkeys)
-                                action.Invoke();
+                                Application.Current.Dispatcher.BeginInvoke(action);
 
                             if (key == Key.LWin || key == Key.RWin)
                             {
