@@ -231,6 +231,7 @@ public static class HotkeyManager
         bool wasEnabled = _enabledHotkeys.Remove(hotkey.Hotkey);
         hotkey.Hotkey = newHotkey;
         _enabledHotkeys[newHotkey] = hotkey;
+        _settings.Hotkeys[hotkey.Id] = newHotkey.ToString();
 
         if (existingHotkey.action is not null)
         {
