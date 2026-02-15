@@ -9,7 +9,6 @@
     CornerRadius="8"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
     Foreground="{DynamicResource PopupTextColor}"
-    PreviewKeyDown="OnPreviewKeyDown"
     Style="{DynamicResource ContentDialog}">
     <ui:ContentDialog.Resources>
         <Thickness x:Key="ContentDialogPadding">0</Thickness>
@@ -129,15 +128,6 @@
                 HorizontalAlignment="Center"
                 Orientation="Horizontal">
                 <Button
-                    x:Name="OverwriteBtn"
-                    MinHeight="36"
-                    MinWidth="100"
-                    Margin="0 0 4 0"
-                    Click="Overwrite"
-                    Content="{DynamicResource commonOverwrite}"
-                    Style="{StaticResource AccentButtonStyle}"
-                    Visibility="Collapsed" />
-                <Button
                     x:Name="SaveBtn"
                     MinHeight="36"
                     MinWidth="100"
@@ -146,12 +136,14 @@
                     Content="{DynamicResource commonSave}"
                     Style="{StaticResource AccentButtonStyle}" />
                 <Button
+                    x:Name="ResetBtn"
                     MinHeight="36"
                     MinWidth="100"
                     Margin="4 0 4 0"
                     Click="Reset"
                     Content="{DynamicResource commonReset}" />
                 <Button
+                    x:Name="DeleteBtn"
                     MinHeight="36"
                     MinWidth="100"
                     Margin="4 0 4 0"

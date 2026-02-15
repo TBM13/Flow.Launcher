@@ -218,6 +218,9 @@ public static class HotkeyManager
 
     public static void UpdateHotkey(HotkeyInformation hotkey, Hotkey newHotkey)
     {
+        if (hotkey.Hotkey == newHotkey)
+            return;
+
         if (!IsHotkeyAvailable(newHotkey, out string? reason))
             throw new ArgumentException($"Can't update hotkey '{hotkey}': {reason}");
         if (!_allHotkeys.TryGetValue(hotkey.Id, out var existingHotkey))

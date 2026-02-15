@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows;
-using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Core;
 using Flow.Launcher.Infrastructure.Hotkeys;
 
@@ -52,7 +51,7 @@ namespace Flow.Launcher
                 control.HotkeyInformation = string.IsNullOrEmpty(id)
                     ? null : HotkeyManager.GetHotkeyInformationById(id);
 
-                control.SetKeysToDisplay(control.HotkeyInformation?.Hotkey);
+                control.UpdateUI();
             }
         }
 
@@ -63,38 +62,29 @@ namespace Flow.Launcher
 
         private async Task OpenHotkeyDialogAsync()
         {
-            // TODO
-            /*var dialog = new HotkeyControlDialog(HotkeyInformation.Hotkey, HotkeyInformation.DefaultHotkey, WindowTitle)
+            if (HotkeyInformation is null)
+                return;
+
+            var dialog = new HotkeyControlDialog(HotkeyInformation, WindowTitle)
             {
                 Owner = Window.GetWindow(this)
             };
 
             await dialog.ShowAsync();
-            switch (dialog.ResultType)
-            {
-                case HotkeyControlDialog.EResultType.Cancel:
-                    SetHotkey(Hotkey);
-                    return;
-                case HotkeyControlDialog.EResultType.Save:
-                    SetHotkey(dialog.ResultValue);
-                    break;
-                case HotkeyControlDialog.EResultType.Delete:
-                    Delete();
-                    break;
-            }*/
+            UpdateUI();
         }
 
-        private void SetKeysToDisplay(Hotkey? hotkey)
+        private void UpdateUI()
         {
             KeysToDisplay.Clear();
 
-            if (!hotkey.HasValue || !hotkey.Value.IsValid)
+            if (HotkeyInformation is null || !HotkeyInformation.Hotkey.IsValid)
             {
                 KeysToDisplay.Add("None");
                 return;
             }
 
-            foreach (var key in hotkey.Value.ToString().Split('+'))
+            foreach (var key in HotkeyInformation.Hotkey.ToString().Split('+'))
             {
                 KeysToDisplay.Add(key);
             }

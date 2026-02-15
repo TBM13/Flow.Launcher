@@ -38,9 +38,16 @@ internal static class GlobalHotkeyManager
     private static readonly Dictionary<Hotkey, Action> _registeredHotkeys = [];
     private static ModifierKeys _pressedModifiers;
     private static bool _isSimulatingKeyPress = false;
-    private static bool _blockAllKeys = false;
-    private static HashSet<Hotkey> _blockKeysExceptions = [];
-    private static Action<Hotkey>? _onKeyBlocked;
+
+    /// <summary>
+    /// The last hotkey that was triggered.
+    /// </summary>
+    public static Hotkey? LastHotkey { get; private set; }
+
+    /// <summary>
+    /// If true, the actions of the registered hotkeys won't be executed.
+    /// </summary>
+    public static bool IgnoreRegisteredHotkeys { get; set; }
 
     static GlobalHotkeyManager()
     {
@@ -56,36 +63,6 @@ internal static class GlobalHotkeyManager
         return PInvoke.SetWindowsHookEx(WINDOWS_HOOK_ID.WH_KEYBOARD_LL, proc, PInvoke.GetModuleHandle(curModule.ModuleName), 0);
     }
 
-    /// <summary>
-    /// Blocks ALL the keys and hotkeys from doing anything at the OS level, except for those in <paramref name="exceptions"/>.
-    /// <para/>
-    /// Whenever a blocked key/hotkey is released, <paramref name="onHotkeyBlocked"/> will be called with it.
-    /// </summary>
-    public static void BlockAllKeys(HashSet<Hotkey> exceptions, Action<Hotkey>? onHotkeyBlocked)
-    {
-        if (_blockAllKeys)
-            throw new InvalidOperationException("BlockAllKeys can only be called once.");
-        foreach (Hotkey hotkey in exceptions)
-        {
-            if (!hotkey.IsValid)
-                throw new ArgumentException($"Invalid hotkey: {hotkey}", nameof(exceptions));
-        }
-
-        _blockKeysExceptions = exceptions;
-        _onKeyBlocked = onHotkeyBlocked;
-        _blockAllKeys = true;
-    }
-
-    /// <summary>
-    /// Undoes the effect of <see cref="BlockAllKeys"/>.
-    /// </summary>
-    public static void ReleaseAllKeys()
-    {
-        _blockAllKeys = false;
-        _onKeyBlocked = null;
-        _blockKeysExceptions.Clear();
-    }
-
     private static LRESULT HookCallback(int nCode, WPARAM wParam, LPARAM lParam)
     {
         // TODO: Handle LongPress
@@ -99,44 +76,40 @@ internal static class GlobalHotkeyManager
             {
                 if (wParam == PInvoke.WM_KEYDOWN || wParam == PInvoke.WM_SYSKEYDOWN)
                 {
+                    LastHotkey = null;
                     if (isKeyModifier)
                         _pressedModifiers |= modKey!.Value;
                 }
                 else if (wParam == PInvoke.WM_KEYUP || wParam == PInvoke.WM_SYSKEYUP)
                 {
+                    bool isKeyFromLastHotkey = LastHotkey.HasValue
+                        && (LastHotkey.Value.MainKey == key || isKeyModifier && LastHotkey.Value.Modifiers.HasFlag(modKey!.Value));
+
+                    // If we are releasing a key from the last triggered hotkey,
+                    // we don't want to update LastHotkey nor trigger a hotkey action
+                    if (!isKeyFromLastHotkey)
+                    {
+                        LastHotkey = new()
+                        {
+                            Modifiers = _pressedModifiers,
+                            MainKey = isKeyModifier ? Key.None : key,
+                            LongPress = false
+                        };
+                    }
+
                     if (isKeyModifier)
+                        _pressedModifiers &= ~modKey!.Value;
+
+                    if (!isKeyFromLastHotkey && _registeredHotkeys.TryGetValue(LastHotkey!.Value, out var action))
                     {
-                        // There's a small chance we didn't detect the modifier key's key down event
-                        _pressedModifiers |= modKey!.Value;
-                    }
-
-                    Hotkey hotkey = new()
-                    {
-                        Modifiers = _pressedModifiers,
-                        MainKey = isKeyModifier ? Key.None : key,
-                        LongPress = false
-                    };
-
-                    // Reset
-                    _pressedModifiers = ModifierKeys.None;
-
-                    if (_blockAllKeys && !_blockKeysExceptions.Contains(hotkey))
-                    {
-                        if (key == Key.LWin || key == Key.RWin)
-                            BlockStartMenu();
-
-                        _onKeyBlocked?.Invoke(hotkey);
-                        return (LRESULT)1; // Block the key event from reaching the OS or any other app
-                    }
-
-                    if (_registeredHotkeys.TryGetValue(hotkey, out var action))
-                    {
-                        action.Invoke();
+                        if (!IgnoreRegisteredHotkeys)
+                            action.Invoke();
 
                         if (key == Key.LWin || key == Key.RWin)
-                            BlockStartMenu();
-
-                        return (LRESULT)1; // Block the key event from reaching the OS or any other app
+                        {
+                            FixWindowsKey();
+                            return (LRESULT)1; // Block the key event from reaching the OS or any other app
+                        }
                     }
                 }
             }
@@ -146,7 +119,7 @@ internal static class GlobalHotkeyManager
         return PInvoke.CallNextHookEx(_hookID, nCode, wParam, lParam);
     }
 
-    private static void BlockStartMenu()
+    private static void FixWindowsKey()
     {
         // Since we are blocking the Windows key's KEYUP event, the OS will think it's still being
         // held down and will trigger respective shortcuts when another key is pressed.
