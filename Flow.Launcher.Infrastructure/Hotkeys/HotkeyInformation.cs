@@ -3,6 +3,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Flow.Launcher.Infrastructure.Hotkeys;
 
+public partial class GlobalHotkeyInformation(string id, string defaultHotkey, string description)
+    : HotkeyInformation(id, defaultHotkey, description);
+
 public partial class HotkeyInformation : ObservableObject
 {
     /// <summary>

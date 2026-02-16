@@ -20,12 +20,11 @@ public readonly record struct Hotkey
     public required Key MainKey { get; init; }
 
     /// <summary>
-    /// This is ONLY used by global hotkeys registered with <see cref="GlobalHotkeyManager"/>.
-    /// <para/>
     /// When true, the hotkey will only trigger when all the keys are held down
-    /// for at least two seconds before being released.
-    /// <para/>
+    /// for at least one second before being released.<br/>
     /// This allows two different hotkeys to be registered with the same key(s).
+    /// <para/>
+    /// This only has an effect on hotkeys registered in <see cref="GlobalHotkeyManager"/>.
     /// </summary>
     public bool LongPress { get; init; }
 
@@ -110,12 +109,13 @@ public readonly record struct Hotkey
         };
     }
 
-    public override string ToString()
+    public override string ToString() => ToString(includeLongPress: true);
+    public string ToString(bool includeLongPress)
     {
         if (Modifiers == ModifierKeys.None && MainKey == Key.None)
             return string.Empty;
 
-        string res = LongPress ? "[LongPress]" : string.Empty;
+        string res = LongPress && includeLongPress ? "[LongPress]" : string.Empty;
         if (Modifiers != ModifierKeys.None)
             res += Modifiers.ToString().Replace(", ", "+");
 

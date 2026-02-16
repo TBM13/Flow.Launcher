@@ -75,46 +75,54 @@
             </Border>
         </Grid>
 
-        <!--  Warning message for when something went wrong with the new hotkey.  -->
-        <Border Grid.Row="1">
+        <Grid Grid.Row="1">
+            <StackPanel VerticalAlignment="Center">
+                <CheckBox
+                    x:Name="LongPressCheckbox"
+                    HorizontalAlignment="Center"
+                    Content="Long Press"
+                    ToolTip="If checked, the key(s) will need to be pressed for one or more seconds."
+                    Checked="LongPressCheckbox_Checked"
+                    Unchecked="LongPressCheckbox_Unchecked"/>
 
-            <Border
-                x:Name="Alert"
-                Width="420"
-                Padding="0 10"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Background="{DynamicResource InfoBarWarningBG}"
-                BorderBrush="{DynamicResource InfoBarBD}"
-                BorderThickness="1"
-                CornerRadius="5"
-                Visibility="Collapsed">
-                <Grid VerticalAlignment="Center">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <ui:FontIcon
-                        Grid.Column="0"
-                        Margin="20 0 14 0"
-                        VerticalAlignment="Center"
-                        FontSize="15"
-                        Foreground="{DynamicResource InfoBarWarningIcon}"
-                        Glyph="&#xf167;" />
-                    <TextBlock
-                        x:Name="tbMsg"
-                        Grid.Column="1"
-                        Margin="0 0 0 2"
-                        Padding="0 0 8 0"
-                        HorizontalAlignment="Left"
-                        FontSize="13"
-                        FontWeight="SemiBold"
-                        Foreground="{DynamicResource Color05B}"
-                        TextWrapping="Wrap" />
-                </Grid>
-            </Border>
-
-        </Border>
+                <!--  Warning message for when something went wrong with the new hotkey.  -->
+                <Border
+                    x:Name="Alert"
+                    Width="420"
+                    Padding="0 10"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Background="{DynamicResource InfoBarWarningBG}"
+                    BorderBrush="{DynamicResource InfoBarBD}"
+                    BorderThickness="1"
+                    CornerRadius="5"
+                    Visibility="Collapsed">
+                    <Grid VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <ui:FontIcon
+                            Grid.Column="0"
+                            Margin="20 0 14 0"
+                            VerticalAlignment="Center"
+                            FontSize="15"
+                            Foreground="{DynamicResource InfoBarWarningIcon}"
+                            Glyph="&#xf167;" />
+                        <TextBlock
+                            x:Name="tbMsg"
+                            Grid.Column="1"
+                            Margin="0 0 0 2"
+                            Padding="0 0 8 0"
+                            HorizontalAlignment="Left"
+                            FontSize="13"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource Color05B}"
+                            TextWrapping="Wrap" />
+                    </Grid>
+                </Border>
+            </StackPanel>
+        </Grid>
 
         <!--  Action buttons at the bottom of the dialog  -->
         <Border

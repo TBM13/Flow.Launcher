@@ -42,6 +42,7 @@ internal static class GlobalHotkeyManager
     private static readonly HashSet<Key> _pressedKeys = [];
     private static ModifierKeys _pressedModifiers;
     private static bool _keyPressedBeforeModifiers;
+    private static DateTime _lastsKeyDownTime;
     private static bool _isSimulatingKeyPress;
 
     /// <summary>
@@ -90,7 +91,6 @@ internal static class GlobalHotkeyManager
 
     private static LRESULT HookCallback(int nCode, WPARAM wParam, LPARAM lParam)
     {
-        // TODO: Handle LongPress
         if (nCode >= 0 && !_isSimulatingKeyPress)
         {
             int vkCode = Marshal.ReadInt32(lParam);
@@ -107,10 +107,17 @@ internal static class GlobalHotkeyManager
                         if (_pressedKeys.Count > 0)
                             _keyPressedBeforeModifiers = true;
 
-                        _pressedModifiers |= modKey!.Value;
+                        if (!_pressedModifiers.HasFlag(modKey!.Value))
+                            _lastsKeyDownTime = DateTime.Now;
+
+                        _pressedModifiers |= modKey.Value;
                     }
                     else
-                        _pressedKeys.Add(key);
+                    {
+                        bool wasNotPressed = _pressedKeys.Add(key);
+                        if (wasNotPressed)
+                            _lastsKeyDownTime = DateTime.Now;
+                    }
                 }
                 else if (wParam == PInvoke.WM_KEYUP || wParam == PInvoke.WM_SYSKEYUP)
                 {
@@ -139,12 +146,18 @@ internal static class GlobalHotkeyManager
 
                     if (!isKeyFromLastHotkey && validState)
                     {
+                        var elapsed = DateTime.Now - _lastsKeyDownTime;
                         LastHotkey = new()
                         {
                             Modifiers = _pressedModifiers | (isKeyModifier ? modKey!.Value : ModifierKeys.None),
                             MainKey = isKeyModifier ? _pressedKeys.FirstOrDefault(Key.None) : key,
-                            LongPress = false
+                            LongPress = elapsed >= TimeSpan.FromSeconds(1f)
                         };
+
+                        // If there is no action with the long press version of the hotkey,
+                        // consider it as a normal press
+                        if (!_registeredHotkeys.ContainsKey(LastHotkey.Value))
+                            LastHotkey = LastHotkey.Value with { LongPress = false };
 
                         if (_registeredHotkeys.TryGetValue(LastHotkey!.Value, out var action))
                         {

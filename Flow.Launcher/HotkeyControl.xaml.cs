@@ -84,7 +84,7 @@ namespace Flow.Launcher
                 return;
             }
 
-            foreach (var key in HotkeyInformation.Hotkey.ToString().Split('+'))
+            foreach (var key in HotkeyInformation.Hotkey.ToString(includeLongPress: false).Split('+'))
             {
                 KeysToDisplay.Add(key);
             }

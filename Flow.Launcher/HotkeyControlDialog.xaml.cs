@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Input;
 using Flow.Launcher.Core;
 using Flow.Launcher.Infrastructure.Hotkeys;
 using iNKORE.UI.WPF.Modern.Controls;
@@ -35,7 +33,10 @@ public partial class HotkeyControlDialog : ContentDialog
         {
             if (GlobalHotkeyManager.LastHotkey.HasValue)
             {
-                _newHotkey = GlobalHotkeyManager.LastHotkey.Value;
+                _newHotkey = GlobalHotkeyManager.LastHotkey.Value with
+                {
+                    LongPress = LongPressCheckbox.IsChecked!.Value
+                };
                 UpdateUI();
 
                 e.Handled = true;
@@ -51,11 +52,7 @@ public partial class HotkeyControlDialog : ContentDialog
 
     private void Delete(object sender, RoutedEventArgs routedEventArgs)
     {
-        _newHotkey = new()
-        {
-            MainKey = Key.None,
-            Modifiers = ModifierKeys.None,
-        };
+        _newHotkey = default;
         UpdateUI();
     }
 
@@ -77,6 +74,10 @@ public partial class HotkeyControlDialog : ContentDialog
         ResetBtn.IsEnabled = _newHotkey != Hotkey.DefaultHotkey;
         DeleteBtn.IsEnabled = _newHotkey.IsValid;
 
+        LongPressCheckbox.Visibility =
+            (Hotkey is GlobalHotkeyInformation && _newHotkey != default) ? Visibility.Visible : Visibility.Collapsed;
+        LongPressCheckbox.IsChecked = _newHotkey.LongPress;
+
         KeysToDisplay.Clear();
         if (!_newHotkey.IsValid)
         {
@@ -84,7 +85,7 @@ public partial class HotkeyControlDialog : ContentDialog
             return;
         }
 
-        foreach (var key in _newHotkey.ToString().Split('+'))
+        foreach (var key in _newHotkey.ToString(includeLongPress: false).Split('+'))
             KeysToDisplay.Add(key);
 
         bool hotkeyChanged = _newHotkey != Hotkey.Hotkey;
@@ -99,5 +100,23 @@ public partial class HotkeyControlDialog : ContentDialog
             SaveBtn.IsEnabled = true;
             Alert.Visibility = Visibility.Collapsed;
         }
+    }
+
+    private void LongPressCheckbox_Checked(object sender, RoutedEventArgs e)
+    {
+        _newHotkey = _newHotkey with
+        {
+            LongPress = true,
+        };
+        UpdateUI();
+    }
+
+    private void LongPressCheckbox_Unchecked(object sender, RoutedEventArgs e)
+    {
+        _newHotkey = _newHotkey with
+        {
+            LongPress = false,
+        };
+        UpdateUI();
     }
 }
