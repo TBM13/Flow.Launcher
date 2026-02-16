@@ -20,6 +20,8 @@ IWebBrowser2
 
 WINDOW_LONG_PTR_INDEX
 GetForegroundWindow
+GetWindow
+IsWindowVisible
 GetDesktopWindow
 GetShellWindow
 GetWindowRect

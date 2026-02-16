@@ -4,13 +4,15 @@ using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Shell;
+using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Flow.Launcher.Infrastructure.Helpers;
 
 public static class FileExplorerHelper
 {
     /// <summary>
-    /// Gets the path of the file explorer that is currently in the foreground.
+    /// Gets the path of the file explorer that is currently in the foreground,
+    /// or immediately behind FlowLauncher's Window if it's focused.
     /// <para/>
     /// Returns null if no explorer window is focused or if it is minimized.
     /// </summary>
@@ -28,7 +30,9 @@ public static class FileExplorerHelper
     }
 
     /// <summary>
-    /// Gets the LocationURL of the file explorer that is currently in the foreground.
+    /// Gets the LocationURL of the file explorer that is currently in the foreground, or
+    /// immediately behind FlowLauncher's Window if it's focused.
+    /// <para/>
     /// Returns null if no explorer window is focused or if it is minimized.
     /// </summary>
     private static string? GetForegroundExplorerLocationUrl()
@@ -39,6 +43,18 @@ public static class FileExplorerHelper
         {
             windows = (IShellWindows)shellWindows;
             var foregroundWindow = PInvoke.GetForegroundWindow();
+            var targetWindow = foregroundWindow;
+
+            // If our application is the foreground window, look for the
+            // explorer window immediately behind it in Z-order
+            PInvoke.GetWindowThreadProcessId(foregroundWindow, out uint foregroundPid);
+            if (foregroundPid == (uint)Environment.ProcessId)
+            {
+                targetWindow = GetNextVisibleWindow(foregroundWindow);
+                if (targetWindow.IsNull)
+                    return null;
+            }
+
             int count = windows.Count;
 
             for (int i = 0; i < count; i++)
@@ -61,7 +77,7 @@ public static class FileExplorerHelper
                         continue;
 
                     var hwnd = new HWND(browser.HWND);
-                    if (hwnd == foregroundWindow && !PInvoke.IsIconic(hwnd))
+                    if (hwnd == targetWindow && !PInvoke.IsIconic(hwnd))
                     {
                         return browser.LocationURL.ToString();
                     }
@@ -85,5 +101,22 @@ public static class FileExplorerHelper
 
             Marshal.ReleaseComObject(shellWindows);
         }
+    }
+
+    /// <summary>
+    /// Returns the next visible, non-minimized window in Z-order after the given window.
+    /// </summary>
+    private static HWND GetNextVisibleWindow(HWND hwnd)
+    {
+        var next = PInvoke.GetWindow(hwnd, GET_WINDOW_CMD.GW_HWNDNEXT);
+        while (!next.IsNull)
+        {
+            if (PInvoke.IsWindowVisible(next) && !PInvoke.IsIconic(next))
+                return next;
+
+            next = PInvoke.GetWindow(next, GET_WINDOW_CMD.GW_HWNDNEXT);
+        }
+
+        return HWND.Null;
     }
 }
