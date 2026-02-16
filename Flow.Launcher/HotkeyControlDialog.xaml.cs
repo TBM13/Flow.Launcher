@@ -82,6 +82,8 @@ public partial class HotkeyControlDialog : ContentDialog
         if (!_newHotkey.IsValid)
         {
             KeysToDisplay.Add("None");
+            SaveBtn.IsEnabled = Hotkey.CanBeDisabled;
+            Alert.Visibility = Visibility.Collapsed;
             return;
         }
 
