@@ -1,5 +1,4 @@
-﻿using System.Windows.Input;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Flow.Launcher.Infrastructure.Hotkeys;
 
@@ -17,24 +16,8 @@ public partial class HotkeyInformation : ObservableObject
     /// <summary>
     /// The hotkey that is currently assigned. This can be changed by the user.
     /// </summary>
-    public Hotkey Hotkey
-    {
-        get;
-        internal set
-        {
-            field = value;
-            if (value.IsValid)
-                Gesture = new KeyGesture(Hotkey.MainKey, Hotkey.Modifiers);
-            else
-                Gesture = null;
-        }
-    }
-
-    /// <summary>
-    /// Represents <see cref="Hotkey"/>. Helper for WPF bindings.
-    /// </summary>
     [ObservableProperty]
-    public partial KeyGesture? Gesture { get; private set; }
+    public partial Hotkey Hotkey { get; internal set; }
 
     /// <summary>
     /// An user-friendly description of the hotkey's action.

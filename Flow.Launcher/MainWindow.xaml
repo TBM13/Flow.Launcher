@@ -110,22 +110,22 @@
             Modifiers="Ctrl+Shift" />
         <infsUi:KeyBinding
             Command="{Binding TogglePreviewCommand}"
-            BindableGesture="{Binding Path=Gesture, Source={x:Static core:DefaultHotkeys.TogglePreview}}"/>
+            Hotkey="{Binding Path=Hotkey, Source={x:Static core:DefaultHotkeys.TogglePreview}}"/>
         <infsUi:KeyBinding
             Command="{Binding AutocompleteQueryCommand}"
-            BindableGesture="{Binding Path=Gesture, Source={x:Static core:DefaultHotkeys.Autocomplete}}"/>
+            Hotkey="{Binding Path=Hotkey, Source={x:Static core:DefaultHotkeys.Autocomplete}}"/>
         <infsUi:KeyBinding
             Command="{Binding SelectNextItemCommand}"
-            BindableGesture="{Binding Path=Gesture, Source={x:Static core:DefaultHotkeys.SelectNextResult}}"/>
+            Hotkey="{Binding Path=Hotkey, Source={x:Static core:DefaultHotkeys.SelectNextResult}}"/>
         <infsUi:KeyBinding
             Command="{Binding SelectPrevItemCommand}"
-            BindableGesture="{Binding Path=Gesture, Source={x:Static core:DefaultHotkeys.SelectPreviousResult}}"/>
+            Hotkey="{Binding Path=Hotkey, Source={x:Static core:DefaultHotkeys.SelectPreviousResult}}"/>
         <infsUi:KeyBinding
             Command="{Binding SelectNextPageCommand}"
-            BindableGesture="{Binding Path=Gesture, Source={x:Static core:DefaultHotkeys.SelectNextPage}}"/>
+            Hotkey="{Binding Path=Hotkey, Source={x:Static core:DefaultHotkeys.SelectNextPage}}"/>
         <infsUi:KeyBinding
             Command="{Binding SelectPrevPageCommand}"
-            BindableGesture="{Binding Path=Gesture, Source={x:Static core:DefaultHotkeys.SelectPreviousPage}}"/>
+            Hotkey="{Binding Path=Hotkey, Source={x:Static core:DefaultHotkeys.SelectPreviousPage}}"/>
     </Window.InputBindings>
 
     <Border MouseDown="OnMouseDown" Style="{DynamicResource WindowBorderStyle}">

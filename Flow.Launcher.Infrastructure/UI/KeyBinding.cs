@@ -1,28 +1,30 @@
 ﻿using System.Windows;
 using System.Windows.Input;
+using Flow.Launcher.Infrastructure.Hotkeys;
 
 namespace Flow.Launcher.Infrastructure.UI;
 
 public class KeyBinding : System.Windows.Input.KeyBinding
 {
-    public static readonly DependencyProperty BindableGestureProperty =
+    public static readonly DependencyProperty HotkeyProperty =
         DependencyProperty.Register(
-            nameof(BindableGesture),
-            typeof(KeyGesture),
+            nameof(Hotkey),
+            typeof(Hotkey),
             typeof(KeyBinding),
-            new PropertyMetadata(null, OnBindableGestureChanged));
+            new PropertyMetadata(new Hotkey() { MainKey = Key.None, Modifiers = ModifierKeys.None }, OnHotkeyChanged));
 
-    public KeyGesture? BindableGesture
+    public Hotkey Hotkey
     {
-        get => (KeyGesture?)GetValue(BindableGestureProperty);
-        set => SetValue(BindableGestureProperty, value);
+        get => (Hotkey)GetValue(HotkeyProperty);
+        set => SetValue(HotkeyProperty, value);
     }
 
-    private static void OnBindableGestureChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    private static void OnHotkeyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        if (d is KeyBinding binding && e.NewValue is KeyGesture newGesture)
+        if (d is KeyBinding binding && e.NewValue is Hotkey hotkey)
         {
-            binding.Gesture = newGesture;
+            binding.Key = hotkey.MainKey;
+            binding.Modifiers = hotkey.Modifiers;
         }
     }
 }
