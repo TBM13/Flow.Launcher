@@ -10,9 +10,14 @@ namespace Flow.Launcher.Infrastructure.Helpers;
 
 public static class FileExplorerHelper
 {
+    private static readonly string DesktopLocationUrl =
+        new Uri(Environment.GetFolderPath(Environment.SpecialFolder.Desktop)).AbsoluteUri;
+
     /// <summary>
-    /// Gets the path of the file explorer that is currently in the foreground,
+    /// Gets the path of the file explorer window that is currently in the foreground,
     /// or immediately behind FlowLauncher's Window if it's focused.
+    /// <para/>
+    /// Note that the desktop itself is considered a file explorer window.
     /// <para/>
     /// Returns null if no explorer window is focused or if it is minimized.
     /// </summary>
@@ -30,8 +35,10 @@ public static class FileExplorerHelper
     }
 
     /// <summary>
-    /// Gets the LocationURL of the file explorer that is currently in the foreground, or
+    /// Gets the LocationURL of the file explorer window that is currently in the foreground, or
     /// immediately behind FlowLauncher's Window if it's focused.
+    /// <para/>
+    /// Note that the desktop itself is considered a file explorer window.
     /// <para/>
     /// Returns null if no explorer window is focused or if it is minimized.
     /// </summary>
@@ -45,15 +52,21 @@ public static class FileExplorerHelper
             var foregroundWindow = PInvoke.GetForegroundWindow();
             var targetWindow = foregroundWindow;
 
+            var shellDesktopWindow = PInvoke.GetShellWindow();
+
             // If our application is the foreground window, look for the
             // explorer window immediately behind it in Z-order
             PInvoke.GetWindowThreadProcessId(foregroundWindow, out uint foregroundPid);
             if (foregroundPid == (uint)Environment.ProcessId)
             {
                 targetWindow = GetNextVisibleWindow(foregroundWindow);
-                if (targetWindow.IsNull)
-                    return null;
+                if (targetWindow.IsNull || targetWindow == shellDesktopWindow)
+                    return DesktopLocationUrl;
             }
+
+            // If the desktop itself is the foreground window
+            if (targetWindow == shellDesktopWindow)
+                return DesktopLocationUrl;
 
             int count = windows.Count;
 
