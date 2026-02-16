@@ -81,7 +81,7 @@
                     x:Name="LongPressCheckbox"
                     HorizontalAlignment="Center"
                     Content="Long Press"
-                    ToolTip="If checked, the key(s) will need to be pressed for one or more seconds."
+                    ToolTip="If checked, the key(s) will need to be pressed for a little more than half a second."
                     Checked="LongPressCheckbox_Checked"
                     Unchecked="LongPressCheckbox_Unchecked"/>
 

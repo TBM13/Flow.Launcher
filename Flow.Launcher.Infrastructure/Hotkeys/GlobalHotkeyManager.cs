@@ -151,7 +151,7 @@ internal static class GlobalHotkeyManager
                         {
                             Modifiers = _pressedModifiers | (isKeyModifier ? modKey!.Value : ModifierKeys.None),
                             MainKey = isKeyModifier ? _pressedKeys.FirstOrDefault(Key.None) : key,
-                            LongPress = elapsed >= TimeSpan.FromSeconds(0.7f)
+                            LongPress = elapsed >= TimeSpan.FromSeconds(0.6f)
                         };
 
                         // If there is no action with the long press version of the hotkey,

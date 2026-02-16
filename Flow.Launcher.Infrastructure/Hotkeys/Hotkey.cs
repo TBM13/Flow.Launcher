@@ -21,7 +21,7 @@ public readonly record struct Hotkey
 
     /// <summary>
     /// When true, the hotkey will only trigger when all the keys are held down
-    /// for at least one second before being released.<br/>
+    /// for a little more than half a second before being released.<br/>
     /// This allows two different hotkeys to be registered with the same key(s).
     /// <para/>
     /// This only has an effect on hotkeys registered in <see cref="GlobalHotkeyManager"/>.
