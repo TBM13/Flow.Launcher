@@ -8,7 +8,7 @@ public partial class SettingWindowViewModel(Settings settings) : ObservableObjec
 {
     public Settings Settings { get; } = settings;
 
-    public bool SetPageType(Type pageType)
+    public bool SetPageType(Type? pageType)
     {
         if (PageType == pageType)
             return false;
@@ -18,5 +18,5 @@ public partial class SettingWindowViewModel(Settings settings) : ObservableObjec
     }
 
     [ObservableProperty]
-    public partial Type PageType { get; set; }
+    public partial Type? PageType { get; set; }
 }

@@ -54,7 +54,7 @@ public partial class SettingWindow
         switch (e.PropertyName)
         {
             case nameof(SettingWindowViewModel.PageType):
-                var selectedIndex = _viewModel.PageType.Name switch
+                var selectedIndex = _viewModel.PageType?.Name switch
                 {
                     nameof(SettingsPaneGeneral) => 0,
                     nameof(SettingsPanePlugins) => 1,
@@ -275,7 +275,7 @@ public partial class SettingWindow
 
     private void ContentFrame_Loaded(object sender, RoutedEventArgs e)
     {
-        _viewModel.SetPageType(null); // Set page type to null so that NavigationView_SelectionChanged can navigate the frame
+        _viewModel.SetPageType(null);
         NavView.SelectedItem = NavView.MenuItems[0]; /* Set First Page */
     }
 
