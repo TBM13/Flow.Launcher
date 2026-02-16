@@ -16,8 +16,8 @@ public static class DefaultHotkeys
 {
     // Global Hotkeys
     public static readonly GlobalHotkeyInformation
-        ToggleFlowLauncher = new("ToggleFlowLauncher", "Alt+Space", "Toggle Flow Launcher") { CanBeDisabled = false },
-        MagicQuery = new("MagicQuery", "[LongPress]Alt+Space", "Magic Query");
+        ToggleFlowLauncher = new("ToggleFlowLauncher", "Windows", "Toggle Flow Launcher") { CanBeDisabled = false },
+        MagicQuery = new("MagicQuery", "[LongPress]Windows", "Magic Query");
 
     // MainWindow hotkeys
     public static readonly HotkeyInformation
