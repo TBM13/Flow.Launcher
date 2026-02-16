@@ -17,7 +17,6 @@ using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Hotkeys;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern;
-using static Flow.Launcher.Core.Settings;
 using DataObject = System.Windows.DataObject;
 using Key = System.Windows.Input.Key;
 

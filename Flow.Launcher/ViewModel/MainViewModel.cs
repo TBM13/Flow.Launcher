@@ -66,6 +66,15 @@ namespace Flow.Launcher.ViewModel
             _ignoredQueryText = null; // null as invalid value
 
             Settings = Ioc.Default.GetRequiredService<Settings>();
+            Settings.PropertyChanged += (_, args) =>
+            {
+                switch (args.PropertyName)
+                {
+                    case nameof(Settings.WindowSize):
+                        OnPropertyChanged(nameof(MainWindowWidth));
+                        break;
+                }
+            };
 
             _userSelectedRecordStorage = new FlowLauncherJsonStorage<UserSelectedRecord>();
             _topMostRecord = new FlowLauncherJsonStorageTopMostRecord();
@@ -418,20 +427,20 @@ namespace Flow.Launcher.ViewModel
         [RelayCommand]
         private void IncreaseWidth()
         {
-            Settings.WindowSize += 100;
+            MainWindowWidth += 100;
             Settings.WindowLeft -= 50;
         }
 
         [RelayCommand]
         private void DecreaseWidth()
         {
-            if (Settings.WindowSize - 100 < 400 || Settings.WindowSize == 400)
+            if (MainWindowWidth - 100 < 400 || MainWindowWidth == 400)
             {
-                Settings.WindowSize = 400;
+                MainWindowWidth = 400;
             }
             else
             {
-                Settings.WindowSize -= 100;
+                MainWindowWidth -= 100;
                 Settings.WindowLeft += 50;
             }
         }
@@ -600,6 +609,16 @@ namespace Flow.Launcher.ViewModel
 
         public event VisibilityChangedEventHandler? VisibilityChanged;
         public event ActualApplicationThemeChangedEventHandler? ActualApplicationThemeChanged;
+
+        public double MainWindowWidth
+        {
+            get => Settings.WindowSize;
+            set
+            {
+                if (!MainWindowVisibilityStatus) return;
+                Settings.WindowSize = value;
+            }
+        }
 
         [ObservableProperty]
         public partial ImageSource? PluginIconSource { get; private set; } = null;
