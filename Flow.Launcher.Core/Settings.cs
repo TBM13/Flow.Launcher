@@ -173,7 +173,7 @@ public partial class Settings : ObservableObject
     public ObservableCollection<BaseBuiltinShortcutModel> BuiltinShortcuts { get; } =
     [
         new AsyncBuiltinShortcutModel("{clipboard}", "shortcut_clipboard_description", () => Win32Helper.StartSTATaskAsync(Clipboard.GetText)),
-        new BuiltinShortcutModel("{active_explorer_path}", "shortcut_active_explorer_path", () => FileExplorerHelper.GetActiveExplorerPath() ?? "<error>")
+        new BuiltinShortcutModel("{active_explorer_path}", "shortcut_active_explorer_path", () => FileExplorerHelper.GetForegroundExplorerPath() ?? "<error>")
     ];
 
     [ObservableProperty]

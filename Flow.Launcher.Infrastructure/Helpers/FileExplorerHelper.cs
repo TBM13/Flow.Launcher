@@ -1,20 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Runtime.InteropServices;
 using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.Shell;
 
 namespace Flow.Launcher.Infrastructure.Helpers;
 
 public static class FileExplorerHelper
 {
     /// <summary>
-    /// Gets the path of the file explorer that is currently in the foreground
+    /// Gets the path of the file explorer that is currently in the foreground.
+    /// <para/>
+    /// Returns null if no explorer window is focused or if it is minimized.
     /// </summary>
-    public static string? GetActiveExplorerPath()
+    public static string? GetForegroundExplorerPath()
     {
-        var explorerWindow = GetActiveExplorer();
-        string? locationUrl = explorerWindow?.LocationURL;
+        var locationUrl = GetForegroundExplorerLocationUrl();
         if (locationUrl is null)
             return null;
 
@@ -26,65 +28,62 @@ public static class FileExplorerHelper
     }
 
     /// <summary>
-    /// Gets the file explorer that is currently in the foreground
+    /// Gets the LocationURL of the file explorer that is currently in the foreground.
+    /// Returns null if no explorer window is focused or if it is minimized.
     /// </summary>
-    private static dynamic? GetActiveExplorer()
+    private static string? GetForegroundExplorerLocationUrl()
     {
-        Type? type = Type.GetTypeFromProgID("Shell.Application");
-        if (type is null)
-            return null;
-
-        dynamic? shell = Activator.CreateInstance(type);
-        if (shell is null)
-            return null;
-
-        var explorerWindows = new List<dynamic>();
-        var openWindows = shell.Windows();
-        for (int i = 0; i < openWindows.Count; i++)
+        var shellWindows = new ShellWindows();
+        IShellWindows? windows = null;
+        try
         {
-            var window = openWindows.Item(i);
-            if (window is null)
-                continue;
+            windows = (IShellWindows)shellWindows;
+            var foregroundWindow = PInvoke.GetForegroundWindow();
+            int count = windows.Count;
 
-            // find the desired window and make sure that it is indeed a file explorer
-            // we don't want the Internet Explorer or the classic control panel
-            // ToLower() is needed, because Windows can report the path as "C:\\Windows\\Explorer.EXE"
-            if (Path.GetFileName((string)window.FullName)?.ToLower() == "explorer.exe")
+            for (int i = 0; i < count; i++)
             {
-                explorerWindows.Add(window);
+                object? item = windows.Item(i);
+                if (item is null)
+                    continue;
+
+                IWebBrowser2? browser = null;
+                try
+                {
+                    browser = item as IWebBrowser2;
+                    if (browser is null)
+                        continue;
+
+                    // Make sure that the window is indeed a file explorer
+                    // we don't want the Internet Explorer or the classic control panel
+                    string fullName = browser.FullName.ToString();
+                    if (!Path.GetFileName(fullName).Equals("explorer.exe", StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    var hwnd = new HWND(browser.HWND);
+                    if (hwnd == foregroundWindow && !PInvoke.IsIconic(hwnd))
+                    {
+                        return browser.LocationURL.ToString();
+                    }
+                }
+                finally
+                {
+                    if (browser is not null && !ReferenceEquals(browser, item))
+                        Marshal.ReleaseComObject(browser);
+
+                    if (Marshal.IsComObject(item))
+                        Marshal.ReleaseComObject(item);
+                }
             }
+
+            return null;
         }
-
-        if (explorerWindows.Count == 0) return null;
-
-        var zOrders = GetZOrder(explorerWindows);
-
-        return explorerWindows.Zip(zOrders).MinBy(x => x.Second).First;
-    }
-
-    /// <summary>
-    /// Gets the z-order for one or more windows atomically with respect to each other. In Windows, smaller z-order is higher. If the window is not top level, the z order is returned as -1. 
-    /// </summary>
-    private static int[] GetZOrder(List<dynamic> hWnds)
-    {
-        var z = new int[hWnds.Count];
-        for (var i = 0; i < hWnds.Count; i++) z[i] = -1;
-
-        var index = 0;
-        var numRemaining = hWnds.Count;
-        PInvoke.EnumWindows((wnd, _) =>
+        finally
         {
-            var searchIndex = hWnds.FindIndex(x => new IntPtr(x.HWND) == wnd);
-            if (searchIndex != -1)
-            {
-                z[searchIndex] = index;
-                numRemaining--;
-                if (numRemaining == 0) return false;
-            }
-            index++;
-            return true;
-        }, IntPtr.Zero);
+            if (windows is not null && !ReferenceEquals(windows, shellWindows))
+                Marshal.ReleaseComObject(windows);
 
-        return z;
+            Marshal.ReleaseComObject(shellWindows);
+        }
     }
 }

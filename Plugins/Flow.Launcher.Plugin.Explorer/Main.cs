@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 using Flow.Launcher.Infrastructure.Results;
@@ -27,7 +28,7 @@ namespace Flow.Launcher.Plugin.Explorer
         };
     }
 
-    public class Main : ISettingProvider, IAsyncPlugin, IContextMenu
+    public class Main : ISettingProvider, IAsyncPlugin, IContextMenu, IMagicQueryProvider
     {
         internal static PluginInitContext Context { get; private set; } = null!;
 
@@ -62,6 +63,12 @@ namespace Flow.Launcher.Plugin.Explorer
         public async Task<List<Result>> QueryAsync(Query query, CancellationToken token)
         {
             return await _searchManager.SearchAsync(query, token);
+        }
+
+        public string? GenerateMagicQuery()
+        {
+            string? explorerPath = FileExplorerHelper.GetForegroundExplorerPath();
+            return explorerPath;
         }
     }
 }

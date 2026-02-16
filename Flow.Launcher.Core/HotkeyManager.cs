@@ -94,10 +94,13 @@ public static class HotkeyManager
         });
         RegisterHotkey(DefaultHotkeys.MagicQuery, () =>
         {
+            // Generate magic query before showing the main window since
+            // some plugins may want to know which window is focused
+            string? query = PluginManager.GenerateMagicQuery();
+
             if (!_api.IsMainWindowVisible())
                 _api.ShowMainWindow();
 
-            string? query = PluginManager.GenerateMagicQuery();
             if (query is not null)
                 _api.ChangeQuery(query);
         });
