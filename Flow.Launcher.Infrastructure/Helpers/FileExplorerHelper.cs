@@ -16,8 +16,8 @@ public static class FileExplorerHelper
     /// </summary>
     public static string? GetForegroundExplorerPath()
     {
-        var locationUrl = GetForegroundExplorerLocationUrl();
-        if (locationUrl is null)
+        string? locationUrl = GetForegroundExplorerLocationUrl();
+        if (string.IsNullOrEmpty(locationUrl))
             return null;
 
         string path = new Uri(locationUrl).LocalPath;
