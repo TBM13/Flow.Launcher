@@ -16,7 +16,7 @@ public static class DefaultHotkeys
 {
     // Global Hotkeys
     public static readonly GlobalHotkeyInformation
-        ToggleFlowLauncher = new("ToggleFlowLauncher", "Alt+Space", "Toggle Flow Launcher"),
+        ToggleFlowLauncher = new("ToggleFlowLauncher", "Alt+Space", "Toggle Flow Launcher") { CanBeDisabled = false },
         MagicQuery = new("MagicQuery", "[LongPress]Alt+Space", "Magic Query");
 
     // MainWindow hotkeys
@@ -248,7 +248,11 @@ public static class HotkeyManager
         if (hotkey.Hotkey == newHotkey)
             return;
 
-        if (!IsHotkeyAvailable(newHotkey, out string? reason))
+        bool disabling = newHotkey == default;
+        if (disabling && !hotkey.CanBeDisabled)
+            throw new ArgumentException($"Hotkey '{hotkey}' can't be disabled");
+
+        if (!disabling && !IsHotkeyAvailable(newHotkey, out string? reason))
             throw new ArgumentException($"Can't update hotkey '{hotkey}': {reason}");
         if (!_allHotkeys.TryGetValue(hotkey.Id, out var existingHotkey))
             throw new InvalidOperationException($"Tried to update a hotkey that isn't registered: {hotkey.Id} ({hotkey})");
@@ -258,15 +262,16 @@ public static class HotkeyManager
             throw new ArgumentException($"Tried to update non-global hotkey '{hotkey}' with long press hotkey '{newHotkey}'");
 
         bool wasEnabled = _enabledHotkeys.Remove(hotkey.Hotkey);
-        _enabledHotkeys[newHotkey] = hotkey;
         _settings.Hotkeys[hotkey.Id] = newHotkey.ToString();
+        if (!disabling)
+            _enabledHotkeys[newHotkey] = hotkey;
 
         if (existingHotkey.action is not null)
         {
             if (wasEnabled)
                 GlobalHotkeyManager.UnregisterHotkey(hotkey.Hotkey);
-
-            GlobalHotkeyManager.RegisterHotkey(newHotkey, existingHotkey.action);
+            if (!disabling)
+                GlobalHotkeyManager.RegisterHotkey(newHotkey, existingHotkey.action);
         }
 
         hotkey.Hotkey = newHotkey;

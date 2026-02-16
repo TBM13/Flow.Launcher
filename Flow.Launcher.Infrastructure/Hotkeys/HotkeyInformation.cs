@@ -41,6 +41,13 @@ public partial class HotkeyInformation : ObservableObject
     /// </summary>
     public string Description { get; init; }
 
+    /// <summary>
+    /// If true, the user can disable the hotkey.
+    /// <para/>
+    /// When disabled, <see cref="Hotkey"/> will be set to <c>default</c>.
+    /// </summary>
+    public bool CanBeDisabled { get; init; } = true;
+
     internal HotkeyInformation(string id, string defaultHotkey, string description)
     {
         Id = id;

@@ -72,7 +72,7 @@ public partial class HotkeyControlDialog : ContentDialog
     private void UpdateUI()
     {
         ResetBtn.IsEnabled = _newHotkey != Hotkey.DefaultHotkey;
-        DeleteBtn.IsEnabled = _newHotkey.IsValid;
+        DeleteBtn.IsEnabled = Hotkey.CanBeDisabled && _newHotkey.IsValid;
 
         LongPressCheckbox.Visibility =
             (Hotkey is GlobalHotkeyInformation && _newHotkey != default) ? Visibility.Visible : Visibility.Collapsed;
