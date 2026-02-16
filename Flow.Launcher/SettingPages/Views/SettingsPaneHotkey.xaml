@@ -28,18 +28,32 @@
                 Text="{DynamicResource hotkeys}"
                 TextAlignment="left" />
 
-            <ui:SettingsCard
+            <ui:SettingsExpander
                 Margin="0 8 0 0"
                 Description="{DynamicResource flowlauncherHotkeyToolTip}"
                 Header="{DynamicResource flowlauncherHotkey}">
-                <ui:SettingsCard.HeaderIcon>
+                <ui:SettingsExpander.HeaderIcon>
                     <ui:FontIcon Glyph="&#xeda7;" />
-                </ui:SettingsCard.HeaderIcon>
+                </ui:SettingsExpander.HeaderIcon>
 
                 <flowlauncher:HotkeyControl
-                    Id="ToggleFlowLauncher"
-                    WindowTitle="{DynamicResource flowlauncherHotkey}" />
-            </ui:SettingsCard>
+                   Id="ToggleFlowLauncher"
+                   WindowTitle="{DynamicResource flowlauncherHotkey}" />
+
+                <ui:SettingsExpander.Items>
+                    <ui:SettingsCard 
+                        Header="Magic Query"
+                        Description="Show Flow Launcher with a magic query depending on the computer's context (e.g. the explorer's path if a folder is opened and focused).">
+                        <ui:SettingsCard.HeaderIcon>
+                            <ui:FontIcon Glyph="&#xeda7;" />
+                        </ui:SettingsCard.HeaderIcon>
+
+                        <flowlauncher:HotkeyControl
+                           Id="MagicQuery"
+                           WindowTitle="Magic Query" />
+                    </ui:SettingsCard>
+                </ui:SettingsExpander.Items>
+            </ui:SettingsExpander>
 
             <ui:SettingsCard
                 Margin="0 4 0 0"

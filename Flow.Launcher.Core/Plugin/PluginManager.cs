@@ -419,6 +419,21 @@ namespace Flow.Launcher.Core.Plugin
             return !_allInitializedPlugins.ContainsKey(metadata.ID);
         }
 
+        public static string? GenerateMagicQuery()
+        {
+            foreach (var metadata in _allLoadedPlugins.Values)
+            {
+                if (metadata.Plugin is IMagicQueryProvider provider)
+                {
+                    string? query = provider.GenerateMagicQuery();
+                    if (query is not null)
+                        return query;
+                }
+            }
+
+            return null;
+        }
+
         #endregion
 
         #region Get Plugin List

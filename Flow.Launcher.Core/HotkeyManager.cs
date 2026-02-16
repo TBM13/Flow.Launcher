@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Hotkeys;
 using Flow.Launcher.Infrastructure.Logger;
@@ -15,7 +16,8 @@ public static class DefaultHotkeys
 {
     // Global Hotkeys
     public static readonly GlobalHotkeyInformation
-        ToggleFlowLauncher = new("ToggleFlowLauncher", "Alt+Space", "Toggle Flow Launcher");
+        ToggleFlowLauncher = new("ToggleFlowLauncher", "Alt+Space", "Toggle Flow Launcher"),
+        MagicQuery = new("MagicQuery", "[LongPress]Alt+Space", "Magic Query");
 
     // MainWindow hotkeys
     public static readonly HotkeyInformation
@@ -89,6 +91,15 @@ public static class HotkeyManager
                 _api.HideMainWindow();
             else
                 _api.ShowMainWindow();
+        });
+        RegisterHotkey(DefaultHotkeys.MagicQuery, () =>
+        {
+            if (!_api.IsMainWindowVisible())
+                _api.ShowMainWindow();
+
+            string? query = PluginManager.GenerateMagicQuery();
+            if (query is not null)
+                _api.ChangeQuery(query);
         });
         // Register non-global hotkeys
         foreach (HotkeyInformation hotkey in DefaultHotkeys.NonGlobalHotkeys)
