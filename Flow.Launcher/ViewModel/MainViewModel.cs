@@ -90,8 +90,8 @@ namespace Flow.Launcher.ViewModel
                 RightClickResultCommand = LoadContextMenuCommand,
                 IsPreviewOn = Settings.AlwaysPreview
             };
-            _selectedResults = _results;
-            LateSelectedResults = _selectedResults;
+            SelectedResults = _results;
+            LateSelectedResults = SelectedResults;
 
             _results.PropertyChanged += (o, args) =>
             {
@@ -535,16 +535,14 @@ namespace Flow.Launcher.ViewModel
         [ObservableProperty]
         public partial bool QueryTextCursorMovedToEnd { get; set; }
 
-        private ResultsViewModel _selectedResults;
-
         private string _queryTextBeforeLeaveResults = string.Empty;
         public ResultsViewModel SelectedResults
         {
-            get => _selectedResults;
+            get => field;
             private set
             {
                 var isReturningFromContextMenu = ContextMenuSelected();
-                _selectedResults = value;
+                field = value;
                 OnPropertyChanged();
 
                 if (QueryResultsSelected())
@@ -579,7 +577,9 @@ namespace Flow.Launcher.ViewModel
                 }
 
                 // Update LateSelectedResults later so UI doesn't flicker when entering context menu
-                LateSelectedResults = _selectedResults;
+                LateSelectedResults = field;
+
+                OnPropertyChanged(nameof(MiddleSeparatorVisibility));
             }
         }
 
@@ -587,7 +587,7 @@ namespace Flow.Launcher.ViewModel
         public partial ResultsViewModel LateSelectedResults { get; private set; }
 
         public Visibility MiddleSeparatorVisibility
-            => _selectedResults.Results.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+            => SelectedResults.Results.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
 
         [ObservableProperty]
         public partial Visibility MainWindowVisibility { get; set; }
@@ -636,15 +636,10 @@ namespace Flow.Launcher.ViewModel
             {
                 if (ResultAreaColumn == RESULTAREA_COLUMN_PREVIEWSHOWN)
                     return true;
-
                 if (ResultAreaColumn == RESULTAREA_COLUMN_PREVIEWHIDDEN)
                     return false;
-#if DEBUG
-                throw new NotImplementedException("ResultAreaColumn should match ResultAreaColumnPreviewShown/ResultAreaColumnPreviewHidden value");
-#else
-                App.API.LogError(ClassName, "ResultAreaColumnPreviewHidden/ResultAreaColumnPreviewShown int value not implemented", "InternalPreviewVisible");
-                return false;
-#endif
+
+                throw new InvalidOperationException();
             }
         }
 
@@ -1224,7 +1219,7 @@ namespace Flow.Launcher.ViewModel
                         App.API.ReQuery();
                         return false;
                     },
-                    Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\uE74B"),
+                    Glyph = new GlyphInfo(Glyph: "\uE74B"),
                     OriginQuery = result.OriginQuery
                 };
             }
@@ -1240,7 +1235,7 @@ namespace Flow.Launcher.ViewModel
                         App.API.ReQuery();
                         return false;
                     },
-                    Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\uE74A"),
+                    Glyph = new GlyphInfo(Glyph: "\uE74A"),
                     OriginQuery = result.OriginQuery
                 };
             }
