@@ -38,7 +38,6 @@ namespace Flow.Launcher.ViewModel
 
         private Query? _lastQuery;
         private bool _previousIsHomeQuery;
-        private string _queryTextBeforeLeaveResults;
         private string? _ignoredQueryText; // Used to ignore query text change when switching between context menu and query results
 
         private readonly FlowLauncherJsonStorage<UserSelectedRecord> _userSelectedRecordStorage;
@@ -60,7 +59,6 @@ namespace Flow.Launcher.ViewModel
 
         public MainViewModel()
         {
-            _queryTextBeforeLeaveResults = "";
             _queryText = "";
             _lastQuery = null;
             _ignoredQueryText = null; // null as invalid value
@@ -93,7 +91,7 @@ namespace Flow.Launcher.ViewModel
                 IsPreviewOn = Settings.AlwaysPreview
             };
             _selectedResults = _results;
-            _lateSelectedResults = _selectedResults;
+            LateSelectedResults = _selectedResults;
 
             _results.PropertyChanged += (o, args) =>
             {
@@ -539,6 +537,7 @@ namespace Flow.Launcher.ViewModel
 
         private ResultsViewModel _selectedResults;
 
+        private string _queryTextBeforeLeaveResults = string.Empty;
         public ResultsViewModel SelectedResults
         {
             get => _selectedResults;
@@ -546,6 +545,8 @@ namespace Flow.Launcher.ViewModel
             {
                 var isReturningFromContextMenu = ContextMenuSelected();
                 _selectedResults = value;
+                OnPropertyChanged();
+
                 if (QueryResultsSelected())
                 {
                     // QueryText setter (used in ChangeQueryText) runs the query again, resetting the selected
@@ -571,11 +572,8 @@ namespace Flow.Launcher.ViewModel
                     _queryTextBeforeLeaveResults = QueryText;
                     QueryText = string.Empty;
 
-                    // TODO: Confirm if this also happens with MVVM
-                    // Because of Fody's optimization
                     // setter won't be called when property value is not changed.
                     // so we need manually call Query()
-                    // http://stackoverflow.com/posts/25895769/revisions
                     if (_queryTextBeforeLeaveResults == string.Empty)
                         Query();
                 }
@@ -585,16 +583,8 @@ namespace Flow.Launcher.ViewModel
             }
         }
 
-        private ResultsViewModel _lateSelectedResults;
-        public ResultsViewModel LateSelectedResults
-        {
-            get => _lateSelectedResults;
-            private set
-            {
-                _lateSelectedResults = value;
-                OnPropertyChanged(nameof(LateSelectedResults));
-            }
-        }
+        [ObservableProperty]
+        public partial ResultsViewModel LateSelectedResults { get; private set; }
 
         public Visibility MiddleSeparatorVisibility
             => _selectedResults.Results.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
