@@ -653,11 +653,11 @@ namespace Flow.Launcher
                         screen = allScreens[0];
                     break;
                 default:
-                    screen = MonitorHelper.GetDisplayMonitors()[0];
+                    screen = MonitorHelper.GetPrimaryDisplayMonitor();
                     break;
             }
 
-            return screen ?? MonitorHelper.GetDisplayMonitors()[0];
+            return screen ?? MonitorHelper.GetPrimaryDisplayMonitor();
         }
 
         private double HorizonCenter(MonitorInfo screen)

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows;
 using Windows.Win32;
@@ -10,20 +11,29 @@ namespace Flow.Launcher.Infrastructure.Helpers;
 
 public class MonitorInfo
 {
-    private readonly HMONITOR _monitor;
+    internal unsafe MonitorInfo(HMONITOR monitor, HMONITOR primaryMonitor, RECT* rect)
+        : this(monitor, primaryMonitor, new Rect(new Point(rect->left, rect->top), new Point(rect->right, rect->bottom)))
+    { }
 
-    internal unsafe MonitorInfo(HMONITOR monitor, RECT* rect)
+    internal MonitorInfo(HMONITOR monitor, HMONITOR primaryMonitor)
+        : this(monitor, primaryMonitor, bounds: null)
+    { }
+
+    private unsafe MonitorInfo(HMONITOR monitor, HMONITOR primaryMonitor, Rect? bounds)
     {
-        Bounds =
-            new Rect(new Point(rect->left, rect->top),
-            new Point(rect->right, rect->bottom));
-        _monitor = monitor;
+        IsPrimary = monitor == primaryMonitor;
         var info = new MONITORINFOEXW() { monitorInfo = new MONITORINFO() { cbSize = (uint)sizeof(MONITORINFOEXW) } };
-        MonitorHelper.GetMonitorInfo(monitor, ref info);
+        var res = PInvoke.GetMonitorInfo(monitor, ref info.monitorInfo);
+        if (!res)
+            throw new Win32Exception(Marshal.GetLastWin32Error());
+
+        Bounds = bounds ??
+            new Rect(new Point(info.monitorInfo.rcMonitor.left, info.monitorInfo.rcMonitor.top),
+            new Point(info.monitorInfo.rcMonitor.right, info.monitorInfo.rcMonitor.bottom));
         WorkingArea =
             new Rect(new Point(info.monitorInfo.rcWork.left, info.monitorInfo.rcWork.top),
             new Point(info.monitorInfo.rcWork.right, info.monitorInfo.rcWork.bottom));
-        Name = new string(info.szDevice.AsSpan()).Replace("\0", "").Trim();
+        Name = new string(info.szDevice.AsSpan()).TrimEnd('\0').Trim();
     }
 
     /// <summary>
@@ -50,7 +60,7 @@ public class MonitorInfo
     /// <summary>
     /// Gets if the monitor is the primary display monitor.
     /// </summary>
-    public bool IsPrimary => _monitor == PInvoke.MonitorFromWindow(new(nint.Zero), MONITOR_FROM_FLAGS.MONITOR_DEFAULTTOPRIMARY);
+    public bool IsPrimary { get; }
 
     /// <inheritdoc />
     public override string ToString() => $"{Name} {Bounds.Width}x{Bounds.Height}";
@@ -69,22 +79,21 @@ public static class MonitorHelper
     /// Gets the display monitors (including invisible pseudo-monitors associated with the mirroring drivers).
     /// </summary>
     /// <returns>A list of display monitors</returns>
-    public static unsafe IList<MonitorInfo> GetDisplayMonitors()
+    public static unsafe List<MonitorInfo> GetDisplayMonitors()
     {
         var monitorCount = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CMONITORS);
+        var primaryMonitor = GetPrimaryMonitorHandle();
         var list = new List<MonitorInfo>(monitorCount);
         var callback = new MONITORENUMPROC((monitor, deviceContext, rect, data) =>
         {
-            list.Add(new MonitorInfo(monitor, rect));
+            list.Add(new MonitorInfo(monitor, primaryMonitor, rect));
             return true;
         });
-        var dwData = new LPARAM();
-        var hdc = new HDC();
-        bool ok = PInvoke.EnumDisplayMonitors(hdc, null, callback, dwData);
+
+        bool ok = PInvoke.EnumDisplayMonitors(default, null, callback, default);
         if (!ok)
-        {
-            Marshal.ThrowExceptionForHR(Marshal.GetLastWin32Error());
-        }
+            throw new Win32Exception(Marshal.GetLastWin32Error());
+
         return list;
     }
 
@@ -92,95 +101,39 @@ public static class MonitorHelper
     /// Gets the display monitor that is nearest to a given window.
     /// </summary>
     /// <param name="hwnd">Window handle</param>
-    /// <returns>The display monitor that is nearest to a given window, or null if no monitor is found.</returns>
-    public static unsafe MonitorInfo? GetNearestDisplayMonitor(nint hwnd)
+    public static MonitorInfo? GetNearestDisplayMonitor(nint hwnd)
     {
-        var nearestMonitor = PInvoke.MonitorFromWindow(new(hwnd), MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
-        MonitorInfo? nearestMonitorInfo = null;
-        var callback = new MONITORENUMPROC((monitor, deviceContext, rect, data) =>
-        {
-            if (monitor == nearestMonitor)
-            {
-                nearestMonitorInfo = new MonitorInfo(monitor, rect);
-                return false;
-            }
-            return true;
-        });
-        var dwData = new LPARAM();
-        var hdc = new HDC();
-        bool ok = PInvoke.EnumDisplayMonitors(hdc, null, callback, dwData);
-        if (!ok)
-        {
-            Marshal.ThrowExceptionForHR(Marshal.GetLastWin32Error());
-        }
-        return nearestMonitorInfo;
-    }
+        var targetMonitor = PInvoke.MonitorFromWindow(new(hwnd), MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONULL);
+        if (targetMonitor.IsNull)
+            return null;
 
-    /// <summary>
-    /// Gets the primary display monitor (the one that contains the taskbar).
-    /// </summary>
-    /// <returns>The primary display monitor, or null if no monitor is found.</returns>
-    public static unsafe MonitorInfo? GetPrimaryDisplayMonitor()
-    {
-        var primaryMonitor = PInvoke.MonitorFromWindow(new HWND(nint.Zero), MONITOR_FROM_FLAGS.MONITOR_DEFAULTTOPRIMARY);
-        MonitorInfo? primaryMonitorInfo = null;
-        var callback = new MONITORENUMPROC((monitor, deviceContext, rect, data) =>
-        {
-            if (monitor == primaryMonitor)
-            {
-                primaryMonitorInfo = new MonitorInfo(monitor, rect);
-                return false;
-            }
-            return true;
-        });
-        var dwData = new LPARAM();
-        var hdc = new HDC();
-        bool ok = PInvoke.EnumDisplayMonitors(hdc, null, callback, dwData);
-        if (!ok)
-        {
-            Marshal.ThrowExceptionForHR(Marshal.GetLastWin32Error());
-        }
-        return primaryMonitorInfo;
+        return new MonitorInfo(targetMonitor, GetPrimaryMonitorHandle());
     }
 
     /// <summary>
     /// Gets the display monitor that contains the cursor.
     /// </summary>
-    /// <returns>The display monitor that contains the cursor, or null if no monitor is found.</returns>
-    public static unsafe MonitorInfo? GetCursorDisplayMonitor()
+    public static MonitorInfo? GetCursorDisplayMonitor()
     {
         if (!PInvoke.GetCursorPos(out var pt))
-        {
-            Marshal.ThrowExceptionForHR(Marshal.GetLastWin32Error());
-        }
-        var cursorMonitor = PInvoke.MonitorFromPoint(pt, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
-        MonitorInfo? cursorMonitorInfo = null;
-        var callback = new MONITORENUMPROC((monitor, deviceContext, rect, data) =>
-        {
-            if (monitor == cursorMonitor)
-            {
-                cursorMonitorInfo = new MonitorInfo(monitor, rect);
-                return false;
-            }
-            return true;
-        });
-        var dwData = new LPARAM();
-        var hdc = new HDC();
-        bool ok = PInvoke.EnumDisplayMonitors(hdc, null, callback, dwData);
-        if (!ok)
-        {
-            Marshal.ThrowExceptionForHR(Marshal.GetLastWin32Error());
-        }
-        return cursorMonitorInfo;
+            throw new Win32Exception(Marshal.GetLastWin32Error());
+
+        var targetMonitor = PInvoke.MonitorFromPoint(pt, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONULL);
+        if (targetMonitor.IsNull)
+            return null;
+
+        return new MonitorInfo(targetMonitor, GetPrimaryMonitorHandle());
     }
 
-    internal static unsafe bool GetMonitorInfo(HMONITOR hMonitor, ref MONITORINFOEXW lpmi)
+    /// <summary>
+    /// Gets the primary display monitor (the one that contains the taskbar).
+    /// </summary>
+    public static MonitorInfo GetPrimaryDisplayMonitor()
     {
-        fixed (MONITORINFOEXW* lpmiLocal = &lpmi)
-        {
-            var lpmiBase = (MONITORINFO*)lpmiLocal;
-            var __result = PInvoke.GetMonitorInfo(hMonitor, lpmiBase);
-            return __result;
-        }
+        var targetMonitor = GetPrimaryMonitorHandle();
+        return new MonitorInfo(targetMonitor, targetMonitor);
     }
+
+    private static HMONITOR GetPrimaryMonitorHandle() =>
+        PInvoke.MonitorFromWindow(new HWND(nint.Zero), MONITOR_FROM_FLAGS.MONITOR_DEFAULTTOPRIMARY);
 }
