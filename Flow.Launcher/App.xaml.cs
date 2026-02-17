@@ -24,7 +24,7 @@ using ZLogger;
 
 namespace Flow.Launcher
 {
-    public partial class App : IDisposable, ISingleInstanceApp
+    public partial class App : IDisposable
     {
         public static IPublicAPI API { get; private set; }
         public static bool LoadingOrExiting => _mainWindow == null || _mainWindow.CanClose;
@@ -180,6 +180,10 @@ namespace Flow.Launcher
                 application.InitializeComponent();
                 application.Run();
             }
+            else
+            {
+                MessageBox.Show("Another instance of Flow Launcher is already running.");
+        }
         }
 
         private static void ShowErrorMsgBoxAndFailFast(string message, Exception e)
@@ -343,11 +347,6 @@ namespace Flow.Launcher
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
-        }
-
-        public void OnSecondAppStarted()
-        {
-            API.ShowMainWindow();
         }
     }
 }
