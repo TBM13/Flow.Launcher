@@ -481,7 +481,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
             var startupPaths = GetStartupPaths();
 
             var programs = ExceptDisabledSource(allPrograms)
-                .Where(x => !startupPaths.Any(startup => FilesFolders.PathContains(startup, x)))
+                .Where(x => !startupPaths.Any(startup => PathContains(startup, x)))
                 .Select(x => GetProgramFromPath(x, protocols));
             return programs;
         }
@@ -497,7 +497,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
 
             var paths = pathEnv.Split(";", StringSplitOptions.RemoveEmptyEntries).DistinctBy(p => p.ToLowerInvariant());
 
-            var toFilter = paths.Where(x => commonParents.All(parent => !FilesFolders.PathContains(parent, x)))
+            var toFilter = paths.Where(x => commonParents.All(parent => !PathContains(parent, x)))
                 .AsParallel()
                 .SelectMany(p => EnumerateProgramsInDir(p, suffixes, recursive: false));
 
@@ -630,7 +630,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     // is shortcut and in start menu
                     var startMenu = g.Where(g =>
                             g.LnkResolvedPath != null &&
-                            startMenuPaths.Any(x => FilesFolders.PathContains(x, g.FullPath)))
+                            startMenuPaths.Any(x => PathContains(x, g.FullPath)))
                         .ToList();
                     if (startMenu.Count != 0)
                         return startMenu.Take(1);
@@ -815,7 +815,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 HashSet<ProgramSource> parents = [.. group];
                 foreach (var source in group)
                 {
-                    if (parents.Any(p => FilesFolders.PathContains(p.Location, source.Location)))
+                    if (parents.Any(p => PathContains(p.Location, source.Location)))
                     {
                         parents.Remove(source);
                     }
@@ -825,6 +825,23 @@ namespace Flow.Launcher.Plugin.Program.Programs
             }
 
             return [.. result.DistinctBy(x => x.ToLowerInvariant())];
+        }
+
+        /// <summary>
+        /// Returns if <paramref name="parentPath"/> contains <paramref name="subPath"/>. Equal paths are not considered to be contained by default.
+        /// From https://stackoverflow.com/a/66877016
+        /// </summary>
+        private static bool PathContains(string parentPath, string subPath)
+        {
+            if (!parentPath.EndsWith('\\'))
+                parentPath += '\\';
+
+            var rel = Path.GetRelativePath(parentPath, subPath);
+            return rel != "."
+                   && rel != ".."
+                   && !rel.StartsWith("../")
+                   && !rel.StartsWith(@"..\")
+                   && !Path.IsPathRooted(rel);
         }
     }
 }

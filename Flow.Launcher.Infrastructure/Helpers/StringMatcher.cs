@@ -8,60 +8,27 @@ namespace Flow.Launcher.Infrastructure.Helpers;
 /// <summary>
 /// Represents the result of a match operation.
 /// </summary>
-public class MatchResult
+public record MatchResult
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MatchResult"/> class.
-    /// </summary>
-    /// <param name="success"></param>
-    /// <param name="searchPrecision"></param>
-    public MatchResult(bool success, SearchPrecisionScore searchPrecision)
-    {
-        Success = success;
-        SearchPrecision = searchPrecision;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MatchResult"/> class.
-    /// </summary>
-    /// <param name="success"></param>
-    /// <param name="searchPrecision"></param>
-    /// <param name="matchData"></param>
-    /// <param name="rawScore"></param>
-    public MatchResult(bool success, SearchPrecisionScore searchPrecision, int rawScore)
-    {
-        Success = success;
-        SearchPrecision = searchPrecision;
-        RawScore = rawScore;
-    }
-
     /// <summary>
     /// Whether the match operation was successful.
     /// </summary>
-    public bool Success { get; set; }
-
-    /// <summary>
-    /// The final score of the match result with search precision filters applied.
-    /// </summary>
-    public int Score { get; private set; }
+    public required bool Success { get; init; }
 
     /// <summary>
     /// The raw calculated search score without any search precision filtering applied.
     /// </summary>
-    public int RawScore
-    {
-        get => field;
-        set
-        {
-            field = value;
-            Score = IsSearchPrecisionScoreMet(value) ? value : 0;
-        }
-    }
+    public required int RawScore { get; init; }
+
+    /// <summary>
+    /// The final score of the match result with search precision filters applied.
+    /// </summary>
+    public int Score => IsSearchPrecisionScoreMet(RawScore) ? RawScore : 0;
 
     /// <summary>
     /// The search precision score used to filter the search results.
     /// </summary>
-    public SearchPrecisionScore SearchPrecision { get; set; }
+    public required SearchPrecisionScore SearchPrecision { get; init; }
 
     /// <summary>
     /// Determines if the search precision score is met.
@@ -145,7 +112,12 @@ public static class StringMatcher
     public static MatchResult FuzzyMatch(string query, string stringToCompare, MatchOption opt)
     {
         if (string.IsNullOrEmpty(stringToCompare) || string.IsNullOrEmpty(query))
-            return new MatchResult(false, UserSettingSearchPrecision);
+            return new MatchResult()
+            {
+                Success = false,
+                SearchPrecision = UserSettingSearchPrecision,
+                RawScore = 0
+            };
 
         query = query.Trim();
 
@@ -275,7 +247,12 @@ public static class StringMatcher
             int acronymScore = acronymsMatched * 100 / acronymsTotalCount;
 
             if (acronymScore >= (int)UserSettingSearchPrecision)
-                return new MatchResult(true, UserSettingSearchPrecision, acronymScore);
+                return new MatchResult()
+                {
+                    Success = true,
+                    SearchPrecision = UserSettingSearchPrecision,
+                    RawScore = acronymScore
+                };
         }
 
         // proceed to calculate score if every char or substring without whitespaces matched
@@ -289,10 +266,20 @@ public static class StringMatcher
             var score = CalculateSearchScore(query, stringToCompare, firstMatchIndex - nearestSpaceIndex - 1, spaceIndices,
                 lastMatchIndex - firstMatchIndex, allSubstringsContainedInCompareString);
 
-            return new MatchResult(true, UserSettingSearchPrecision, score);
+            return new MatchResult()
+            {
+                Success = true,
+                SearchPrecision = UserSettingSearchPrecision,
+                RawScore = score
+            };
         }
 
-        return new MatchResult(false, UserSettingSearchPrecision);
+        return new MatchResult()
+        {
+            Success = false,
+            SearchPrecision = UserSettingSearchPrecision,
+            RawScore = 0
+        };
     }
 
     private static bool IsAcronym(string stringToCompare, int compareStringIndex)

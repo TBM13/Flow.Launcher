@@ -32,7 +32,6 @@ public sealed class ShellContextMenu : IDisposable
     private const uint CMF_EXPLORE = 0x00000004;
     private const uint CMF_EXTENDEDVERBS = 0x00000100;
 
-    private const int MAX_PATH = 260;
     private const uint CMD_FIRST = 1;
     private const uint CMD_LAST = 30000;
 
@@ -314,7 +313,7 @@ public sealed class ShellContextMenu : IDisposable
 
                 try
                 {
-                    Span<char> buffer = stackalloc char[MAX_PATH];
+                    Span<char> buffer = stackalloc char[(int)PInvoke.MAX_PATH];
                     PInvoke.StrRetToBuf(ref strRet, null, buffer);
                     _parentFolderPath = buffer.TrimEnd('\0').ToString();
                 }
