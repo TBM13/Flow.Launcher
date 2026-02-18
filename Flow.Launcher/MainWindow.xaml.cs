@@ -61,7 +61,6 @@ namespace Flow.Launcher
             Topmost = _settings.ShowAtTopmost;
 
             InitializeComponent();
-            UpdatePosition();
 
             DataObject.AddPastingHandler(QueryTextBox, QueryTextBox_OnPaste);
             _viewModel.ActualApplicationThemeChanged += ViewModel_ActualApplicationThemeChanged;
@@ -98,7 +97,6 @@ namespace Flow.Launcher
             }
 
             // Hide window if need
-            UpdatePosition();
             if (_settings.HideOnStartup)
             {
                 _viewModel.Hide();
@@ -117,9 +115,6 @@ namespace Flow.Launcher
             {
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
             }
-
-            // Force update position
-            UpdatePosition();
 
             // Initialize resize mode after refreshing frame
             SetupResizeMode();
@@ -514,6 +509,9 @@ namespace Flow.Launcher
 
         #region Window Position
 
+        /// <summary>
+        /// Avoid calling this function at startup since we can't access the monitor information while the user is logging-in.
+        /// </summary>
         private void UpdatePosition()
         {
             // Initialize call twice to work around multi-display alignment issue- https://github.com/Flow-Launcher/Flow.Launcher/issues/2910
@@ -521,6 +519,9 @@ namespace Flow.Launcher
             InitializePosition();
         }
 
+        /// <summary>
+        /// Avoid calling this function at startup since we can't access the monitor information while the user is logging-in.
+        /// </summary>
         private void InitializePosition()
         {
             // Initialize call twice to work around multi-display alignment issue- https://github.com/Flow-Launcher/Flow.Launcher/issues/2910
@@ -631,6 +632,9 @@ namespace Flow.Launcher
             }
         }
 
+        /// <summary>
+        /// Avoid calling this function at startup since we can't access the monitor information while the user is logging-in.
+        /// </summary>
         private MonitorInfo SelectedScreen()
         {
             MonitorInfo? screen;

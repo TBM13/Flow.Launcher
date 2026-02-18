@@ -67,12 +67,11 @@ public class MonitorInfo
 }
 
 /// <summary>
-/// Contains full information about a display monitor.
-/// Inspired from: https://github.com/Jack251970/DesktopWidgets3.
+/// Helper to get information about display monitors.
+/// <para/>
+/// Note that accessing the monitors while the user is in the lockscreen or logging-in may throw an exception.
 /// </summary>
-/// <remarks>
-/// Use this class to replace the System.Windows.Forms.Screen class which can cause possible System.PlatformNotSupportedException.
-/// </remarks>
+// Based on https://github.com/Jack251970/DesktopWidgets3.
 public static class MonitorHelper
 {
     /// <summary>
