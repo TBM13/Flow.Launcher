@@ -1,41 +1,52 @@
-﻿using Windows.Win32;
+﻿using System.IO;
 
 namespace Flow.Launcher.Infrastructure.Helpers;
 
 /// <summary>
+/// Represents the information contained in an Internet Shortcut (.url) file.
+/// </summary>
+/// <param name="Url">URL to which the shortcut leads</param>
+/// <param name="IconFile">File that contains the icon</param>
+public readonly record struct InternetShortcutInfo(string? Url, string? IconFile);
+
+/// <summary>
 /// Helper class for interacting with Internet Shortcut (.url) files.
 /// </summary>
+/// <inheritdoc cref="File.ReadAllLines(string)" path="/exception" />
 public static class InternetShortcutHelper
 {
     public const string INTERNET_SHORTCUT_EXTENSION = ".url";
 
     /// <summary>
-    /// Reads the URL from the given internet shortcut.
-    /// <para/>
-    /// The URL is not expected to have more than 2048 characters.
+    /// Reads and parses the given internet shortcut file.
     /// </summary>
-    public static string? GetUrl(string path)
+    /// <inheritdoc cref="File.ReadAllLines(string)" path="/exception" />
+    public static InternetShortcutInfo Parse(string path)
     {
-        Span<char> urlBuffer = stackalloc char[2048];
-        uint read = PInvoke.GetPrivateProfileString("InternetShortcut", "URL", string.Empty, urlBuffer, path);
-        if (read > 0)
-            return urlBuffer[..(int)read].ToString();
+        string? url = null;
+        string? iconFile = null;
+        bool inCorrectSection = false;
 
-        return null;
-    }
+        foreach (string line in File.ReadAllLines(path))
+        {
+            if (line.StartsWith('['))
+            {
+                inCorrectSection = line.Equals("[InternetShortcut]", StringComparison.OrdinalIgnoreCase);
+                continue;
+            }
 
-    /// <summary>
-    /// Reads the icon path from the given internet shortcut.
-    /// <para/>
-    /// The icon path is not expected to have more than <see cref="PInvoke.MAX_PATH"/> characters (260 on Windows).
-    /// </summary>
-    public static string? GetIconPath(string path)
-    {
-        Span<char> iconFileBuffer = stackalloc char[(int)PInvoke.MAX_PATH];
-        uint read = PInvoke.GetPrivateProfileString("InternetShortcut", "IconFile", string.Empty, iconFileBuffer, path);
-        if (read > 0)
-            return iconFileBuffer[..(int)read].ToString();
+            if (!inCorrectSection)
+                continue;
 
-        return null;
+            if (url is null && line.StartsWith("URL=", StringComparison.OrdinalIgnoreCase))
+                url = line[4..];
+            else if (iconFile is null && line.StartsWith("IconFile=", StringComparison.OrdinalIgnoreCase))
+                iconFile = line[9..];
+
+            if (url is not null && iconFile is not null)
+                break;
+        }
+
+        return new InternetShortcutInfo(url, iconFile);
     }
 }

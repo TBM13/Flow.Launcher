@@ -163,17 +163,17 @@ public class WindowsThumbnailProvider
     /// <returns>An HBITMAP containing the requested image; callers are responsible for freeing the native handle.</returns>
     private static HBITMAP GetHBitmapForUrlFile(string fileName, int width, int height, ThumbnailOptions options)
     {
-        string? iconPath = InternetShortcutHelper.GetIconPath(fileName);
-        if (iconPath == null || !File.Exists(iconPath))
-            return GetHBitmap(Path.GetFullPath(fileName), width, height, options);
-
         try
         {
-            return GetHBitmap(Path.GetFullPath(iconPath), width, height, options);
+            InternetShortcutInfo shortcutInfo = InternetShortcutHelper.Parse(fileName);
+            if (shortcutInfo.IconFile is not null && File.Exists(shortcutInfo.IconFile))
+                return GetHBitmap(Path.GetFullPath(shortcutInfo.IconFile), width, height, options);
         }
         catch
         {
-            return GetHBitmap(Path.GetFullPath(fileName), width, height, options);
+
         }
+
+        return GetHBitmap(Path.GetFullPath(fileName), width, height, options);
     }
 }

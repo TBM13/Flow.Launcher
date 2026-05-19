@@ -383,24 +383,23 @@ namespace Flow.Launcher.Plugin.Program.Programs
 
             try
             {
-                var url = InternetShortcutHelper.GetUrl(path);
-                if (string.IsNullOrEmpty(url))
+                var shortcutInfo = InternetShortcutHelper.Parse(path);
+                if (string.IsNullOrEmpty(shortcutInfo.Url))
                     return program;
 
                 foreach (var protocol in protocols)
                 {
-                    if (url.StartsWith(protocol))
+                    if (shortcutInfo.Url.StartsWith(protocol))
                     {
-                        program.LnkResolvedPath = url;
+                        program.LnkResolvedPath = shortcutInfo.Url;
                         program.Valid = true;
                         break;
                     }
                 }
 
-                var iconPath = InternetShortcutHelper.GetIconPath(path);
-                if (!string.IsNullOrEmpty(iconPath))
+                if (!string.IsNullOrEmpty(shortcutInfo.IconFile))
                 {
-                    program.IcoPath = iconPath;
+                    program.IcoPath = shortcutInfo.IconFile;
                 }
             }
             catch (Exception)
