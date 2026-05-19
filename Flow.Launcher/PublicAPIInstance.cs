@@ -339,13 +339,9 @@ namespace Flow.Launcher
                 try
                 {
                     if (openInTab)
-                    {
-                        uri.AbsoluteUri.OpenInBrowserTab(string.Empty, inPrivate);
-                    }
+                        BrowserHelper.OpenInNewTab(uri);
                     else
-                    {
-                        uri.AbsoluteUri.OpenInBrowserWindow(string.Empty, inPrivate);
-                    }
+                        BrowserHelper.OpenInNewWindow(uri);
                 }
                 catch (Exception e)
                 {

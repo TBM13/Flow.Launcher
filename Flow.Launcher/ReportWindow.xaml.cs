@@ -55,7 +55,7 @@ namespace Flow.Launcher
                 };
                 link.Inlines.Add(url);
                 link.NavigateUri = uri;
-                link.Click += (s, e) => SearchWeb.OpenInBrowserTab(url);
+                link.Click += (s, e) => BrowserHelper.OpenInNewTab(url);
             }
             catch (Exception)
             {
