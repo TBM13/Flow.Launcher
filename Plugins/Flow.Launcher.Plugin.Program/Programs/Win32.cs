@@ -333,8 +333,8 @@ namespace Flow.Launcher.Plugin.Program.Programs
             {
                 const int MAX_PATH = 260;
                 StringBuilder buffer = new StringBuilder(MAX_PATH);
-                string target = ShellLinkHelper.RetrieveTargetPath(path);
-                (string description, string args) = ShellLinkHelper.RetrieveDescriptionAndArgs(path);
+                string target = ShortcutHelper.RetrieveTargetPath(path);
+                (string description, string args) = ShortcutHelper.RetrieveDescriptionAndArgs(path);
 
                 program.LnkResolvedPath = Path.GetFullPath(target);
                 if (!string.IsNullOrEmpty(target) && File.Exists(target))
@@ -369,13 +369,11 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 Logger.ZLogError(e, $"An unexpected error occurred in the calling method LnkProgram for path {path}");
                 return Default;
             }
-#if !DEBUG //Only do a catch all in production. This is so make developer aware of any unhandled exception and add the exception handling in.
             catch (Exception e)
             {
                 Logger.ZLogError(e, $"An unexpected error occurred in the calling method LnkProgram for path {path}");
                 return Default;
             }
-#endif
         }
 
         private static Win32 UrlProgram(string path, string[] protocols)

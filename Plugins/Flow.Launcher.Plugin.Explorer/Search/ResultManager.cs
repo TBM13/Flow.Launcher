@@ -24,7 +24,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             {
                 if (path.EndsWith(".lnk", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    path = ShellLinkHelper.RetrieveTargetPath(path);
+                    path = ShortcutHelper.RetrieveTargetPath(path);
                     if (!path.EndsWith(Constants.DirectorySeparator) && Directory.Exists(path))
                         path += Constants.DirectorySeparator;
                 }
@@ -252,7 +252,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 Title = title,
                 SubTitle =
                     isRecursiveSearch ? filePath :
-                    isShellLink ? ShellLinkHelper.RetrieveTargetPath(filePath) :
+                    isShellLink ? ShortcutHelper.RetrieveTargetPath(filePath) :
                     string.Empty,
                 IcoPath = filePath,
                 Preview = new Result.PreviewInfo

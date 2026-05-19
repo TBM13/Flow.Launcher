@@ -1,10 +1,9 @@
-﻿using System;
-using Windows.Win32;
+﻿using Windows.Win32;
 
 namespace Flow.Launcher.Infrastructure.Helpers;
 
 /// <summary>
-/// Helper methods for working with Internet Shortcut (.url) files.
+/// Helper class for interacting with Internet Shortcut (.url) files.
 /// </summary>
 public static class InternetShortcutHelper
 {
@@ -28,7 +27,7 @@ public static class InternetShortcutHelper
     /// <summary>
     /// Reads the icon path from the given internet shortcut.
     /// <para/>
-    /// The icon path is not expected to have more than MAX_PATH characters (260 on Windows).
+    /// The icon path is not expected to have more than <see cref="PInvoke.MAX_PATH"/> characters (260 on Windows).
     /// </summary>
     public static string? GetIconPath(string path)
     {

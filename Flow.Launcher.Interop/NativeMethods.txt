@@ -10,6 +10,7 @@ DwmSetWindowAttribute
 DWM_SYSTEMBACKDROP_TYPE
 
 MAX_PATH
+INFOTIPSIZE
 SystemParametersInfo
 
 SetForegroundWindow
@@ -54,7 +55,6 @@ IShellLinkW
 IPersistFile
 STGM_READ
 SLR_FLAGS
-WIN32_FIND_DATAW
 
 MonitorFromWindow
 PostMessage
@@ -115,3 +115,8 @@ VIRTUAL_KEY
 GetMessage
 TranslateMessage
 DispatchMessage
+
+PKEY_Link_Arguments
+IPropertyStore
+PropVariantClear
+VARENUM
