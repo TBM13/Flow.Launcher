@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Flow.Launcher.Infrastructure;
+using Flow.Launcher.Infrastructure.API;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Plugin.Program.Views;
 using Flow.Launcher.Plugin.Program.Views.Models;

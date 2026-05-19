@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using Flow.Launcher.Infrastructure;
+using Flow.Launcher.Infrastructure.API;
 
 namespace Flow.Launcher.Core.Resource
 {

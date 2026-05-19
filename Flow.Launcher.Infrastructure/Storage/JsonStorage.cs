@@ -3,7 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Flow.Launcher.Infrastructure.Logger;
+using Flow.Launcher.Infrastructure.Logging;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 using Microsoft.Extensions.Logging;
 using ZLogger;

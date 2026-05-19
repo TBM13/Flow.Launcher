@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using Flow.Launcher.Infrastructure.Logger;
-using Microsoft.Extensions.Logging;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Storage.FileSystem;
 using Windows.Win32.System.Com;
 using Windows.Win32.UI.Shell;
-using ZLogger;
 
 namespace Flow.Launcher.Infrastructure.Helpers;
 
 public static class ShellLinkHelper
 {
     public const string SHELL_LINK_EXTENSION = ".lnk";
-    private static readonly ILogger Logger = LogManager.GetLogger(nameof(ShellLinkHelper));
+    // private static readonly ILogger Logger = LogManager.GetLogger(nameof(ShellLinkHelper));
 
     /// <summary>
     /// Creates a ShellLink COM object, loads the .lnk file, and returns the <see cref="IShellLinkW"/> interface.
@@ -31,7 +28,7 @@ public static class ShellLinkHelper
         }
         catch (COMException e)
         {
-            Logger.ZLogError(e, $"Failed to load shell link from path: {path}");
+            // Logger.ZLogError(e, $"Failed to load shell link from path: {path}");
             if (Marshal.IsComObject(link))
                 Marshal.ReleaseComObject(link);
 
@@ -61,7 +58,7 @@ public static class ShellLinkHelper
         }
         catch (COMException e)
         {
-            Logger.ZLogError(e, $"Failed to retrieve target path from shell link: {path}");
+            // Logger.ZLogError(e, $"Failed to retrieve target path from shell link: {path}");
             return null;
         }
         finally
@@ -94,7 +91,7 @@ public static class ShellLinkHelper
             catch (COMException e)
             {
                 // C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\MiracastView.lnk always causes an exception
-                Logger.ZLogError(e, $"Failed to get description from shell link: {path}");
+                // Logger.ZLogError(e, $"Failed to get description from shell link: {path}");
             }
 
             // Clear buffer to avoid bleeding of data
@@ -110,7 +107,7 @@ public static class ShellLinkHelper
             }
             catch (COMException e)
             {
-                Logger.ZLogError(e, $"Failed to get args from shell link: {path}");
+                // Logger.ZLogError(e, $"Failed to get args from shell link: {path}");
             }
 
             return (description, args);

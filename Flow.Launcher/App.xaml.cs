@@ -10,8 +10,9 @@ using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
+using Flow.Launcher.Infrastructure.API;
 using Flow.Launcher.Infrastructure.Image;
-using Flow.Launcher.Infrastructure.Logger;
+using Flow.Launcher.Infrastructure.Logging;
 using Flow.Launcher.Infrastructure.Storage;
 using Flow.Launcher.SettingPages.ViewModels;
 using Flow.Launcher.ViewModel;
@@ -183,7 +184,7 @@ namespace Flow.Launcher
             else
             {
                 MessageBox.Show("Another instance of Flow Launcher is already running.");
-        }
+            }
         }
 
         private static void ShowErrorMsgBoxAndFailFast(string message, Exception e)

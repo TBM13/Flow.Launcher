@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace Flow.Launcher.Infrastructure.Logger;
+namespace Flow.Launcher.Infrastructure.Logging;
 
 public static class LogManager
 {

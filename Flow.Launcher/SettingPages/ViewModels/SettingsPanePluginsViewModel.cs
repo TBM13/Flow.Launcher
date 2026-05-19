@@ -7,7 +7,7 @@ using System.Windows.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core;
-using Flow.Launcher.Infrastructure.UI;
+using Flow.Launcher.Infrastructure.WPF;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern.Controls;
 

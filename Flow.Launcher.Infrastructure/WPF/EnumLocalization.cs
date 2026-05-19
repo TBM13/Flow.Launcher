@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
+﻿using System.ComponentModel;
 
-namespace Flow.Launcher.Infrastructure.UI;
+namespace Flow.Launcher.Infrastructure.WPF;
 
 public class LocalizedEnumItem<T> where T : Enum
 {

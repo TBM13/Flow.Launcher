@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Flow.Launcher.Infrastructure;
+using Flow.Launcher.Infrastructure.API;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 using Flow.Launcher.Infrastructure.Results;

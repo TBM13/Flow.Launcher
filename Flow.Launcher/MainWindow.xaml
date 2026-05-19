@@ -9,7 +9,7 @@
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     xmlns:vm="clr-namespace:Flow.Launcher.ViewModel"
     xmlns:core="clr-namespace:Flow.Launcher.Core;assembly=Flow.Launcher.Core"
-    xmlns:infsUi="clr-namespace:Flow.Launcher.Infrastructure.UI;assembly=Flow.Launcher.Infrastructure"
+    xmlns:infsUi="clr-namespace:Flow.Launcher.Infrastructure.WPF;assembly=Flow.Launcher.Infrastructure"
     Name="FlowMainWindow"
     Title="Flow Launcher"
     Width="{Binding MainWindowWidth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"

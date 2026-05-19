@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Infrastructure.Logger;
+using Flow.Launcher.Infrastructure.Logging;
 using Microsoft.Extensions.Logging;
 using ZLogger;
 

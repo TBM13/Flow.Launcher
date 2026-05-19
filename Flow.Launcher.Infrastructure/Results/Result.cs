@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Flow.Launcher.Infrastructure.UI;
+using Flow.Launcher.Infrastructure.WPF;
 
 namespace Flow.Launcher.Infrastructure.Results;
 

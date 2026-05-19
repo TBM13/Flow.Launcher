@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Flow.Launcher.Infrastructure.Logger;
+using Flow.Launcher.Infrastructure.Logging;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 using Flow.Launcher.Infrastructure.UserSettings;
 using MemoryPack;

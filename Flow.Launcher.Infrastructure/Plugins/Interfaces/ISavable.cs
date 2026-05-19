@@ -1,4 +1,6 @@
-﻿namespace Flow.Launcher.Infrastructure.Plugins.Interfaces;
+﻿using Flow.Launcher.Infrastructure.API;
+
+namespace Flow.Launcher.Infrastructure.Plugins.Interfaces;
 
 /// <summary>
 /// Inherit this interface if you need to save additional data which is not a setting or cache,

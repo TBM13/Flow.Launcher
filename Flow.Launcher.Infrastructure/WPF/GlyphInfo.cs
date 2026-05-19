@@ -1,4 +1,4 @@
-﻿namespace Flow.Launcher.Infrastructure.UI;
+﻿namespace Flow.Launcher.Infrastructure.WPF;
 
 /// <summary>
 /// Text with FontFamily specified

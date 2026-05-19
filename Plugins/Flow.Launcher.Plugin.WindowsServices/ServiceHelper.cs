@@ -7,7 +7,7 @@ using System.ServiceProcess;
 using System.Windows.Controls;
 using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Results;
-using Flow.Launcher.Infrastructure.UI;
+using Flow.Launcher.Infrastructure.WPF;
 using Flow.Launcher.Plugin.WindowsServices.Preview;
 using Microsoft.Win32;
 using Windows.Win32;

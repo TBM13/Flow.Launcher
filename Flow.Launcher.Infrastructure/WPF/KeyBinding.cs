@@ -2,7 +2,7 @@
 using System.Windows.Input;
 using Flow.Launcher.Infrastructure.Hotkeys;
 
-namespace Flow.Launcher.Infrastructure.UI;
+namespace Flow.Launcher.Infrastructure.WPF;
 
 public class KeyBinding : System.Windows.Input.KeyBinding
 {

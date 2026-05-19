@@ -22,7 +22,7 @@ THE SOFTWARE. */
 
 using System.Collections.Generic;
 using System.Linq;
-using Flow.Launcher.Infrastructure;
+using Flow.Launcher.Infrastructure.API;
 using Flow.Launcher.Plugin.WindowsSettings.Classes;
 using Microsoft.Win32;
 

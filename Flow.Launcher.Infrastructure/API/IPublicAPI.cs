@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Plugins;
 
-namespace Flow.Launcher.Infrastructure;
+namespace Flow.Launcher.Infrastructure.API;
 
 /// <summary>
 /// Public APIs that plugin can use

@@ -17,6 +17,7 @@ using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
+using Flow.Launcher.Infrastructure.API;
 using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Image;
 using Flow.Launcher.Infrastructure.Plugins;

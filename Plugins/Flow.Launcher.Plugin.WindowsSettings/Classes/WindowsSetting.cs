@@ -22,7 +22,7 @@ THE SOFTWARE. */
 
 using System;
 using System.Collections.Generic;
-using Flow.Launcher.Infrastructure.UI;
+using Flow.Launcher.Infrastructure.WPF;
 
 namespace Flow.Launcher.Plugin.WindowsSettings.Classes
 {

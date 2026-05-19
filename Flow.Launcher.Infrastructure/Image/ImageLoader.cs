@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Flow.Launcher.Infrastructure.Logger;
+using Flow.Launcher.Infrastructure.Logging;
 using Microsoft.Extensions.Logging;
 using ZLogger;
 

@@ -4,7 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Flow.Launcher.Core;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Helpers;
-using Flow.Launcher.Infrastructure.UI;
+using Flow.Launcher.Infrastructure.WPF;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
 
