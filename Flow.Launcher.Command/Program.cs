@@ -7,126 +7,127 @@ internal static class Program
     [STAThread]
     private static int Main(string[] args)
     {
-        if (args.Length == 0) return -1;
-
-        // Start process with arguments
-        // Usage: Flow.Launcher.Command -StartProcess -FileName <file> -WorkingDirectory <directory> -Arguments <args> -UseShellExecute <true|false> -Verb <verb> -CreateNoWindow <true|false>
-        if (args[0] == @"-StartProcess")
+        if (args.Length == 0)
         {
-            var fileName = string.Empty;
-            var workingDirectory = Environment.CurrentDirectory;
-            var argumentList = new List<string>();
-            var useShellExecute = true;
-            var verb = string.Empty;
-            var createNoWindow = false;
-            var isArguments = false;
+            Console.WriteLine("Error: No args provided");
+            return -1;
+        }
+
+        if (args[0] == "StartProcess")
+        {
+            string fileName = string.Empty;
+            string workingDirectory = Environment.CurrentDirectory;
+            bool useShellExecute = true;
+            string verb = string.Empty;
+            bool createNoWindow = false;
+            string[] processArgs = [];
 
             for (int i = 1; i < args.Length; i++)
             {
                 switch (args[i])
                 {
                     case "-FileName":
-                        if (i + 1 < args.Length)
-                            fileName = args[++i];
-                        isArguments = false;
+                        if (i + 1 == args.Length)
+                        {
+                            Console.WriteLine("No arg provided after FileName");
+                            return -2;
+                        }
+
+                        fileName = args[++i];
                         break;
 
-                    case "-WorkingDirectory":
-                        if (i + 1 < args.Length)
-                            workingDirectory = args[++i];
-                        isArguments = false;
-                        break;
+                    case "-WorkingDir":
+                        if (i + 1 == args.Length)
+                        {
+                            Console.WriteLine("No arg provided after WorkingDir");
+                            return -2;
+                        }
 
-                    case "-Arguments":
-                        if (i + 1 < args.Length)
-                            argumentList.Add(args[++i]);
-                        isArguments = true;
+                        workingDirectory = args[++i];
                         break;
 
                     case "-UseShellExecute":
-                        if (i + 1 < args.Length && bool.TryParse(args[++i], out bool useShell))
-                            useShellExecute = useShell;
-                        isArguments = false;
+                        if (i + 1 == args.Length)
+                        {
+                            Console.WriteLine("No arg provided after UseShellExecute");
+                            return -2;
+                        }
+                        if (!bool.TryParse(args[++i], out bool useShell))
+                        {
+                            Console.WriteLine("Invalid value for UseShellExecute");
+                            return -2;
+                        }
+
+                        useShellExecute = useShell;
                         break;
 
                     case "-Verb":
-                        if (i + 1 < args.Length)
-                            verb = args[++i];
-                        isArguments = false;
+                        if (i + 1 == args.Length)
+                        {
+                            Console.WriteLine("No arg provided after Verb");
+                            return -2;
+                        }
+
+                        verb = args[++i];
                         break;
 
                     case "-CreateNoWindow":
-                        if (i + 1 < args.Length && bool.TryParse(args[++i], out bool createNoWin))
+                        if (i + 1 == args.Length)
+                        {
+                            Console.WriteLine("No arg provided after CreateNoWindow");
+                            return -2;
+                        }
+                        if (!bool.TryParse(args[++i], out bool createNoWin))
+                        {
+                            Console.WriteLine("Invalid value for CreateNoWindow");
+                            return -2;
+                        }
+
                         createNoWindow = createNoWin;
                         break;
 
-                    default:
-                        if (isArguments)
-                            argumentList.Add(args[i]);
-                        else
-                            Console.WriteLine($"Unknown parameter: {args[i]}");
+                    case "-BeginArgs":
+                        // Everything that follows is an argument
+                        processArgs = args[(i + 1)..];
+                        i = args.Length; // End the loop
                         break;
+
+                    default:
+                        Console.WriteLine($"Unknown arg: {args[i]}");
+                        return -2;
                 }
             }
 
             if (string.IsNullOrEmpty(fileName))
             {
                 Console.WriteLine("Error: -FileName is required.");
-                return -2;
+                return -3;
             }
+
+            ProcessStartInfo info = new()
+            {
+                FileName = fileName,
+                WorkingDirectory = workingDirectory,
+                UseShellExecute = useShellExecute,
+                Verb = verb,
+                CreateNoWindow = createNoWindow
+            };
+            foreach (string arg in processArgs)
+                info.ArgumentList.Add(arg);
 
             try
             {
-                ProcessStartInfo info;
-                if (argumentList.Count == 0)
-                {
-                    info = new ProcessStartInfo
-                    {
-                        FileName = fileName,
-                        WorkingDirectory = workingDirectory,
-                        UseShellExecute = useShellExecute,
-                        Verb = verb,
-                        CreateNoWindow = createNoWindow
-                    };
-                }
-                else if (argumentList.Count == 1)
-                {
-                    info = new ProcessStartInfo
-                    {
-                        FileName = fileName,
-                        WorkingDirectory = workingDirectory,
-                        Arguments = argumentList[0],
-                        UseShellExecute = useShellExecute,
-                        Verb = verb,
-                        CreateNoWindow = createNoWindow
-                    };
-                }
-                else
-                {
-                    info = new ProcessStartInfo
-                    {
-                        FileName = fileName,
-                        WorkingDirectory = workingDirectory,
-                        UseShellExecute = useShellExecute,
-                        Verb = verb,
-                        CreateNoWindow = createNoWindow
-                    };
-                    foreach (var arg in argumentList)
-                    {
-                        info.ArgumentList.Add(arg);
-                    }
-                }
                 Process.Start(info)?.Dispose();
-                Console.WriteLine("Success.");
                 return 0;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                return -3;
+                return -4;
             }
         }
 
-        return -4;
+        Console.WriteLine($"Unknown command: {args[0]}");
+        return -1;
     }
 }

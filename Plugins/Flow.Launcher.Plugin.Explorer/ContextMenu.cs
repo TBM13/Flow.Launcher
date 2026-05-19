@@ -8,6 +8,7 @@ using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Infrastructure.WPF;
+using Flow.Launcher.Interop.Programs;
 using Flow.Launcher.Plugin.Explorer.Search;
 
 namespace Flow.Launcher.Plugin.Explorer
@@ -95,7 +96,7 @@ namespace Flow.Launcher.Plugin.Explorer
                 {
                     try
                     {
-                        Main.Context.API.StartProcess(shellPath, workingDirectory: record.FullPath, arguments: string.Empty);
+                        ProcessHelper.StartProcess(shellPath, workingDirectory: record.FullPath);
                         return true;
                     }
                     catch (Exception e)

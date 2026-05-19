@@ -41,18 +41,6 @@ public interface IPublicAPI
     void RestartAppAsAdmin();
 
     /// <summary>
-    /// Run a shell command
-    /// </summary>
-    /// <remarks>
-    /// It can help to start a de-elevated process and show user account control dialog when Flow is running as administrator.
-    /// </remarks>
-    /// <param name="cmd">The command or program to run</param>
-    /// <param name="filename">the shell type to run, e.g. powershell.exe</param>
-    /// <exception cref="FileNotFoundException">Thrown when unable to find the file specified in the command </exception>
-    /// <exception cref="Win32Exception">Thrown when error occurs during the execution of the command </exception>
-    void ShellRun(string cmd, string filename = "cmd.exe");
-
-    /// <summary>
     /// Copies the passed in text and shows a message indicating whether the operation was completed successfully.
     /// When directCopy is set to true and passed in text is the path to a file or directory,
     /// the actual file/directory will be copied to clipboard. Otherwise the text itself will still be copied to clipboard.
@@ -421,34 +409,4 @@ public interface IPublicAPI
     /// </summary>
     /// <returns></returns>
     string GetDataDirectory();
-
-    /// <summary>
-    /// Start a process with support for handling administrative privileges
-    /// </summary>
-    /// <remarks>
-    /// It can help to start a de-elevated process and show user account control dialog when Flow is running as administrator.
-    /// </remarks>
-    /// <param name="fileName">File name</param>
-    /// <param name="workingDirectory">Working directory. If not specified, the current directory will be used</param>
-    /// <param name="arguments">Optional arguments to pass to the process. If not specified, no arguments will be passed</param>
-    /// <param name="useShellExecute">Whether to use shell to execute the process</param>
-    /// <param name="verb">Verb to use when starting the process, e.g. "runas" for elevated permissions. If not specified, no verb will be used.</param>
-    /// <param name="createNoWindow">Whether to create console window</param>
-    /// <returns>Whether process is started successfully</returns>
-    public bool StartProcess(string fileName, string workingDirectory = "", string arguments = "", bool useShellExecute = false, string verb = "", bool createNoWindow = false);
-
-    /// <summary>
-    /// Start a process with support for handling administrative privileges
-    /// </summary>
-    /// <remarks>
-    /// It can help to start a de-elevated process and show user account control dialog when Flow is running as administrator.
-    /// </remarks>
-    /// <param name="fileName">File name</param>
-    /// <param name="workingDirectory">Working directory. If not specified, the current directory will be used</param>
-    /// <param name="argumentList">Optional argument list to pass to the process. If not specified, no arguments will be passed</param>
-    /// <param name="useShellExecute">Whether to use shell to execute the process</param>
-    /// <param name="verb">Verb to use when starting the process, e.g. "runas" for elevated permissions. If not specified, no verb will be used.</param>
-    /// <param name="createNoWindow">Whether to create console window</param>
-    /// <returns>Whether process is started successfully</returns>
-    public bool StartProcess(string fileName, string workingDirectory = "", Collection<string> argumentList = null, bool useShellExecute = false, string verb = "", bool createNoWindow = false);
 }

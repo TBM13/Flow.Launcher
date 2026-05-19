@@ -13,6 +13,7 @@ using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Logging;
 using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Infrastructure.WPF;
+using Flow.Launcher.Interop.Programs;
 using MemoryPack;
 using Microsoft.Extensions.Logging;
 using Windows.ApplicationModel;
@@ -501,17 +502,16 @@ namespace Flow.Launcher.Plugin.Program.Programs
 
             _ = Task.Run(() =>
             {
-                bool res = Main.Context.API.StartProcess(
-                    command,
-                    arguments: string.Empty,
-                    useShellExecute: true,
-                    verb: elevated ? "runas" : "");
-
-                if (!res)
+                try
+                {
+                    ProcessHelper.StartProcess(
+                        command, useShellExecute: true, verb: elevated ? "runas" : "");
+                }
+                catch (Exception e)
                 {
                     Main.Context.API.ShowMsgError(
                         Localize.Error_Title,
-                        Localize.Error_UnableToRun(command));
+                        Localize.Error_UnableToRun(command, e.Message));
                 }
             });
         }

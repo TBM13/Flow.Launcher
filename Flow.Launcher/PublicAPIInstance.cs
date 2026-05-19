@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -24,6 +22,7 @@ using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 using Flow.Launcher.Infrastructure.Storage;
 using Flow.Launcher.Infrastructure.UserSettings;
+using Flow.Launcher.Interop.Programs;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern;
 
@@ -115,13 +114,6 @@ namespace Flow.Launcher
             {
                 SettingWindow sw = SingletonWindowOpener.Open<SettingWindow>();
             });
-        }
-
-        public void ShellRun(string cmd, string filename = "cmd.exe")
-        {
-            var args = filename == "cmd.exe" ? $"/C {cmd}" : $"{cmd}";
-
-            StartProcess(filename, arguments: args, createNoWindow: true);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "<Pending>")]
@@ -369,7 +361,7 @@ namespace Flow.Launcher
             {
                 try
                 {
-                    StartProcess(uri.AbsoluteUri, arguments: string.Empty, useShellExecute: true);
+                    ProcessHelper.StartProcess(uri.AbsoluteUri, useShellExecute: true);
                 }
                 catch (Exception e)
                 {
@@ -464,86 +456,6 @@ namespace Flow.Launcher
         }
 
         public string GetDataDirectory() => DataLocation.DataDirectory;
-
-        public bool StartProcess(string fileName, string workingDirectory = "", string arguments = "", bool useShellExecute = false, string verb = "", bool createNoWindow = false)
-        {
-            try
-            {
-                workingDirectory = string.IsNullOrEmpty(workingDirectory) ? Environment.CurrentDirectory : workingDirectory;
-
-                // Use command executer to run the process as desktop user if running as admin
-                if (Win32Helper.IsAdministrator())
-                {
-                    var result = Win32Helper.RunAsDesktopUser(
-                        Constant.CommandExecutablePath,
-                        Environment.CurrentDirectory,
-                        $"-StartProcess " +
-                        $"-FileName {AddDoubleQuotes(fileName)} " +
-                        $"-WorkingDirectory {AddDoubleQuotes(workingDirectory)} " +
-                        $"-Arguments {AddDoubleQuotes(arguments)} " +
-                        $"-UseShellExecute {useShellExecute} " +
-                        $"-Verb {AddDoubleQuotes(verb)} " +
-                        $"-CreateNoWindow {createNoWindow}",
-                        false,
-                        true, // Do not show the command window
-                        out var errorInfo);
-                    if (!string.IsNullOrEmpty(errorInfo))
-                    {
-                        LogError(ClassName, $"Failed to start process {fileName} with arguments {arguments} under {workingDirectory}: {errorInfo}");
-                    }
-
-                    return result;
-                }
-
-                var info = new ProcessStartInfo
-                {
-                    FileName = fileName,
-                    WorkingDirectory = workingDirectory,
-                    Arguments = arguments,
-                    UseShellExecute = useShellExecute,
-                    Verb = verb,
-                    CreateNoWindow = createNoWindow
-                };
-                Process.Start(info)?.Dispose();
-                return true;
-            }
-            catch (Exception e)
-            {
-                // TODO: Maybe don't handle exceptions? Let the caller do it
-                LogException(ClassName, $"Failed to start process {fileName} with arguments {arguments} under {workingDirectory}", e);
-                return false;
-            }
-        }
-
-        public bool StartProcess(string fileName, string workingDirectory = "", Collection<string>? argumentList = null, bool useShellExecute = false, string verb = "", bool createNoWindow = false) =>
-            StartProcess(fileName, workingDirectory, JoinArgumentList(argumentList), useShellExecute, verb, createNoWindow);
-
-        private static string AddDoubleQuotes(string arg)
-        {
-            if (string.IsNullOrEmpty(arg))
-                return "\"\"";
-
-            // If already wrapped in double quotes, return as is
-            if (arg.Length >= 2 && arg[0] == '"' && arg[^1] == '"')
-                return arg;
-
-            return $"\"{arg}\"";
-        }
-
-        private static string JoinArgumentList(Collection<string>? args)
-        {
-            if (args == null || args.Count == 0)
-                return string.Empty;
-
-            return string.Join(" ", args.Select(arg =>
-            {
-                if (string.IsNullOrEmpty(arg))
-                    return "\"\"";
-
-                // Add double quotes
-                return AddDoubleQuotes(arg);
-            }));
-        }
         #endregion
     }
 }

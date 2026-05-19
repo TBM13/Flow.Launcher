@@ -547,10 +547,10 @@ namespace Flow.Launcher.Plugin.Program
             {
                 runProcess(info);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 Context.API.ShowMsgError(
-                    Localize.Error_Title, Localize.Error_UnableToRun(info.FileName));
+                    Localize.Error_Title, Localize.Error_UnableToRun(info.FileName, e.Message));
             }
         }
 

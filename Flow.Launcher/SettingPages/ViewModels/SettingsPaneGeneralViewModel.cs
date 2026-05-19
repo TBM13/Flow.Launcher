@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Flow.Launcher.Core;
@@ -59,7 +60,7 @@ public partial class SettingsPaneGeneralViewModel(Settings settings) : Observabl
     {
         // When we change from non-admin to admin, we need to restart the app as administrator to apply the changes
         // Under non-administrator, we cannot delete or set the logon task which is run as administrator
-        if (AlwaysRunAsAdministrator && !Win32Helper.IsAdministrator())
+        if (AlwaysRunAsAdministrator && !Environment.IsPrivilegedProcess)
         {
             if (App.API.ShowMsgBox(
                 App.API.GetTranslation("runAsAdministratorChangeAndRestart"),

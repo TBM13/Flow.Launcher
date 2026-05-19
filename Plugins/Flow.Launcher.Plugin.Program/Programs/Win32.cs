@@ -14,6 +14,7 @@ using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Logging;
 using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Infrastructure.WPF;
+using Flow.Launcher.Interop.Programs;
 using Flow.Launcher.Plugin.Program.Views.Models;
 using MemoryPack;
 using Microsoft.Extensions.Logging;
@@ -209,18 +210,19 @@ namespace Flow.Launcher.Plugin.Program.Programs
         {
             _ = Task.Run(() =>
             {
-                bool res = Main.Context.API.StartProcess(
-                   FullPath,
-                   workingDirectory: ParentDirectory,
-                   arguments: string.Empty,
-                   useShellExecute: true,
-                   verb: runAsAdmin ? "runas" : "");
-
-                if (!res)
+                try
+                {
+                    ProcessHelper.StartProcess(
+                        FullPath,
+                        workingDirectory: ParentDirectory,
+                        useShellExecute: true,
+                        verb: runAsAdmin ? "runas" : "");
+                }
+                catch (Exception e)
                 {
                     Main.Context.API.ShowMsgError(
                         Localize.Error_Title,
-                        Localize.Error_UnableToRun(FullPath));
+                        Localize.Error_UnableToRun(FullPath, e.Message));
                 }
             });
         }

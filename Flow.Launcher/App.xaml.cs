@@ -47,7 +47,7 @@ namespace Flow.Launcher
         public App()
         {
             // Check if the application is running as administrator
-            if (_settings.AlwaysRunAsAdministrator && !Win32Helper.IsAdministrator())
+            if (_settings.AlwaysRunAsAdministrator && !Environment.IsPrivilegedProcess)
             {
                 // We don't want to restart as admin if we are debugging in Visual Studio
                 if (!Debugger.IsAttached)
@@ -130,7 +130,7 @@ namespace Flow.Launcher
                 FileName = Constant.ExecutablePath,
                 Arguments = "--restart",
                 UseShellExecute = true,
-                Verb = Win32Helper.IsAdministrator() || forceAdmin ? "runas" : ""
+                Verb = Environment.IsPrivilegedProcess || forceAdmin ? "runas" : ""
             };
             // No need to de-elevate since we are restarting Flow Launcher which cannot bring security risks
             Process.Start(startInfo);

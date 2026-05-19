@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Results;
+using Flow.Launcher.Interop.Programs;
 using Flow.Launcher.Plugin.Explorer.Views;
 
 namespace Flow.Launcher.Plugin.Explorer.Search
@@ -313,8 +314,11 @@ namespace Flow.Launcher.Plugin.Explorer.Search
         private static void OpenFile(string filePath, string workingDir = "", bool asAdmin = false)
         {
             string verb = asAdmin ? "runas" : string.Empty;
-            bool res = Main.Context.API.StartProcess(filePath, workingDir, arguments: string.Empty, verb: verb);
-            if (!res)
+            try
+            {
+                ProcessHelper.StartProcess(filePath, workingDirectory: workingDir, verb: verb);
+            }
+            catch (Exception)
             {
                 Main.Context.API.ShowMsgError(Localize.Error_OpenFile);
             }

@@ -74,7 +74,7 @@ public static class Localize
 
     // Errors
     public const string Error_Title = "Error";
-    public static string Error_UnableToRun(string program) => $"Unable to run {program}";
+    public static string Error_UnableToRun(string program, string exception) => $"Unable to run {program}: {exception}";
     public const string Error_UnableToRunAsAdmin = "This app is not intended to be run as administrator";
     public const string Error_InvalidPath = "Invalid Path";
 

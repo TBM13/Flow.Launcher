@@ -120,3 +120,6 @@ PKEY_Link_Arguments
 IPropertyStore
 PropVariantClear
 VARENUM
+
+CreateEnvironmentBlock
+DestroyEnvironmentBlock
