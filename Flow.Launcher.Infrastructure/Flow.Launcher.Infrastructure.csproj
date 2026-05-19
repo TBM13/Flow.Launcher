@@ -2,17 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0-windows</TargetFramework>
-    <ProjectGuid>{4FD29318-A8AB-4D8F-AA47-60BC241B8DA3}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <UseWpf>true</UseWpf>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Flow.Launcher.Infrastructure</RootNamespace>
-    <AssemblyName>Flow.Launcher.Infrastructure</AssemblyName>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Nullable>enable</Nullable>
 
     <!-- 
     Required by CommunityToolkit.Mvvm to use the 'field' keyword
@@ -22,24 +20,13 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>portable</DebugType>
-    <Optimize>false</Optimize>
+    <DebugType>embedded</DebugType>
     <OutputPath>..\Output\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <DebugType>embedded</DebugType>
     <OutputPath>..\Output\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
     <NoWarn>$(NoWarn);FLSG0007</NoWarn>
   </PropertyGroup>
   
