@@ -1,31 +1,35 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Gdi;
-using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Flow.Launcher.Infrastructure.Helpers;
 
+/// <summary>
+/// Represents the information of a display monitor.
+/// </summary>
 public class MonitorInfo
 {
+    /// <exception cref="InvalidOperationException"></exception>
     internal unsafe MonitorInfo(HMONITOR monitor, HMONITOR primaryMonitor, RECT* rect)
         : this(monitor, primaryMonitor, new Rect(new Point(rect->left, rect->top), new Point(rect->right, rect->bottom)))
     { }
 
+    /// <exception cref="InvalidOperationException"></exception>
     internal MonitorInfo(HMONITOR monitor, HMONITOR primaryMonitor)
         : this(monitor, primaryMonitor, bounds: null)
     { }
 
+    /// <exception cref="InvalidOperationException"></exception>
     private unsafe MonitorInfo(HMONITOR monitor, HMONITOR primaryMonitor, Rect? bounds)
     {
         IsPrimary = monitor == primaryMonitor;
         var info = new MONITORINFOEXW() { monitorInfo = new MONITORINFO() { cbSize = (uint)sizeof(MONITORINFOEXW) } };
         var res = PInvoke.GetMonitorInfo(monitor, ref info.monitorInfo);
         if (!res)
-            throw new Win32Exception(Marshal.GetLastWin32Error());
+            throw new InvalidOperationException("Failed to get monitor info");
 
         Bounds = bounds ??
             new Rect(new Point(info.monitorInfo.rcMonitor.left, info.monitorInfo.rcMonitor.top),
@@ -33,57 +37,57 @@ public class MonitorInfo
         WorkingArea =
             new Rect(new Point(info.monitorInfo.rcWork.left, info.monitorInfo.rcWork.top),
             new Point(info.monitorInfo.rcWork.right, info.monitorInfo.rcWork.bottom));
-        Name = new string(info.szDevice.AsSpan()).TrimEnd('\0').Trim();
+        Name = new string(info.szDevice.AsSpan().TrimEnd('\0').Trim());
     }
 
     /// <summary>
-    /// Gets the name of the display.
+    /// The name of the display.
     /// </summary>
     public string Name { get; }
 
     /// <summary>
-    /// Gets the display monitor rectangle, expressed in virtual-screen coordinates.
+    /// The display monitor rectangle, expressed in virtual-screen coordinates.
     /// </summary>
     /// <remarks>
-    /// <note>If the monitor is not the primary display monitor, some of the rectangle's coordinates may be negative values.</note>
+    /// If this is not the primary display monitor, some of the coordinates may be negative values.
     /// </remarks>
     public Rect Bounds { get; }
 
     /// <summary>
-    /// Gets the work area rectangle of the display monitor, expressed in virtual-screen coordinates.
+    /// The work area rectangle of the display monitor, expressed in virtual-screen coordinates.
     /// </summary>
     /// <remarks>
-    /// <note>If the monitor is not the primary display monitor, some of the rectangle's coordinates may be negative values.</note>
+    /// If this is not the primary display monitor, some of the coordinates may be negative values.
     /// </remarks>
     public Rect WorkingArea { get; }
 
     /// <summary>
-    /// Gets if the monitor is the primary display monitor.
+    /// Whether this is the primary display monitor.
     /// </summary>
     public bool IsPrimary { get; }
 
-    /// <inheritdoc />
     public override string ToString() => $"{Name} {Bounds.Width}x{Bounds.Height}";
 }
 
 /// <summary>
-/// Helper to get information about display monitors.
-/// <para/>
-/// Note that accessing the monitors while the user is in the lockscreen or logging-in may throw an exception.
+/// Helper to get information of display monitors.
 /// </summary>
+/// <remarks>
+/// Accessing the monitors while the user is in the lockscreen or logging-in may throw an exception.
+/// </remarks>
 // Based on https://github.com/Jack251970/DesktopWidgets3.
 public static class MonitorHelper
 {
     /// <summary>
-    /// Gets the display monitors (including invisible pseudo-monitors associated with the mirroring drivers).
+    /// Gets all the display monitors (including invisible pseudo-monitors associated with the mirroring drivers).
     /// </summary>
-    /// <returns>A list of display monitors</returns>
+    /// <exception cref="InvalidOperationException"></exception>
     public static unsafe List<MonitorInfo> GetDisplayMonitors()
     {
-        var monitorCount = PInvoke.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CMONITORS);
-        var primaryMonitor = GetPrimaryMonitorHandle();
-        var list = new List<MonitorInfo>(monitorCount);
-        var callback = new MONITORENUMPROC((monitor, deviceContext, rect, data) =>
+        HMONITOR primaryMonitor = GetPrimaryMonitorHandle();
+        List<MonitorInfo> list = [];
+
+        MONITORENUMPROC callback = new((monitor, deviceContext, rect, data) =>
         {
             list.Add(new MonitorInfo(monitor, primaryMonitor, rect));
             return true;
@@ -91,7 +95,7 @@ public static class MonitorHelper
 
         bool ok = PInvoke.EnumDisplayMonitors(default, null, callback, default);
         if (!ok)
-            throw new Win32Exception(Marshal.GetLastWin32Error());
+            throw new InvalidOperationException("Failed to enum display monitors");
 
         return list;
     }
@@ -99,10 +103,11 @@ public static class MonitorHelper
     /// <summary>
     /// Gets the display monitor that is nearest to a given window.
     /// </summary>
-    /// <param name="hwnd">Window handle</param>
+    /// <param name="hwnd">The window handle.</param>
+    /// <exception cref="InvalidOperationException"></exception>
     public static MonitorInfo? GetNearestDisplayMonitor(nint hwnd)
     {
-        var targetMonitor = PInvoke.MonitorFromWindow(new(hwnd), MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONULL);
+        HMONITOR targetMonitor = PInvoke.MonitorFromWindow(new(hwnd), MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONULL);
         if (targetMonitor.IsNull)
             return null;
 
@@ -110,14 +115,16 @@ public static class MonitorHelper
     }
 
     /// <summary>
-    /// Gets the display monitor that contains the cursor.
+    /// Gets the display monitor where the cursor is.
     /// </summary>
+    /// <exception cref="InvalidOperationException"></exception>
+    /// <exception cref="Win32Exception"></exception>
     public static MonitorInfo? GetCursorDisplayMonitor()
     {
         if (!PInvoke.GetCursorPos(out var pt))
-            throw new Win32Exception(Marshal.GetLastWin32Error());
+            throw new Win32Exception(Marshal.GetLastPInvokeError());
 
-        var targetMonitor = PInvoke.MonitorFromPoint(pt, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONULL);
+        HMONITOR targetMonitor = PInvoke.MonitorFromPoint(pt, MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONULL);
         if (targetMonitor.IsNull)
             return null;
 
@@ -125,11 +132,11 @@ public static class MonitorHelper
     }
 
     /// <summary>
-    /// Gets the primary display monitor (the one that contains the taskbar).
+    /// Gets the primary display monitor.
     /// </summary>
     public static MonitorInfo GetPrimaryDisplayMonitor()
     {
-        var targetMonitor = GetPrimaryMonitorHandle();
+        HMONITOR targetMonitor = GetPrimaryMonitorHandle();
         return new MonitorInfo(targetMonitor, targetMonitor);
     }
 
