@@ -333,37 +333,6 @@ public static partial class Win32Helper
 
     #endregion
 
-    #region Explorer
-
-    // https://learn.microsoft.com/en-us/windows/win32/api/shlobj_core/nf-shlobj_core-shopenfolderandselectitems
-
-    public static unsafe void OpenFolderAndSelectFile(string filePath)
-    {
-        ITEMIDLIST* pidlFolder = null;
-        ITEMIDLIST* pidlFile = null;
-
-        var folderPath = Path.GetDirectoryName(filePath);
-
-        try
-        {
-            var hrFolder = PInvoke.SHParseDisplayName(folderPath, null, out pidlFolder, 0);
-            if (hrFolder.Failed) throw new COMException("Failed to parse folder path", hrFolder);
-
-            var hrFile = PInvoke.SHParseDisplayName(filePath, null, out pidlFile, 0);
-            if (hrFile.Failed) throw new COMException("Failed to parse file path", hrFile);
-
-            var hrSelect = PInvoke.SHOpenFolderAndSelectItems(pidlFolder, 1, &pidlFile, 0);
-            if (hrSelect.Failed) throw new COMException("Failed to open folder and select item", hrSelect);
-        }
-        finally
-        {
-            if (pidlFile != null) PInvoke.CoTaskMemFree(pidlFile);
-            if (pidlFolder != null) PInvoke.CoTaskMemFree(pidlFolder);
-        }
-    }
-
-    #endregion
-
     #region Win32 Dark Mode
 
     /*

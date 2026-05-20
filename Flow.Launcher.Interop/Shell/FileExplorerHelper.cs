@@ -1,13 +1,16 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Shell;
+using Windows.Win32.UI.Shell.Common;
 using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Flow.Launcher.Infrastructure.Helpers;
 
+/// <summary>
+/// Helper class for interacting with explorer.exe
+/// </summary>
 public static class FileExplorerHelper
 {
     private static readonly string DesktopLocationUrl =
@@ -15,19 +18,20 @@ public static class FileExplorerHelper
 
     /// <summary>
     /// Gets the path of the file explorer window that is currently in the foreground,
-    /// or immediately behind FlowLauncher's Window if it's focused.
-    /// <para/>
-    /// Note that the desktop itself is considered a file explorer window.
-    /// <para/>
-    /// Returns null if no explorer window is focused or if it is minimized.
+    /// or immediately behind our own window if we are focused.
     /// </summary>
+    /// <remarks>The desktop itself is considered a file explorer window.</remarks>
+    /// <returns>Null if no explorer window is focused or it is minimized.</returns>
     public static string? GetForegroundExplorerPath()
     {
         string? locationUrl = GetForegroundExplorerLocationUrl();
         if (string.IsNullOrEmpty(locationUrl))
             return null;
 
-        string path = new Uri(locationUrl).LocalPath;
+        if (!Uri.TryCreate(locationUrl, UriKind.Absolute, out Uri? uri))
+            return null;
+
+        string path = uri.LocalPath;
         if (!Path.EndsInDirectorySeparator(path))
             path += Path.DirectorySeparatorChar;
 
@@ -35,24 +39,20 @@ public static class FileExplorerHelper
     }
 
     /// <summary>
-    /// Gets the LocationURL of the file explorer window that is currently in the foreground, or
-    /// immediately behind FlowLauncher's Window if it's focused.
-    /// <para/>
-    /// Note that the desktop itself is considered a file explorer window.
-    /// <para/>
-    /// Returns null if no explorer window is focused or if it is minimized.
+    /// Gets the LocationURL of the file explorer window that is currently in the foreground,
+    /// or immediately behind our own window if we are focused.
     /// </summary>
+    /// <remarks>The desktop itself is considered a file explorer window.</remarks>
+    /// <returns>Null if no explorer window is focused or it is minimized.</returns>
     private static string? GetForegroundExplorerLocationUrl()
     {
-        var shellWindows = new ShellWindows();
-        IShellWindows? windows = null;
+        ShellWindows shellWindows = new();
         try
         {
-            windows = (IShellWindows)shellWindows;
-            var foregroundWindow = PInvoke.GetForegroundWindow();
-            var targetWindow = foregroundWindow;
-
-            var shellDesktopWindow = PInvoke.GetShellWindow();
+            IShellWindows windows = (IShellWindows)shellWindows;
+            HWND foregroundWindow = PInvoke.GetForegroundWindow();
+            HWND targetWindow = foregroundWindow;
+            HWND shellDesktopWindow = PInvoke.GetShellWindow();
 
             // If our application is the foreground window, look for the
             // explorer window immediately behind it in Z-order
@@ -64,43 +64,38 @@ public static class FileExplorerHelper
                     return DesktopLocationUrl;
             }
 
-            // If the desktop itself is the foreground window
+            // If the desktop itself is the foreground window, return its location
             if (targetWindow == shellDesktopWindow)
                 return DesktopLocationUrl;
 
             int count = windows.Count;
-
             for (int i = 0; i < count; i++)
             {
-                object? item = windows.Item(i);
-                if (item is null)
-                    continue;
-
-                IWebBrowser2? browser = null;
+                object? item = null;
                 try
                 {
-                    browser = item as IWebBrowser2;
-                    if (browser is null)
-                        continue;
-
-                    // Make sure that the window is indeed a file explorer
-                    // we don't want the Internet Explorer or the classic control panel
-                    string fullName = browser.FullName.ToString();
-                    if (!Path.GetFileName(fullName).Equals("explorer.exe", StringComparison.OrdinalIgnoreCase))
-                        continue;
-
-                    var hwnd = new HWND(browser.HWND);
-                    if (hwnd == targetWindow && !PInvoke.IsIconic(hwnd))
+                    item = windows.Item(i);
+                    if (item is IWebBrowser2 browser)
                     {
-                        return browser.LocationURL.ToString();
+                        // Make sure that the window is indeed a file explorer
+                        // we don't want Internet Explorer or the classic control panel
+                        BSTR fullName = browser.FullName;
+                        if (!Path.GetFileName(fullName).Equals("explorer.exe", StringComparison.OrdinalIgnoreCase))
+                            continue;
+
+                        HWND hwnd = new(browser.HWND);
+                        if (hwnd == targetWindow && !PInvoke.IsIconic(hwnd))
+                            return browser.LocationURL.ToString();
                     }
+                }
+                catch (COMException)
+                {
+                    // The window may have been closed or become unresponsive
+                    continue;
                 }
                 finally
                 {
-                    if (browser is not null && !ReferenceEquals(browser, item))
-                        Marshal.ReleaseComObject(browser);
-
-                    if (Marshal.IsComObject(item))
+                    if (item is not null)
                         Marshal.ReleaseComObject(item);
                 }
             }
@@ -109,9 +104,6 @@ public static class FileExplorerHelper
         }
         finally
         {
-            if (windows is not null && !ReferenceEquals(windows, shellWindows))
-                Marshal.ReleaseComObject(windows);
-
             Marshal.ReleaseComObject(shellWindows);
         }
     }
@@ -121,7 +113,7 @@ public static class FileExplorerHelper
     /// </summary>
     private static HWND GetNextVisibleWindow(HWND hwnd)
     {
-        var next = PInvoke.GetWindow(hwnd, GET_WINDOW_CMD.GW_HWNDNEXT);
+        HWND next = PInvoke.GetWindow(hwnd, GET_WINDOW_CMD.GW_HWNDNEXT);
         while (!next.IsNull)
         {
             if (PInvoke.IsWindowVisible(next) && !PInvoke.IsIconic(next))
@@ -131,5 +123,23 @@ public static class FileExplorerHelper
         }
 
         return HWND.Null;
+    }
+
+    /// <summary>
+    /// Opens the containing folder of the given file path in explorer.exe and selects the file.
+    /// </summary>
+    public static unsafe void OpenFolderAndSelectFile(string filePath)
+    {
+        ITEMIDLIST* pidlFile = null;
+        try
+        {
+            PInvoke.SHParseDisplayName(filePath, null, out pidlFile, 0).ThrowOnFailure();
+            PInvoke.SHOpenFolderAndSelectItems(pidlFile, 0, null, 0).ThrowOnFailure();
+        }
+        finally
+        {
+            if (pidlFile is not null)
+                PInvoke.CoTaskMemFree(pidlFile);
+        }
     }
 }

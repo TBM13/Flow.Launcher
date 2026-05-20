@@ -288,7 +288,7 @@ namespace Flow.Launcher
                 else
                 {
                     // Open the directory and select the file
-                    Win32Helper.OpenFolderAndSelectFile(targetPath);
+                    FileExplorerHelper.OpenFolderAndSelectFile(targetPath);
                 }
             }
             catch (COMException ex) when (ex.ErrorCode == unchecked((int)0x80004004))
@@ -296,7 +296,7 @@ namespace Flow.Launcher
                 /*
                  * The COMException with HResult 0x80004004 is E_ABORT (operation aborted).
                  * Shell APIs often return this when the operation is canceled or the shell cannot complete it cleanly.
-                 * It most likely comes from Win32Helper.OpenFolderAndSelectFile(targetPath).
+                 * It most likely comes from FileExplorerHelper.OpenFolderAndSelectFile(targetPath).
                  * Typical triggers:
                  * The target file/folder was deleted/moved between computing targetPath and the shell call.
                  * The folder is on an offline network/removable drive.
