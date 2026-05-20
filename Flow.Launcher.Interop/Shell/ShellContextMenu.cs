@@ -13,11 +13,11 @@ namespace Flow.Launcher.Infrastructure.Helpers;
 
 /// <summary>
 /// Shows the Windows Explorer shell context menu for files, folders or drives.
-/// Based on code from https://www.codeproject.com/Articles/22012/Explorer-Shell-Context-Menu
 /// </summary>
 /// <remarks>
 /// Limitation: Only handles files/folders in the same directory.
 /// </remarks>
+// Based on code from https://www.codeproject.com/Articles/22012/Explorer-Shell-Context-Menu
 // TODO: Handle IContextMenu2 and IContextMenu3
 public sealed class ShellContextMenu : IDisposable
 {
@@ -84,7 +84,7 @@ public sealed class ShellContextMenu : IDisposable
     /// </summary>
     /// <param name="drives">Drives to show context menu for</param>
     /// <param name="screenPoint">Screen coordinates where to show the menu</param>
-    public unsafe void ShowContextMenu(DriveInfo[] drives, Point screenPoint)
+    public void ShowContextMenu(DriveInfo[] drives, Point screenPoint)
     {
         if (drives is null || drives.Length == 0) return;
 
@@ -132,7 +132,7 @@ public sealed class ShellContextMenu : IDisposable
             menu = HMENU.Null;
 
             if (selectedCmd != 0)
-                InvokeCommand(_contextMenu, selectedCmd, _parentFolderPath!, screenPoint);
+                InvokeCommand(_contextMenu, selectedCmd, _parentFolderPath!, screenPoint, ownerWindow);
         }
         finally
         {
@@ -184,7 +184,8 @@ public sealed class ShellContextMenu : IDisposable
         return false;
     }
 
-    private static unsafe void InvokeCommand(IContextMenu contextMenu, uint cmd, string folder, Point point)
+    private static unsafe void InvokeCommand(
+        IContextMenu contextMenu, uint cmd, string folder, Point point, HWND ownerWindow)
     {
         fixed (char* pFolder = folder)
         {
@@ -193,6 +194,7 @@ public sealed class ShellContextMenu : IDisposable
             CMINVOKECOMMANDINFOEX invoke = new()
             {
                 cbSize = (uint)sizeof(CMINVOKECOMMANDINFOEX),
+                hwnd = ownerWindow,
                 lpVerb = new PCSTR((byte*)cmdOffset),
                 lpVerbW = new PCWSTR((char*)cmdOffset),
                 lpDirectoryW = pFolder,
@@ -348,9 +350,7 @@ public sealed class ShellContextMenu : IDisposable
     {
         if (_desktopFolder is null)
         {
-            int hr = PInvoke.SHGetDesktopFolder(out IShellFolder folder);
-            if (HRESULT.S_OK != hr)
-                throw new COMException("Failed to get desktop shell folder", hr);
+            PInvoke.SHGetDesktopFolder(out IShellFolder folder).ThrowOnFailure();
             _desktopFolder = folder;
         }
         return _desktopFolder;
