@@ -24,6 +24,7 @@ using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Infrastructure.Storage;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Infrastructure.WPF;
+using Flow.Launcher.Interop.Shell;
 using Flow.Launcher.Storage;
 using iNKORE.UI.WPF.Modern;
 using Microsoft.VisualStudio.Threading;
@@ -1291,7 +1292,7 @@ namespace Flow.Launcher.ViewModel
             // Show the taskbar if the setting is enabled
             if (Settings.ShowTaskbarWhenInvoked && !_taskbarShownByFlow)
             {
-                Win32Helper.ShowTaskbar();
+                TaskbarHelper.ShowTaskbar();
                 _taskbarShownByFlow = true;
             }
         }
@@ -1341,7 +1342,7 @@ namespace Flow.Launcher.ViewModel
             // Hide the taskbar if the setting is enabled
             if (_taskbarShownByFlow)
             {
-                Win32Helper.HideTaskbar();
+                TaskbarHelper.HideTaskbar();
                 _taskbarShownByFlow = false;
             }
 

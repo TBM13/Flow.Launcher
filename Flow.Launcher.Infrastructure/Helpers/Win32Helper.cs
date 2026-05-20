@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
@@ -9,7 +8,6 @@ using Microsoft.Win32;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Dwm;
-using Windows.Win32.UI.Shell.Common;
 using Windows.Win32.UI.WindowsAndMessaging;
 using Point = System.Windows.Point;
 
@@ -379,33 +377,6 @@ public static partial class Win32Helper
             return dlg.FileName;
 
         return string.Empty;
-    }
-
-    #endregion
-
-    #region Taskbar
-
-    public static unsafe void ShowTaskbar()
-    {
-        // Find the taskbar window
-        var taskbarHwnd = PInvoke.FindWindowEx(HWND.Null, HWND.Null, "Shell_TrayWnd", null);
-        if (taskbarHwnd == HWND.Null) return;
-
-        // Magic from https://github.com/Oliviaophia/SmartTaskbar
-        const uint TrayBarFlag = 0x05D1;
-        var mon = PInvoke.MonitorFromWindow(taskbarHwnd, Windows.Win32.Graphics.Gdi.MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONEAREST);
-        PInvoke.PostMessage(taskbarHwnd, TrayBarFlag, new WPARAM(1), new LPARAM((nint)mon.Value));
-    }
-
-    public static void HideTaskbar()
-    {
-        // Find the taskbar window
-        var taskbarHwnd = PInvoke.FindWindowEx(HWND.Null, HWND.Null, "Shell_TrayWnd", null);
-        if (taskbarHwnd == HWND.Null) return;
-
-        // Magic from https://github.com/Oliviaophia/SmartTaskbar
-        const uint TrayBarFlag = 0x05D1;
-        PInvoke.PostMessage(taskbarHwnd, TrayBarFlag, new WPARAM(0), IntPtr.Zero);
     }
 
     #endregion
