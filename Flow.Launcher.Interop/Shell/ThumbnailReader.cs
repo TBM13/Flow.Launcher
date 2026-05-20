@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
@@ -32,12 +31,6 @@ public class WindowsThumbnailProvider
 
     private static readonly Guid GUID_IShellItem = typeof(IShellItem).GUID;
 
-    private static readonly HRESULT S_EXTRACTIONFAILED = (HRESULT)0x8004B200;
-
-    private static readonly HRESULT S_PATHNOTFOUND = (HRESULT)0x8004B205;
-
-    private const string UrlExtension = ".url";
-
     /// <summary>
     /// Obtains a BitmapSource thumbnail for the specified file.
     /// </summary>
@@ -54,7 +47,8 @@ public class WindowsThumbnailProvider
         HBITMAP hBitmap;
 
         var extension = Path.GetExtension(fileName);
-        if (string.Equals(extension, UrlExtension, StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(extension, InternetShortcutHelper.INTERNET_SHORTCUT_EXTENSION,
+            StringComparison.OrdinalIgnoreCase))
         {
             hBitmap = GetHBitmapForUrlFile(fileName, width, height, options);
         }
@@ -65,11 +59,14 @@ public class WindowsThumbnailProvider
 
         try
         {
-            return Imaging.CreateBitmapSourceFromHBitmap(hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            BitmapSource bitmap = Imaging.CreateBitmapSourceFromHBitmap(
+                hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+
+            bitmap.Freeze();
+            return bitmap;
         }
         finally
         {
-            // delete HBitmap to avoid memory leaks
             PInvoke.DeleteObject(hBitmap);
         }
     }
@@ -87,23 +84,19 @@ public class WindowsThumbnailProvider
     /// <param name="height">Requested thumbnail height in pixels.</param>
     /// <param name="options">Thumbnail request flags that control behavior (e.g., ThumbnailOnly, IconOnly).</param>
     /// <returns>An HBITMAP handle containing the image. Caller must free the handle when finished.</returns>
-    /// <exception cref="COMException">If creating the shell item fails (HRESULT returned by SHCreateItemFromParsingName).</exception>
+    /// <exception cref="COMException"></exception>
     /// <exception cref="InvalidOperationException">If the shell item does not expose IShellItemImageFactory or if an unexpected error occurs while obtaining the image.</exception>
     private static unsafe HBITMAP GetHBitmap(string fileName, int width, int height, ThumbnailOptions options)
     {
-        var retCode = PInvoke.SHCreateItemFromParsingName(
+        PInvoke.SHCreateItemFromParsingName(
             fileName,
             null,
             GUID_IShellItem,
-            out var nativeShellItem);
-
-        if (retCode != HRESULT.S_OK)
-            throw Marshal.GetExceptionForHR(retCode) ?? new InvalidOperationException("Failed to get thumbnail");
+            out object nativeShellItem).ThrowOnFailure();
 
         if (nativeShellItem is not IShellItemImageFactory imageFactory)
         {
             Marshal.ReleaseComObject(nativeShellItem);
-            nativeShellItem = null;
             throw new InvalidOperationException("Failed to get IShellItemImageFactory");
         }
 
@@ -121,7 +114,7 @@ public class WindowsThumbnailProvider
                 imageFactory.GetImage(size, (SIIGBF)options, &hBitmap);
             }
             catch (COMException ex) when (options == ThumbnailOptions.ThumbnailOnly &&
-                (ex.HResult == S_PATHNOTFOUND || ex.HResult == S_EXTRACTIONFAILED))
+                (ex.HResult == (int)HRESULT.WTS_E_EXTRACTIONPENDING || ex.HResult == (int)HRESULT.WTS_E_FAILEDEXTRACTION))
             {
                 // Fallback to IconOnly if extraction fails or files cannot be found
                 imageFactory.GetImage(size, (SIIGBF)ThumbnailOptions.IconOnly, &hBitmap);
@@ -131,18 +124,14 @@ public class WindowsThumbnailProvider
                 // Fallback to IconOnly if files cannot be found
                 imageFactory.GetImage(size, (SIIGBF)ThumbnailOptions.IconOnly, &hBitmap);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                // Handle other exceptions
                 throw new InvalidOperationException("Failed to get thumbnail", ex);
             }
         }
         finally
         {
-            if (nativeShellItem != null)
-            {
-                Marshal.ReleaseComObject(nativeShellItem);
-            }
+            Marshal.ReleaseComObject(nativeShellItem);
         }
 
         return hBitmap;
@@ -171,7 +160,7 @@ public class WindowsThumbnailProvider
         }
         catch
         {
-
+            // fallback to getting the thumbnail directly from the .url file
         }
 
         return GetHBitmap(Path.GetFullPath(fileName), width, height, options);

@@ -123,3 +123,6 @@ VARENUM
 
 CreateEnvironmentBlock
 DestroyEnvironmentBlock
+
+WTS_E_FAILEDEXTRACTION
+WTS_E_EXTRACTIONPENDING
