@@ -541,19 +541,6 @@ namespace Flow.Launcher.Plugin.Program
             return false;
         }
 
-        public static void StartProcess(Func<ProcessStartInfo, Process> runProcess, ProcessStartInfo info)
-        {
-            try
-            {
-                runProcess(info);
-            }
-            catch (Exception e)
-            {
-                Context.API.ShowMsgError(
-                    Localize.Error_Title, Localize.Error_UnableToRun(info.FileName, e.Message));
-            }
-        }
-
         public async Task ReloadDataAsync()
         {
             await IndexProgramsAsync();

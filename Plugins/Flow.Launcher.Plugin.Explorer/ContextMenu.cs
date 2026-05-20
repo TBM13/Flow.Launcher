@@ -64,7 +64,7 @@ namespace Flow.Launcher.Plugin.Explorer
                         {
                             try
                             {
-                                _ = Task.Run(() => ShellCommand.RunAsDifferentUser(record.FullPath.SetProcessStartInfo()));
+                                _ = Task.Run(() => ProcessHelper.StartProcess(record.FullPath, useShellExecute: true, verb: "RunAsUser"));
                             }
                             catch (FileNotFoundException e)
                             {

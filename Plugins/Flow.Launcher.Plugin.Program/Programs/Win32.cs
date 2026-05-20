@@ -236,12 +236,19 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     Title = Localize.Action_RunAsDifferentUser,
                     Action = c =>
                     {
-                        var info = new ProcessStartInfo
+                        _ = Task.Run(() =>
                         {
-                            FileName = FullPath, WorkingDirectory = ParentDirectory, UseShellExecute = true
-                        };
-
-                        _ = Task.Run(() => Main.StartProcess(ShellCommand.RunAsDifferentUser, info));
+                            try
+                            {
+                                ProcessHelper.StartProcess(FullPath, workingDirectory: ParentDirectory,
+                                    useShellExecute: true, verb: "RunAsUser");
+                            }
+                            catch (Exception e)
+                            {
+                                Main.Context.API.ShowMsgError(
+                                    Localize.Error_Title, Localize.Error_UnableToRun(FullPath, e.Message));
+                            }
+                        });
 
                         return true;
                     },
