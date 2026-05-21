@@ -15,6 +15,7 @@ using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Hotkeys;
+using Flow.Launcher.Interop;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern;
 using DataObject = System.Windows.DataObject;
@@ -107,11 +108,11 @@ namespace Flow.Launcher
             }
 
             // Initialize color scheme
-            if (_settings.ColorScheme == Constant.Light)
+            if (_settings.ColorScheme == SystemColorScheme.Light)
             {
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
             }
-            else if (_settings.ColorScheme == Constant.Dark)
+            else if (_settings.ColorScheme == SystemColorScheme.Dark)
             {
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
             }

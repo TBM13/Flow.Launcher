@@ -14,6 +14,7 @@ using Flow.Launcher.Infrastructure.API;
 using Flow.Launcher.Infrastructure.Image;
 using Flow.Launcher.Infrastructure.Logging;
 using Flow.Launcher.Infrastructure.Storage;
+using Flow.Launcher.Interop;
 using Flow.Launcher.SettingPages.ViewModels;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern.Common;
@@ -207,7 +208,7 @@ namespace Flow.Launcher
             Notification.Install();
 
             // Enable Win32 dark mode if the system is in dark mode before creating all windows
-            Win32Helper.EnableWin32DarkMode(_settings.ColorScheme);
+            ApplicationHelper.SetWin32DarkMode(_settings.ColorScheme);
 
             // Initialize language before portable clean up since it needs translations
             await _internationalization.InitializeLanguageAsync();

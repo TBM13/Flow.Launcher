@@ -22,6 +22,7 @@ using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 using Flow.Launcher.Infrastructure.Storage;
 using Flow.Launcher.Infrastructure.UserSettings;
+using Flow.Launcher.Interop;
 using Flow.Launcher.Interop.Programs;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern;
@@ -187,7 +188,7 @@ namespace Flow.Launcher
             {
                 try
                 {
-                    await Win32Helper.StartSTATaskAsync(action).ConfigureAwait(false);
+                    await ApplicationHelper.StartSTATaskAsync(action).ConfigureAwait(false);
                     break;
                 }
                 catch (Exception e)

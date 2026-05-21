@@ -5,6 +5,7 @@ using Flow.Launcher.Core;
 using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.WPF;
+using Flow.Launcher.Interop;
 using iNKORE.UI.WPF.Modern;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
@@ -34,23 +35,24 @@ public partial class SettingsPaneThemeViewModel(Settings settings, Theme theme) 
         }
     }
 
-    public List<LocalizedEnumItem<ColorSchemes>> ColorSchemes { get; }
-        = EnumLocalization.GetLocalizedEnumItems<ColorSchemes>();
-    public string ColorScheme
+    public List<LocalizedEnumItem<SystemColorScheme>> ColorSchemes { get; }
+        = EnumLocalization.GetLocalizedEnumItems<SystemColorScheme>();
+    public SystemColorScheme ColorScheme
     {
         get => Settings.ColorScheme;
         set
         {
             ThemeManager.Current.ApplicationTheme = value switch
             {
-                Constant.Light => ApplicationTheme.Light,
-                Constant.Dark => ApplicationTheme.Dark,
-                Constant.System => null,
+                SystemColorScheme.Light => ApplicationTheme.Light,
+                SystemColorScheme.Dark => ApplicationTheme.Dark,
+                SystemColorScheme.System => null,
                 _ => ThemeManager.Current.ApplicationTheme
             };
+
             Settings.ColorScheme = value;
             _ = _theme.RefreshFrameAsync();
-            Win32Helper.EnableWin32DarkMode(value);
+            ApplicationHelper.SetWin32DarkMode(value);
         }
     }
 

@@ -8,6 +8,7 @@ using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Storage;
 using Flow.Launcher.Infrastructure.UserSettings;
+using Flow.Launcher.Interop;
 
 namespace Flow.Launcher.Core;
 
@@ -23,16 +24,6 @@ public enum LastQueryModes
     ActionKeywordPreserved,
     [Description("Select Last Action Keyword")]
     ActionKeywordSelected
-}
-
-public enum ColorSchemes
-{
-    [Description("System Default")]
-    System,
-    [Description("Light")]
-    Light,
-    [Description("Dark")]
-    Dark
 }
 
 public enum SearchWindowScreens
@@ -83,7 +74,8 @@ public partial class Settings : ObservableObject
     }
 
     [ObservableProperty]
-    public partial string ColorScheme { get; set; } = "System";
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public partial SystemColorScheme ColorScheme { get; set; } = SystemColorScheme.System;
 
     [ObservableProperty]
     public partial double WindowSize { get; set; } = 580;
@@ -172,7 +164,7 @@ public partial class Settings : ObservableObject
     [JsonIgnore]
     public ObservableCollection<BaseBuiltinShortcutModel> BuiltinShortcuts { get; } =
     [
-        new AsyncBuiltinShortcutModel("{clipboard}", "shortcut_clipboard_description", () => Win32Helper.StartSTATaskAsync(Clipboard.GetText)),
+        new AsyncBuiltinShortcutModel("{clipboard}", "shortcut_clipboard_description", () => ApplicationHelper.StartSTATaskAsync(Clipboard.GetText)),
         new BuiltinShortcutModel("{active_explorer_path}", "shortcut_active_explorer_path", () => FileExplorerHelper.GetForegroundExplorerPath() ?? "<error>")
     ];
 
