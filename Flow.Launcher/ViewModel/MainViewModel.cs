@@ -237,7 +237,7 @@ namespace Flow.Launcher.ViewModel
         [RelayCommand]
         private void Backspace(object index)
         {
-            var query = Infrastructure.Results.Query.Build(QueryText, isRequery: false, PluginManager.GetNonGlobalPlugins());
+            var query = QueryBuilder.Build(QueryText, isRequery: false, PluginManager.GetNonGlobalPlugins());
             string actionKeyword = query.ActionKeyword.Length == 0
                 ? string.Empty
                 : query.ActionKeyword + Infrastructure.Results.Query.TermSeparator;
@@ -1081,7 +1081,7 @@ namespace Flow.Launcher.ViewModel
         {
             if (string.IsNullOrWhiteSpace(queryText))
             {
-                return Infrastructure.Results.Query.Build(string.Empty, isRequery, PluginManager.GetNonGlobalPlugins());
+                return QueryBuilder.Build(string.Empty, isRequery, PluginManager.GetNonGlobalPlugins());
             }
 
             var queryBuilder = new StringBuilder(queryText);
@@ -1101,7 +1101,7 @@ namespace Flow.Launcher.ViewModel
             // Apply builtin shortcuts
             await BuildQueryAsync(builtInShortcuts, queryBuilder, queryBuilderTmp);
 
-            return Infrastructure.Results.Query.Build(queryBuilder.ToString(), isRequery, PluginManager.GetNonGlobalPlugins());
+            return QueryBuilder.Build(queryBuilder.ToString(), isRequery, PluginManager.GetNonGlobalPlugins());
         }
 
         private async Task BuildQueryAsync(IEnumerable<BaseBuiltinShortcutModel> builtInShortcuts,

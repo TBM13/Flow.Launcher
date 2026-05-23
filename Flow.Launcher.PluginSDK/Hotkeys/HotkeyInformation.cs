@@ -31,7 +31,7 @@ public partial class HotkeyInformation : ObservableObject
     /// </summary>
     public bool CanBeDisabled { get; init; } = true;
 
-    internal HotkeyInformation(string id, string defaultHotkey, string description)
+    public HotkeyInformation(string id, string defaultHotkey, string description)
     {
         Id = id;
         DefaultHotkey = Hotkey.FromString(defaultHotkey);

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
 namespace Flow.Launcher.Infrastructure.Hotkeys;
 
@@ -8,14 +7,14 @@ public readonly record struct Hotkey
     /// <summary>
     /// The modifier(s) that need to be held down for the hotkey to be triggered.
     /// <para/>
-    /// Set to <see cref="ModifierKeys.None"/> if pressing <see cref="MainKey"/> alone triggers the hotkey.
+    /// When set to <see cref="ModifierKeys.None"/>, pressing <see cref="MainKey"/> alone triggers the hotkey.
     /// </summary>
     public required ModifierKeys Modifiers { get; init; }
     /// <summary>
     /// The main key that needs to be pressed for the hotkey to be triggered.
     /// E.g. K in Ctrl+Alt+K.
     /// <para/>
-    /// Set to <see cref="Key.None"/> if just pressing the modifier(s) triggers the hotkey.
+    /// When set to <see cref="Key.None"/>, pressing <see cref="Modifiers"/> alone triggers the hotkey.
     /// </summary>
     public required Key MainKey { get; init; }
 
@@ -24,7 +23,7 @@ public readonly record struct Hotkey
     /// for a little more than half a second before being released.<br/>
     /// This allows two different hotkeys to be registered with the same key(s).
     /// <para/>
-    /// This only has an effect on hotkeys registered in <see cref="GlobalHotkeyManager"/>.
+    /// This only has an effect on global hotkeys.
     /// </summary>
     public bool LongPress { get; init; }
 
