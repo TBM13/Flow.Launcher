@@ -117,7 +117,7 @@ public partial class Settings : ObservableObject
     public partial bool AlwaysPreview { get; set; } = false;
 
     [JsonInclude, JsonConverter(typeof(JsonStringEnumConverter))]
-    public SearchPrecisionScore QuerySearchPrecision
+    public SearchPrecision QuerySearchPrecision
     {
         get => field;
         set
@@ -125,7 +125,7 @@ public partial class Settings : ObservableObject
             SetProperty(ref field, value);
             StringMatcher.UserSettingSearchPrecision = value;
         }
-    } = SearchPrecisionScore.Regular;
+    } = SearchPrecision.Regular;
 
     [ObservableProperty]
     public partial double WindowLeft { get; set; }

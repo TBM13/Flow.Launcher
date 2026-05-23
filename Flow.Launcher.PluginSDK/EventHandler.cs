@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Flow.Launcher.Infrastructure;
+﻿namespace Flow.Launcher.Infrastructure;
 
 /// <summary>
 /// A delegate for when the visibility is changed

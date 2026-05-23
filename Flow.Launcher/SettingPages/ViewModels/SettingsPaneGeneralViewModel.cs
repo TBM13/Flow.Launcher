@@ -18,8 +18,8 @@ public partial class SettingsPaneGeneralViewModel(Settings settings) : Observabl
     public IReadOnlyList<LocalizedEnumItem<SearchWindowAligns>> SearchWindowAligns { get; } =
         EnumLocalization<SearchWindowAligns>.Items;
 
-    public IReadOnlyList<LocalizedEnumItem<SearchPrecisionScore>> SearchPrecisionScores { get; } =
-        EnumLocalization<SearchPrecisionScore>.Items;
+    public IReadOnlyList<LocalizedEnumItem<SearchPrecision>> SearchPrecisionScores { get; } =
+        EnumLocalization<SearchPrecision>.Items;
 
     public List<int> ScreenNumbers
     {
