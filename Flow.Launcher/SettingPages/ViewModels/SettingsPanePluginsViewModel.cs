@@ -18,7 +18,7 @@ public partial class SettingsPanePluginsViewModel(Settings settings) : Observabl
     private readonly Settings _settings = settings;
 
     public IReadOnlyList<LocalizedEnumItem<DisplayMode>> DisplayModes { get; } =
-        EnumLocalization.GetLocalizedEnumItems<DisplayMode>();
+        EnumLocalization<DisplayMode>.Items;
 
     public DisplayMode SelectedDisplayMode
     {

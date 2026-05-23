@@ -13,13 +13,13 @@ public partial class SettingsPaneGeneralViewModel(Settings settings) : Observabl
     public Settings Settings { get; } = settings;
 
     public IReadOnlyList<LocalizedEnumItem<SearchWindowScreens>> SearchWindowScreens { get; } =
-        EnumLocalization.GetLocalizedEnumItems<SearchWindowScreens>();
+        EnumLocalization<SearchWindowScreens>.Items;
 
     public IReadOnlyList<LocalizedEnumItem<SearchWindowAligns>> SearchWindowAligns { get; } =
-        EnumLocalization.GetLocalizedEnumItems<SearchWindowAligns>();
+        EnumLocalization<SearchWindowAligns>.Items;
 
     public IReadOnlyList<LocalizedEnumItem<SearchPrecisionScore>> SearchPrecisionScores { get; } =
-        EnumLocalization.GetLocalizedEnumItems<SearchPrecisionScore>();
+        EnumLocalization<SearchPrecisionScore>.Items;
 
     public List<int> ScreenNumbers
     {
@@ -37,7 +37,7 @@ public partial class SettingsPaneGeneralViewModel(Settings settings) : Observabl
     }
 
     public IReadOnlyList<LocalizedEnumItem<LastQueryModes>> LastQueryModes { get; } =
-        EnumLocalization.GetLocalizedEnumItems<LastQueryModes>();
+        EnumLocalization<LastQueryModes>.Items;
 
     public static string AlwaysPreviewToolTip
         => Localize.AlwaysPreviewToolTip(DefaultHotkeys.TogglePreview.Hotkey.ToString());

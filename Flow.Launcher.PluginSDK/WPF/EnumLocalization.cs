@@ -9,32 +9,23 @@ public class LocalizedEnumItem<T> where T : Enum
     public required string Description { get; set; }
 }
 
-public static class EnumLocalization
+// Use a static class per enum type to avoid repeated reflection
+public static class EnumLocalization<T> where T : struct, Enum
 {
-    // Use a cache per enum type to avoid repeated reflection
-    private static class Cache<T> where T : struct, Enum
-    {
-        public static readonly List<LocalizedEnumItem<T>> Items = [..
+    public static readonly List<LocalizedEnumItem<T>> Items = [..
             Enum.GetValues<T>().Select(e => new LocalizedEnumItem<T>
             {
                 Value = e,
                 Description = FetchDescription(e)
             })
-        ];
+    ];
 
-        private static string FetchDescription(T enumValue)
-        {
-            return typeof(T)
-                .GetField(enumValue.ToString())
-                ?.GetCustomAttribute<DescriptionAttribute>()
-                ?.Description
-                ?? enumValue.ToString();
-        }
-    }
-
-    public static IReadOnlyList<LocalizedEnumItem<T>> GetLocalizedEnumItems<T>() where T : struct, Enum
+    private static string FetchDescription(T enumValue)
     {
-        // Return shallow copy to prevent external modification of the cached list
-        return [.. Cache<T>.Items];
+        return typeof(T)
+            .GetField(enumValue.ToString())
+            ?.GetCustomAttribute<DescriptionAttribute>()
+            ?.Description
+            ?? enumValue.ToString();
     }
 }

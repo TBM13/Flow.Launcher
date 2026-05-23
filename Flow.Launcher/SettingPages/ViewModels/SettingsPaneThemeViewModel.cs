@@ -35,7 +35,7 @@ public partial class SettingsPaneThemeViewModel(Settings settings, Theme theme) 
     }
 
     public IReadOnlyList<LocalizedEnumItem<SystemColorScheme>> ColorSchemes { get; }
-        = EnumLocalization.GetLocalizedEnumItems<SystemColorScheme>();
+        = EnumLocalization<SystemColorScheme>.Items;
     public SystemColorScheme ColorScheme
     {
         get => Settings.ColorScheme;

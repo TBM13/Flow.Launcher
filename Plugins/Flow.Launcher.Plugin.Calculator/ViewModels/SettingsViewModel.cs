@@ -11,5 +11,5 @@ public class SettingsViewModel(Settings settings)
     public static IEnumerable<int> MaxDecimalPlacesRange => Enumerable.Range(1, 20);
 
     public static IEnumerable<LocalizedEnumItem<DecimalSeparator>> AllDecimalSeparator
-        => EnumLocalization.GetLocalizedEnumItems<DecimalSeparator>();
+        => EnumLocalization<DecimalSeparator>.Items;
 }
