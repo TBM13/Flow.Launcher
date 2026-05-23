@@ -15,6 +15,7 @@ SystemParametersInfo
 
 SetForegroundWindow
 IsIconic
+IsZoomed
 ShellWindows
 IShellWindows
 IWebBrowser2

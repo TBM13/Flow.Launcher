@@ -78,11 +78,11 @@ namespace Flow.Launcher
 
         private void OnSourceInitialized(object sender, EventArgs e)
         {
-            var handle = Win32Helper.GetWindowHandle(this, true);
+            nint handle = WindowHelper.GetWindowHandle(this, true);
             _hwndSource = HwndSource.FromHwnd(handle);
             _hwndSource.AddHook(WndProc);
-            Win32Helper.HideFromAltTab(this);
-            Win32Helper.DisableControlBox(this);
+            WindowHelper.HideFromAltTab(this);
+            WindowHelper.DisableControlBox(this);
         }
 
         private void OnLoaded(object sender, RoutedEventArgs _)
@@ -435,12 +435,12 @@ namespace Flow.Launcher
         {
             switch (msg)
             {
-                case Win32Helper.WM_ENTERSIZEMOVE:
+                case WindowHelper.WM_ENTERSIZEMOVE:
                     _initialWidth = (int)Width;
                     _initialHeight = (int)Height;
                     handled = true;
                     break;
-                case Win32Helper.WM_EXITSIZEMOVE:
+                case WindowHelper.WM_EXITSIZEMOVE:
                     //Prevent updating the number of results when the window height is below the height of a single result item.
                     //This situation occurs not only when the user manually resizes the window, but also when the window is released from a side snap, as the OS automatically adjusts the window height.
                     //(Without this check, releasing from a snap can cause the window height to hit the minimum, resulting in only 2 results being shown.)
@@ -489,13 +489,13 @@ namespace Flow.Launcher
 
                     handled = true;
                     break;
-                case Win32Helper.WM_NCLBUTTONDBLCLK: // Block the double click in frame
+                case WindowHelper.WM_NCLBUTTONDBLCLK: // Block the double click in frame
                     SizeToContent = SizeToContent.Height;
                     handled = true;
                     break;
-                case Win32Helper.WM_SYSCOMMAND: // Block Maximize/Minimize by Win+Up and Win+Down Arrow
+                case WindowHelper.WM_SYSCOMMAND: // Block Maximize/Minimize by Win+Up and Win+Down Arrow
                     var command = wParam.ToInt32() & 0xFFF0;
-                    if (command == Win32Helper.SC_MAXIMIZE || command == Win32Helper.SC_MINIMIZE)
+                    if (command == WindowHelper.SC_MAXIMIZE || command == WindowHelper.SC_MINIMIZE)
                     {
                         SizeToContent = SizeToContent.Height;
                         handled = true;
@@ -645,7 +645,7 @@ namespace Flow.Launcher
                     screen = MonitorHelper.GetCursorDisplayMonitor();
                     break;
                 case SearchWindowScreens.Focus:
-                    screen = MonitorHelper.GetNearestDisplayMonitor(Win32Helper.GetForegroundWindow());
+                    screen = MonitorHelper.GetNearestDisplayMonitor(WindowHelper.GetForegroundWindow());
                     break;
                 case SearchWindowScreens.Primary:
                     screen = MonitorHelper.GetPrimaryDisplayMonitor();

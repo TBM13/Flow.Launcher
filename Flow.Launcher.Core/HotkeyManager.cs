@@ -8,6 +8,7 @@ using Flow.Launcher.Infrastructure.API;
 using Flow.Launcher.Infrastructure.Hotkeys;
 using Flow.Launcher.Infrastructure.Logging;
 using Flow.Launcher.Infrastructure.UserSettings;
+using Flow.Launcher.Interop;
 using Microsoft.Extensions.Logging;
 using ZLogger;
 
@@ -118,7 +119,7 @@ public static class HotkeyManager
 
     private static bool ShouldIgnoreHotkeys()
     {
-        return _settings.IgnoreHotkeysOnFullscreen && Win32Helper.IsForegroundWindowFullscreen() || _api.IsGameModeOn();
+        return _settings.IgnoreHotkeysOnFullscreen && WindowHelper.IsForegroundWindowFullscreen() || _api.IsGameModeOn();
     }
 
     public static void RegisterHotkey(GlobalHotkeyInformation hotkey, Action action) => RegisterHotkeyInternal(hotkey, action);

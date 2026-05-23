@@ -24,6 +24,7 @@ using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Infrastructure.Storage;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Infrastructure.WPF;
+using Flow.Launcher.Interop;
 using Flow.Launcher.Interop.Shell;
 using Flow.Launcher.Storage;
 using iNKORE.UI.WPF.Modern;
@@ -1280,7 +1281,7 @@ namespace Flow.Launcher.ViewModel
                 if (Application.Current?.MainWindow is MainWindow mainWindow)
                 {
                     // 📌 Remove DWM Cloak (Make the window visible normally)
-                    Win32Helper.DWMSetCloakForWindow(mainWindow, false);
+                    WindowHelper.DWMSetCloakForWindow(mainWindow, false);
                 }
             }, DispatcherPriority.Render);
 
@@ -1335,7 +1336,7 @@ namespace Flow.Launcher.ViewModel
                 if (Application.Current?.MainWindow is MainWindow mainWindow)
                 {
                     // 📌 Apply DWM Cloak (Completely hide the window)
-                    Win32Helper.DWMSetCloakForWindow(mainWindow, true);
+                    WindowHelper.DWMSetCloakForWindow(mainWindow, true);
                 }
             }, DispatcherPriority.Render);
 
