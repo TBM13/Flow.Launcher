@@ -3,7 +3,6 @@ using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Flow.Launcher.Core;
 using Flow.Launcher.Core.Resource;
-using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.WPF;
 using Flow.Launcher.Interop;
 using iNKORE.UI.WPF.Modern;
@@ -35,7 +34,7 @@ public partial class SettingsPaneThemeViewModel(Settings settings, Theme theme) 
         }
     }
 
-    public List<LocalizedEnumItem<SystemColorScheme>> ColorSchemes { get; }
+    public IReadOnlyList<LocalizedEnumItem<SystemColorScheme>> ColorSchemes { get; }
         = EnumLocalization.GetLocalizedEnumItems<SystemColorScheme>();
     public SystemColorScheme ColorScheme
     {

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Flow.Launcher.Core;
-using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.WPF;
 
@@ -13,13 +12,13 @@ public partial class SettingsPaneGeneralViewModel(Settings settings) : Observabl
 {
     public Settings Settings { get; } = settings;
 
-    public List<LocalizedEnumItem<SearchWindowScreens>> SearchWindowScreens { get; } =
+    public IReadOnlyList<LocalizedEnumItem<SearchWindowScreens>> SearchWindowScreens { get; } =
         EnumLocalization.GetLocalizedEnumItems<SearchWindowScreens>();
 
-    public List<LocalizedEnumItem<SearchWindowAligns>> SearchWindowAligns { get; } =
+    public IReadOnlyList<LocalizedEnumItem<SearchWindowAligns>> SearchWindowAligns { get; } =
         EnumLocalization.GetLocalizedEnumItems<SearchWindowAligns>();
 
-    public List<LocalizedEnumItem<SearchPrecisionScore>> SearchPrecisionScores { get; } =
+    public IReadOnlyList<LocalizedEnumItem<SearchPrecisionScore>> SearchPrecisionScores { get; } =
         EnumLocalization.GetLocalizedEnumItems<SearchPrecisionScore>();
 
     public List<int> ScreenNumbers
@@ -37,7 +36,7 @@ public partial class SettingsPaneGeneralViewModel(Settings settings) : Observabl
         }
     }
 
-    public List<LocalizedEnumItem<LastQueryModes>> LastQueryModes { get; } =
+    public IReadOnlyList<LocalizedEnumItem<LastQueryModes>> LastQueryModes { get; } =
         EnumLocalization.GetLocalizedEnumItems<LastQueryModes>();
 
     public static string AlwaysPreviewToolTip
