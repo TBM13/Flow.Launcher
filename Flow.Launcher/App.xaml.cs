@@ -123,9 +123,10 @@ public partial class App : Application
                     logging.ClearProviders();
                     // TODO: Log to file
 
+                    if (Debugger.IsAttached)
+                        logging.AddDebug();
 #if DEBUG
                     logging.AddZLoggerConsole();
-                    logging.AddDebug();
 #endif
                 })
                 .UseContentRoot(AppContext.BaseDirectory)
@@ -256,8 +257,8 @@ public partial class App : Application
             }
             else
             {
-                Trace.WriteLine(message);
-                Console.Error.WriteLine(message);
+                Trace.WriteLine($"{message}\n{ex}");
+                Console.Error.WriteLine($"{message}\n{ex}");
             }
 
             Exception exceptionToReport = ex
