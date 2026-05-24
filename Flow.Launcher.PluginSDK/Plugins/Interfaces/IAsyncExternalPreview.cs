@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace Flow.Launcher.Infrastructure.Plugins.Interfaces;
+﻿namespace Flow.Launcher.Infrastructure.Plugins.Interfaces;
 
 /// <summary>
 /// This interface is for plugins that wish to provide file preview (external preview) 

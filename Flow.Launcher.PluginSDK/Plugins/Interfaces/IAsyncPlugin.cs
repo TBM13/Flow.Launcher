@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Flow.Launcher.Infrastructure.Results;
+﻿using Flow.Launcher.Infrastructure.Results;
 
 namespace Flow.Launcher.Infrastructure.Plugins.Interfaces;
 
@@ -29,3 +26,4 @@ public interface IAsyncPlugin
     /// <returns></returns>
     Task InitAsync(PluginInitContext context);
 }
+

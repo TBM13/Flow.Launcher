@@ -1,22 +1,12 @@
-﻿using Flow.Launcher.Infrastructure.API;
-
-namespace Flow.Launcher.Infrastructure.Plugins.Interfaces;
+﻿namespace Flow.Launcher.Infrastructure.Plugins.Interfaces;
 
 /// <summary>
-/// Inherit this interface if you need to save additional data which is not a setting or cache,
-/// please implement this interface.
+/// Implement this interface if you need to manually save stuff.
 /// </summary>
-/// <remarks>
-/// For storing plugin settings, prefer <see cref="IPublicAPI.LoadSettingJsonStorage{T}"/>
-/// or <see cref="IPublicAPI.SaveSettingJsonStorage{T}"/>.
-/// For storing plugin caches, prefer <see cref="IPublicAPI.LoadCacheBinaryStorageAsync{T}"/>
-/// or <see cref="IPublicAPI.SaveCacheBinaryStorageAsync{T}(string, string)"/>.
-/// Once called, those settings and caches will be automatically saved by Flow.
-/// </remarks>
 public interface ISavable
 {
     /// <summary>
-    /// Save additional plugin data.
+    /// Called by Flow Launcher when appropiate.
     /// </summary>
     void Save();
 }
