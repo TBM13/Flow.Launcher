@@ -47,13 +47,14 @@ namespace Flow.Launcher
         private ScrollViewer _resultListboxScrollviewer;
         private double _resultListboxVerticalOffset = 0;
 
-        public MainWindow()
+        public MainWindow(Logger<MainWindow> logger, MainViewModel viewModel,
+            Settings settings, Theme theme, PluginManager pluginManager)
         {
-            _logger = Ioc.Default.GetRequiredService<Logger<MainWindow>>();
-            _viewModel = Ioc.Default.GetRequiredService<MainViewModel>();
-            _settings = Ioc.Default.GetRequiredService<Settings>();
-            _theme = Ioc.Default.GetRequiredService<Theme>();
-            _pluginManager = Ioc.Default.GetRequiredService<PluginManager>();
+            _logger = logger;
+            _viewModel = viewModel;
+            _settings = settings;
+            _theme = theme;
+            _pluginManager = pluginManager;
             DataContext = _viewModel;
 
             Topmost = _settings.ShowAtTopmost;
@@ -217,6 +218,16 @@ namespace Flow.Launcher
                         break;
                     case nameof(Settings.ShowAtTopmost):
                         Topmost = _settings.ShowAtTopmost;
+                        break;
+                }
+            };
+
+            _theme.PropertyChanged += (o, e) =>
+            {
+                switch (e.PropertyName)
+                {
+                    case nameof(Theme.ThemeResizeBorderThickness):
+                        SetupResizeMode();
                         break;
                 }
             };
@@ -767,7 +778,10 @@ namespace Flow.Launcher
             ResizeMode = _settings.KeepMaxResults ? ResizeMode.NoResize : ResizeMode.CanResize;
             if (WindowChrome.GetWindowChrome(this) is WindowChrome windowChrome)
             {
-                _theme.SetResizeBorderThickness(windowChrome, _settings.KeepMaxResults);
+                if (_settings.KeepMaxResults)
+                    windowChrome.ResizeBorderThickness = new(0);
+                else
+                    windowChrome.ResizeBorderThickness = _theme.ThemeResizeBorderThickness;
             }
         }
 

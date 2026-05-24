@@ -21,7 +21,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Threading;
+#if DEBUG
 using ZLogger;
+#endif
 
 namespace Flow.Launcher;
 
@@ -131,21 +133,22 @@ public partial class App : Application
                 })
                 .UseContentRoot(AppContext.BaseDirectory)
                 .ConfigureServices(services => services
+                    // Core services
                     .AddTransient(typeof(PluginSDK.Logging.Logger<>))
-                    .AddSingleton(_settings)
-                    .AddSingleton<Internationalization>()
                     .AddSingleton<IPublicAPI, PublicAPIInstance>()
                     .AddSingleton<Plugin.IPublicAPI, PublicAPIInstance>()
+                    .AddSingleton(_settings)
+                    .AddSingleton<Internationalization>()
                     .AddSingleton<Theme>()
                     .AddSingleton<HotkeyManager>()
                     .AddSingleton<ImageLoader>()
                     .AddSingleton<PluginManager>()
                     .AddSingleton<Notification>()
-                    // Use one instance for main window view model because we only have one main window
+
+                    // UI
+                    .AddSingleton<MainWindow>()
                     .AddSingleton<MainViewModel>()
                     .AddSingleton<SettingWindowViewModel>()
-                    // Use transient instance for setting window page view models because
-                    // pages in setting window need to be recreated when setting window is closed
                     .AddTransient<SettingsPaneAboutViewModel>()
                     .AddTransient<SettingsPaneGeneralViewModel>()
                     .AddTransient<SettingsPaneHotkeyViewModel>()
@@ -212,13 +215,9 @@ public partial class App : Application
 
         await Ioc.Default.GetRequiredService<ImageLoader>().InitializeAsync();
 
-        _mainWindow = new MainWindow();
-        Current.MainWindow = _mainWindow;
-        Current.MainWindow.Title = Constant.FlowLauncher;
-
-        // Initialize hotkey mapper instantly after main window is created because
-        // it will steal focus from main window which causes window hide
-        Ioc.Default.GetRequiredService<HotkeyManager>().Initialize();
+        // Initialize MainWindow and HotkeyManager
+        _mainWindow = Ioc.Default.GetRequiredService<MainWindow>();
+        Ioc.Default.GetRequiredService<HotkeyManager>();
 
         // Initialize theme for main window
         Ioc.Default.GetRequiredService<Theme>().ChangeTheme();
@@ -235,7 +234,7 @@ public partial class App : Application
 
         // Refresh home page after plugins are initialized because users may open main window during plugin initialization
         // And home page is created without full plugin list
-        MainViewModel mainVM = Ioc.Default.GetRequiredService<MainViewModel>(); ;
+        MainViewModel mainVM = Ioc.Default.GetRequiredService<MainViewModel>();
         if (_settings.ShowHomePage && mainVM.QueryResultsSelected() && string.IsNullOrEmpty(mainVM.QueryText))
         {
             mainVM.QueryResults();

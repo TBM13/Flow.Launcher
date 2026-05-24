@@ -56,16 +56,16 @@ namespace Flow.Launcher.ViewModel
 
         private bool _taskbarShownByFlow = false;
 
-        public MainViewModel()
+        public MainViewModel(Logger<MainViewModel> logger, Settings settings, PluginManager pluginManager)
         {
-            _logger = Ioc.Default.GetRequiredService<Logger<MainViewModel>>();
-            _pluginManager = Ioc.Default.GetRequiredService<PluginManager>();
+            _logger = logger;
+            _pluginManager = pluginManager;
 
             _queryText = "";
             _lastQuery = null;
             _ignoredQueryText = null; // null as invalid value
 
-            Settings = Ioc.Default.GetRequiredService<Settings>();
+            Settings = settings;
             Settings.PropertyChanged += (_, args) =>
             {
                 switch (args.PropertyName)
