@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 using Flow.Launcher.Infrastructure.Results;
@@ -37,8 +35,6 @@ namespace Flow.Launcher.Plugin.Program
 
     public class Main : ISettingProvider, IAsyncPlugin, IContextMenu, IAsyncReloadable, IDisposable
     {
-        private static readonly string ClassName = nameof(Main);
-
         private const string Win32CacheName = "Win32";
         private const string UwpCacheName = "UWP";
 
@@ -323,8 +319,8 @@ namespace Flow.Launcher.Plugin.Program
                 _uwpsLock.Release();
             }
 
-            Context.API.LogInfo(ClassName, $"Number of preload win32 programs <{_win32sCount}>");
-            Context.API.LogInfo(ClassName, $"Number of preload uwps <{_uwpsCount}>");
+            context.Logger.LogInfo($"Number of preload win32 programs <{_win32sCount}>");
+            context.Logger.LogInfo($"Number of preload uwps <{_uwpsCount}>");
 
             var cacheEmpty = _win32sCount == 0 || _uwpsCount == 0;
 
@@ -376,7 +372,7 @@ namespace Flow.Launcher.Plugin.Program
             }
             catch (Exception e)
             {
-                Context.API.LogException(ClassName, "Failed to index Win32 programs", e);
+                Context.Logger.LogError(e, $"Failed to index Win32 programs");
             }
             finally
             {
@@ -407,7 +403,7 @@ namespace Flow.Launcher.Plugin.Program
             }
             catch (Exception e)
             {
-                Context.API.LogException(ClassName, "Failed to index Uwp programs", e);
+                Context.Logger.LogError(e, $"Failed to index Uwp programs");
             }
             finally
             {
@@ -445,7 +441,7 @@ namespace Flow.Launcher.Plugin.Program
             }
             catch (Exception e)
             {
-                Context.API.LogException(ClassName, "Failed to dispose old program cache", e);
+                Context.Logger.LogError(e, $"Failed to dispose old program cache");
             }
         }
 
@@ -485,7 +481,7 @@ namespace Flow.Launcher.Plugin.Program
                             }
                             catch (Exception e)
                             {
-                                Context.API.LogException(ClassName, "Failed to disable program", e);
+                                Context.Logger.LogError(e, $"Failed to disable program");
                             }
                         });
                         return false;

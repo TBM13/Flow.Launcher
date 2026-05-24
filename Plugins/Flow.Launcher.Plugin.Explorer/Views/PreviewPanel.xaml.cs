@@ -10,15 +10,15 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Plugin.Explorer.Search;
+using Flow.Launcher.PluginSDK.Logging;
 
 namespace Flow.Launcher.Plugin.Explorer.Views;
 
 [INotifyPropertyChanged]
 public partial class PreviewPanel : UserControl
 {
-    private static readonly string ClassName = nameof(PreviewPanel);
-
     public string FilePath { get; }
     public string FileName { get; }
 
@@ -34,34 +34,34 @@ public partial class PreviewPanel : UserControl
     [ObservableProperty]
     private ImageSource _previewImage = new BitmapImage();
 
-    private Settings Settings { get; }
+    private readonly Settings _settings;
 
-    public Visibility FileSizeVisibility => Settings.ShowFileSizeInPreviewPanel
+    public Visibility FileSizeVisibility => _settings.ShowFileSizeInPreviewPanel
         ? Visibility.Visible
         : Visibility.Collapsed;
-    public Visibility CreatedAtVisibility => Settings.ShowCreatedDateInPreviewPanel
+    public Visibility CreatedAtVisibility => _settings.ShowCreatedDateInPreviewPanel
         ? Visibility.Visible
         : Visibility.Collapsed;
-    public Visibility LastModifiedAtVisibility => Settings.ShowModifiedDateInPreviewPanel
+    public Visibility LastModifiedAtVisibility => _settings.ShowModifiedDateInPreviewPanel
         ? Visibility.Visible
         : Visibility.Collapsed;
 
     public Visibility FileInfoVisibility =>
-        Settings.ShowFileSizeInPreviewPanel ||
-        Settings.ShowCreatedDateInPreviewPanel ||
-        Settings.ShowModifiedDateInPreviewPanel
+        _settings.ShowFileSizeInPreviewPanel ||
+        _settings.ShowCreatedDateInPreviewPanel ||
+        _settings.ShowModifiedDateInPreviewPanel
         ? Visibility.Visible
         : Visibility.Collapsed;
 
     public PreviewPanel(Settings settings, string filePath, ResultType type)
     {
-        Settings = settings;
+        _settings = settings;
         FilePath = filePath;
         FileName = Path.GetFileName(filePath);
 
         InitializeComponent();
 
-        if (Settings.ShowFileSizeInPreviewPanel)
+        if (_settings.ShowFileSizeInPreviewPanel)
         {
             if (type == ResultType.File)
             {
@@ -77,18 +77,18 @@ public partial class PreviewPanel : UserControl
             }
         }
 
-        if (Settings.ShowCreatedDateInPreviewPanel)
+        if (_settings.ShowCreatedDateInPreviewPanel)
         {
             CreatedAt = type == ResultType.File ?
-                GetFileCreatedAt(filePath, Settings.PreviewPanelDateFormat, Settings.PreviewPanelTimeFormat, Settings.ShowFileAgeInPreviewPanel) :
-                GetFolderCreatedAt(filePath, Settings.PreviewPanelDateFormat, Settings.PreviewPanelTimeFormat, Settings.ShowFileAgeInPreviewPanel);
+                GetFileCreatedAt(filePath, _settings.PreviewPanelDateFormat, _settings.PreviewPanelTimeFormat, _settings.ShowFileAgeInPreviewPanel) :
+                GetFolderCreatedAt(filePath, _settings.PreviewPanelDateFormat, _settings.PreviewPanelTimeFormat, _settings.ShowFileAgeInPreviewPanel);
         }
 
-        if (Settings.ShowModifiedDateInPreviewPanel)
+        if (_settings.ShowModifiedDateInPreviewPanel)
         {
             LastModifiedAt = type == ResultType.File ?
-                GetFileLastModifiedAt(filePath, Settings.PreviewPanelDateFormat, Settings.PreviewPanelTimeFormat, Settings.ShowFileAgeInPreviewPanel) :
-                GetFolderLastModifiedAt(filePath, Settings.PreviewPanelDateFormat, Settings.PreviewPanelTimeFormat, Settings.ShowFileAgeInPreviewPanel);
+                GetFileLastModifiedAt(filePath, _settings.PreviewPanelDateFormat, _settings.PreviewPanelTimeFormat, _settings.ShowFileAgeInPreviewPanel) :
+                GetFolderLastModifiedAt(filePath, _settings.PreviewPanelDateFormat, _settings.PreviewPanelTimeFormat, _settings.ShowFileAgeInPreviewPanel);
         }
 
         _ = LoadImageAsync();
@@ -99,7 +99,7 @@ public partial class PreviewPanel : UserControl
         PreviewImage = await Main.Context.API.LoadImageAsync(FilePath, true).ConfigureAwait(false);
     }
 
-    public static string GetFileSize(string filePath)
+    public string GetFileSize(string filePath)
     {
         try
         {
@@ -108,17 +108,17 @@ public partial class PreviewPanel : UserControl
         }
         catch (FileNotFoundException)
         {
-            Main.Context.API.LogError(ClassName, $"File not found: {filePath}");
+            Main.Context.Logger.LogError($"File not found: {filePath}");
             return Localize.Preview_UnknownValue;
         }
         catch (UnauthorizedAccessException)
         {
-            Main.Context.API.LogError(ClassName, $"Access denied to file: {filePath}");
+            Main.Context.Logger.LogError($"Access denied to file: {filePath}");
             return Localize.Preview_UnknownValue;
         }
         catch (Exception e)
         {
-            Main.Context.API.LogException(ClassName, $"Failed to get file size for {filePath}", e);
+            Main.Context.Logger.LogError(e, $"Failed to get file size for {filePath}");
             return Localize.Preview_UnknownValue;
         }
     }
@@ -139,17 +139,17 @@ public partial class PreviewPanel : UserControl
         }
         catch (FileNotFoundException)
         {
-            Main.Context.API.LogError(ClassName, $"File not found: {filePath}");
+            Main.Context.Logger.LogError($"File not found: {filePath}");
             return Localize.Preview_UnknownValue;
         }
         catch (UnauthorizedAccessException)
         {
-            Main.Context.API.LogError(ClassName, $"Access denied to file: {filePath}");
+            Main.Context.Logger.LogError($"Access denied to file: {filePath}");
             return Localize.Preview_UnknownValue;
         }
         catch (Exception e)
         {
-            Main.Context.API.LogException(ClassName, $"Failed to get file created date for {filePath}", e);
+            Main.Context.Logger.LogError(e, $"Failed to get file created date for {filePath}");
             return Localize.Preview_UnknownValue;
         }
     }
@@ -170,17 +170,17 @@ public partial class PreviewPanel : UserControl
         }
         catch (FileNotFoundException)
         {
-            Main.Context.API.LogError(ClassName, $"File not found: {filePath}");
+            Main.Context.Logger.LogError($"File not found: {filePath}");
             return Localize.Preview_UnknownValue;
         }
         catch (UnauthorizedAccessException)
         {
-            Main.Context.API.LogError(ClassName, $"Access denied to file: {filePath}");
+            Main.Context.Logger.LogError($"Access denied to file: {filePath}");
             return Localize.Preview_UnknownValue;
         }
         catch (Exception e)
         {
-            Main.Context.API.LogException(ClassName, $"Failed to get file modified date for {filePath}", e);
+            Main.Context.Logger.LogError(e, $"Failed to get file modified date for {filePath}");
             return Localize.Preview_UnknownValue;
         }
     }
@@ -202,17 +202,17 @@ public partial class PreviewPanel : UserControl
         }
         catch (FileNotFoundException)
         {
-            Main.Context.API.LogError(ClassName, $"Folder not found: {folderPath}");
+            Main.Context.Logger.LogError($"Folder not found: {folderPath}");
             return Localize.Preview_UnknownValue;
         }
         catch (UnauthorizedAccessException)
         {
-            Main.Context.API.LogError(ClassName, $"Access denied to folder: {folderPath}");
+            Main.Context.Logger.LogError($"Access denied to folder: {folderPath}");
             return Localize.Preview_UnknownValue;
         }
         catch (OperationCanceledException)
         {
-            Main.Context.API.LogError(ClassName, $"Operation timed out while calculating folder size for {folderPath}");
+            Main.Context.Logger.LogError($"Operation timed out while calculating folder size for {folderPath}");
             return Localize.Preview_UnknownValue;
         }
         // For parallel operations, AggregateException may be thrown if any of the tasks fail
@@ -221,22 +221,22 @@ public partial class PreviewPanel : UserControl
             switch (ae.InnerException)
             {
                 case FileNotFoundException:
-                    Main.Context.API.LogError(ClassName, $"Folder not found: {folderPath}");
+                    Main.Context.Logger.LogError($"Folder not found: {folderPath}");
                     return Localize.Preview_UnknownValue;
                 case UnauthorizedAccessException:
-                    Main.Context.API.LogError(ClassName, $"Access denied to folder: {folderPath}");
+                    Main.Context.Logger.LogError($"Access denied to folder: {folderPath}");
                     return Localize.Preview_UnknownValue;
                 case OperationCanceledException:
-                    Main.Context.API.LogError(ClassName, $"Operation timed out while calculating folder size for {folderPath}");
+                    Main.Context.Logger.LogError($"Operation timed out while calculating folder size for {folderPath}");
                     return Localize.Preview_UnknownValue;
                 default:
-                    Main.Context.API.LogException(ClassName, $"Failed to get folder size for {folderPath}", ae);
+                    Main.Context.Logger.LogError(ae, $"Failed to get folder size for {folderPath}");
                     return Localize.Preview_UnknownValue;
             }
         }
         catch (Exception e)
         {
-            Main.Context.API.LogException(ClassName, $"Failed to get folder size for {folderPath}", e);
+            Main.Context.Logger.LogError(e, $"Failed to get folder size for {folderPath}");
             return Localize.Preview_UnknownValue;
         }
     }
@@ -257,17 +257,17 @@ public partial class PreviewPanel : UserControl
         }
         catch (FileNotFoundException)
         {
-            Main.Context.API.LogError(ClassName, $"Folder not found: {folderPath}");
+            Main.Context.Logger.LogError($"Folder not found: {folderPath}");
             return Localize.Preview_UnknownValue;
         }
         catch (UnauthorizedAccessException)
         {
-            Main.Context.API.LogError(ClassName, $"Access denied to folder: {folderPath}");
+            Main.Context.Logger.LogError($"Access denied to folder: {folderPath}");
             return Localize.Preview_UnknownValue;
         }
         catch (Exception e)
         {
-            Main.Context.API.LogException(ClassName, $"Failed to get folder created date for {folderPath}", e);
+            Main.Context.Logger.LogError(e, $"Failed to get folder created date for {folderPath}");
             return Localize.Preview_UnknownValue;
         }
     }
@@ -288,17 +288,17 @@ public partial class PreviewPanel : UserControl
         }
         catch (FileNotFoundException)
         {
-            Main.Context.API.LogError(ClassName, $"Folder not found: {folderPath}");
+            Main.Context.Logger.LogError($"Folder not found: {folderPath}");
             return Localize.Preview_UnknownValue;
         }
         catch (UnauthorizedAccessException)
         {
-            Main.Context.API.LogError(ClassName, $"Access denied to folder: {folderPath}");
+            Main.Context.Logger.LogError($"Access denied to folder: {folderPath}");
             return Localize.Preview_UnknownValue;
         }
         catch (Exception e)
         {
-            Main.Context.API.LogException(ClassName, $"Failed to get folder modified date for {folderPath}", e);
+            Main.Context.Logger.LogError(e, $"Failed to get folder modified date for {folderPath}");
             return Localize.Preview_UnknownValue;
         }
     }

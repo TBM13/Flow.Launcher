@@ -11,14 +11,14 @@ using Flow.Launcher.Core;
 using Flow.Launcher.Infrastructure.Image;
 using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Infrastructure.WPF;
+using Flow.Launcher.PluginSDK.Logging;
 
 namespace Flow.Launcher.ViewModel
 {
     public partial class ResultViewModel : ObservableObject
     {
-        private static readonly string ClassName = nameof(ResultViewModel);
-
         // TODO: Check if there is any better alternative
+        private static readonly Logger<ResultViewModel> _logger = Ioc.Default.GetRequiredService<Logger<ResultViewModel>>();
         private static readonly ImageLoader _imageLoader = Ioc.Default.GetRequiredService<ImageLoader>();
         private static readonly PrivateFontCollection _fontCollection = new();
         private static readonly Dictionary<string, string> _fonts = [];
@@ -170,9 +170,8 @@ namespace Flow.Launcher.ViewModel
                 }
                 catch (Exception e)
                 {
-                    App.API.LogException(ClassName,
-                        $"IcoPath is empty and exception when calling IconDelegate for result <{Result.Title}> of plugin <{Result.PluginID}>",
-                        e);
+                    _logger.LogError(e,
+                        $"IcoPath is empty and exception when calling IconDelegate for result <{Result.Title}> of plugin <{Result.PluginID}>");
                 }
             }
 

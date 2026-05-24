@@ -8,27 +8,33 @@ using System.Windows.Data;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Flow.Launcher.Core;
+using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Infrastructure.Results;
+using Flow.Launcher.PluginSDK.Logging;
 
 namespace Flow.Launcher.ViewModel
 {
     public partial class ResultsViewModel : ObservableObject
     {
-        private readonly string ClassName = nameof(ResultsViewModel);
+        private readonly Logger<ResultsViewModel> _logger;
+        private readonly MainViewModel _mainVM;
+        private readonly Settings _settings;
+        private readonly PluginManager _pluginManager;
+        private readonly object _collectionLock = new();
 
         public ResultCollection Results { get; }
 
-        private readonly object _collectionLock = new();
-        private readonly Settings _settings;
-        private readonly MainViewModel _mainVM;
-
-        public ResultsViewModel(Settings settings, MainViewModel mainVM)
+        public ResultsViewModel(Logger<ResultsViewModel> logger,
+            MainViewModel mainVM, Settings settings, PluginManager pluginManager)
         {
+            _logger = logger;
+            _mainVM = mainVM;
+            _settings = settings;
+            _pluginManager = pluginManager;
+
             Results = [];
             BindingOperations.EnableCollectionSynchronization(Results, _collectionLock);
 
-            _settings = settings;
-            _mainVM = mainVM;
             _settings.PropertyChanged += (s, e) =>
             {
                 switch (e.PropertyName)
@@ -194,7 +200,7 @@ namespace Flow.Launcher.ViewModel
         {
             if (resultsForUpdates.Count == 0)
             {
-                App.API.LogDebug(ClassName, "No results for updates, returning existing results");
+                _logger.LogDebug($"No results for updates, returning existing results");
                 return Results;
             }
 
@@ -202,11 +208,11 @@ namespace Flow.Launcher.ViewModel
 
             if (resultsForUpdates.Any(x => x.ShouldClearExistingResults))
             {
-                App.API.LogDebug(ClassName, $"Existing results are cleared for query");
+                _logger.LogDebug($"Existing results are cleared for query");
                 return [.. newResults.OrderByDescending(rv => rv.Result.Score)];
             }
 
-            App.API.LogDebug(ClassName, $"Keeping existing results for {resultsForUpdates.Count} queries");
+            _logger.LogDebug($"Keeping existing results for {resultsForUpdates.Count} queries");
             return [.. Results.Where(r => r?.Result != null && resultsForUpdates.All(u => u.ID != r.Result.PluginID))
                               .Concat(newResults)
                               .OrderByDescending(rv => rv.Result.Score)];

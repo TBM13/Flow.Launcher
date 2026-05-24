@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Windows;
 using Flow.Launcher.Infrastructure;
+using Flow.Launcher.PluginSDK.Logging;
 using Microsoft.Toolkit.Uwp.Notifications;
 
 namespace Flow.Launcher
@@ -10,13 +11,12 @@ namespace Flow.Launcher
     /// <summary>
     /// Requires Windows 10 20H1 (Build 19041) or later.
     /// </summary>
-    internal static class Notification
+    public class Notification(Logger<Notification> logger)
     {
-        private static readonly string ClassName = nameof(Notification);
+        private readonly Logger<Notification> _logger = logger;
+        private readonly ConcurrentDictionary<string, Action> _notificationActions = new();
 
-        private static readonly ConcurrentDictionary<string, Action> _notificationActions = new();
-
-        internal static void Install()
+        internal void Install()
         {
             ToastNotificationManagerCompat.OnActivated += toastArgs =>
             {
@@ -28,13 +28,13 @@ namespace Flow.Launcher
             };
         }
 
-        internal static void Uninstall()
+        internal void Uninstall()
         {
             _notificationActions.Clear();
             ToastNotificationManagerCompat.Uninstall();
         }
 
-        public static void Show(string title, string subTitle, string iconPath = null)
+        public void Show(string title, string subTitle, string iconPath = null)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -42,7 +42,7 @@ namespace Flow.Launcher
             });
         }
 
-        private static void ShowInternal(string title, string subTitle, string iconPath = null)
+        private void ShowInternal(string title, string subTitle, string iconPath = null)
         {
             var Icon = !File.Exists(iconPath)
                 ? Path.Combine(Constant.ProgramDirectory, "Images\\app.png")
@@ -60,15 +60,15 @@ namespace Flow.Launcher
             {
                 // Windows 11 may have a notification issue
                 // likely on 22621.1413 or 22621.1485 judging by post time of #2024
-                App.API.LogException(ClassName, "Notification InvalidOperationException Error", e);
+                _logger.LogError(e, $"Notification InvalidOperationException Error");
             }
             catch (Exception e)
             {
-                App.API.LogException(ClassName, "Notification Error", e);
+                _logger.LogError(e, $"Notification Error");
             }
         }
 
-        public static void ShowWithButton(string title, string buttonText, Action buttonAction, string subTitle, string iconPath = null)
+        public void ShowWithButton(string title, string buttonText, Action buttonAction, string subTitle, string iconPath = null)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -76,7 +76,7 @@ namespace Flow.Launcher
             });
         }
 
-        private static void ShowInternalWithButton(string title, string buttonText, Action buttonAction, string subTitle, string iconPath = null)
+        private void ShowInternalWithButton(string title, string buttonText, Action buttonAction, string subTitle, string iconPath = null)
         {
             var Icon = !File.Exists(iconPath)
                 ? Path.Combine(Constant.ProgramDirectory, "Images\\app.png")
@@ -97,11 +97,11 @@ namespace Flow.Launcher
             {
                 // Windows 11 may have a notification issue
                 // likely on 22621.1413 or 22621.1485 judging by post time of #2024
-                App.API.LogException(ClassName, "Notification InvalidOperationException Error", e);
+                _logger.LogError(e, $"Notification InvalidOperationException Error");
             }
             catch (Exception e)
             {
-                App.API.LogException(ClassName, "Notification Error", e);
+                _logger.LogError(e, $"Notification Error");
             }
         }
     }

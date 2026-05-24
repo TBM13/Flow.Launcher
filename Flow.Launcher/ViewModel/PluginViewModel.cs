@@ -12,16 +12,17 @@ using Flow.Launcher.Infrastructure.Image;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 using Flow.Launcher.Infrastructure.Results;
+using Flow.Launcher.PluginSDK.Logging;
 using Flow.Launcher.Resources.Controls;
 
 namespace Flow.Launcher.ViewModel
 {
     public partial class PluginViewModel : ObservableObject
     {
-        private static readonly string ClassName = nameof(PluginViewModel);
-
         // TODO: Check if there is any better alternative
+        private static readonly Logger<PluginViewModel> _logger = Ioc.Default.GetRequiredService<Logger<PluginViewModel>>();
         private static readonly ImageLoader _imageLoader = Ioc.Default.GetRequiredService<ImageLoader>();
+        private static readonly PluginManager _pluginManager = Ioc.Default.GetRequiredService<PluginManager>();
         private static readonly Settings _settings = Ioc.Default.GetRequiredService<Settings>();
         private static readonly Thickness _settingPanelMargin = (Thickness)Application.Current.FindResource("SettingPanelMargin");
         private static readonly Thickness _settingPanelItemTopBottomMargin = (Thickness)Application.Current.FindResource("SettingPanelItemTopBottomMargin");
@@ -117,7 +118,7 @@ namespace Flow.Launcher.ViewModel
             catch (Exception e)
             {
                 // Log exception
-                App.API.LogException(ClassName, $"Failed to create setting panel for {metadata.Name}", e);
+                _logger.LogError(e, $"Failed to create setting panel for {metadata.Name}");
 
                 // Show error message in UI
                 var errorMsg = Localize.errorCreatingSettingPanel(metadata.Name, Environment.NewLine, e.Message);
@@ -128,7 +129,7 @@ namespace Flow.Launcher.ViewModel
         public string Version => Localize.plugin_query_version() + " " + PluginMetadata.Version;
         public string ActionKeywordsText => string.Join(Query.TermSeparator, PluginMetadata.ActionKeywords);
         public Infrastructure.UserSettings.Plugin? PluginSettingsObject { get; init; }
-        public bool HomeEnabled => _settings.ShowHomePage && PluginManager.IsHomePlugin(PluginMetadata.ID);
+        public bool HomeEnabled => _settings.ShowHomePage && _pluginManager.IsHomePlugin(PluginMetadata.ID);
 
         public void OnActionKeywordsTextChanged()
         {

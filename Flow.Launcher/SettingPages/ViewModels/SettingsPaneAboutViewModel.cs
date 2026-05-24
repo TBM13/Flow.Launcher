@@ -4,15 +4,19 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.UserSettings;
+using Flow.Launcher.PluginSDK.Logging;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
 
 public partial class SettingsPaneAboutViewModel : ObservableObject
 {
-    private static readonly string ClassName = nameof(SettingsPaneAboutViewModel);
+    // TODO: Check if there is any better alternative
+    private readonly Logger<SettingsPaneAboutViewModel> _logger
+        = Ioc.Default.GetRequiredService<Logger<SettingsPaneAboutViewModel>>();
 
     public string CacheFolderSize
     {
@@ -74,7 +78,7 @@ public partial class SettingsPaneAboutViewModel : ObservableObject
             }
             catch (Exception e)
             {
-                App.API.LogException(ClassName, $"Failed to delete cache file: {f.Name}", e);
+                _logger.LogError(e, $"Failed to delete cache file: {f.Name}");
                 success = false;
             }
         });
@@ -95,7 +99,7 @@ public partial class SettingsPaneAboutViewModel : ObservableObject
                     }
                     catch (Exception e)
                     {
-                        App.API.LogException(ClassName, $"Failed to delete cache directory: {dir.Name}", e);
+                        _logger.LogError(e, $"Failed to delete cache directory: {dir.Name}");
                         success = false;
                     }
                 });
@@ -108,7 +112,7 @@ public partial class SettingsPaneAboutViewModel : ObservableObject
             }
             catch (Exception e)
             {
-                App.API.LogException(ClassName, $"Failed to delete cache directory: {dir.Name}", e);
+                _logger.LogError(e, $"Failed to delete cache directory: {dir.Name}");
                 success = false;
             }
         }

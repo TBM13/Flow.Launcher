@@ -5,7 +5,6 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -24,6 +23,7 @@ using Flow.Launcher.Infrastructure.Storage;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Interop;
 using Flow.Launcher.Interop.Programs;
+using Flow.Launcher.PluginSDK.Logging;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern;
 
@@ -31,17 +31,27 @@ namespace Flow.Launcher
 {
     public class PublicAPIInstance : Plugin.IPublicAPI
     {
+        private readonly Logger<PublicAPIInstance> _logger;
         private readonly Settings _settings;
         private readonly MainViewModel _mainVM;
+        private readonly Internationalization _internationalization;
         private readonly ImageLoader _imageLoader;
+        private readonly PluginManager _pluginManager;
+        private readonly Notification _notification;
 
         private readonly object _saveSettingsLock = new();
 
-        public PublicAPIInstance(Settings settings, MainViewModel mainVM, ImageLoader imageLoader)
+        public PublicAPIInstance(Logger<PublicAPIInstance> logger,
+            MainViewModel mainVM, Settings settings, Internationalization internationalization,
+            ImageLoader imageLoader, PluginManager pluginManager, Notification notification)
         {
-            _settings = settings;
+            _logger = logger;
             _mainVM = mainVM;
+            _settings = settings;
+            _internationalization = internationalization;
             _imageLoader = imageLoader;
+            _pluginManager = pluginManager;
+            _notification = notification;
 
             IPublicAPI.Instance = this;
         }
@@ -80,12 +90,12 @@ namespace Flow.Launcher
             lock (_saveSettingsLock)
             {
                 _settings.Save();
-                PluginManager.Save();
+                _pluginManager.Save();
                 _mainVM.Save();
             }
         }
 
-        public Task ReloadAllPluginData() => PluginManager.ReloadDataAsync();
+        public Task ReloadAllPluginData() => _pluginManager.ReloadDataAsync();
 
         public void ShowMsgError(string title, string subTitle = "") =>
             ShowMsg(title, subTitle, Constant.ErrorIcon, true);
@@ -98,7 +108,7 @@ namespace Flow.Launcher
 
         public void ShowMsg(string title, string subTitle, string iconPath, bool useMainWindowAsOwner = true)
         {
-            Notification.Show(title, subTitle, iconPath);
+            _notification.Show(title, subTitle, iconPath);
         }
 
         public void ShowMsgWithButton(string title, string buttonText, Action buttonAction, string subTitle = "", string iconPath = "") =>
@@ -106,7 +116,7 @@ namespace Flow.Launcher
 
         public void ShowMsgWithButton(string title, string buttonText, Action buttonAction, string subTitle, string iconPath, bool useMainWindowAsOwner = true)
         {
-            Notification.ShowWithButton(title, buttonText, buttonAction, subTitle, iconPath);
+            _notification.ShowWithButton(title, buttonText, buttonAction, subTitle, iconPath);
         }
 
         public void OpenSettingDialog()
@@ -151,7 +161,7 @@ namespace Flow.Launcher
                 }
                 else
                 {
-                    LogException(nameof(PublicAPIInstance), "Failed to copy file/folder to clipboard", exception);
+                    _logger.LogError(exception, $"Failed to copy file/folder to clipboard");
                     ShowMsgError(Localize.failedToCopy());
                 }
             }
@@ -176,7 +186,7 @@ namespace Flow.Launcher
                 }
                 else
                 {
-                    LogException(nameof(PublicAPIInstance), "Failed to copy text to clipboard", exception);
+                    _logger.LogError(exception, $"Failed to copy text to clipboard");
                     ShowMsgError(Localize.failedToCopy());
                 }
             }
@@ -203,38 +213,23 @@ namespace Flow.Launcher
             return null;
         }
 
-        public string GetTranslation(string key) => Internationalization.GetTranslation(key);
+        public string GetTranslation(string key) => _internationalization.GetTranslation(key);
 
-        public List<PluginMetadata> GetAllPlugins() => PluginManager.GetAllLoadedPlugins();
+        public List<PluginMetadata> GetAllPlugins() => _pluginManager.GetAllLoadedPlugins();
 
         public List<PluginMetadata> GetAllInitializedPlugins(bool includeFailed) =>
-            PluginManager.GetAllInitializedPlugins(includeFailed);
+            _pluginManager.GetAllInitializedPlugins(includeFailed);
 
         public MatchResult FuzzySearch(string query, string stringToCompare) =>
             StringMatcher.FuzzySearch(query, stringToCompare);
 
         public void AddActionKeyword(string pluginId, string newActionKeyword) =>
-            PluginManager.AddActionKeyword(pluginId, newActionKeyword);
+            _pluginManager.AddActionKeyword(pluginId, newActionKeyword);
 
-        public bool ActionKeywordAssigned(string actionKeyword) => PluginManager.ActionKeywordRegistered(actionKeyword);
+        public bool ActionKeywordAssigned(string actionKeyword) => _pluginManager.ActionKeywordRegistered(actionKeyword);
 
         public void RemoveActionKeyword(string pluginId, string oldActionKeyword) =>
-            PluginManager.RemoveActionKeyword(pluginId, oldActionKeyword);
-
-        [Obsolete("TODO: Remove me, use new logging system directly")]
-        public void LogDebug(string className, string message, [CallerMemberName] string methodName = "") { }
-
-        [Obsolete("TODO: Remove me, use new logging system directly")]
-        public void LogInfo(string className, string message, [CallerMemberName] string methodName = "") { }
-
-        [Obsolete("TODO: Remove me, use new logging system directly")]
-        public void LogWarn(string className, string message, [CallerMemberName] string methodName = "") { }
-
-        [Obsolete("TODO: Remove me, use new logging system directly")]
-        public void LogError(string className, string message, [CallerMemberName] string methodName = "") { }
-
-        [Obsolete("TODO: Remove me, use new logging system directly")]
-        public void LogException(string className, string message, Exception e, [CallerMemberName] string methodName = "") { }
+            _pluginManager.RemoveActionKeyword(pluginId, oldActionKeyword);
 
         private readonly ConcurrentDictionary<Type, ISavable> _pluginJsonStorages = new();
 
@@ -309,7 +304,7 @@ namespace Flow.Launcher
             }
             catch (Win32Exception ex) when (ex.NativeErrorCode == 2)
             {
-                LogException("", "File Manager not found", ex);
+                _logger.LogError(ex, $"File Manager not found");
                 ShowMsgError(
                     Localize.fileManagerNotFoundTitle(),
                     Localize.fileManagerNotFound()
@@ -317,7 +312,7 @@ namespace Flow.Launcher
             }
             catch (Exception ex)
             {
-                LogException("", "Failed to open folder", ex);
+                _logger.LogError(ex, $"Failed to open folder: {directoryPath}");
                 ShowMsgError(
                     Localize.errorTitle(),
                     Localize.folderOpenError()
@@ -347,7 +342,7 @@ namespace Flow.Launcher
                 catch (Exception e)
                 {
                     var tabOrWindow = openInTab ? "tab" : "window";
-                    LogException("", $"Failed to open URL in browser {tabOrWindow}: {inPrivate}", e);
+                    _logger.LogError(e, $"Failed to open URL in browser {tabOrWindow}: {inPrivate}");
                     ShowMsgError(
                         Localize.errorTitle(),
                         Localize.browserOpenError()
@@ -362,7 +357,7 @@ namespace Flow.Launcher
                 }
                 catch (Exception e)
                 {
-                    LogException("", $"Failed to open: {uri.AbsoluteUri}", e);
+                    _logger.LogError(e, $"Failed to open: {uri.AbsoluteUri}");
                     ShowMsgError(Localize.errorTitle(), e.Message);
                 }
             }

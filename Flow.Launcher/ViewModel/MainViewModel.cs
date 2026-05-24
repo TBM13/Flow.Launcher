@@ -26,6 +26,7 @@ using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Infrastructure.WPF;
 using Flow.Launcher.Interop;
 using Flow.Launcher.Interop.Shell;
+using Flow.Launcher.PluginSDK.Logging;
 using Flow.Launcher.Storage;
 using iNKORE.UI.WPF.Modern;
 using Microsoft.VisualStudio.Threading;
@@ -34,9 +35,8 @@ namespace Flow.Launcher.ViewModel
 {
     public partial class MainViewModel : ObservableObject, ISavable, IDisposable
     {
-        #region Private Fields
-
-        private static readonly string ClassName = nameof(MainViewModel);
+        private readonly Logger<MainViewModel> _logger;
+        private readonly PluginManager _pluginManager;
 
         private Query? _lastQuery;
         private bool _previousIsHomeQuery;
@@ -55,12 +55,12 @@ namespace Flow.Launcher.ViewModel
         private readonly IReadOnlyList<Result> _emptyResult = [];
 
         private bool _taskbarShownByFlow = false;
-        #endregion
-
-        #region Constructor
 
         public MainViewModel()
         {
+            _logger = Ioc.Default.GetRequiredService<Logger<MainViewModel>>();
+            _pluginManager = Ioc.Default.GetRequiredService<PluginManager>();
+
             _queryText = "";
             _lastQuery = null;
             _ignoredQueryText = null; // null as invalid value
@@ -80,13 +80,14 @@ namespace Flow.Launcher.ViewModel
             _topMostRecord = new FlowLauncherJsonStorageTopMostRecord();
             _userSelectedRecord = _userSelectedRecordStorage.Load();
 
-            _contextMenu = new ResultsViewModel(Settings, this)
+            Logger<ResultsViewModel> resultsLogger = Ioc.Default.GetRequiredService<Logger<ResultsViewModel>>();
+            _contextMenu = new ResultsViewModel(resultsLogger, this, Settings, _pluginManager)
             {
                 LeftClickResultCommand = OpenResultCommand,
                 RightClickResultCommand = LoadContextMenuCommand,
                 IsPreviewOn = Settings.AlwaysPreview
             };
-            _results = new ResultsViewModel(Settings, this)
+            _results = new ResultsViewModel(resultsLogger, this, Settings, _pluginManager)
             {
                 LeftClickResultCommand = OpenResultCommand,
                 RightClickResultCommand = LoadContextMenuCommand,
@@ -176,7 +177,7 @@ namespace Flow.Launcher.ViewModel
                 }
 
                 if (!_disposed)
-                    App.API.LogError(ClassName, "Unexpected ResultViewUpdate ends");
+                    _logger.LogError($"Unexpected ResultViewUpdate ends");
             }
 
             void continueAction(Task t)
@@ -184,7 +185,7 @@ namespace Flow.Launcher.ViewModel
 #if DEBUG
                 throw t.Exception;
 #else
-                App.API.LogError(ClassName, $"Error happen in task dealing with viewupdate for results. {t.Exception}");
+                _logger.LogError(t.Exception, $"Error happen in task dealing with viewupdate for results");
                 _resultsViewUpdateTask =
                     Task.Run(UpdateActionAsync).ContinueWith(continueAction, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.Default);
 #endif
@@ -196,7 +197,7 @@ namespace Flow.Launcher.ViewModel
         {
             Hide();
 
-            await PluginManager.ReloadDataAsync().ConfigureAwait(false);
+            await _pluginManager.ReloadDataAsync().ConfigureAwait(false);
             App.API.ShowMsg(Localize.success(),
                 Localize.completedSuccessfully());
         }
@@ -237,7 +238,7 @@ namespace Flow.Launcher.ViewModel
         [RelayCommand]
         private void Backspace(object index)
         {
-            var query = QueryBuilder.Build(QueryText, isRequery: false, PluginManager.GetNonGlobalPlugins());
+            var query = QueryBuilder.Build(QueryText, isRequery: false, _pluginManager.GetNonGlobalPlugins());
             string actionKeyword = query.ActionKeyword.Length == 0
                 ? string.Empty
                 : query.ActionKeyword + Infrastructure.Results.Query.TermSeparator;
@@ -311,8 +312,6 @@ namespace Flow.Launcher.ViewModel
             }
             return resultsCopy;
         }
-
-        #endregion
 
         #region BasicCommands
 
@@ -681,7 +680,7 @@ namespace Flow.Launcher.ViewModel
 
         private async Task ShowPreviewAsync()
         {
-            var useExternalPreview = PluginManager.UseExternalPreview();
+            var useExternalPreview = _pluginManager.UseExternalPreview();
 
             switch (useExternalPreview)
             {
@@ -710,7 +709,7 @@ namespace Flow.Launcher.ViewModel
 
         private void HidePreview()
         {
-            if (PluginManager.UseExternalPreview())
+            if (_pluginManager.UseExternalPreview())
                 _ = CloseExternalPreviewAsync();
 
             if (InternalPreviewVisible)
@@ -732,19 +731,19 @@ namespace Flow.Launcher.ViewModel
 
         private async Task OpenExternalPreviewAsync(string path, bool sendFailToast = true)
         {
-            await PluginManager.OpenExternalPreviewAsync(path, sendFailToast).ConfigureAwait(false);
+            await _pluginManager.OpenExternalPreviewAsync(path, sendFailToast).ConfigureAwait(false);
             ExternalPreviewVisible = true;
         }
 
         private async Task CloseExternalPreviewAsync()
         {
-            await PluginManager.CloseExternalPreviewAsync().ConfigureAwait(false);
+            await _pluginManager.CloseExternalPreviewAsync().ConfigureAwait(false);
             ExternalPreviewVisible = false;
         }
 
-        private static async Task SwitchExternalPreviewAsync(string path, bool sendFailToast = true)
+        private async Task SwitchExternalPreviewAsync(string path, bool sendFailToast = true)
         {
-            await PluginManager.SwitchExternalPreviewAsync(path, sendFailToast).ConfigureAwait(false);
+            await _pluginManager.SwitchExternalPreviewAsync(path, sendFailToast).ConfigureAwait(false);
         }
 
         private void ShowInternalPreview()
@@ -763,7 +762,7 @@ namespace Flow.Launcher.ViewModel
             switch (Settings.AlwaysPreview)
             {
                 case true
-                    when PluginManager.AllowAlwaysPreview() && CanExternalPreviewSelectedResult(out var path):
+                    when _pluginManager.AllowAlwaysPreview() && CanExternalPreviewSelectedResult(out var path):
                     _ = OpenExternalPreviewAsync(path);
                     break;
                 case true:
@@ -777,7 +776,7 @@ namespace Flow.Launcher.ViewModel
 
         private async Task UpdatePreviewAsync()
         {
-            switch (PluginManager.UseExternalPreview())
+            switch (_pluginManager.UseExternalPreview())
             {
                 case true
                     when CanExternalPreviewSelectedResult(out var path):
@@ -885,7 +884,7 @@ namespace Flow.Launcher.ViewModel
                 }
                 else
                 {
-                    results = PluginManager.GetContextMenusForPlugin(selected);
+                    results = _pluginManager.GetContextMenusForPlugin(selected);
                     results.Add(ContextMenuTopMost(selected));
                 }
 
@@ -920,7 +919,7 @@ namespace Flow.Launcher.ViewModel
             if (_updateSource is not null)
                 await _updateSource.CancelAsync();
 
-            App.API.LogDebug(ClassName, $"Start query with text: <{QueryText}>");
+            _logger.LogDebug($"Start query with text: <{QueryText}>");
 
             var query = await ConstructQueryAsync(QueryText, isReQuery, Settings.CustomShortcuts, Settings.BuiltinShortcuts);
 
@@ -930,7 +929,7 @@ namespace Flow.Launcher.ViewModel
                 return;
             }
 
-            App.API.LogDebug(ClassName, $"Start query with ActionKeyword <{query.ActionKeyword}> and TrimmedQuery <{query.TrimmedQuery}>");
+            _logger.LogDebug($"Start query with ActionKeyword <{query.ActionKeyword}> and TrimmedQuery <{query.TrimmedQuery}>");
 
             var currentIsHomeQuery = query.IsHomeQuery;
 
@@ -950,7 +949,7 @@ namespace Flow.Launcher.ViewModel
             {
                 if (Settings.ShowHomePage)
                 {
-                    plugins = PluginManager.ValidPluginsForHomeQuery();
+                    plugins = _pluginManager.ValidPluginsForHomeQuery();
                 }
 
                 PluginIconPath = null;
@@ -958,7 +957,7 @@ namespace Flow.Launcher.ViewModel
             }
             else
             {
-                plugins = PluginManager.ValidPluginsForQuery(query);
+                plugins = _pluginManager.ValidPluginsForQuery(query);
 
                 if (plugins.Count == 1)
                 {
@@ -972,7 +971,7 @@ namespace Flow.Launcher.ViewModel
                 }
             }
 
-            App.API.LogDebug(ClassName, $"Valid <{plugins.Count}> plugins: {string.Join(" ", plugins.Select(x => $"<{x.Name}>"))}");
+            _logger.LogDebug($"Valid <{plugins.Count}> plugins: {string.Join(" ", plugins.Select(x => $"<{x.Name}>"))}");
 
             // Do not wait for performance improvement
             /*if (string.IsNullOrEmpty(query.ActionKeyword))
@@ -1025,7 +1024,7 @@ namespace Flow.Launcher.ViewModel
             // Local function
             void ClearResults()
             {
-                App.API.LogDebug(ClassName, $"Clear query results");
+                _logger.LogDebug($"Clear query results");
 
                 // Hide and clear results again because running query may show and add some results
                 _results.Visibility = Visibility.Collapsed;
@@ -1039,15 +1038,15 @@ namespace Flow.Launcher.ViewModel
             // Local function
             async Task QueryTaskAsync(PluginMetadata plugin, CancellationToken token)
             {
-                App.API.LogDebug(ClassName, $"Wait for querying plugin <{plugin.Name}>");
+                _logger.LogDebug($"Wait for querying plugin <{plugin.Name}>");
 
                 // Since it is wrapped within a ThreadPool Thread, the synchronous context is null
                 // Task.Yield will force it to run in ThreadPool
                 await Task.Yield();
 
                 var results = currentIsHomeQuery ?
-                    await PluginManager.QueryHomeForPluginAsync(plugin, query, token) :
-                    await PluginManager.QueryForPluginAsync(plugin, query, token);
+                    await _pluginManager.QueryHomeForPluginAsync(plugin, query, token) :
+                    await _pluginManager.QueryForPluginAsync(plugin, query, token);
 
                 if (token.IsCancellationRequested) return;
 
@@ -1064,12 +1063,12 @@ namespace Flow.Launcher.ViewModel
 
                 if (token.IsCancellationRequested) return;
 
-                App.API.LogDebug(ClassName, $"Update results for plugin <{plugin.Name}>");
+                _logger.LogDebug($"Update results for plugin <{plugin.Name}>");
 
                 if (!_resultsUpdateChannelWriter.TryWrite(new ResultsForUpdate(resultsCopy, plugin, query,
                     token, reSelect)))
                 {
-                    App.API.LogError(ClassName, "Unable to add item to Result Update Queue");
+                    _logger.LogError($"Unable to add item to Result Update Queue");
                 }
             }
         }
@@ -1081,7 +1080,7 @@ namespace Flow.Launcher.ViewModel
         {
             if (string.IsNullOrWhiteSpace(queryText))
             {
-                return QueryBuilder.Build(string.Empty, isRequery, PluginManager.GetNonGlobalPlugins());
+                return QueryBuilder.Build(string.Empty, isRequery, _pluginManager.GetNonGlobalPlugins());
             }
 
             var queryBuilder = new StringBuilder(queryText);
@@ -1101,7 +1100,7 @@ namespace Flow.Launcher.ViewModel
             // Apply builtin shortcuts
             await BuildQueryAsync(builtInShortcuts, queryBuilder, queryBuilderTmp);
 
-            return QueryBuilder.Build(queryBuilder.ToString(), isRequery, PluginManager.GetNonGlobalPlugins());
+            return QueryBuilder.Build(queryBuilder.ToString(), isRequery, _pluginManager.GetNonGlobalPlugins());
         }
 
         private async Task BuildQueryAsync(IEnumerable<BaseBuiltinShortcutModel> builtInShortcuts,
@@ -1137,7 +1136,7 @@ namespace Flow.Launcher.ViewModel
                 }
                 catch (Exception e)
                 {
-                    App.API.LogException(ClassName, $"Error when expanding shortcut {shortcut.Key}", e);
+                    _logger.LogError(e, $"Error when expanding shortcut {shortcut.Key}");
                 }
             }
 
@@ -1172,14 +1171,14 @@ namespace Flow.Launcher.ViewModel
             // If previous or current results are from home query, we need to clear them
             if (_previousIsHomeQuery || currentIsHomeQuery)
             {
-                App.API.LogDebug(ClassName, $"Existing results should be cleared for query");
+                _logger.LogDebug($"Existing results should be cleared for query");
                 return true;
             }
 
             // If the last and current query are not home query type, we need to check the action keyword
             if (_lastQuery?.ActionKeyword != query?.ActionKeyword)
             {
-                App.API.LogDebug(ClassName, $"Existing results should be cleared for query");
+                _logger.LogDebug($"Existing results should be cleared for query");
                 return true;
             }
 
@@ -1195,11 +1194,11 @@ namespace Flow.Launcher.ViewModel
         /// </summary>
         /// <param name="plugins">The collection of plugins to check.</param>
         /// <returns>True if existing results should be cleared, false otherwise.</returns>
-        private static bool ShouldClearExistingResultsForNonQuery(ICollection<PluginMetadata> plugins)
+        private bool ShouldClearExistingResultsForNonQuery(ICollection<PluginMetadata> plugins)
         {
             if (plugins.Count == 0 || plugins.All(x => x.HomeDisabled == true))
             {
-                App.API.LogDebug(ClassName, $"Existing results should be cleared for non-query");
+                _logger.LogDebug($"Existing results should be cleared for non-query");
                 return true;
             }
 

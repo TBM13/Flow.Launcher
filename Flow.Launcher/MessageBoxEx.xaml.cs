@@ -3,17 +3,19 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Infrastructure;
+using Flow.Launcher.PluginSDK.Logging;
 
 namespace Flow.Launcher
 {
     public partial class MessageBoxEx : Window
     {
-        private static readonly string ClassName = nameof(MessageBoxEx);
-
         private static MessageBoxEx msgBox;
         private static MessageBoxResult _result = MessageBoxResult.None;
 
+        // TODO: Check if there is any better alternative
+        private static readonly Logger<MessageBoxEx> _logger = Ioc.Default.GetRequiredService<Logger<MessageBoxEx>>();
         private readonly MessageBoxButton _button;
 
         private MessageBoxEx(MessageBoxButton button)
@@ -57,7 +59,7 @@ namespace Flow.Launcher
             }
             catch (Exception e)
             {
-                App.API.LogError(ClassName, $"An error occurred: {e.Message}");
+                _logger.LogError($"An error occurred: {e.Message}");
                 msgBox = null;
                 return MessageBoxResult.None;
             }

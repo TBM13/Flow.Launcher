@@ -139,6 +139,8 @@ public partial class App : Application
                     .AddSingleton<Theme>()
                     .AddSingleton<HotkeyManager>()
                     .AddSingleton<ImageLoader>()
+                    .AddSingleton<PluginManager>()
+                    .AddSingleton<Notification>()
                     // Use one instance for main window view model because we only have one main window
                     .AddSingleton<MainViewModel>()
                     .AddSingleton<SettingWindowViewModel>()
@@ -197,7 +199,7 @@ public partial class App : Application
         Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
         // Initialize notification system before any notification api is called
-        Notification.Install();
+        Ioc.Default.GetRequiredService<Notification>().Install();
 
         // Enable Win32 dark mode if the system is in dark mode before creating all windows
         ApplicationHelper.SetWin32DarkMode(_settings.ColorScheme);
@@ -227,8 +229,9 @@ public partial class App : Application
         _logger.LogInfo($"End Flow Launcher startup ------------------------------------------------------");
 
         _logger.LogInfo($"Begin plugin initialization ----------------------------------------------------");
-        PluginManager.LoadPlugins(_settings.PluginSettings);
-        await PluginManager.InitializePluginsAsync();
+        PluginManager pluginManager = Ioc.Default.GetRequiredService<PluginManager>();
+        pluginManager.LoadPlugins(_settings.PluginSettings);
+        await pluginManager.InitializePluginsAsync();
 
         // Refresh home page after plugins are initialized because users may open main window during plugin initialization
         // And home page is created without full plugin list

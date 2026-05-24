@@ -153,7 +153,7 @@ namespace Flow.Launcher.Plugin.ProcessKiller
             }
             catch (Exception e)
             {
-                Main.Context.API.LogException(ClassName, $"Failed to kill process {p.ProcessName}", e);
+                Main.Context.Logger.LogError(e, $"Failed to kill process {p.ProcessName}");
             }
         }
 

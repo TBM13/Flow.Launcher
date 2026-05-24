@@ -62,11 +62,13 @@ public static class DefaultHotkeys
 /// <summary>
 /// Manages and keeps track of all the registered hotkeys in Flow Launcher.
 /// </summary>
-public class HotkeyManager(Logger<HotkeyManager> logger, IPublicAPI api, Settings settings)
+public class HotkeyManager(Logger<HotkeyManager> logger,
+    IPublicAPI api, Settings settings, PluginManager pluginManager)
 {
     private readonly Logger<HotkeyManager> _logger = logger;
-    private readonly Settings _settings = settings;
     private readonly IPublicAPI _api = api;
+    private readonly Settings _settings = settings;
+    private readonly PluginManager _pluginManager = pluginManager;
 
     /// <summary>
     /// Key is the hotkey ID, value is the hotkey information and action (or null if it's a non-global hotkey).
@@ -88,7 +90,7 @@ public class HotkeyManager(Logger<HotkeyManager> logger, IPublicAPI api, Setting
         {
             // Generate magic query before showing the main window since
             // some plugins may want to know which window is focused
-            string? query = PluginManager.GenerateMagicQuery();
+            string? query = _pluginManager.GenerateMagicQuery();
 
             if (!_api.IsMainWindowVisible())
                 _api.ShowMainWindow();

@@ -22,8 +22,8 @@ THE SOFTWARE. */
 
 using System.Collections.Generic;
 using System.Linq;
-using Flow.Launcher.Infrastructure.API;
 using Flow.Launcher.Plugin.WindowsSettings.Classes;
+using Flow.Launcher.PluginSDK.Logging;
 using Microsoft.Win32;
 
 namespace Flow.Launcher.Plugin.WindowsSettings.Helper
@@ -34,12 +34,10 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Helper
         private const string KEY_BUILD = "CurrentBuild";
         private const string KEY_BUILD_NUMBER = "CurrentBuildNumber";
 
-        private static readonly string CLASS = typeof(UnsupportedSettingsHelper).FullName ?? nameof(UnsupportedSettingsHelper);
-
         /// <summary>
         /// Removes all the <see cref="WindowsSetting"/>(s) not available on the current Windows build.
         /// </summary>
-        internal static IEnumerable<WindowsSetting> FilterByBuild(IPublicAPI api, in IEnumerable<WindowsSetting> settingsList)
+        internal static IEnumerable<WindowsSetting> FilterByBuild(Logger logger, in IEnumerable<WindowsSetting> settingsList)
         {
             var currentBuild = GetNumericRegistryValue(KEY_PATH, KEY_BUILD);
             var currentBuildNumber = GetNumericRegistryValue(KEY_PATH, KEY_BUILD_NUMBER);
@@ -52,7 +50,7 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Helper
                     + $" result ({KEY_BUILD}={currentBuild}, {KEY_BUILD_NUMBER}={currentBuildNumber})!"
                     + $" For resolving the conflict we use the value of '{usedValueName}'.";
 
-                api.LogWarn(CLASS, warningMessage);
+                logger.LogWarn($"{warningMessage}");
             }
 
             var currentWindowsBuild = currentBuild != uint.MinValue

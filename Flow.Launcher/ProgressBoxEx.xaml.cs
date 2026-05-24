@@ -2,13 +2,15 @@
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using CommunityToolkit.Mvvm.DependencyInjection;
+using Flow.Launcher.PluginSDK.Logging;
 
 namespace Flow.Launcher
 {
     public partial class ProgressBoxEx : Window
     {
-        private static readonly string ClassName = nameof(ProgressBoxEx);
-
+        // TODO: Check if there is any better alternative
+        private static readonly Logger<ProgressBoxEx> _logger = Ioc.Default.GetRequiredService<Logger<ProgressBoxEx>>();
         private readonly Action? _cancelProgress;
 
         private ProgressBoxEx(Action? cancelProgress)
@@ -48,7 +50,7 @@ namespace Flow.Launcher
             }
             catch (Exception e)
             {
-                App.API.LogError(ClassName, $"An error occurred: {e.Message}");
+                _logger.LogError($"An error occurred: {e.Message}");
 
                 await reportProgressAsync(null).ConfigureAwait(false);
             }

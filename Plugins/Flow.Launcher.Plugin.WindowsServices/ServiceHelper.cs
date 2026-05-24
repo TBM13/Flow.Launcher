@@ -54,8 +54,6 @@ public enum Action
 
 public class ServiceResult
 {
-    private static readonly string ClassName = typeof(ServiceResult).FullName ?? nameof(ServiceResult);
-
     public string ServiceName { get; }
     public string DisplayName { get; }
     public ServiceStartMode StartType { get; }
@@ -84,7 +82,7 @@ public class ServiceResult
         catch (Exception ex)
         {
             // Retrieving properties from ServiceController may throw exceptions like PlatformNotSupportedException
-            Main.Context.API.LogException(ClassName, $"Failed to create {nameof(ServiceResult)}", ex);
+            Main.Context.Logger.LogError(ex, $"Failed to create {nameof(ServiceResult)}");
         }
 
         return null;
@@ -224,7 +222,7 @@ public static class ServiceHelper
         // Warn if we failed to create a ServiceResult for one or more services
         if (failed != 0)
         {
-            Main.Context.API.LogError(ClassName, $"Failed to create {failed} ServiceResult(s)");
+            Main.Context.Logger.LogError($"Failed to create {failed} ServiceResult(s)");
             Main.Context.API.ShowMsgError(Localize.Error_GetInformationFail(failed));
         }
 

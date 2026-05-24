@@ -5,18 +5,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Infrastructure.API;
+using Flow.Launcher.PluginSDK.Logging;
 
 namespace Flow.Launcher.Core.Resource
 {
-    public class Internationalization
+    public class Internationalization(Logger<Internationalization> logger)
     {
-        private static readonly string ClassName = nameof(Internationalization);
-
         private const string Folder = "Languages";
         private const string DefaultLanguageCode = "en";
         private const string DefaultFile = "en.xaml";
         private const string Extension = ".xaml";
+
+        private readonly Logger<Internationalization> _logger = logger;
         private readonly List<string> _languageDirectories = [];
 
         #region Initialization
@@ -39,7 +39,7 @@ namespace Flow.Launcher.Core.Resource
             var directory = Path.Combine(Constant.ProgramDirectory, Folder);
             if (!Directory.Exists(directory))
             {
-                IPublicAPI.Instance.LogError(ClassName, $"Flow Launcher language directory can't be found <{directory}>");
+                _logger.LogError($"Flow Launcher language directory can't be found <{directory}>");
                 return;
             }
 
@@ -80,7 +80,7 @@ namespace Flow.Launcher.Core.Resource
             }
         }
 
-        private static string LanguageFile(string folder, string language)
+        private string LanguageFile(string folder, string language)
         {
             if (Directory.Exists(folder))
             {
@@ -91,7 +91,7 @@ namespace Flow.Launcher.Core.Resource
                 }
                 else
                 {
-                    IPublicAPI.Instance.LogError(ClassName, $"Language path can't be found <{path}>");
+                    _logger.LogError($"Language path can't be found <{path}>");
                     var english = Path.Combine(folder, DefaultFile);
                     if (File.Exists(english))
                     {
@@ -99,7 +99,7 @@ namespace Flow.Launcher.Core.Resource
                     }
                     else
                     {
-                        IPublicAPI.Instance.LogError(ClassName, $"Default English Language path can't be found <{path}>");
+                        _logger.LogError($"Default English Language path can't be found <{path}>");
                         return string.Empty;
                     }
                 }
@@ -114,13 +114,13 @@ namespace Flow.Launcher.Core.Resource
 
         #region Get Translations
 
-        public static string GetTranslation(string key)
+        public string GetTranslation(string key)
         {
             var translation = Application.Current.TryFindResource(key);
             if (translation is string s)
                 return s;
 
-            IPublicAPI.Instance.LogError(ClassName, $"No Translation for key {key}");
+            _logger.LogError($"No Translation for key {key}");
             return $"No Translation for key {key}";
         }
 

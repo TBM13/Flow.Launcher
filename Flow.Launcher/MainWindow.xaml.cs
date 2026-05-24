@@ -16,6 +16,7 @@ using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Hotkeys;
 using Flow.Launcher.Interop;
+using Flow.Launcher.PluginSDK.Logging;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern;
 using DataObject = System.Windows.DataObject;
@@ -28,14 +29,11 @@ namespace Flow.Launcher
         // Window Event: Close Event
         public bool CanClose { get; set; } = false;
 
-        // Class Name
-        private static readonly string ClassName = nameof(MainWindow);
-
-        // Dependency Injection
+        private readonly Logger<MainWindow> _logger;
+        private readonly MainViewModel _viewModel;
         private readonly Settings _settings;
         private readonly Theme _theme;
-
-        private readonly MainViewModel _viewModel;
+        private readonly PluginManager _pluginManager;
 
         // Window Event: Key Event
         private bool _isArrowKeyPressed = false;
@@ -51,9 +49,11 @@ namespace Flow.Launcher
 
         public MainWindow()
         {
+            _logger = Ioc.Default.GetRequiredService<Logger<MainWindow>>();
+            _viewModel = Ioc.Default.GetRequiredService<MainViewModel>();
             _settings = Ioc.Default.GetRequiredService<Settings>();
             _theme = Ioc.Default.GetRequiredService<Theme>();
-            _viewModel = Ioc.Default.GetRequiredService<MainViewModel>();
+            _pluginManager = Ioc.Default.GetRequiredService<PluginManager>();
             DataContext = _viewModel;
 
             Topmost = _settings.ShowAtTopmost;
@@ -236,8 +236,8 @@ namespace Flow.Launcher
                 CanClose = true;
                 App.API.SaveAppAllSettings();
                 e.Cancel = true;
-                await PluginManager.DisposePluginsAsync();
-                Notification.Uninstall();
+                await _pluginManager.DisposePluginsAsync();
+                Ioc.Default.GetRequiredService<Notification>().Uninstall();
                 // After plugins are all disposed, we shutdown application to close app
                 // We use this instead of Close() to avoid InvalidOperationException when calling Close() in OnClosing event
                 Application.Current.Shutdown();
@@ -740,7 +740,7 @@ namespace Flow.Launcher
             }
             catch (Exception ex)
             {
-                App.API.LogException(ClassName, "Failed to paste text", ex);
+                _logger.LogError(ex, $"Failed to paste text");
             }
         }
 

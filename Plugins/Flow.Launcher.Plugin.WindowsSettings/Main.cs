@@ -33,7 +33,7 @@ namespace Flow.Launcher.Plugin.WindowsSettings
         {
             Context = context;
             _settingsList = JsonSettingsListHelper.ReadAllPossibleSettings();
-            _settingsList = UnsupportedSettingsHelper.FilterByBuild(Context.API, _settingsList);
+            _settingsList = UnsupportedSettingsHelper.FilterByBuild(Context.Logger, _settingsList);
             TranslationHelper.TranslateAllSettings(_settingsList);
         }
 

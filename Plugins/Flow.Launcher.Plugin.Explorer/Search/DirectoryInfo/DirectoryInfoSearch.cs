@@ -9,8 +9,6 @@ namespace Flow.Launcher.Plugin.Explorer.Search.DirectoryInfo
 {
     public static class DirectoryInfoSearch
     {
-        private static readonly string ClassName = nameof(DirectoryInfoSearch);
-
         internal static IEnumerable<SearchResult> TopLevelDirectorySearch(Query query, string search, CancellationToken token, out bool isRecursive)
         {
             var criteria = ConstructSearchCriteria(search);
@@ -79,7 +77,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search.DirectoryInfo
             }
             catch (Exception e)
             {
-                Main.Context.API.LogException(ClassName, "Error occurred while searching path", e);
+                Main.Context.Logger.LogError(e, $"Error occurred while searching path");
                 throw;
             }
 
