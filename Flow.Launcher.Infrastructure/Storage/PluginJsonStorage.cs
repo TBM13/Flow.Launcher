@@ -1,21 +1,16 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using Flow.Launcher.Infrastructure.Logging;
+﻿using System.IO;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 using Flow.Launcher.Infrastructure.UserSettings;
-using Microsoft.Extensions.Logging;
-using ZLogger;
 
 namespace Flow.Launcher.Infrastructure.Storage;
+
+// TODO: Fix logging
 
 // Expose ISaveable interface in derived class to make sure we are calling the new version of Save method
 public class PluginJsonStorage<T> : JsonStorage<T>, ISavable where T : new()
 {
     // Use assembly name to check which plugin is using this storage
     public readonly string AssemblyName;
-
-    private static readonly ILogger<PluginJsonStorage<T>> Logger = LogManager.GetLogger<PluginJsonStorage<T>>();
 
     public PluginJsonStorage()
     {
@@ -42,7 +37,7 @@ public class PluginJsonStorage<T> : JsonStorage<T>, ISavable where T : new()
         }
         catch (Exception e)
         {
-            Logger.ZLogError(e, $"Failed to save plugin settings to path: {FilePath}");
+            // Logger.ZLogError(e, $"Failed to save plugin settings to path: {FilePath}");
         }
     }
 
@@ -54,7 +49,7 @@ public class PluginJsonStorage<T> : JsonStorage<T>, ISavable where T : new()
         }
         catch (Exception e)
         {
-            Logger.ZLogError(e, $"Failed to save plugin settings to path: {FilePath}");
+            // Logger.ZLogError(e, $"Failed to save plugin settings to path: {FilePath}");
         }
     }
 }

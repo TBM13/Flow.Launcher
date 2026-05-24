@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Core;
 using Flow.Launcher.Infrastructure.Hotkeys;
 using iNKORE.UI.WPF.Modern.Controls;
@@ -8,6 +9,8 @@ namespace Flow.Launcher;
 
 public partial class HotkeyControlDialog : ContentDialog
 {
+    // TODO: Check if there is any better alternative
+    private readonly HotkeyManager _hotkeyManager = Ioc.Default.GetRequiredService<HotkeyManager>();
     private Hotkey _newHotkey;
 
     public string WindowTitle { get; }
@@ -64,7 +67,7 @@ public partial class HotkeyControlDialog : ContentDialog
 
     private void Save(object sender, RoutedEventArgs routedEventArgs)
     {
-        HotkeyManager.UpdateHotkey(Hotkey, _newHotkey);
+        _hotkeyManager.UpdateHotkey(Hotkey, _newHotkey);
         GlobalHotkeyManager.IgnoreRegisteredHotkeys = false;
         Hide();
     }
@@ -91,7 +94,7 @@ public partial class HotkeyControlDialog : ContentDialog
             KeysToDisplay.Add(key);
 
         bool hotkeyChanged = _newHotkey != Hotkey.Hotkey;
-        if (hotkeyChanged && !HotkeyManager.IsHotkeyAvailable(_newHotkey, out string? reason))
+        if (hotkeyChanged && !_hotkeyManager.IsHotkeyAvailable(_newHotkey, out string? reason))
         {
             tbMsg.Text = reason;
             SaveBtn.IsEnabled = false;

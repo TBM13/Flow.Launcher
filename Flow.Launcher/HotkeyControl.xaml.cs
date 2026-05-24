@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Core;
 using Flow.Launcher.Infrastructure.Hotkeys;
 
@@ -49,7 +50,8 @@ namespace Flow.Launcher
             if (d is HotkeyControl control && e.NewValue is string id)
             {
                 control.HotkeyInformation = string.IsNullOrEmpty(id)
-                    ? null : HotkeyManager.GetHotkeyInformationById(id);
+                    // TODO: Check if there is any better alternative
+                    ? null : Ioc.Default.GetRequiredService<HotkeyManager>().GetHotkeyInformationById(id);
 
                 control.UpdateUI();
             }

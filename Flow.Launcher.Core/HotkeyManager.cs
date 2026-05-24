@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Core.Plugin;
-using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.API;
 using Flow.Launcher.Infrastructure.Hotkeys;
-using Flow.Launcher.Infrastructure.Logging;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Interop;
-using Microsoft.Extensions.Logging;
-using ZLogger;
+using Flow.Launcher.PluginSDK.Logging;
 
 namespace Flow.Launcher.Core;
 
@@ -66,26 +62,20 @@ public static class DefaultHotkeys
 /// <summary>
 /// Manages and keeps track of all the registered hotkeys in Flow Launcher.
 /// </summary>
-public static class HotkeyManager
+public class HotkeyManager(Logger<HotkeyManager> logger, IPublicAPI api, Settings settings)
 {
-    private static readonly ILogger Logger = LogManager.GetLogger(nameof(HotkeyManager));
-
-#pragma warning disable CS8618
-    private static Settings _settings;
-    private static IPublicAPI _api;
-#pragma warning restore CS8618
+    private readonly Logger<HotkeyManager> _logger = logger;
+    private readonly Settings _settings = settings;
+    private readonly IPublicAPI _api = api;
 
     /// <summary>
     /// Key is the hotkey ID, value is the hotkey information and action (or null if it's a non-global hotkey).
     /// </summary>
-    private static readonly Dictionary<string, (HotkeyInformation info, Action? action)> _allHotkeys = [];
-    private static readonly Dictionary<Hotkey, HotkeyInformation> _enabledHotkeys = [];
+    private readonly Dictionary<string, (HotkeyInformation info, Action? action)> _allHotkeys = [];
+    private readonly Dictionary<Hotkey, HotkeyInformation> _enabledHotkeys = [];
 
-    public static void Initialize()
+    public void Initialize()
     {
-        _api = Ioc.Default.GetRequiredService<IPublicAPI>();
-        _settings = Ioc.Default.GetRequiredService<Settings>();
-
         // Register global hotkeys
         RegisterHotkey(DefaultHotkeys.ToggleFlowLauncher, () =>
         {
@@ -117,14 +107,14 @@ public static class HotkeyManager
         }
     }
 
-    private static bool ShouldIgnoreHotkeys()
+    private bool ShouldIgnoreHotkeys()
     {
         return _settings.IgnoreHotkeysOnFullscreen && WindowHelper.IsForegroundWindowFullscreen() || _api.IsGameModeOn();
     }
 
-    public static void RegisterHotkey(GlobalHotkeyInformation hotkey, Action action) => RegisterHotkeyInternal(hotkey, action);
-    public static void RegisterHotkey(HotkeyInformation hotkey) => RegisterHotkeyInternal(hotkey, null);
-    private static void RegisterHotkeyInternal(HotkeyInformation hotkey, Action? action)
+    public void RegisterHotkey(GlobalHotkeyInformation hotkey, Action action) => RegisterHotkeyInternal(hotkey, action);
+    public void RegisterHotkey(HotkeyInformation hotkey) => RegisterHotkeyInternal(hotkey, null);
+    private void RegisterHotkeyInternal(HotkeyInformation hotkey, Action? action)
     {
         if (_allHotkeys.TryGetValue(hotkey.Id, out var existing))
             throw new InvalidOperationException($"Hotkey '{hotkey}' has the same ID than already-registered hotkey '{existing.info}'");
@@ -139,7 +129,7 @@ public static class HotkeyManager
             {
                 // Error if it the value isn't empty (which means disabled)
                 if (!string.IsNullOrEmpty(userHotkey))
-                    Logger.ZLogError($"Invalid hotkey in user settings for '{hotkey.Id}': {userHotkey}");
+                    _logger.LogError($"Invalid hotkey in user settings for '{hotkey.Id}': {userHotkey}");
 
                 // Disable the hotkey
                 hotkey.Hotkey = default;
@@ -149,7 +139,7 @@ public static class HotkeyManager
         // Ensure the hotkey doesn't collide with another one that is enabled
         if (_enabledHotkeys.TryGetValue(hotkey.Hotkey, out var value))
         {
-            Logger.ZLogError($"Disabling hotkey '{hotkey}' since it's already assigned to '{value.Id}'");
+            _logger.LogError($"Disabling hotkey '{hotkey}' since it's already assigned to '{value.Id}'");
             hotkey.Hotkey = default;
         }
 
@@ -169,7 +159,7 @@ public static class HotkeyManager
             {
                 if (!GlobalHotkeyManager.CanRegisterHotkey(hotkey.Hotkey))
                 {
-                    Logger.ZLogError($"Can't register hotkey '{hotkey}' for '{hotkey.Id}'");
+                    _logger.LogError($"Can't register hotkey '{hotkey}' for '{hotkey.Id}'");
                     hotkey.Hotkey = default;
                 }
                 else
@@ -178,7 +168,7 @@ public static class HotkeyManager
         }
         else if (hotkey.Hotkey.LongPress)
         {
-            Logger.ZLogError($"Non-global hotkey '{hotkey}' has long press enabled. Disabling.");
+            _logger.LogError($"Non-global hotkey '{hotkey}' has long press enabled. Disabling.");
             hotkey.Hotkey = default;
         }
 
@@ -190,7 +180,7 @@ public static class HotkeyManager
     /// <summary>
     /// Registers the given custom query hotkey.
     /// </summary>
-    public static void RegisterCustomQueryHotkey(CustomPluginHotkey hotkey)
+    public void RegisterCustomQueryHotkey(CustomPluginHotkey hotkey)
     {
         string id = $"CustomQuery {hotkey.ActionKeyword}";
         GlobalHotkeyInformation info = new(id, hotkey.Hotkey, $"Custom query \"{hotkey.ActionKeyword}\"");
@@ -203,7 +193,7 @@ public static class HotkeyManager
         });
     }
 
-    public static void UnregisterCustomQueryHotkey(CustomPluginHotkey hotkey)
+    public void UnregisterCustomQueryHotkey(CustomPluginHotkey hotkey)
     {
         string id = $"CustomQuery {hotkey.ActionKeyword}";
         HotkeyInformation info = GetHotkeyInformationById(id);
@@ -218,7 +208,7 @@ public static class HotkeyManager
     /// <param name="hotkey"></param>
     /// <param name="reason">The reason why the hotkey is not available.</param>
     /// <returns>True if the hotkey is valid and available.</returns>
-    public static bool IsHotkeyAvailable(Hotkey hotkey, [NotNullWhen(false)] out string? reason)
+    public bool IsHotkeyAvailable(Hotkey hotkey, [NotNullWhen(false)] out string? reason)
     {
         if (!hotkey.IsValid)
         {
@@ -245,7 +235,7 @@ public static class HotkeyManager
         return true;
     }
 
-    public static void UpdateHotkey(HotkeyInformation hotkey, Hotkey newHotkey)
+    public void UpdateHotkey(HotkeyInformation hotkey, Hotkey newHotkey)
     {
         if (hotkey.Hotkey == newHotkey)
             return;
@@ -279,7 +269,7 @@ public static class HotkeyManager
         hotkey.Hotkey = newHotkey;
     }
 
-    public static HotkeyInformation GetHotkeyInformationById(string id)
+    public HotkeyInformation GetHotkeyInformationById(string id)
     {
         if (_allHotkeys.TryGetValue(id, out var hotkey))
             return hotkey.info;

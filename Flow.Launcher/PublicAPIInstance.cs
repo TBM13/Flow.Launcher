@@ -31,17 +31,17 @@ namespace Flow.Launcher
 {
     public class PublicAPIInstance : Plugin.IPublicAPI
     {
-        private static readonly string ClassName = nameof(PublicAPIInstance);
-
         private readonly Settings _settings;
         private readonly MainViewModel _mainVM;
+        private readonly ImageLoader _imageLoader;
 
         private readonly object _saveSettingsLock = new();
 
-        public PublicAPIInstance(Settings settings, MainViewModel mainVM)
+        public PublicAPIInstance(Settings settings, MainViewModel mainVM, ImageLoader imageLoader)
         {
             _settings = settings;
             _mainVM = mainVM;
+            _imageLoader = imageLoader;
 
             IPublicAPI.Instance = this;
         }
@@ -309,7 +309,7 @@ namespace Flow.Launcher
             }
             catch (Win32Exception ex) when (ex.NativeErrorCode == 2)
             {
-                LogException(ClassName, "File Manager not found", ex);
+                LogException("", "File Manager not found", ex);
                 ShowMsgError(
                     Localize.fileManagerNotFoundTitle(),
                     Localize.fileManagerNotFound()
@@ -317,7 +317,7 @@ namespace Flow.Launcher
             }
             catch (Exception ex)
             {
-                LogException(ClassName, "Failed to open folder", ex);
+                LogException("", "Failed to open folder", ex);
                 ShowMsgError(
                     Localize.errorTitle(),
                     Localize.folderOpenError()
@@ -347,7 +347,7 @@ namespace Flow.Launcher
                 catch (Exception e)
                 {
                     var tabOrWindow = openInTab ? "tab" : "window";
-                    LogException(ClassName, $"Failed to open URL in browser {tabOrWindow}: {inPrivate}", e);
+                    LogException("", $"Failed to open URL in browser {tabOrWindow}: {inPrivate}", e);
                     ShowMsgError(
                         Localize.errorTitle(),
                         Localize.browserOpenError()
@@ -362,7 +362,7 @@ namespace Flow.Launcher
                 }
                 catch (Exception e)
                 {
-                    LogException(ClassName, $"Failed to open: {uri.AbsoluteUri}", e);
+                    LogException("", $"Failed to open: {uri.AbsoluteUri}", e);
                     ShowMsgError(Localize.errorTitle(), e.Message);
                 }
             }
@@ -439,7 +439,7 @@ namespace Flow.Launcher
         }
 
         public ValueTask<ImageSource> LoadImageAsync(string path, bool loadFullImage = false, bool cacheImage = true) =>
-            ImageLoader.LoadAsync(path, loadFullImage, cacheImage);
+            _imageLoader.LoadAsync(path, loadFullImage, cacheImage);
 
         public bool IsApplicationDarkTheme()
         {

@@ -1,79 +1,71 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
-using System.Windows;
 
-// http://blogs.microsoft.co.il/arik/2010/05/28/wpf-single-instance-application/
-// modified to allow single instace restart
-namespace Flow.Launcher.Helper
+namespace Flow.Launcher.Helper;
+
+/// <summary>
+/// Helper to ensure we are the only running instance of Flow Launcher.
+/// </summary>
+public static class SingleInstance
 {
-    public static class SingleInstance<TApplication> where TApplication : Application
+    private const string MutexName = @"Local\Flow.Launcher_Unique_Application_Mutex_";
+    private static Mutex? _mutex;
+    private static bool _hasOwnership;
+
+    /// <summary>
+    /// Ensures we are the only running instance of Flow Launcher.
+    /// </summary>
+    /// <param name="waitIfOccupied">Whether to wait if there is another instance running.</param>
+    /// <returns>True if we are able to secure the instance lock (and thus we are the only running instance).</returns>
+    public static bool Initialize(bool waitIfOccupied)
     {
-        private const string InstanceMutexName = "Flow.Launcher_Unique_Application_Mutex";
-        private static string ApplicationIdentifier => InstanceMutexName + Environment.UserName;
+        string identifier = MutexName + Environment.UserName;
+        _mutex = new Mutex(initiallyOwned: true, identifier, out bool isFirstInstance);
 
-        internal static Mutex? SingleInstanceMutex { get; set; }
-        private static bool IsFirstInstance = false;
-
-        [MemberNotNull(nameof(SingleInstanceMutex))]
-        private static void CreateSingleInstanceMutex(out bool isFirstInstance)
+        if (isFirstInstance)
         {
-            if (SingleInstanceMutex is not null)
-            {
-                isFirstInstance = IsFirstInstance;
-                return;
-            }
-
-            // Create mutex based on unique application Id to check if this is the first instance of the application. 
-            SingleInstanceMutex = new Mutex(true, ApplicationIdentifier, out var firstInstance);
-            isFirstInstance = firstInstance;
-            IsFirstInstance = firstInstance;
+            _hasOwnership = true;
+            return true;
         }
 
-        public static void WaitUntilWeAreFirstInstance()
+        // Block until the old instace shuts down and releases the mutex
+        if (waitIfOccupied)
         {
-            CreateSingleInstanceMutex(out bool isFirstInstance);
-            if (isFirstInstance)
-                return;
-
-            // Wait until we can acquire the mutex
             try
             {
-                SingleInstanceMutex.WaitOne();
+                // Wait up to 5 seconds for the old instance to cleanly exit
+                if (_mutex.WaitOne(TimeSpan.FromSeconds(5)))
+                {
+                    _hasOwnership = true;
+                    return true;
+                }
             }
             catch (AbandonedMutexException)
             {
-                // Existing instance crashed
+                // The previous instance crashed/terminated abruptly but we now own the mutex
+                _hasOwnership = true;
+                return true;
             }
-
-            // We should own the mutex now
-            SingleInstanceMutex.ReleaseMutex();
-            SingleInstanceMutex.Dispose();
-            SingleInstanceMutex = null;
-            CreateSingleInstanceMutex(out isFirstInstance);
-            if (!isFirstInstance)
-            {
-                // We still don't own the mutex, so lets keep waiting
-                WaitUntilWeAreFirstInstance();
-                return;
-            }
-
-            IsFirstInstance = true;
         }
 
-        /// <returns>True if this is the first instance of the application.</returns>
-        public static bool InitializeAsFirstInstance()
-        {
-            CreateSingleInstanceMutex(out bool isFirstInstance);
-            return isFirstInstance;
-        }
+        // Failed to secure the instance lock
+        Cleanup();
+        return false;
+    }
 
-        /// <summary>
-        /// Cleans up single-instance code, clearing shared resources, mutexes, etc.
-        /// </summary>
-        public static void Cleanup()
+    /// <summary>
+    /// Releases the instance lock so that another instance of Flow Launcher can be started.
+    /// </summary>
+    public static void Cleanup()
+    {
+        if (_mutex is not null)
         {
-            SingleInstanceMutex?.ReleaseMutex();
+            if (_hasOwnership)
+                _mutex.ReleaseMutex();
+
+            _mutex.Dispose();
+            _mutex = null;
+            _hasOwnership = false;
         }
     }
 }

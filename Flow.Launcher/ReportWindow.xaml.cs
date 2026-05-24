@@ -9,7 +9,7 @@ using Flow.Launcher.Infrastructure.Helpers;
 
 namespace Flow.Launcher
 {
-    internal partial class ReportWindow
+    internal partial class ReportWindow : Window
     {
         public ReportWindow(Exception exception)
         {
@@ -27,7 +27,7 @@ namespace Flow.Launcher
             ErrorTextbox.Document.Blocks.Add(paragraph);
 
             var content = new StringBuilder();
-            content.AppendLine(ErrorReporting.RuntimeInfo());
+            content.AppendLine(App.RuntimeInfo);
             content.AppendLine();
             content.AppendLine($"Date: {DateTime.Now.ToString(CultureInfo.InvariantCulture)}");
             content.AppendLine("Exception:");

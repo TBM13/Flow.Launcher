@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Core;
 using Flow.Launcher.Infrastructure.Image;
 using Flow.Launcher.Infrastructure.Results;
@@ -17,6 +18,8 @@ namespace Flow.Launcher.ViewModel
     {
         private static readonly string ClassName = nameof(ResultViewModel);
 
+        // TODO: Check if there is any better alternative
+        private static readonly ImageLoader _imageLoader = Ioc.Default.GetRequiredService<ImageLoader>();
         private static readonly PrivateFontCollection _fontCollection = new();
         private static readonly Dictionary<string, string> _fonts = [];
 
@@ -115,8 +118,8 @@ namespace Flow.Launcher.ViewModel
         private volatile bool _imageLoaded;
         private volatile bool _previewImageLoaded;
 
-        private ImageSource _image = ImageLoader.LoadingImage;
-        private ImageSource _previewImage = ImageLoader.LoadingImage;
+        private ImageSource _image = _imageLoader.LoadingImage;
+        private ImageSource _previewImage = _imageLoader.LoadingImage;
 
         public ImageSource Image
         {
@@ -182,7 +185,7 @@ namespace Flow.Launcher.ViewModel
             var imagePath = Result.IcoPath;
             var iconDelegate = Result.Icon;
 
-            if (imagePath is not null && ImageLoader.TryGetValue(imagePath, false, out var img))
+            if (imagePath is not null && _imageLoader.TryGetValue(imagePath, false, out var img))
             {
                 _image = img;
                 return;
@@ -197,7 +200,7 @@ namespace Flow.Launcher.ViewModel
             var imagePath = Result.Preview.PreviewImagePath ?? Result.IcoPath;
             var iconDelegate = Result.Preview.PreviewDelegate ?? Result.Icon;
 
-            if (imagePath is not null && ImageLoader.TryGetValue(imagePath, true, out var img))
+            if (imagePath is not null && _imageLoader.TryGetValue(imagePath, true, out var img))
             {
                 _previewImage = img;
                 return;

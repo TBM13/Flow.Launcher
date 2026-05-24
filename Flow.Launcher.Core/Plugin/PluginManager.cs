@@ -5,12 +5,15 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.API;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Infrastructure.UserSettings;
+using Flow.Launcher.PluginSDK.Logging;
+using Microsoft.Extensions.Logging;
 using ISavable = Flow.Launcher.Infrastructure.Plugins.Interfaces.ISavable;
 
 namespace Flow.Launcher.Core.Plugin
@@ -208,9 +211,16 @@ namespace Flow.Launcher.Core.Plugin
                 // Register plugin action keywords so that plugins can be queried in results
                 RegisterPluginActionKeywords(metadata);
 
+                ILogger rawLogger = Ioc.Default.GetRequiredService<ILoggerFactory>().CreateLogger(metadata.Name);
+
                 try
                 {
-                    await metadata.Plugin.InitAsync(new PluginInitContext(metadata, IPublicAPI.Instance));
+                    await metadata.Plugin.InitAsync(new PluginInitContext()
+                    {
+                        Logger = new(rawLogger),
+                        API = IPublicAPI.Instance,
+                        CurrentPluginMetadata = metadata
+                    });
                 }
                 catch (Exception e)
                 {

@@ -20,6 +20,8 @@ namespace Flow.Launcher.ViewModel
     {
         private static readonly string ClassName = nameof(PluginViewModel);
 
+        // TODO: Check if there is any better alternative
+        private static readonly ImageLoader _imageLoader = Ioc.Default.GetRequiredService<ImageLoader>();
         private static readonly Settings _settings = Ioc.Default.GetRequiredService<Settings>();
         private static readonly Thickness _settingPanelMargin = (Thickness)Application.Current.FindResource("SettingPanelMargin");
         private static readonly Thickness _settingPanelItemTopBottomMargin = (Thickness)Application.Current.FindResource("SettingPanelItemTopBottomMargin");
@@ -103,7 +105,7 @@ namespace Flow.Launcher.ViewModel
                         ? TryCreateSettingPanel(PluginMetadata)
                         : null
                 : null;
-        private ImageSource _image = ImageLoader.MissingImage;
+        private ImageSource _image = _imageLoader.MissingImage;
 
         private static Control TryCreateSettingPanel(PluginMetadata metadata)
         {

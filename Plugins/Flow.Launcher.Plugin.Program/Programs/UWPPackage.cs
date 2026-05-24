@@ -10,7 +10,6 @@ using System.Windows.Media.Imaging;
 using System.Xml;
 using Flow.Launcher.Infrastructure.API;
 using Flow.Launcher.Infrastructure.Helpers;
-using Flow.Launcher.Infrastructure.Logging;
 using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Infrastructure.WPF;
 using Flow.Launcher.Interop.Programs;
@@ -26,8 +25,6 @@ namespace Flow.Launcher.Plugin.Program.Programs
     [MemoryPackable]
     public partial class UWPPackage
     {
-        private static readonly ILogger<UWPPackage> Logger = LogManager.GetLogger<UWPPackage>();
-
         public string Name { get; }
         public string FullName { get; }
         public string FamilyName { get; }
@@ -66,7 +63,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 }
                 catch (Exception e)
                 {
-                    Logger.ZLogError(e, $"Failed to construct app from package '{FullName}' at '{Location}'");
+                    Main.Context.Logger.LogError(e, $"Failed to construct app from package '{FullName}' at '{Location}'");
                 }
             }
 
@@ -123,7 +120,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
             }
             catch (Exception e)
             {
-                Logger.ZLogError(e, $"Failed to parse manifest from package '{FullName}' at '{Location}'");
+                Main.Context.Logger.LogError(e, $"Failed to parse manifest from package '{FullName}' at '{Location}'");
             }
         }
 
@@ -139,12 +136,12 @@ namespace Flow.Launcher.Plugin.Program.Programs
             }
             catch (FileNotFoundException e)
             {
-                Logger.ZLogError(e, $"{Location}: AppxManifest.xml not found.");
+                Main.Context.Logger.LogError(e, $"{Location}: AppxManifest.xml not found.");
                 return null;
             }
             catch (Exception e)
             {
-                Logger.ZLogError(e, $"{Location}: Failed to load AppxManifest.xml");
+                Main.Context.Logger.LogError(e, $"{Location}: Failed to load AppxManifest.xml");
                 return null;
             }
         }
@@ -162,12 +159,12 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     }
                 }
 
-                Logger.ZLogError($"Unknown app-manifest version in package '{FullName}' at '{Location}'");
+                Main.Context.Logger.LogError($"Unknown app-manifest version in package '{FullName}' at '{Location}'");
                 return PackageVersion.Unknown;
             }
             else
             {
-                Logger.ZLogError($"Can't parse AppManifest.xml of package '{FullName}' at '{Location}'");
+                Main.Context.Logger.LogError($"Can't parse AppManifest.xml of package '{FullName}' at '{Location}'");
                 return PackageVersion.Unknown;
             }
         }
@@ -209,7 +206,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
 #if !DEBUG
                     catch (Exception e)
                     {
-                        Logger.ZLogError(e, $"{p.InstalledLocation}: Failed to convert Package to UWP for {p.Id.FullName}");
+                        Main.Context.Logger.LogError(e, $"{p.InstalledLocation}: Failed to convert Package to UWP for {p.Id.FullName}");
                         return [];
                     }
 #endif
@@ -272,7 +269,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     }
                     catch (Exception e)
                     {
-                        Logger.ZLogError(e, $"{p.Id.FullName}: Failed to verify if package is valid");
+                        Main.Context.Logger.LogError(e, $"{p.Id.FullName}: Failed to verify if package is valid");
                         return false;
                     }
                 });
@@ -352,7 +349,6 @@ namespace Flow.Launcher.Plugin.Program.Programs
     [MemoryPackable]
     public partial class UWPApp : IProgram
     {
-        private static readonly ILogger<UWPApp> Logger = LogManager.GetLogger<UWPApp>();
         private string _uid = string.Empty;
 
         public string UniqueIdentifier
@@ -534,7 +530,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
 
             if (string.IsNullOrWhiteSpace(uri))
             {
-                Logger.ZLogError($"{UserModelId} 's logo uri is null or empty: {Location}");
+                Main.Context.Logger.LogError($"{UserModelId} 's logo uri is null or empty: {Location}");
                 return string.Empty;
             }
 
@@ -571,7 +567,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     if (string.IsNullOrEmpty(logoNamePrefix) || !Directory.Exists(logoDir))
                     {
                         // Known issue: Edge always triggers it since logo is not at uri
-                        Logger.ZLogError($"{UserModelId} can't find logo uri for {uri} in package location (logo name or directory not found): {Location}");
+                        Main.Context.Logger.LogError($"{UserModelId} can't find logo uri for {uri} in package location (logo name or directory not found): {Location}");
                         return string.Empty;
                     }
 
@@ -611,13 +607,13 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     }
                     else
                     {
-                        Logger.ZLogError($"{UserModelId} can't find logo uri for {uri} in package location (can't find specified logo): {Location}");
+                        Main.Context.Logger.LogError($"{UserModelId} can't find logo uri for {uri} in package location (can't find specified logo): {Location}");
                         return string.Empty;
                     }
                 }
                 else
                 {
-                    Logger.ZLogError($"Failed to find extension from {uri} for {UserModelId} in package location {Location}");
+                    Main.Context.Logger.LogError($"Failed to find extension from {uri} for {UserModelId} in package location {Location}");
                     return string.Empty;
                 }
             }

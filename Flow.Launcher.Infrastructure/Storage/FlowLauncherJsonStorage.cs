@@ -1,18 +1,14 @@
 ﻿using System.IO;
-using System.Threading.Tasks;
-using Flow.Launcher.Infrastructure.Logging;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 using Flow.Launcher.Infrastructure.UserSettings;
-using Microsoft.Extensions.Logging;
-using ZLogger;
 
 namespace Flow.Launcher.Infrastructure.Storage;
+
+// TODO: Fix logging
 
 // Expose ISaveable interface in derived class to make sure we are calling the new version of Save method
 public class FlowLauncherJsonStorage<T> : JsonStorage<T>, ISavable where T : new()
 {
-    private static readonly ILogger<FlowLauncherJsonStorage<T>> Logger = LogManager.GetLogger<FlowLauncherJsonStorage<T>>();
-
     public FlowLauncherJsonStorage()
     {
         DirectoryPath = Path.Combine(DataLocation.DataDirectory, DirectoryName);
@@ -29,9 +25,9 @@ public class FlowLauncherJsonStorage<T> : JsonStorage<T>, ISavable where T : new
         {
             base.Save();
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
-            Logger.ZLogError(e, $"Failed to save FL settings to path: {FilePath}");
+            // Logger.ZLogError(e, $"Failed to save FL settings to path: {FilePath}");
         }
     }
 
@@ -41,9 +37,9 @@ public class FlowLauncherJsonStorage<T> : JsonStorage<T>, ISavable where T : new
         {
             await base.SaveAsync();
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
-            Logger.ZLogError(e, $"Failed to save FL settings to path: {FilePath}");
+            // Logger.ZLogError(e, $"Failed to save FL settings to path: {FilePath}");
         }
     }
 }

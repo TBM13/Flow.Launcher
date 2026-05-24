@@ -1,17 +1,13 @@
 ﻿using System.IO;
-using System.Threading.Tasks;
-using Flow.Launcher.Infrastructure.Logging;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
-using Microsoft.Extensions.Logging;
-using ZLogger;
 
 namespace Flow.Launcher.Infrastructure.Storage;
+
+// TODO: Fix logging
 
 // Expose ISaveable interface in derived class to make sure we are calling the new version of Save method
 public class PluginBinaryStorage<T> : BinaryStorage<T>, ISavable where T : new()
 {
-    private static readonly ILogger<PluginBinaryStorage<T>> Logger = LogManager.GetLogger<PluginBinaryStorage<T>>();
-
     public PluginBinaryStorage(string cacheName, string cacheDirectory)
     {
         DirectoryPath = cacheDirectory;
@@ -27,9 +23,9 @@ public class PluginBinaryStorage<T> : BinaryStorage<T>, ISavable where T : new()
         {
             base.Save();
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
-            Logger.ZLogError(e, $"Failed to save plugin caches to path: {FilePath}");
+            // Logger.ZLogError(e, $"Failed to save plugin caches to path: {FilePath}");
         }
     }
 
@@ -39,9 +35,9 @@ public class PluginBinaryStorage<T> : BinaryStorage<T>, ISavable where T : new()
         {
             await base.SaveAsync();
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
-            Logger.ZLogError(e, $"Failed to save plugin caches to path: {FilePath}");
+            // Logger.ZLogError(e, $"Failed to save plugin caches to path: {FilePath}");
         }
     }
 }

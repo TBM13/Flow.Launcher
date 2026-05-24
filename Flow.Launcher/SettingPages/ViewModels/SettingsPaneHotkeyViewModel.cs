@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core;
 using Flow.Launcher.Infrastructure.UserSettings;
@@ -9,6 +10,9 @@ namespace Flow.Launcher.SettingPages.ViewModels;
 
 public partial class SettingsPaneHotkeyViewModel(Settings settings) : ObservableObject
 {
+    // TODO: Check if there is any better alternative
+    private readonly HotkeyManager _hotkeyManager = Ioc.Default.GetRequiredService<HotkeyManager>();
+
     public Settings Settings { get; } = settings;
 
     [ObservableProperty]
@@ -35,7 +39,7 @@ public partial class SettingsPaneHotkeyViewModel(Settings settings) : Observable
         if (result is MessageBoxResult.Yes)
         {
             Settings.CustomPluginHotkeys.Remove(item);
-            HotkeyManager.UnregisterCustomQueryHotkey(item);
+            _hotkeyManager.UnregisterCustomQueryHotkey(item);
         }
     }
 
@@ -78,7 +82,7 @@ public partial class SettingsPaneHotkeyViewModel(Settings settings) : Observable
         {
             var customHotkey = new CustomPluginHotkey(window.Hotkey, window.ActionKeyword);
             Settings.CustomPluginHotkeys.Add(customHotkey);
-            HotkeyManager.RegisterCustomQueryHotkey(customHotkey); // set new hotkey
+            _hotkeyManager.RegisterCustomQueryHotkey(customHotkey); // set new hotkey
         }
     }
 

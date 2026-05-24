@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Flow.Launcher.Infrastructure.API;
 using Flow.Launcher.Infrastructure.Helpers;
-using Flow.Launcher.Infrastructure.Logging;
 using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Infrastructure.WPF;
 using Flow.Launcher.Interop.Programs;
@@ -26,8 +25,6 @@ namespace Flow.Launcher.Plugin.Program.Programs
     [MemoryPackable]
     public partial class Win32 : IProgram, IEquatable<Win32>
     {
-        private static readonly ILogger<Win32> Logger = LogManager.GetLogger<Win32>();
-
         public string Name { get; set; }
 
         public string UniqueIdentifier
@@ -323,13 +320,13 @@ namespace Flow.Launcher.Plugin.Program.Programs
             }
             catch (Exception e) when (e is SecurityException || e is UnauthorizedAccessException)
             {
-                Logger.ZLogError(e, $"Permission denied when trying to load the program from {path}");
+                Main.Context.Logger.LogError(e, $"Permission denied when trying to load the program from {path}");
                 return Default;
             }
 #if !DEBUG
             catch (Exception e)
             {
-                Logger.ZLogError(e, $"An unexpected error occurred in the calling method Win32Program for path {path}");
+                Main.Context.Logger.LogError(e, $"An unexpected error occurred in the calling method Win32Program for path {path}");
                 return Default;
             }
 #endif
@@ -375,12 +372,12 @@ namespace Flow.Launcher.Plugin.Program.Programs
             }
             catch (FileNotFoundException e)
             {
-                Logger.ZLogError(e, $"An unexpected error occurred in the calling method LnkProgram for path {path}");
+                Main.Context.Logger.LogError(e, $"An unexpected error occurred in the calling method LnkProgram for path {path}");
                 return Default;
             }
             catch (Exception e)
             {
-                Logger.ZLogError(e, $"An unexpected error occurred in the calling method LnkProgram for path {path}");
+                Main.Context.Logger.LogError(e, $"An unexpected error occurred in the calling method LnkProgram for path {path}");
                 return Default;
             }
         }
@@ -431,12 +428,12 @@ namespace Flow.Launcher.Plugin.Program.Programs
             }
             catch (FileNotFoundException e)
             {
-                Logger.ZLogError(e, $"File not found when trying to load the program from {path}");
+                Main.Context.Logger.LogError(e, $"File not found when trying to load the program from {path}");
                 return Default;
             }
             catch (Exception e) when (e is SecurityException || e is UnauthorizedAccessException)
             {
-                Logger.ZLogError(e, $"Permission denied when trying to load the program from {path}", e);
+                Main.Context.Logger.LogError(e, $"Permission denied when trying to load the program from {path}", e);
                 return Default;
             }
         }
@@ -570,7 +567,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
             }
             catch (Exception e) when (e is SecurityException || e is UnauthorizedAccessException)
             {
-                Logger.ZLogError(e, $"Permission denied when trying to load the program from {path}");
+                Main.Context.Logger.LogError(e, $"Permission denied when trying to load the program from {path}");
                 return string.Empty;
             }
         }
@@ -700,7 +697,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
 #if !DEBUG //Only do a catch all in production.
             catch (Exception e)
             {
-                Logger.ZLogError(e, $"An unexpected error occurred in the calling method All");
+                Main.Context.Logger.LogError(e, $"An unexpected error occurred in the calling method All");
                 return [];
             }
 #endif

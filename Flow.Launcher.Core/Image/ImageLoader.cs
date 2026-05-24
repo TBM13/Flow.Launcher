@@ -6,26 +6,23 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Flow.Launcher.Infrastructure.Logging;
-using Microsoft.Extensions.Logging;
-using ZLogger;
+using Flow.Launcher.PluginSDK.Logging;
 
 namespace Flow.Launcher.Infrastructure.Image;
 
-public static class ImageLoader
+public class ImageLoader(Logger<ImageLoader> logger)
 {
-    private static readonly ILogger Logger = LogManager.GetLogger(nameof(ImageLoader));
+    private readonly Logger<ImageLoader> _logger = logger;
+    private readonly ImageCache _imageCache = new();
+    private readonly ConcurrentDictionary<string, string> _guidToKey = new();
+    private readonly string[] _imageExtensions = [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".ico"];
 
-    private static readonly ImageCache ImageCache = new();
-    private static readonly ConcurrentDictionary<string, string> GuidToKey = new();
-    public static ImageSource Image => ImageCache[Constant.ImageIcon, false]!;
-    public static ImageSource MissingImage => ImageCache[Constant.MissingImgIcon, false]!;
-    public static ImageSource LoadingImage => ImageCache[Constant.LoadingImgIcon, false]!;
+    public ImageSource Image => _imageCache[Constant.ImageIcon, false]!;
+    public ImageSource MissingImage => _imageCache[Constant.MissingImgIcon, false]!;
+    public ImageSource LoadingImage => _imageCache[Constant.LoadingImgIcon, false]!;
     public const int SmallIconSize = 64;
     public const int FullIconSize = 256;
     public const int FullImageSize = 320;
-
-    private static readonly string[] ImageExtensions = [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".ico"];
 
     private record ImageResult(ImageSource ImageSource, ImageType ImageType);
     private enum ImageType
@@ -39,7 +36,7 @@ public static class ImageLoader
         Cache
     }
 
-    public static async Task InitializeAsync()
+    public async Task InitializeAsync()
     {
         await Task.Run(() =>
         {
@@ -47,14 +44,14 @@ public static class ImageLoader
             {
                 ImageSource img = new BitmapImage(new Uri(icon));
                 img.Freeze();
-                ImageCache[icon, false] = img;
+                _imageCache[icon, false] = img;
             }
         });
     }
 
-    public static bool TryGetValue(string path, bool loadFullImage, [NotNullWhen(true)] out ImageSource? image)
+    public bool TryGetValue(string path, bool loadFullImage, [NotNullWhen(true)] out ImageSource? image)
     {
-        return ImageCache.TryGetValue(path, loadFullImage, out image);
+        return _imageCache.TryGetValue(path, loadFullImage, out image);
     }
 
     private static BitmapSource GetThumbnail(string path,
@@ -102,7 +99,7 @@ public static class ImageLoader
         return image;
     }
 
-    private static ImageResult GetThumbnailResult(string path, bool loadFullImage = false)
+    private ImageResult GetThumbnailResult(string path, bool loadFullImage = false)
     {
         ImageSource image;
         ImageType type = ImageType.Error;
@@ -120,7 +117,7 @@ public static class ImageLoader
         else if (File.Exists(path))
         {
             var extension = Path.GetExtension(path).ToLower();
-            if (ImageExtensions.Contains(extension))
+            if (_imageExtensions.Contains(extension))
             {
                 type = ImageType.ImageFile;
                 if (loadFullImage)
@@ -134,7 +131,7 @@ public static class ImageLoader
                     {
                         image = Image;
                         type = ImageType.Error;
-                        Logger.ZLogError(ex, $"Failed to load image file from {path}");
+                        _logger.LogError(ex, $"Failed to load image file from {path}");
                     }
                 }
                 else
@@ -166,7 +163,7 @@ public static class ImageLoader
         return new ImageResult(image, type);
     }
 
-    private static async ValueTask<ImageResult> LoadInternalAsync(string path, bool loadFullImage = false)
+    private async ValueTask<ImageResult> LoadInternalAsync(string path, bool loadFullImage = false)
     {
         ImageResult imageResult;
 
@@ -183,11 +180,11 @@ public static class ImageLoader
             }
             catch (Exception e2)
             {
-                Logger.ZLogError(e2, $"Failed to get thumbnail for {path} on first try");
-                Logger.ZLogError(e2, $"Failed to get thumbnail for {path} on second try");
+                _logger.LogError(e2, $"Failed to get thumbnail for {path} on first try");
+                _logger.LogError(e2, $"Failed to get thumbnail for {path} on second try");
 
                 ImageSource image = MissingImage;
-                ImageCache[path, false] = image;
+                _imageCache[path, false] = image;
                 imageResult = new ImageResult(image, ImageType.Error);
             }
         }
@@ -195,7 +192,7 @@ public static class ImageLoader
         return imageResult;
     }
 
-    public static async ValueTask<ImageSource> LoadAsync(string path, bool loadFullImage = false, bool cacheImage = true)
+    public async ValueTask<ImageSource> LoadAsync(string path, bool loadFullImage = false, bool cacheImage = true)
     {
         // If the path is relative combine it with FlowLauncher's directory,
         // since the working directory may be different
@@ -206,7 +203,7 @@ public static class ImageLoader
         path = path.ToLowerInvariant();
 
         // Use cached image if available
-        if (ImageCache.TryGetValue(path, loadFullImage, out ImageSource? cachedImage))
+        if (_imageCache.TryGetValue(path, loadFullImage, out ImageSource? cachedImage))
             return cachedImage;
 
         var imageResult = await LoadInternalAsync(path, loadFullImage);
@@ -218,22 +215,22 @@ public static class ImageLoader
             string? hash = ImageHashGenerator.GetHashFromImage(img);
             if (hash is not null)
             {
-                if (GuidToKey.TryGetValue(hash, out string? key))
+                if (_guidToKey.TryGetValue(hash, out string? key))
                 {
                     // image already exists
-                    img = ImageCache[key, loadFullImage] ?? img;
+                    img = _imageCache[key, loadFullImage] ?? img;
                 }
                 else if (cacheImage)
                 {
                     // save guid key
-                    GuidToKey[hash] = path;
+                    _guidToKey[hash] = path;
                 }
             }
 
             if (cacheImage)
             {
                 // update cache
-                ImageCache[path, loadFullImage] = img;
+                _imageCache[path, loadFullImage] = img;
             }
         }
 

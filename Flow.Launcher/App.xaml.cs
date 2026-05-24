@@ -12,7 +12,6 @@ using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.API;
 using Flow.Launcher.Infrastructure.Image;
-using Flow.Launcher.Infrastructure.Logging;
 using Flow.Launcher.Infrastructure.Storage;
 using Flow.Launcher.Interop;
 using Flow.Launcher.SettingPages.ViewModels;
@@ -24,331 +23,317 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Threading;
 using ZLogger;
 
-namespace Flow.Launcher
+namespace Flow.Launcher;
+
+public partial class App : Application
 {
-    public partial class App : IDisposable
+    [Obsolete("TODO: Remove this")]
+    public static IPublicAPI API { get; private set; }
+    public static bool LoadingOrExiting => _mainWindow is null || _mainWindow.CanClose;
+
+    private static MainWindow _mainWindow;
+    private IHost? _host;
+    private readonly Settings _settings;
+    private readonly PluginSDK.Logging.Logger<App>? _logger;
+
+    public static readonly string RuntimeInfo = "\n\n" +
+        $"Version: {Constant.Version}\n" +
+        $"IntPtr Length: {IntPtr.Size}\n" +
+        $"x64: {Environment.Is64BitOperatingSystem}";
+
+    [STAThread]
+    public static void Main()
     {
-        public static IPublicAPI API { get; private set; }
-        public static bool LoadingOrExiting => _mainWindow == null || _mainWindow.CanClose;
-
-        private static ILogger<App> Logger => field ??= LogManager.GetLogger<App>();
-        private static readonly string ClassName = nameof(App);
-
-        private static bool _disposed;
-        private static Settings _settings;
-        private static MainWindow _mainWindow;
-        private readonly MainViewModel _mainVM;
-        private readonly Internationalization _internationalization;
-
-        // To prevent two disposals running at the same time.
-        private static readonly object _disposingLock = new();
-
-        // TODO: Log to file
-        // TODO: Figure out if we should somehow flush the logger on app exit
-        public App()
+        bool isRestart = Environment.GetCommandLineArgs().Contains("--restart");
+        if (!SingleInstance.Initialize(waitIfOccupied: isRestart))
         {
-            // Check if the application is running as administrator
-            if (_settings.AlwaysRunAsAdministrator && !Environment.IsPrivilegedProcess)
+            MessageBox.Show("Another instance of Flow Launcher is already running.");
+            return;
+        }
+
+        Settings settings;
+        try
+        {
+            FlowLauncherJsonStorage<Settings> storage = new();
+            settings = storage.Load();
+            settings.SetStorage(storage);
+        }
+        catch (Exception e)
+        {
+            ShowErrorMsgboxAndFailFast("Failed to load settings", e);
+            throw;
+        }
+
+        // Restart as admin if needed
+        if (settings.AlwaysRunAsAdministrator && !Environment.IsPrivilegedProcess)
+        {
+            // Only restart when we are not debugging on Visual Studio
+            if (!Debugger.IsAttached)
             {
-                // We don't want to restart as admin if we are debugging in Visual Studio
-                if (!Debugger.IsAttached)
+                RestartApp(true);
+                return;
+            }
+        }
+
+        try
+        {
+            App application = new(settings);
+            application.InitializeComponent();
+            application.Run();
+        }
+        finally
+        {
+            SingleInstance.Cleanup();
+        }
+    }
+
+    /// <summary>
+    /// Restarts the application.
+    /// </summary>
+    /// <param name="forceAdmin"> If true, the app will be restarted as administrator.</param>
+    public static void RestartApp(bool forceAdmin = false)
+    {
+        ProcessStartInfo startInfo = new()
+        {
+            FileName = Environment.ProcessPath,
+            Arguments = "--restart",
+            UseShellExecute = true,
+            Verb = Environment.IsPrivilegedProcess || forceAdmin ? "runas" : ""
+        };
+
+        Process.Start(startInfo);
+        // Application.Current is null when this is called from Main()
+        Current?.Shutdown();
+    }
+
+    public App(Settings settings)
+    {
+        SetupErrorHandling();
+        _settings = settings;
+
+        // Do not use bitmap cache since it can cause WPF second window freezing issue
+        ShadowAssist.UseBitmapCache = false;
+
+        // Configure DI container
+        try
+        {
+            _host = Host.CreateDefaultBuilder()
+                .ConfigureLogging(logging =>
                 {
-                    RestartApp(true);
-                    return;
-                }
-            }
+                    logging.ClearProviders();
+                    // TODO: Log to file
 
-            // Do not use bitmap cache since it can cause WPF second window freezing issue
-            ShadowAssist.UseBitmapCache = false;
+#if DEBUG
+                    logging.AddZLoggerConsole();
+                    logging.AddDebug();
+#endif
+                })
+                .UseContentRoot(AppContext.BaseDirectory)
+                .ConfigureServices(services => services
+                    .AddTransient(typeof(PluginSDK.Logging.Logger<>))
+                    .AddSingleton(_settings)
+                    .AddSingleton<Internationalization>()
+                    .AddSingleton<IPublicAPI, PublicAPIInstance>()
+                    .AddSingleton<Plugin.IPublicAPI, PublicAPIInstance>()
+                    .AddSingleton<Theme>()
+                    .AddSingleton<HotkeyManager>()
+                    .AddSingleton<ImageLoader>()
+                    // Use one instance for main window view model because we only have one main window
+                    .AddSingleton<MainViewModel>()
+                    .AddSingleton<SettingWindowViewModel>()
+                    // Use transient instance for setting window page view models because
+                    // pages in setting window need to be recreated when setting window is closed
+                    .AddTransient<SettingsPaneAboutViewModel>()
+                    .AddTransient<SettingsPaneGeneralViewModel>()
+                    .AddTransient<SettingsPaneHotkeyViewModel>()
+                    .AddTransient<SettingsPanePluginsViewModel>()
+                    .AddTransient<SettingsPaneThemeViewModel>()
+                ).Build();
 
-            // Configure the dependency injection container
-            try
-            {
-                var host = Host.CreateDefaultBuilder()
-                    .ConfigureLogging(logging =>
-                    {
-                        logging.ClearProviders();
-                        logging.AddZLoggerConsole();
-                    })
-                    .UseContentRoot(AppContext.BaseDirectory)
-                    .ConfigureServices(services => services
-                        .AddSingleton(_ => _settings)
-                        .AddSingleton<Internationalization>()
-                        .AddSingleton<IPublicAPI, PublicAPIInstance>()
-                        .AddSingleton<Plugin.IPublicAPI, PublicAPIInstance>()
-                        .AddSingleton<Theme>()
-                        // Use one instance for main window view model because we only have one main window
-                        .AddSingleton<MainViewModel>()
-                        .AddSingleton<SettingWindowViewModel>()
-                        // Use transient instance for setting window page view models because
-                        // pages in setting window need to be recreated when setting window is closed
-                        .AddTransient<SettingsPaneAboutViewModel>()
-                        .AddTransient<SettingsPaneGeneralViewModel>()
-                        .AddTransient<SettingsPaneHotkeyViewModel>()
-                        .AddTransient<SettingsPanePluginsViewModel>()
-                        .AddTransient<SettingsPaneThemeViewModel>()
-                    ).Build();
-
-                var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
-                LogManager.Init(loggerFactory);
-
-                Ioc.Default.ConfigureServices(host.Services);
-            }
-            catch (Exception e)
-            {
-                ShowErrorMsgBoxAndFailFast("Cannot configure dependency injection container, please open new issue in Flow.Launcher", e);
-                return;
-            }
-
-            // Initialize the public API and Settings first
-            try
-            {
-                API = Ioc.Default.GetRequiredService<IPublicAPI>();
-                _settings.Initialize();
-                _mainVM = Ioc.Default.GetRequiredService<MainViewModel>();
-                _internationalization = Ioc.Default.GetRequiredService<Internationalization>();
-            }
-            catch (Exception e)
-            {
-                ShowErrorMsgBoxAndFailFast("Cannot initialize api and settings, please open new issue in Flow.Launcher", e);
-                return;
-            }
+            Ioc.Default.ConfigureServices(_host.Services);
+        }
+        catch (Exception e)
+        {
+            ShowErrorMsgboxAndFailFast("Failed to configure dependency injection container", e);
+            throw;
         }
 
-        /// <summary>
-        /// Restart the application without changing the user privileges.
-        /// </summary>
-        /// <param name="forceAdmin">
-        /// If true, the application will be restarted as administrator.
-        /// If false, it will be restarted with the same privileges as the current user.
-        /// </param>
-        public static void RestartApp(bool forceAdmin = false)
+        // Ensure logs are flushed even if OnExit is not called (e.g. Environment.Exit is used)
+        AppDomain.CurrentDomain.ProcessExit += (s, ev) => CleanUpAndFlush();
+
+        try
         {
-            Logger.ZLogInformation($"Restarting app, forceAdmin={forceAdmin}");
+            _logger = Ioc.Default.GetRequiredService<PluginSDK.Logging.Logger<App>>();
 
-            var startInfo = new ProcessStartInfo
-            {
-                FileName = Constant.ExecutablePath,
-                Arguments = "--restart",
-                UseShellExecute = true,
-                Verb = Environment.IsPrivilegedProcess || forceAdmin ? "runas" : ""
-            };
-            // No need to de-elevate since we are restarting Flow Launcher which cannot bring security risks
-            Process.Start(startInfo);
-            Thread.Sleep(500);
+            // Initialize the API and Settings first
+            // TODO: Check if this is needed
+            API = Ioc.Default.GetRequiredService<IPublicAPI>();
+            _settings.Initialize();
+        }
+        catch (Exception e)
+        {
+            ShowErrorMsgboxAndFailFast("Failed to initialize basic services", e);
+            throw;
+        }
+    }
 
-            Current.Shutdown();
+    private static void ShowErrorMsgboxAndFailFast(string message, Exception e)
+    {
+        MessageBox.Show(e.ToString(), message, MessageBoxButton.OK, MessageBoxImage.Error);
+        Environment.FailFast(message, e);
+    }
+
+#pragma warning disable VSTHRD100
+    // TODO: Double-check whether async here is a good idea
+    protected override async void OnStartup(StartupEventArgs e)
+#pragma warning restore VSTHRD100
+    {
+        base.OnStartup(e);
+
+        // Because new message box api uses MessageBoxEx window,
+        // if it is created and closed before main window is created, it will cause the application to exit.
+        // So set to OnExplicitShutdown to prevent the application from shutting down before main window is created
+        Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+
+        // Initialize notification system before any notification api is called
+        Notification.Install();
+
+        // Enable Win32 dark mode if the system is in dark mode before creating all windows
+        ApplicationHelper.SetWin32DarkMode(_settings.ColorScheme);
+
+        // Initialize language before portable clean up since it needs translations
+        await Ioc.Default.GetRequiredService<Internationalization>().InitializeLanguageAsync();
+
+        _logger!.LogInfo($"Begin Flow Launcher startup ----------------------------------------------------");
+        _logger.LogInfo($"Runtime info:{RuntimeInfo}");
+
+        await Ioc.Default.GetRequiredService<ImageLoader>().InitializeAsync();
+
+        _mainWindow = new MainWindow();
+        Current.MainWindow = _mainWindow;
+        Current.MainWindow.Title = Constant.FlowLauncher;
+
+        // Initialize hotkey mapper instantly after main window is created because
+        // it will steal focus from main window which causes window hide
+        Ioc.Default.GetRequiredService<HotkeyManager>().Initialize();
+
+        // Initialize theme for main window
+        Ioc.Default.GetRequiredService<Theme>().ChangeTheme();
+
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+        API.SaveAppAllSettings();
+        _logger.LogInfo($"End Flow Launcher startup ------------------------------------------------------");
+
+        _logger.LogInfo($"Begin plugin initialization ----------------------------------------------------");
+        PluginManager.LoadPlugins(_settings.PluginSettings);
+        await PluginManager.InitializePluginsAsync();
+
+        // Refresh home page after plugins are initialized because users may open main window during plugin initialization
+        // And home page is created without full plugin list
+        MainViewModel mainVM = Ioc.Default.GetRequiredService<MainViewModel>(); ;
+        if (_settings.ShowHomePage && mainVM.QueryResultsSelected() && string.IsNullOrEmpty(mainVM.QueryText))
+        {
+            mainVM.QueryResults();
         }
 
-        [STAThread]
-        public static void Main()
+        // Save all settings since we possibly update the plugin environment paths
+        API.SaveAppAllSettings();
+
+        _logger.LogInfo($"End plugin initialization ------------------------------------------------------");
+    }
+
+    private void SetupErrorHandling()
+    {
+        void HandleException(Exception? ex, string message)
         {
-            // Setup temporary logger factory
-            // TODO: Maybe make the app use this logger factory?
-            // Otherwise loggers created during Flow init won't use the app's factory
-            using var loggerFactory = LoggerFactory.Create(builder =>
+            if (_logger is not null)
             {
-                builder.ClearProviders();
-                builder.AddZLoggerConsole();
-                if (Debugger.IsAttached)
-                    builder.AddDebug();
-            });
-            LogManager.Init(loggerFactory);
-
-            string[] args = Environment.GetCommandLineArgs();
-            if (args.Length > 1 && args[1] == "--restart")
-            {
-                // Wait until the previous instance closes
-                SingleInstance<App>.WaitUntilWeAreFirstInstance();
-            }
-
-            // Initialize settings so that we can get language code
-            try
-            {
-                var storage = new FlowLauncherJsonStorage<Settings>();
-                _settings = storage.Load();
-                _settings.SetStorage(storage);
-            }
-            catch (Exception e)
-            {
-                ShowErrorMsgBoxAndFailFast("Cannot load setting storage, please check local data directory", e);
-                return;
-            }
-
-            // Start the application as a single instance
-            if (SingleInstance<App>.InitializeAsFirstInstance())
-            {
-                using var application = new App();
-                application.InitializeComponent();
-                application.Run();
+                if (ex is not null)
+                    _logger?.LogCritical(ex, $"{message}");
+                else
+                    _logger?.LogCritical($"{message}");
             }
             else
             {
-                MessageBox.Show("Another instance of Flow Launcher is already running.");
+                Trace.WriteLine(message);
+                Console.Error.WriteLine(message);
+            }
+
+            Exception exceptionToReport = ex
+                ?? new InvalidOperationException($"{message} (No exception provided)");
+
+            if (Current?.Dispatcher?.CheckAccess() == true)
+            {
+                ReportWindow reportWindow = new(exceptionToReport);
+                reportWindow.ShowDialog();
+            }
+            else
+            {
+                // We are on a background thread, show a simple MessageBox
+                MessageBox.Show($"{message}\n\n{exceptionToReport}", Constant.FlowLauncher,
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        private static void ShowErrorMsgBoxAndFailFast(string message, Exception e)
+        AppDomain.CurrentDomain.UnhandledException += (s, e) =>
         {
-            Logger.ZLogCritical(e, $"{message}");
-            MessageBox.Show(e.ToString(), message, MessageBoxButton.OK, MessageBoxImage.Error);
-            Environment.FailFast(message, e);
-        }
+            if (e.ExceptionObject is Exception ex)
+                HandleException(ex, "Unhandled exception");
+            else
+                HandleException(null, "Unhandled exception");
 
-#pragma warning disable VSTHRD100 // Avoid async void methods
+            // Ensure all logs are flushed
+            CleanUpAndFlush();
+        };
 
-        private async void OnStartup(object sender, StartupEventArgs e)
+        DispatcherUnhandledException += (s, e) =>
         {
-            // Because new message box api uses MessageBoxEx window,
-            // if it is created and closed before main window is created, it will cause the application to exit.
-            // So set to OnExplicitShutdown to prevent the application from shutting down before main window is created
-            Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+            // Prevent app from crashing immediately
+            e.Handled = true;
 
-            // Initialize notification system before any notification api is called
-            Notification.Install();
-
-            // Enable Win32 dark mode if the system is in dark mode before creating all windows
-            ApplicationHelper.SetWin32DarkMode(_settings.ColorScheme);
-
-            // Initialize language before portable clean up since it needs translations
-            await _internationalization.InitializeLanguageAsync();
-
-            API.LogInfo(ClassName, "Begin Flow Launcher startup ----------------------------------------------------");
-            API.LogInfo(ClassName, $"Runtime info:{ErrorReporting.RuntimeInfo()}");
-
-            RegisterAppDomainExceptions();
-            RegisterDispatcherUnhandledException();
-            RegisterTaskSchedulerUnhandledException();
-
-            await ImageLoader.InitializeAsync();
-
-            _mainWindow = new MainWindow();
-
-            Current.MainWindow = _mainWindow;
-            Current.MainWindow.Title = Constant.FlowLauncher;
-
-            // Initialize hotkey mapper instantly after main window is created because
-            // it will steal focus from main window which causes window hide
-            HotkeyManager.Initialize();
-
-            // Initialize theme for main window
-            Ioc.Default.GetRequiredService<Theme>().ChangeTheme();
-
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
-            RegisterExitEvents();
-
-            API.SaveAppAllSettings();
-            API.LogInfo(ClassName, "End Flow Launcher startup ------------------------------------------------------");
-
-            API.LogInfo(ClassName, "Begin plugin initialization ----------------------------------------------------");
-            PluginManager.LoadPlugins(_settings.PluginSettings);
-            await PluginManager.InitializePluginsAsync();
-
-            // Refresh home page after plugins are initialized because users may open main window during plugin initialization
-            // And home page is created without full plugin list
-            if (_settings.ShowHomePage && _mainVM.QueryResultsSelected() && string.IsNullOrEmpty(_mainVM.QueryText))
+            // Workaround for issue https://github.com/Flow-Launcher/Flow.Launcher/issues/4016
+            // The crash occurs in PresentationFramework.dll, not necessarily when the Runner UI is visible, originating from this line:
+            // https://github.com/dotnet/wpf/blob/3439f20fb8c685af6d9247e8fd2978cac42e74ac/src/Microsoft.DotNet.Wpf/src/PresentationFramework/System/Windows/Shell/WindowChromeWorker.cs#L1005
+            // Many bug reports because users see the "Error report UI" after the crash with System.Runtime.InteropServices.COMException 0xD0000701 or 0x80263001.
+            // However, displaying this "Error report UI" during WPF crashes, especially when DWM composition is changing, is not ideal; some users reported it hangs for up to a minute before the it appears.
+            // This change modifies the behavior to log the exception instead of showing the "Error report UI".
+            if (ExceptionHelper.IsRecoverableDwmCompositionException(e.Exception))
             {
-                _mainVM.QueryResults();
+                _logger?.LogWarn(e.Exception, $"Ignoring DWM Composition exception");
+                return;
             }
 
-            // Save all settings since we possibly update the plugin environment paths
-            API.SaveAppAllSettings();
+            HandleException(e.Exception, "WPF dispatcher unhandled exception");
+        };
 
-            API.LogInfo(ClassName, "End plugin initialization ------------------------------------------------------");
-        }
-
-#pragma warning restore VSTHRD100 // Avoid async void methods
-
-        private void RegisterExitEvents()
+        TaskScheduler.UnobservedTaskException += (s, e) =>
         {
-            AppDomain.CurrentDomain.ProcessExit += (s, e) =>
-            {
-                API.LogInfo(ClassName, "Process Exit");
-                Dispose();
-            };
+            HandleException(e.Exception, "Unobserved task exception");
+            e.SetObserved();
+        };
+    }
 
-            Current.Exit += (s, e) =>
-            {
-                API.LogInfo(ClassName, "Application Exit");
-                Dispose();
-            };
+    protected override void OnExit(ExitEventArgs e)
+    {
+        CleanUpAndFlush();
+        base.OnExit(e);
+    }
 
-            Current.SessionEnding += (s, e) =>
-            {
-                API.LogInfo(ClassName, "Session Ending");
-                Dispose();
-            };
-        }
-
-        /// <summary>
-        /// Let exception throw as normal is better for Debug
-        /// </summary>
-        [Conditional("RELEASE")]
-        private void RegisterDispatcherUnhandledException()
+    private void CleanUpAndFlush()
+    {
+        // Ensure dispose is not called by multiple threads at the same time
+        IHost? host = Interlocked.Exchange(ref _host, null);
+        try
         {
-            DispatcherUnhandledException += ErrorReporting.DispatcherUnhandledException;
+            host?.Dispose();
         }
-
-        /// <summary>
-        /// Let exception throw as normal is better for Debug
-        /// </summary>
-        [Conditional("RELEASE")]
-        private static void RegisterAppDomainExceptions()
+        catch (Exception e)
         {
-            AppDomain.CurrentDomain.UnhandledException += ErrorReporting.UnhandledException;
-        }
-
-        /// <summary>
-        /// Let exception throw as normal is better for Debug
-        /// </summary>
-        private static void RegisterTaskSchedulerUnhandledException()
-        {
-            TaskScheduler.UnobservedTaskException += ErrorReporting.TaskSchedulerUnobservedTaskException;
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            // Prevent two disposes at the same time.
-            lock (_disposingLock)
-            {
-                if (!disposing)
-                {
-                    return;
-                }
-
-                if (_disposed)
-                {
-                    return;
-                }
-
-                // If we call Environment.Exit(0), the application dispose will be called before _mainWindow.Close()
-                // Accessing _mainWindow?.Dispatcher will cause the application stuck
-                // So here we need to check it and just return so that we will not acees _mainWindow?.Dispatcher
-                if (!_mainWindow.CanClose)
-                {
-                    return;
-                }
-
-                _disposed = true;
-            }
-
-            API.LogInfo(ClassName, "Begin Flow Launcher dispose ----------------------------------------------------");
-            if (disposing)
-            {
-                // Dispose needs to be called on the main Windows thread,
-                // since some resources owned by the thread need to be disposed.
-                _mainWindow?.Dispatcher.Invoke(_mainWindow.Dispose);
-                _mainVM?.Dispose();
-            }
-            API.LogInfo(ClassName, "End Flow Launcher dispose ----------------------------------------------------");
-        }
-
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
+            // We should not use the logger service here since it may have already been disposed
+            string msg = $"Failed to dispose host: {e}";
+            Trace.WriteLine(msg);
+            Console.Error.WriteLine(msg);
         }
     }
 }

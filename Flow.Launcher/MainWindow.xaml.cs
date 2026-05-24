@@ -23,7 +23,7 @@ using Key = System.Windows.Input.Key;
 
 namespace Flow.Launcher
 {
-    public partial class MainWindow : IDisposable
+    public partial class MainWindow : Window
     {
         // Window Event: Close Event
         public bool CanClose { get; set; } = false;
@@ -41,16 +41,13 @@ namespace Flow.Launcher
         private bool _isArrowKeyPressed = false;
 
         // Window WndProc
-        private HwndSource _hwndSource;
+        private HwndSource? _hwndSource;
         private int _initialWidth;
         private int _initialHeight;
 
         // ResultListbox
         private ScrollViewer _resultListboxScrollviewer;
         private double _resultListboxVerticalOffset = 0;
-
-        // IDisposable
-        private bool _disposed = false;
 
         public MainWindow()
         {
@@ -233,6 +230,7 @@ namespace Flow.Launcher
 
         private async void OnClosing(object sender, CancelEventArgs e)
         {
+            // TODO: Would it be better to move this to OnClosed?
             if (!CanClose)
             {
                 CanClose = true;
@@ -248,16 +246,21 @@ namespace Flow.Launcher
 
         private void OnClosed(object sender, EventArgs e)
         {
+            _viewModel.ActualApplicationThemeChanged -= ViewModel_ActualApplicationThemeChanged;
+
             try
             {
-                _hwndSource.RemoveHook(WndProc);
+                _hwndSource?.RemoveHook(WndProc);
+                _hwndSource?.Dispose();
             }
             catch (Exception)
             {
                 // Ignored
             }
-
-            _hwndSource = null;
+            finally
+            {
+                _hwndSource = null;
+            }
         }
 
         private void OnLocationChanged(object sender, EventArgs e)
@@ -777,31 +780,6 @@ namespace Flow.Launcher
             var textBox = (TextBox)sender;
             _viewModel.QueryText = textBox.Text;
             _viewModel.Query();
-        }
-
-        #endregion
-
-        #region IDisposable
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!_disposed)
-            {
-                if (disposing)
-                {
-                    _hwndSource?.Dispose();
-                    _viewModel.ActualApplicationThemeChanged -= ViewModel_ActualApplicationThemeChanged;
-                }
-
-                _disposed = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
         }
 
         #endregion
