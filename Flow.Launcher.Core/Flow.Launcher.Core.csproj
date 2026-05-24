@@ -2,16 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
-    <UseWpf>true</UseWpf>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Flow.Launcher.Core</RootNamespace>
-    <AssemblyName>Flow.Launcher.Core</AssemblyName>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-    <Nullable>enable</Nullable>
 
     <!-- 
     Required by CommunityToolkit.Mvvm to use the 'field' keyword
@@ -19,36 +16,21 @@
     -->
     <LangVersion>preview</LangVersion>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>portable</DebugType>
-    <Optimize>false</Optimize>
+    <DebugType>embedded</DebugType>
     <OutputPath>..\Output\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <DebugType>embedded</DebugType>
     <OutputPath>..\Output\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
     <NoWarn>$(NoWarn);FLSG0007</NoWarn>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <Compile Include="..\SolutionAssemblyInfo.cs" Link="Properties\SolutionAssemblyInfo.cs" />
   </ItemGroup>
-
-  <PropertyGroup>
-    <FLLUseDependencyInjection>true</FLLUseDependencyInjection>
-  </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Flow.Launcher.Infrastructure\Flow.Launcher.Infrastructure.csproj" />
@@ -61,6 +43,10 @@
     <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.WindowsServices\Flow.Launcher.Plugin.WindowsServices.csproj" />
     <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.WindowsSettings\Flow.Launcher.Plugin.WindowsSettings.csproj" />
     <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.WindowsTasks\Flow.Launcher.Plugin.WindowsTasks.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BitFaster.Caching" Version="2.5.4" />
   </ItemGroup>
 
 </Project>
