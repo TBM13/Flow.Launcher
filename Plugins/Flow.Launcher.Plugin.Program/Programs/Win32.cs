@@ -185,7 +185,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 Action = c =>
                 {
                     // Ctrl + Enter to open containing folder
-                    bool openFolder = c.PressedKeys == ModifierKeys.Control;
+                    bool openFolder = c.PressedKeys.OnlyModifiersPressed(ModifierKeys.Control);
                     if (openFolder)
                     {
                         Main.Context.API.OpenDirectory(ParentDirectory, FullPath);
@@ -193,7 +193,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     }
 
                     // Ctrl + Shift + Enter to run as admin
-                    bool runAsAdmin = c.PressedKeys == (ModifierKeys.Control | ModifierKeys.Shift);
+                    bool runAsAdmin = c.PressedKeys.OnlyModifiersPressed(ModifierKeys.Control | ModifierKeys.Shift);
                     Launch(runAsAdmin);
 
                     return true;

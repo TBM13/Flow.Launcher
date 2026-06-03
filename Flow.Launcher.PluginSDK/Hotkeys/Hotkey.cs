@@ -1,30 +1,33 @@
-﻿using System.Windows.Input;
+﻿using System.Collections.Immutable;
+using System.Windows.Input;
 
 namespace Flow.Launcher.Infrastructure.Hotkeys;
 
 public readonly record struct Hotkey
 {
+    private const string LongPressPrefix = "[LongPress]";
+
     /// <summary>
     /// The modifier(s) that need to be held down for the hotkey to be triggered.
-    /// <para/>
-    /// When set to <see cref="ModifierKeys.None"/>, pressing <see cref="MainKey"/> alone triggers the hotkey.
     /// </summary>
-    public required ModifierKeys Modifiers { get; init; }
+    /// <remarks>Global hotkeys must contain at least one modifier.</remarks>
+    public ModifierKeys Modifiers { get; init; }
     /// <summary>
     /// The main key that needs to be pressed for the hotkey to be triggered.
     /// E.g. K in Ctrl+Alt+K.
-    /// <para/>
-    /// When set to <see cref="Key.None"/>, pressing <see cref="Modifiers"/> alone triggers the hotkey.
     /// </summary>
-    public required Key MainKey { get; init; }
+    /// <remarks>
+    /// When set to <see cref="Key.None"/>, pressing the modifier(s) is enough to trigger the hotkey.
+    /// </remarks>
+    public Key MainKey { get; init; }
 
     /// <summary>
     /// When true, the hotkey will only trigger when all the keys are held down
-    /// for a little more than half a second before being released.<br/>
-    /// This allows two different hotkeys to be registered with the same key(s).
+    /// for a small amount of time before being released.
     /// <para/>
-    /// This only has an effect on global hotkeys.
+    /// This allows two different hotkeys to be registered with the same key(s).
     /// </summary>
+    /// <remarks>This only has an effect on global hotkeys.</remarks>
     public bool LongPress { get; init; }
 
     /// <summary>
@@ -36,6 +39,8 @@ public readonly record struct Hotkey
         {
             if (Modifiers == ModifierKeys.None && MainKey == Key.None)
                 return false;
+            if (!Enum.IsDefined(MainKey))
+                return false;
             if (MainKey.IsModifierKey())
                 return false;
 
@@ -43,78 +48,122 @@ public readonly record struct Hotkey
         }
     }
 
-    public static Hotkey FromString(string str)
+    public Hotkey(Key mainKey = Key.None, ModifierKeys modifiers = ModifierKeys.None, bool longPress = false)
     {
-        bool longPress = str.StartsWith("[LongPress]", StringComparison.OrdinalIgnoreCase);
+        MainKey = mainKey;
+        Modifiers = modifiers;
+        LongPress = longPress;
+    }
+
+    /// <summary>
+    /// Tries to create a <see cref="Hotkey"/> instance from a string representation.
+    /// </summary>
+    /// <returns>True if the hotkey is valid.</returns>
+    public static bool TryParse(ReadOnlySpan<char> str, out Hotkey hotkey)
+    {
+        str = str.Trim();
+
+        bool longPress = str.StartsWith(LongPressPrefix, StringComparison.OrdinalIgnoreCase);
         if (longPress)
-            str = str[11..];
+            str = str[LongPressPrefix.Length..];
 
         ModifierKeys modifiers = ModifierKeys.None;
         Key mainKey = Key.None;
 
-        string[] keys = str.Split('+', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        for (int i = 0; i < keys.Length; i++)
+        int separatorIndex = str.IndexOf('+');
+        while (separatorIndex != -1)
         {
-            string key = keys[i];
-
-            if (key.Equals("Ctrl", StringComparison.OrdinalIgnoreCase) ||
-                    key.Equals("LCtrl", StringComparison.OrdinalIgnoreCase) ||
-                    key.Equals("LeftCtrl", StringComparison.OrdinalIgnoreCase) ||
-                    key.Equals("RCtrl", StringComparison.OrdinalIgnoreCase) ||
-                    key.Equals("RightCtrl", StringComparison.OrdinalIgnoreCase) ||
-                    key.Equals("Control", StringComparison.OrdinalIgnoreCase) ||
-                    key.Equals("LControl", StringComparison.OrdinalIgnoreCase) ||
-                    key.Equals("LeftControl", StringComparison.OrdinalIgnoreCase) ||
-                    key.Equals("RControl", StringComparison.OrdinalIgnoreCase) ||
-                    key.Equals("RightControl", StringComparison.OrdinalIgnoreCase))
-                modifiers |= ModifierKeys.Control;
-            else if (key.Equals("Alt", StringComparison.OrdinalIgnoreCase) ||
-                    key.Equals("LAlt", StringComparison.OrdinalIgnoreCase) ||
-                    key.Equals("LeftAlt", StringComparison.OrdinalIgnoreCase) ||
-                    key.Equals("RAlt", StringComparison.OrdinalIgnoreCase) ||
-                    key.Equals("RightAlt", StringComparison.OrdinalIgnoreCase))
-                modifiers |= ModifierKeys.Alt;
-            else if (key.Equals("Shift", StringComparison.OrdinalIgnoreCase) ||
-                    key.Equals("LShift", StringComparison.OrdinalIgnoreCase) ||
-                    key.Equals("LeftShift", StringComparison.OrdinalIgnoreCase) ||
-                    key.Equals("RShift", StringComparison.OrdinalIgnoreCase) ||
-                    key.Equals("RightShift", StringComparison.OrdinalIgnoreCase))
-                modifiers |= ModifierKeys.Shift;
-            else if (key.Equals("Win", StringComparison.OrdinalIgnoreCase) ||
-                    key.Equals("LWin", StringComparison.OrdinalIgnoreCase) ||
-                    key.Equals("LeftWin", StringComparison.OrdinalIgnoreCase) ||
-                    key.Equals("RWin", StringComparison.OrdinalIgnoreCase) ||
-                    key.Equals("RightWin", StringComparison.OrdinalIgnoreCase) ||
-                    key.Equals("Windows", StringComparison.OrdinalIgnoreCase) ||
-                    key.Equals("LWindows", StringComparison.OrdinalIgnoreCase) ||
-                    key.Equals("LeftWindows", StringComparison.OrdinalIgnoreCase) ||
-                    key.Equals("RWindows", StringComparison.OrdinalIgnoreCase) ||
-                    key.Equals("RightWindows", StringComparison.OrdinalIgnoreCase))
-                modifiers |= ModifierKeys.Windows;
-            else
+            ReadOnlySpan<char> mod = str[..separatorIndex].Trim();
+            ModifierKeys modKey = StringToModifier(mod);
+            if (modKey == ModifierKeys.None)
             {
-                if (i != keys.Length - 1)
-                    throw new ArgumentException($"Key '{key}' is not a valid modifier key", nameof(str));
-                if (!Enum.TryParse(key, true, out mainKey))
-                    throw new ArgumentException($"Key '{key}' is not a valid key", nameof(str));
+                // Invalid modifier
+                hotkey = default;
+                return false;
             }
+
+            modifiers |= modKey;
+            str = str[(separatorIndex + 1)..];
+            separatorIndex = str.IndexOf('+');
         }
 
-        return new Hotkey
+        str = str.Trim();
+        if (str.Length > 0)
+        {
+            ModifierKeys modKey = StringToModifier(str);
+            if (modKey == ModifierKeys.None && !Enum.TryParse(str, ignoreCase: true, out mainKey))
+            {
+                // Not a valid modifier nor main key
+                hotkey = default;
+                return false;
+            }
+
+            modifiers |= modKey;
+        }
+
+        hotkey = new Hotkey()
         {
             Modifiers = modifiers,
             MainKey = mainKey,
             LongPress = longPress
         };
+
+        return hotkey.IsValid;
     }
 
+    private static ModifierKeys StringToModifier(ReadOnlySpan<char> str)
+    {
+        if (str.Equals("Ctrl", StringComparison.OrdinalIgnoreCase) ||
+                str.Equals("LCtrl", StringComparison.OrdinalIgnoreCase) ||
+                str.Equals("LeftCtrl", StringComparison.OrdinalIgnoreCase) ||
+                str.Equals("RCtrl", StringComparison.OrdinalIgnoreCase) ||
+                str.Equals("RightCtrl", StringComparison.OrdinalIgnoreCase) ||
+                str.Equals("Control", StringComparison.OrdinalIgnoreCase) ||
+                str.Equals("LControl", StringComparison.OrdinalIgnoreCase) ||
+                str.Equals("LeftControl", StringComparison.OrdinalIgnoreCase) ||
+                str.Equals("RControl", StringComparison.OrdinalIgnoreCase) ||
+                str.Equals("RightControl", StringComparison.OrdinalIgnoreCase))
+            return ModifierKeys.Control;
+        else if (str.Equals("Alt", StringComparison.OrdinalIgnoreCase) ||
+                str.Equals("LAlt", StringComparison.OrdinalIgnoreCase) ||
+                str.Equals("LeftAlt", StringComparison.OrdinalIgnoreCase) ||
+                str.Equals("RAlt", StringComparison.OrdinalIgnoreCase) ||
+                str.Equals("RightAlt", StringComparison.OrdinalIgnoreCase))
+            return ModifierKeys.Alt;
+        else if (str.Equals("Shift", StringComparison.OrdinalIgnoreCase) ||
+                str.Equals("LShift", StringComparison.OrdinalIgnoreCase) ||
+                str.Equals("LeftShift", StringComparison.OrdinalIgnoreCase) ||
+                str.Equals("RShift", StringComparison.OrdinalIgnoreCase) ||
+                str.Equals("RightShift", StringComparison.OrdinalIgnoreCase))
+            return ModifierKeys.Shift;
+        else if (str.Equals("Win", StringComparison.OrdinalIgnoreCase) ||
+                str.Equals("LWin", StringComparison.OrdinalIgnoreCase) ||
+                str.Equals("LeftWin", StringComparison.OrdinalIgnoreCase) ||
+                str.Equals("RWin", StringComparison.OrdinalIgnoreCase) ||
+                str.Equals("RightWin", StringComparison.OrdinalIgnoreCase) ||
+                str.Equals("Windows", StringComparison.OrdinalIgnoreCase) ||
+                str.Equals("LWindows", StringComparison.OrdinalIgnoreCase) ||
+                str.Equals("LeftWindows", StringComparison.OrdinalIgnoreCase) ||
+                str.Equals("RWindows", StringComparison.OrdinalIgnoreCase) ||
+                str.Equals("RightWindows", StringComparison.OrdinalIgnoreCase))
+            return ModifierKeys.Windows;
+
+        return ModifierKeys.None;
+    }
+
+    /// <inheritdoc cref="ToString(bool)"/>
     public override string ToString() => ToString(includeLongPress: true);
+    /// <summary>
+    /// Converts the hotkey to a string representation.
+    /// </summary>
+    /// <param name="includeLongPress">Whether to include a LongPress prefix when <see cref="LongPress"/> is true.</param>
+    /// <returns>An empty string if the hotkey is not valid.</returns>
     public string ToString(bool includeLongPress)
     {
-        if (Modifiers == ModifierKeys.None && MainKey == Key.None)
+        if (!IsValid)
             return string.Empty;
 
-        string res = LongPress && includeLongPress ? "[LongPress]" : string.Empty;
+        string res = LongPress && includeLongPress ? LongPressPrefix : string.Empty;
         if (Modifiers != ModifierKeys.None)
             res += Modifiers.ToString().Replace(", ", "+");
 

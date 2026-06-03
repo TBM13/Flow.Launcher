@@ -37,6 +37,7 @@ namespace Flow.Launcher.ViewModel
     {
         private readonly Logger<MainViewModel> _logger;
         private readonly PluginManager _pluginManager;
+        private readonly HotkeyManager _hotkeyManager;
 
         private Query? _lastQuery;
         private bool _previousIsHomeQuery;
@@ -56,10 +57,12 @@ namespace Flow.Launcher.ViewModel
 
         private bool _taskbarShownByFlow = false;
 
-        public MainViewModel(Logger<MainViewModel> logger, Settings settings, PluginManager pluginManager)
+        public MainViewModel(Logger<MainViewModel> logger,
+            Settings settings, PluginManager pluginManager, HotkeyManager hotkeyManager)
         {
             _logger = logger;
             _pluginManager = pluginManager;
+            _hotkeyManager = hotkeyManager;
 
             _queryText = "";
             _lastQuery = null;
@@ -285,7 +288,7 @@ namespace Flow.Launcher.ViewModel
             var hideWindow = await result.ExecuteAsync(new ActionContext
             {
                 // not null means pressing modifier key + number, should ignore the modifier key
-                PressedKeys = GlobalHotkeyManager.GetPressedKeys(),
+                PressedKeys = _hotkeyManager.GetPressedKeys(),
                 ResultPosition = position ?? throw new Exception("Failed to get result position")
             }).ConfigureAwait(false);
 

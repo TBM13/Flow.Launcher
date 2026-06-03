@@ -432,7 +432,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 Action = e =>
                 {
                     // Ctrl + Enter to open containing folder
-                    bool openFolder = e.PressedKeys == ModifierKeys.Control;
+                    bool openFolder = e.PressedKeys.OnlyModifiersPressed(ModifierKeys.Control);
                     if (openFolder)
                     {
                         Main.Context.API.OpenDirectory(Location);
@@ -440,7 +440,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     }
 
                     // Ctrl + Shift + Enter to run elevated
-                    bool elevated = e.PressedKeys == (ModifierKeys.Control | ModifierKeys.Shift);
+                    bool elevated = e.PressedKeys.OnlyModifiersPressed(ModifierKeys.Control | ModifierKeys.Shift);
 
                     bool shouldRunElevated = elevated && CanRunElevated;
                     Launch(shouldRunElevated);

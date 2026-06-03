@@ -35,7 +35,7 @@ namespace Flow.Launcher
             set { SetValue(IdProperty, value); }
         }
 
-        public HotkeyInformation? HotkeyInformation;
+        public HotkeyInfo? HotkeyInformation;
         public ObservableCollection<string> KeysToDisplay { get; set; } = [];
 
         public HotkeyControl()
@@ -51,7 +51,7 @@ namespace Flow.Launcher
             {
                 control.HotkeyInformation = string.IsNullOrEmpty(id)
                     // TODO: Check if there is any better alternative
-                    ? null : Ioc.Default.GetRequiredService<HotkeyManager>().GetHotkeyInformationById(id);
+                    ? null : Ioc.Default.GetRequiredService<HotkeyManager>().GetHotkeyInformation(id);
 
                 control.UpdateUI();
             }

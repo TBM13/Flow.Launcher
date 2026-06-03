@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
 namespace Flow.Launcher.Infrastructure.Hotkeys;
 
@@ -13,7 +12,7 @@ public static class Extensions
             || key == Key.LWin || key == Key.RWin;
     }
 
-    public static bool ToModifierKey(this Key key, [NotNullWhen(true)] out ModifierKeys? modifierKey)
+    public static bool ToModifierKey(this Key key, out ModifierKeys modifierKey)
     {
         modifierKey = key switch
         {
@@ -21,9 +20,9 @@ public static class Extensions
             Key.LeftCtrl or Key.RightCtrl => ModifierKeys.Control,
             Key.LeftShift or Key.RightShift => ModifierKeys.Shift,
             Key.LWin or Key.RWin => ModifierKeys.Windows,
-            _ => null
+            _ => ModifierKeys.None
         };
 
-        return modifierKey.HasValue;
+        return modifierKey != ModifierKeys.None;
     }
 }

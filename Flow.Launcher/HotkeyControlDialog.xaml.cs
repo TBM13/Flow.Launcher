@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Windows;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Core;
@@ -14,10 +15,10 @@ public partial class HotkeyControlDialog : ContentDialog
     private Hotkey _newHotkey;
 
     public string WindowTitle { get; }
-    public HotkeyInformation Hotkey { get; init; }
+    public HotkeyInfo Hotkey { get; init; }
     public ObservableCollection<string> KeysToDisplay { get; } = [];
 
-    public HotkeyControlDialog(HotkeyInformation hotkey, string? windowTitle = null)
+    public HotkeyControlDialog(HotkeyInfo hotkey, string? windowTitle = null)
     {
         WindowTitle = windowTitle ?? Localize.hotkeyRegTitle();
         Hotkey = hotkey;
@@ -26,7 +27,7 @@ public partial class HotkeyControlDialog : ContentDialog
         InitializeComponent();
         UpdateUI();
 
-        GlobalHotkeyManager.IgnoreRegisteredHotkeys = true;
+        _hotkeyManager.IgnoreGlobalHotkeys = true;
         PreviewKeyDown += (_, e) =>
         {
             // Prevent the key event from being handled by other controls in the dialog
@@ -34,9 +35,11 @@ public partial class HotkeyControlDialog : ContentDialog
         };
         PreviewKeyUp += (_, e) =>
         {
-            if (GlobalHotkeyManager.LastHotkey.HasValue)
+            // TODO: This is fine for global hotkeys, but WPF hotkeys should use the future wpf hotkey manager
+            // Also we should probably make LastGlobalHotkey an observable property and subscribe to its changes
+            if (_hotkeyManager.LastGlobalHotkey.HasValue)
             {
-                _newHotkey = GlobalHotkeyManager.LastHotkey.Value with
+                _newHotkey = _hotkeyManager.LastGlobalHotkey.Value with
                 {
                     LongPress = LongPressCheckbox.IsChecked!.Value
                 };
@@ -61,14 +64,14 @@ public partial class HotkeyControlDialog : ContentDialog
 
     private void Cancel(object sender, RoutedEventArgs routedEventArgs)
     {
-        GlobalHotkeyManager.IgnoreRegisteredHotkeys = false;
+        _hotkeyManager.IgnoreGlobalHotkeys = false;
         Hide();
     }
 
     private void Save(object sender, RoutedEventArgs routedEventArgs)
     {
-        _hotkeyManager.UpdateHotkey(Hotkey, _newHotkey);
-        GlobalHotkeyManager.IgnoreRegisteredHotkeys = false;
+        _hotkeyManager.UpdateHotkey(Hotkey.Id, _newHotkey);
+        _hotkeyManager.IgnoreGlobalHotkeys = false;
         Hide();
     }
 
@@ -78,7 +81,7 @@ public partial class HotkeyControlDialog : ContentDialog
         DeleteBtn.IsEnabled = Hotkey.CanBeDisabled && _newHotkey.IsValid;
 
         LongPressCheckbox.Visibility =
-            (Hotkey is GlobalHotkeyInformation && _newHotkey != default) ? Visibility.Visible : Visibility.Collapsed;
+            (Hotkey is GlobalHotkeyInfo && _newHotkey != default) ? Visibility.Visible : Visibility.Collapsed;
         LongPressCheckbox.IsChecked = _newHotkey.LongPress;
 
         KeysToDisplay.Clear();
@@ -94,9 +97,19 @@ public partial class HotkeyControlDialog : ContentDialog
             KeysToDisplay.Add(key);
 
         bool hotkeyChanged = _newHotkey != Hotkey.Hotkey;
-        if (hotkeyChanged && !_hotkeyManager.IsHotkeyAvailable(_newHotkey, out string? reason))
+        string? unavailabilityReason = null;
+        bool hotkeyAvailable = Hotkey switch
         {
-            tbMsg.Text = reason;
+            GlobalHotkeyInfo => _hotkeyManager.IsGlobalHotkeyAvailable(_newHotkey, out unavailabilityReason),
+            AppHotkeyInfo => _hotkeyManager.IsAppHotkeyAvailable(_newHotkey, out unavailabilityReason),
+            // TODO:
+            //ResultHotkeyInfo => _hotkeyManager.IsResultHotkeyAvailable(_newHotkey, out unavailabilityReason),
+            _ => throw new InvalidOperationException("Unknown hotkey type")
+        };
+
+        if (hotkeyChanged && !hotkeyAvailable)
+        {
+            tbMsg.Text = unavailabilityReason;
             SaveBtn.IsEnabled = false;
             Alert.Visibility = Visibility.Visible;
         }

@@ -34,6 +34,7 @@ namespace Flow.Launcher
         private readonly Settings _settings;
         private readonly Theme _theme;
         private readonly PluginManager _pluginManager;
+        private readonly HotkeyManager _hotkeyManager;
 
         // Window Event: Key Event
         private bool _isArrowKeyPressed = false;
@@ -48,13 +49,14 @@ namespace Flow.Launcher
         private double _resultListboxVerticalOffset = 0;
 
         public MainWindow(Logger<MainWindow> logger, MainViewModel viewModel,
-            Settings settings, Theme theme, PluginManager pluginManager)
+            Settings settings, Theme theme, PluginManager pluginManager, HotkeyManager hotkeyManager)
         {
             _logger = logger;
             _viewModel = viewModel;
             _settings = settings;
             _theme = theme;
             _pluginManager = pluginManager;
+            _hotkeyManager = hotkeyManager;
             DataContext = _viewModel;
 
             Topmost = _settings.ShowAtTopmost;
@@ -337,7 +339,8 @@ namespace Flow.Launcher
                     }
                     break;
                 case Key.Back:
-                    if (GlobalHotkeyManager.IsKeyPressed(Key.LeftCtrl) || GlobalHotkeyManager.IsKeyPressed(Key.RightCtrl))
+                    PressedKeys pressedKeys = _hotkeyManager.GetPressedKeys();
+                    if (pressedKeys.IsKeyPressed(Key.LeftCtrl) || pressedKeys.IsKeyPressed(Key.RightCtrl))
                     {
                         if (_viewModel.QueryResultsSelected()
                             && QueryTextBox.Text.Length > 0

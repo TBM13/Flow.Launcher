@@ -8,6 +8,7 @@ using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Interop.Programs;
 using Flow.Launcher.Plugin.Explorer.Views;
+using Flow.Launcher.PluginSDK.Hotkeys;
 
 namespace Flow.Launcher.Plugin.Explorer.Search
 {
@@ -87,14 +88,14 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 PreviewPanel = new Lazy<UserControl>(() => new PreviewPanel(Main.Settings, path, ResultType.Folder)),
                 Action = c =>
                 {
-                    var keys = c.PressedKeys;
+                    IPressedKeys keys = c.PressedKeys;
                     if (keys.AltPressed)
                     {
                         ShowNativeContextMenu(path, ResultType.Folder, c.ResultPosition);
                         return false;
                     }
                     // open folder
-                    if (keys == (ModifierKeys.Control | ModifierKeys.Shift))
+                    if (keys.OnlyModifiersPressed(ModifierKeys.Control | ModifierKeys.Shift))
                     {
                         try
                         {
@@ -108,7 +109,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                         }
                     }
                     // Open containing folder
-                    if (keys == ModifierKeys.Control)
+                    else if (keys.OnlyModifiersPressed(ModifierKeys.Control))
                     {
                         string? dirPath = Path.GetDirectoryName(path);
                         if (!Directory.Exists(dirPath))
@@ -268,7 +269,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                 PreviewPanel = new Lazy<UserControl>(() => new PreviewPanel(Main.Settings, filePath, ResultType.File)),
                 Action = c =>
                 {
-                    var keys = c.PressedKeys;
+                    IPressedKeys keys = c.PressedKeys;
                     if (keys.AltPressed)
                     {
                         ShowNativeContextMenu(filePath, ResultType.File, c.ResultPosition);
@@ -276,11 +277,11 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                     }
                     try
                     {
-                        if (keys == (ModifierKeys.Control | ModifierKeys.Shift))
+                        if (keys.OnlyModifiersPressed(ModifierKeys.Control | ModifierKeys.Shift))
                         {
                             OpenFile(filePath, Main.Settings.UseLocationAsWorkingDir ? directory : string.Empty, true);
                         }
-                        else if (keys == ModifierKeys.Control)
+                        else if (keys.OnlyModifiersPressed(ModifierKeys.Control))
                         {
                             OpenFolder(filePath, filePath);
                         }
