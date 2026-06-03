@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
@@ -12,9 +11,6 @@ public static class Constant
 
     private static readonly Assembly Assembly = Assembly.GetExecutingAssembly();
     public static readonly string ProgramDirectory = AppContext.BaseDirectory;
-    public static readonly string ExecutablePath = Path.Combine(ProgramDirectory, FlowLauncher + ".exe");
-    public static readonly string CommandExecutablePath =
-        Path.Combine(ProgramDirectory, "Command", "Flow.Launcher.Command.exe");
 
     public const string IssuesUrl = "https://github.com/TBM13/Flow.Launcher/issues";
     public static readonly string Version = FileVersionInfo.GetVersionInfo(Assembly.Location).ProductVersion ?? "<Unknown>";
@@ -28,10 +24,6 @@ public static class Constant
     public static readonly string ImageIcon = Path.Combine(ImagesDirectory, "image.png");
 
     public const string DefaultTheme = "Win11Light";
-
-    public const string Light = "Light";
-    public const string Dark = "Dark";
-    public const string System = "System";
 
     public const string Themes = "Themes";
     public const string Settings = "Settings";
