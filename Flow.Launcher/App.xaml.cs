@@ -11,6 +11,7 @@ using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.API;
+using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Image;
 using Flow.Launcher.Infrastructure.Storage;
 using Flow.Launcher.Interop;
@@ -144,6 +145,7 @@ public partial class App : Application
                     .AddSingleton<ImageLoader>()
                     .AddSingleton<PluginManager>()
                     .AddSingleton<Notification>()
+                    .AddSingleton<StringMatcher>()
 
                     // UI
                     .AddSingleton<MainWindow>()
@@ -174,7 +176,6 @@ public partial class App : Application
             // Initialize the API and Settings first
             // TODO: Check if this is needed
             API = Ioc.Default.GetRequiredService<IPublicAPI>();
-            _settings.Initialize();
         }
         catch (Exception e)
         {

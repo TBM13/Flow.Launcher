@@ -1,19 +1,18 @@
-﻿using System.ComponentModel;
+﻿using Flow.Launcher.Core;
 
 namespace Flow.Launcher.Infrastructure.Helpers;
 
-public static class StringMatcher
+public class StringMatcher(Settings settings)
 {
-    private static readonly MatchOption _defaultMatchOption = new();
+    private readonly Settings _settings = settings;
+    private readonly MatchOption _defaultMatchOption = new();
 
-    public static SearchPrecision UserSettingSearchPrecision { get; set; }
-
-    public static MatchResult FuzzySearch(string query, string stringToCompare)
+    public MatchResult FuzzySearch(string query, string stringToCompare)
     {
         return FuzzyMatch(query, stringToCompare);
     }
 
-    public static MatchResult FuzzyMatch(string query, string stringToCompare)
+    public MatchResult FuzzyMatch(string query, string stringToCompare)
     {
         return FuzzyMatch(query, stringToCompare, _defaultMatchOption);
     }
@@ -42,13 +41,13 @@ public static class StringMatcher
     /// 6. Move onto the next substring's characters until all substrings are checked.
     /// 7. Consider success and move onto scoring if every char or substring without whitespaces matched
     /// </summary>
-    public static MatchResult FuzzyMatch(string query, string stringToCompare, MatchOption opt)
+    public MatchResult FuzzyMatch(string query, string stringToCompare, MatchOption opt)
     {
         if (string.IsNullOrEmpty(stringToCompare) || string.IsNullOrEmpty(query))
             return new MatchResult()
             {
                 Success = false,
-                SearchPrecision = UserSettingSearchPrecision,
+                SearchPrecision = _settings.QuerySearchPrecision,
                 RawScore = 0
             };
 
@@ -179,11 +178,11 @@ public static class StringMatcher
         {
             int acronymScore = acronymsMatched * 100 / acronymsTotalCount;
 
-            if (acronymScore >= (int)UserSettingSearchPrecision)
+            if (acronymScore >= (int)_settings.QuerySearchPrecision)
                 return new MatchResult()
                 {
                     Success = true,
-                    SearchPrecision = UserSettingSearchPrecision,
+                    SearchPrecision = _settings.QuerySearchPrecision,
                     RawScore = acronymScore
                 };
         }
@@ -202,7 +201,7 @@ public static class StringMatcher
             return new MatchResult()
             {
                 Success = true,
-                SearchPrecision = UserSettingSearchPrecision,
+                SearchPrecision = _settings.QuerySearchPrecision,
                 RawScore = score
             };
         }
@@ -210,12 +209,12 @@ public static class StringMatcher
         return new MatchResult()
         {
             Success = false,
-            SearchPrecision = UserSettingSearchPrecision,
+            SearchPrecision = _settings.QuerySearchPrecision,
             RawScore = 0
         };
     }
 
-    private static bool IsAcronym(string stringToCompare, int compareStringIndex)
+    private bool IsAcronym(string stringToCompare, int compareStringIndex)
     {
         if (IsAcronymChar(stringToCompare, compareStringIndex) || IsAcronymNumber(stringToCompare, compareStringIndex))
             return true;
@@ -224,7 +223,7 @@ public static class StringMatcher
     }
 
     // When counting acronyms, treat a set of numbers as one acronym ie. Visual 2019 as 2 acronyms instead of 5
-    private static bool IsAcronymCount(string stringToCompare, int compareStringIndex)
+    private bool IsAcronymCount(string stringToCompare, int compareStringIndex)
     {
         if (IsAcronymChar(stringToCompare, compareStringIndex))
             return true;

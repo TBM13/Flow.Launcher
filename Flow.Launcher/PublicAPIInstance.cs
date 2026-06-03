@@ -38,12 +38,14 @@ namespace Flow.Launcher
         private readonly ImageLoader _imageLoader;
         private readonly PluginManager _pluginManager;
         private readonly Notification _notification;
+        private readonly StringMatcher _stringMatcher;
 
         private readonly object _saveSettingsLock = new();
 
         public PublicAPIInstance(Logger<PublicAPIInstance> logger,
             MainViewModel mainVM, Settings settings, Internationalization internationalization,
-            ImageLoader imageLoader, PluginManager pluginManager, Notification notification)
+            ImageLoader imageLoader, PluginManager pluginManager, Notification notification,
+            StringMatcher stringMatcher)
         {
             _logger = logger;
             _mainVM = mainVM;
@@ -52,6 +54,7 @@ namespace Flow.Launcher
             _imageLoader = imageLoader;
             _pluginManager = pluginManager;
             _notification = notification;
+            _stringMatcher = stringMatcher;
 
             IPublicAPI.Instance = this;
         }
@@ -220,8 +223,9 @@ namespace Flow.Launcher
         public List<PluginMetadata> GetAllInitializedPlugins(bool includeFailed) =>
             _pluginManager.GetAllInitializedPlugins(includeFailed);
 
+        // TODO: Should StringMatcher be a service or should we make it static and pass the query precision config here?
         public MatchResult FuzzySearch(string query, string stringToCompare) =>
-            StringMatcher.FuzzySearch(query, stringToCompare);
+            _stringMatcher.FuzzySearch(query, stringToCompare);
 
         public void AddActionKeyword(string pluginId, string newActionKeyword) =>
             _pluginManager.AddActionKeyword(pluginId, newActionKeyword);

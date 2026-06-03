@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Storage;
 using Flow.Launcher.Infrastructure.UserSettings;
@@ -63,11 +61,6 @@ public partial class Settings : ObservableObject
         _storage = storage;
     }
 
-    public void Initialize()
-    {
-        StringMatcher.UserSettingSearchPrecision = QuerySearchPrecision;
-    }
-
     public void Save()
     {
         _storage.Save();
@@ -117,15 +110,7 @@ public partial class Settings : ObservableObject
     public partial bool AlwaysPreview { get; set; } = false;
 
     [JsonInclude, JsonConverter(typeof(JsonStringEnumConverter))]
-    public SearchPrecision QuerySearchPrecision
-    {
-        get => field;
-        set
-        {
-            SetProperty(ref field, value);
-            StringMatcher.UserSettingSearchPrecision = value;
-        }
-    } = SearchPrecision.Regular;
+    public SearchPrecision QuerySearchPrecision { get; set; } = SearchPrecision.Regular;
 
     [ObservableProperty]
     public partial double WindowLeft { get; set; }
