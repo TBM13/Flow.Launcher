@@ -402,7 +402,7 @@ namespace Flow.Launcher
                         // Current monitor information
                         var screen = MonitorHelper.GetNearestDisplayMonitor(new WindowInteropHelper(this).Handle);
                         var workingArea = screen.WorkingArea;
-                        var screenLeftTop = Win32Helper.TransformPixelsToDIP(this, workingArea.X, workingArea.Y);
+                        var screenLeftTop = WpfHelper.TransformPixelsToDIP(this, workingArea.X, workingArea.Y);
 
                         // Switch to Normal state
                         WindowState = WindowState.Normal;
@@ -594,9 +594,9 @@ namespace Flow.Launcher
                             Top = VerticalTop(screen);
                             break;
                         case SearchWindowAligns.Custom:
-                            var customLeft = Win32Helper.TransformPixelsToDIP(this,
+                            var customLeft = WpfHelper.TransformPixelsToDIP(this,
                                 screen.WorkingArea.X + _settings.CustomWindowLeft, 0);
-                            var customTop = Win32Helper.TransformPixelsToDIP(this, 0,
+                            var customTop = WpfHelper.TransformPixelsToDIP(this, 0,
                                 screen.WorkingArea.Y + _settings.CustomWindowTop);
                             Left = customLeft.X;
                             Top = customTop.Y;
@@ -684,38 +684,38 @@ namespace Flow.Launcher
 
         private double HorizonCenter(MonitorInfo screen)
         {
-            var dip1 = Win32Helper.TransformPixelsToDIP(this, screen.WorkingArea.X, 0);
-            var dip2 = Win32Helper.TransformPixelsToDIP(this, screen.WorkingArea.Width, 0);
+            var dip1 = WpfHelper.TransformPixelsToDIP(this, screen.WorkingArea.X, 0);
+            var dip2 = WpfHelper.TransformPixelsToDIP(this, screen.WorkingArea.Width, 0);
             var left = (dip2.X - ActualWidth) / 2 + dip1.X;
             return left;
         }
 
         private double VerticalCenter(MonitorInfo screen)
         {
-            var dip1 = Win32Helper.TransformPixelsToDIP(this, 0, screen.WorkingArea.Y);
-            var dip2 = Win32Helper.TransformPixelsToDIP(this, 0, screen.WorkingArea.Height);
+            var dip1 = WpfHelper.TransformPixelsToDIP(this, 0, screen.WorkingArea.Y);
+            var dip2 = WpfHelper.TransformPixelsToDIP(this, 0, screen.WorkingArea.Height);
             var top = (dip2.Y - QueryTextBox.ActualHeight) / 4 + dip1.Y;
             return top;
         }
 
         private double HorizonRight(MonitorInfo screen)
         {
-            var dip1 = Win32Helper.TransformPixelsToDIP(this, screen.WorkingArea.X, 0);
-            var dip2 = Win32Helper.TransformPixelsToDIP(this, screen.WorkingArea.Width, 0);
+            var dip1 = WpfHelper.TransformPixelsToDIP(this, screen.WorkingArea.X, 0);
+            var dip2 = WpfHelper.TransformPixelsToDIP(this, screen.WorkingArea.Width, 0);
             var left = (dip1.X + dip2.X - ActualWidth) - 10;
             return left;
         }
 
         private double HorizonLeft(MonitorInfo screen)
         {
-            var dip1 = Win32Helper.TransformPixelsToDIP(this, screen.WorkingArea.X, 0);
+            var dip1 = WpfHelper.TransformPixelsToDIP(this, screen.WorkingArea.X, 0);
             var left = dip1.X + 10;
             return left;
         }
 
         public double VerticalTop(MonitorInfo screen)
         {
-            var dip1 = Win32Helper.TransformPixelsToDIP(this, 0, screen.WorkingArea.Y);
+            var dip1 = WpfHelper.TransformPixelsToDIP(this, 0, screen.WorkingArea.Y);
             var top = dip1.Y + 10;
             return top;
         }

@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Core;
+using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.SettingPages.Views;
@@ -209,8 +210,8 @@ public partial class SettingWindow
     private double WindowLeft()
     {
         var screen = MonitorHelper.GetCursorDisplayMonitor();
-        var dip1 = Win32Helper.TransformPixelsToDIP(this, screen.WorkingArea.X, 0);
-        var dip2 = Win32Helper.TransformPixelsToDIP(this, screen.WorkingArea.Width, 0);
+        var dip1 = WpfHelper.TransformPixelsToDIP(this, screen.WorkingArea.X, 0);
+        var dip2 = WpfHelper.TransformPixelsToDIP(this, screen.WorkingArea.Width, 0);
         var left = (dip2.X - ActualWidth) / 2 + dip1.X;
         return left;
     }
@@ -218,8 +219,8 @@ public partial class SettingWindow
     private double WindowTop()
     {
         var screen = MonitorHelper.GetCursorDisplayMonitor();
-        var dip1 = Win32Helper.TransformPixelsToDIP(this, 0, screen.WorkingArea.Y);
-        var dip2 = Win32Helper.TransformPixelsToDIP(this, 0, screen.WorkingArea.Height);
+        var dip1 = WpfHelper.TransformPixelsToDIP(this, 0, screen.WorkingArea.Y);
+        var dip2 = WpfHelper.TransformPixelsToDIP(this, 0, screen.WorkingArea.Height);
         var top = (dip2.Y - ActualHeight) / 2 + dip1.Y - 20;
         return top;
     }
