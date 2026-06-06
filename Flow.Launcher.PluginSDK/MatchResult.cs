@@ -29,13 +29,8 @@ public enum SearchPrecision
 /// <summary>
 /// Represents the result of a match operation.
 /// </summary>
-public record MatchResult
+public readonly record struct MatchResult
 {
-    /// <summary>
-    /// Whether the match operation was successful.
-    /// </summary>
-    public required bool Success { get; init; }
-
     /// <summary>
     /// The raw calculated search score without any search precision filtering applied.
     /// </summary>
@@ -44,24 +39,10 @@ public record MatchResult
     /// <summary>
     /// The final score of the match result with search precision filters applied.
     /// </summary>
-    public int Score => IsSearchPrecisionScoreMet(RawScore) ? RawScore : 0;
+    public required int Score { get; init; }
 
     /// <summary>
-    /// The search precision score used to filter the search results.
+    /// Determines whether the search precision score threshold was met.
     /// </summary>
-    public required SearchPrecision SearchPrecision { get; init; }
-
-    /// <summary>
-    /// Determines if the search precision score is met.
-    /// </summary>
-    /// <returns></returns>
-    public bool IsSearchPrecisionScoreMet()
-    {
-        return IsSearchPrecisionScoreMet(RawScore);
-    }
-
-    private bool IsSearchPrecisionScoreMet(int rawScore)
-    {
-        return rawScore >= (int)SearchPrecision;
-    }
+    public required bool IsSearchPrecisionScoreMet { get; init; }
 }

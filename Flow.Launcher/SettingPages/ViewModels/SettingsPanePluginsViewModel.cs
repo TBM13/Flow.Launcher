@@ -59,8 +59,8 @@ public partial class SettingsPanePluginsViewModel(Settings settings) : Observabl
     public bool SatisfiesFilter(PluginViewModel plugin)
     {
         return string.IsNullOrEmpty(FilterText) ||
-            App.API.FuzzySearch(FilterText, plugin.PluginMetadata.Name).IsSearchPrecisionScoreMet() ||
-            App.API.FuzzySearch(FilterText, plugin.PluginMetadata.Description).IsSearchPrecisionScoreMet();
+            App.API.FuzzySearch(FilterText, plugin.PluginMetadata.Name).IsSearchPrecisionScoreMet ||
+            App.API.FuzzySearch(FilterText, plugin.PluginMetadata.Description).IsSearchPrecisionScoreMet;
     }
 
     [RelayCommand]

@@ -195,7 +195,7 @@ public static class ServiceHelper
                 ];
                 (MatchResult bestMatch, bool isHighPriority) = matches.OrderByDescending(r => r.match.Score).First();
 
-                if (!bestMatch.IsSearchPrecisionScoreMet())
+                if (!bestMatch.IsSearchPrecisionScoreMet)
                     return null;
 
                 score = isHighPriority ? bestMatch.Score + 1000 : bestMatch.Score;

@@ -85,7 +85,7 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Helper
                 Result? result;
 
                 var nameMatch = api.FuzzySearch(query.Search, entry.Name);
-                if (nameMatch.IsSearchPrecisionScoreMet())
+                if (nameMatch.IsSearchPrecisionScoreMet)
                 {
                     var settingResult = NewSettingResult(api, nameMatch.Score, entry);
                     result = settingResult;
@@ -93,7 +93,7 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Helper
                 else
                 {
                     var areaMatch = api.FuzzySearch(query.Search, entry.JoinedAreaPath);
-                    if (areaMatch.IsSearchPrecisionScoreMet())
+                    if (areaMatch.IsSearchPrecisionScoreMet)
                     {
                         result = NewSettingResult(api, areaMatch.Score, entry);
                     }
@@ -101,7 +101,7 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Helper
                     {
                         result = entry.AltNames?
                             .Select(altName => api.FuzzySearch(query.Search, altName))
-                            .Where(match => match.IsSearchPrecisionScoreMet())
+                            .Where(match => match.IsSearchPrecisionScoreMet)
                             .Select(altNameMatch => NewSettingResult(api, altNameMatch.Score, entry))
                             .FirstOrDefault();
                     }

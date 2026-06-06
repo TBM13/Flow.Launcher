@@ -12,6 +12,7 @@ using System.Windows.Media;
 using Flow.Launcher.Core;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Resource;
+using Flow.Launcher.Core.Text;
 using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.API;
@@ -225,7 +226,7 @@ namespace Flow.Launcher
 
         // TODO: Should StringMatcher be a service or should we make it static and pass the query precision config here?
         public MatchResult FuzzySearch(string query, string stringToCompare) =>
-            _stringMatcher.FuzzySearch(query, stringToCompare);
+            _stringMatcher.FuzzyMatch(query, stringToCompare);
 
         public void AddActionKeyword(string pluginId, string newActionKeyword) =>
             _pluginManager.AddActionKeyword(pluginId, newActionKeyword);

@@ -412,7 +412,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 }
             }
 
-            if (!matchResult.IsSearchPrecisionScoreMet() && !string.IsNullOrEmpty(query))
+            if (!matchResult.IsSearchPrecisionScoreMet && !string.IsNullOrEmpty(query))
                 return null;
 
             var result = new Result

@@ -106,7 +106,6 @@ namespace Flow.Launcher.Plugin.ProcessKiller
                             p,
                             _settings.PutVisibleWindowProcessesTop ? 200 : 0,
                             _settings.ShowWindowTitle ? windowTitle : progressNameIdTitle,
-                            null,
                             progressNameIdTitle));
                     }
                     else
@@ -115,7 +114,6 @@ namespace Flow.Launcher.Plugin.ProcessKiller
                             p,
                             0,
                             progressNameIdTitle,
-                            null,
                             progressNameIdTitle));
                     }
                 }
@@ -144,7 +142,6 @@ namespace Flow.Launcher.Plugin.ProcessKiller
                                 p,
                                 score,
                                 _settings.ShowWindowTitle ? windowTitle : progressNameIdTitle,
-                                score == windowTitleMatch.Score ? windowTitleMatch : null,
                                 progressNameIdTitle));
                         }
                     }
@@ -158,7 +155,6 @@ namespace Flow.Launcher.Plugin.ProcessKiller
                                 p,
                                 score,
                                 progressNameIdTitle,
-                                processNameIdMatch,
                                 progressNameIdTitle));
                         }
                     }

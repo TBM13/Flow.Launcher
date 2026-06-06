@@ -92,12 +92,12 @@ namespace Flow.Launcher.Plugin.Program.Programs
         private static MatchResult Match(string query, IReadOnlyCollection<string> candidates)
         {
             if (candidates.Count == 0)
-                return null;
+                return default;
 
             var match = candidates.Select(candidate => Main.Context.API.FuzzySearch(query, candidate))
                 .MaxBy(match => match.Score);
 
-            return match?.IsSearchPrecisionScoreMet() ?? false ? match : null;
+            return match.IsSearchPrecisionScoreMet ? match : default;
         }
 
         public Result Result(string query, IPublicAPI api)
@@ -134,7 +134,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
 
             List<string> candidates = [];
 
-            if (!matchResult.IsSearchPrecisionScoreMet() && !string.IsNullOrEmpty(query))
+            if (!matchResult.IsSearchPrecisionScoreMet && !string.IsNullOrEmpty(query))
             {
                 if (ExecutableName != null) // only lnk program will need this one
                 {
@@ -147,7 +147,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 }
 
                 matchResult = Match(query, candidates);
-                if (matchResult == null)
+                if (matchResult == default)
                 {
                     return null;
                 }

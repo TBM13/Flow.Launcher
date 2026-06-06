@@ -898,12 +898,12 @@ namespace Flow.Launcher.ViewModel
                         r =>
                         {
                             var match = App.API.FuzzySearch(query, r.Title);
-                            if (!match.IsSearchPrecisionScoreMet())
+                            if (!match.IsSearchPrecisionScoreMet)
                             {
                                 match = App.API.FuzzySearch(query, r.SubTitle);
                             }
 
-                            if (!match.IsSearchPrecisionScoreMet()) return false;
+                            if (!match.IsSearchPrecisionScoreMet) return false;
 
                             r.Score = match.Score;
                             return true;

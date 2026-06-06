@@ -45,9 +45,9 @@ namespace Flow.Launcher.Plugin.PluginIndicator
                 from keyword in nonGlobalPlugins.Keys
                 let plugin = nonGlobalPlugins[keyword]
                 let keywordSearchResult = Context.API.FuzzySearch(querySearch, keyword)
-                let searchResult = keywordSearchResult.IsSearchPrecisionScoreMet() ? keywordSearchResult : Context.API.FuzzySearch(querySearch, plugin.Name)
+                let searchResult = keywordSearchResult.IsSearchPrecisionScoreMet ? keywordSearchResult : Context.API.FuzzySearch(querySearch, plugin.Name)
                 let score = searchResult.Score
-                where (searchResult.IsSearchPrecisionScoreMet()
+                where (searchResult.IsSearchPrecisionScoreMet
                         || string.IsNullOrEmpty(querySearch)) // To list all available action keywords
                     && !plugin.Disabled
                 select new Result
