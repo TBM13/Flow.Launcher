@@ -16,5 +16,5 @@ public interface IAsyncHomeQuery
     /// </para>
     /// <param name="token">Cancel when querying job is obsolete</param>
     /// <returns></returns>
-    Task<List<Result>> HomeQueryAsync(CancellationToken token);
+    Task<List<Result>?> HomeQueryAsync(CancellationToken token);
 }

@@ -28,10 +28,10 @@ public class Main : IPlugin
 
     }
 
-    public List<Result> Query(Query query)
+    public List<Result>? Query(Query query)
     {
         if (query.Search.Length < 2)
-            return [];
+            return null;
 
         Value? value;
         try
@@ -52,7 +52,7 @@ public class Main : IPlugin
         }
 
         if (value is not { } v)
-            return [];
+            return null;
 
         string valueString = v.ToString();
         Result res = new()

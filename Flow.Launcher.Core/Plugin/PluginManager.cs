@@ -320,8 +320,6 @@ namespace Flow.Launcher.Core.Plugin
 
         public async Task<List<Result>?> QueryForPluginAsync(PluginMetadata metadata, Query query, CancellationToken token)
         {
-            var results = new List<Result>();
-
             if (IsPluginInitializing(metadata))
             {
                 Result r = new()
@@ -338,20 +336,20 @@ namespace Flow.Launcher.Core.Plugin
                         return false;
                     }
                 };
-                results.Add(r);
-                return results;
+                return [r];
             }
 
             try
             {
-                results = await metadata.Plugin.QueryAsync(query, token).ConfigureAwait(false);
+                List<Result>? results = await metadata.Plugin.QueryAsync(query, token).ConfigureAwait(false);
 
                 token.ThrowIfCancellationRequested();
-                if (results == null)
+                if (results is null)
                     return null;
                 UpdatePluginMetadata(results, metadata, query);
 
                 token.ThrowIfCancellationRequested();
+                return results;
             }
             catch (OperationCanceledException)
             {
@@ -370,15 +368,13 @@ namespace Flow.Launcher.Core.Plugin
                     OriginQuery = query,
                     Action = _ => { throw new FlowPluginException(metadata, e); }
                 };
-                results.Add(r);
+
+                return [r];
             }
-            return results;
         }
 
         public async Task<List<Result>?> QueryHomeForPluginAsync(PluginMetadata metadata, Query query, CancellationToken token)
         {
-            var results = new List<Result>();
-
             if (IsPluginInitializing(metadata))
             {
                 Result r = new()
@@ -395,20 +391,20 @@ namespace Flow.Launcher.Core.Plugin
                         return false;
                     }
                 };
-                results.Add(r);
-                return results;
+                return [r];
             }
 
             try
             {
-                results = await ((IAsyncHomeQuery)metadata.Plugin).HomeQueryAsync(token).ConfigureAwait(false);
+                List<Result>? results = await ((IAsyncHomeQuery)metadata.Plugin).HomeQueryAsync(token).ConfigureAwait(false);
 
                 token.ThrowIfCancellationRequested();
-                if (results == null)
+                if (results is null)
                     return null;
                 UpdatePluginMetadata(results, metadata, query);
 
                 token.ThrowIfCancellationRequested();
+                return results;
             }
             catch (OperationCanceledException)
             {
@@ -420,7 +416,6 @@ namespace Flow.Launcher.Core.Plugin
                 _logger.LogError(e, $"Failed to query home for plugin: {metadata.Name}");
                 return null;
             }
-            return results;
         }
 
         private bool IsPluginInitializing(PluginMetadata metadata)
@@ -505,9 +500,8 @@ namespace Flow.Launcher.Core.Plugin
 
         #region Get Context Menus
 
-        public List<Result> GetContextMenusForPlugin(Result result)
+        public List<Result>? GetContextMenusForPlugin(Result result)
         {
-            var results = new List<Result>();
             var metadata = _contextMenuPlugins.FirstOrDefault(o => o.ID == result.PluginID);
             if (metadata != null)
             {
@@ -515,20 +509,26 @@ namespace Flow.Launcher.Core.Plugin
 
                 try
                 {
-                    results = plugin.LoadContextMenus(result) ?? results;
-                    foreach (var r in results)
+                    List<Result>? results = plugin.LoadContextMenus(result);
+                    if (results is null)
+                        return null;
+
+                    foreach (Result r in results)
                     {
                         r.PluginID = metadata.ID;
                         r.OriginQuery = result.OriginQuery;
                     }
+
+                    return results;
                 }
                 catch (Exception e)
                 {
                     _logger.LogError(e, $"Can't load context menus for plugin <{metadata.Name}>");
+                    return null;
                 }
             }
 
-            return results;
+            return null;
         }
 
         #endregion

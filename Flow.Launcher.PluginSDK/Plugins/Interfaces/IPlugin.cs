@@ -20,7 +20,7 @@ public interface IPlugin : IAsyncPlugin
     /// </summary>
     /// <param name="query">Query to search</param>
     /// <returns></returns>
-    List<Result> Query(Query query);
+    List<Result>? Query(Query query);
 
     /// <summary>
     /// Initialize plugin
@@ -30,5 +30,5 @@ public interface IPlugin : IAsyncPlugin
 
     Task IAsyncPlugin.InitAsync(PluginInitContext context) => Task.Run(() => Init(context));
 
-    Task<List<Result>> IAsyncPlugin.QueryAsync(Query query, CancellationToken token) => Task.Run(() => Query(query));
+    Task<List<Result>?> IAsyncPlugin.QueryAsync(Query query, CancellationToken token) => Task.Run(() => Query(query));
 }

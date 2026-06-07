@@ -887,7 +887,7 @@ namespace Flow.Launcher.ViewModel
                 }
                 else
                 {
-                    results = _pluginManager.GetContextMenusForPlugin(selected);
+                    results = _pluginManager.GetContextMenusForPlugin(selected) ?? [];
                     results.Add(ContextMenuTopMost(selected));
                 }
 

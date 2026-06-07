@@ -13,5 +13,5 @@ public interface IContextMenu
     /// <param name="selectedResult">
     /// The <see cref="Result"/> for which the user has activated the context menu.
     /// </param>
-    List<Result> LoadContextMenus(Result selectedResult);
+    List<Result>? LoadContextMenus(Result selectedResult);
 }

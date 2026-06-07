@@ -17,7 +17,7 @@ public interface IAsyncPlugin
     /// <param name="query">Query to search</param>
     /// <param name="token">Cancel when querying job is obsolete</param>
     /// <returns></returns>
-    Task<List<Result>> QueryAsync(Query query, CancellationToken token);
+    Task<List<Result>?> QueryAsync(Query query, CancellationToken token);
 
     /// <summary>
     /// Initialize plugin asynchrously (will still wait finish to continue)

@@ -19,7 +19,7 @@ public interface IHomeQuery : IAsyncHomeQuery
     /// </para>
     /// </summary>
     /// <returns></returns>
-    List<Result> HomeQuery();
+    List<Result>? HomeQuery();
 
-    Task<List<Result>> IAsyncHomeQuery.HomeQueryAsync(CancellationToken token) => Task.Run(HomeQuery);
+    Task<List<Result>?> IAsyncHomeQuery.HomeQueryAsync(CancellationToken token) => Task.Run(HomeQuery);
 }
