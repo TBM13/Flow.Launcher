@@ -1,434 +1,69 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Windows.Controls;
-using Flow.Launcher.Infrastructure.Plugins;
+﻿using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 using Flow.Launcher.Infrastructure.Results;
-using Flow.Launcher.Plugin.Calculator.Views;
-using Mages.Core;
+using Flow.Launcher.Plugin.Calculator.Engine;
 
-namespace Flow.Launcher.Plugin.Calculator
+namespace Flow.Launcher.Plugin.Calculator;
+
+public static class PluginMetadataDefinition
 {
-    public static class PluginMetadataDefinition
+    public static readonly PluginMetadata Metadata = new()
     {
-        public static readonly PluginMetadata Metadata = new()
-        {
-            ID = "CEA0FDFC6D3B4085823D60DC76F28855",
-            ActionKeywords = ["*"],
-            Name = "Calculator",
-            Description = "Perform mathematical calculations, including hex values and advanced functions such as 'min(1,2,3)', 'sqrt(123)' and 'cos(123)'.",
-            Author = "cxfksword, dcog989",
-            Version = "1.0.0",
-            IcoPath = "Images/Plugin.Calculator.png",
+        ID = "999fc3a66fe54b7cbbba439d8e835efe",
+        ActionKeywords = ["*"],
+        Name = "Calculator",
+        Description = "Perform basic mathematical calculations and bitwise operations.",
+        Author = "TBM13",
+        Version = "1.0.0",
+        IcoPath = "Images/Plugin.Calculator.png",
 
-            Plugin = new Main()
-        };
+        Plugin = new Main()
+    };
+}
+
+public class Main : IPlugin
+{
+    public void Init(PluginInitContext context)
+    {
+
     }
 
-    public class Main : IPlugin, ISettingProvider
+    public List<Result> Query(Query query)
     {
-        private static readonly Regex ThousandGroupRegex = MainRegexHelper.GetThousandGroupRegex();
-        private static readonly Regex NumberRegex = MainRegexHelper.GetNumberRegex();
-        private static readonly Regex PowRegex = MainRegexHelper.GetPowRegex();
-        private static readonly Regex LogRegex = MainRegexHelper.GetLogRegex();
-        private static readonly Regex LnRegex = MainRegexHelper.GetLnRegex();
-        private static readonly Regex FunctionRegex = MainRegexHelper.GetFunctionRegex();
+        if (query.Search.Length < 2)
+            return [];
 
-        private static Engine MagesEngine = null!;
-        private const string Comma = ",";
-        private const string Dot = ".";
-        private static readonly string IcoPath = PluginMetadataDefinition.Metadata.IcoPath;
-        private static readonly List<Result> EmptyResults = [];
-
-        internal static PluginInitContext Context { get; private set; } = null!;
-
-        private Settings _settings = null!;
-
-        public void Init(PluginInitContext context)
+        Value? value;
+        try
         {
-            Context = context;
-            _settings = context.API.LoadSettingJsonStorage<Settings>();
-
-            MagesEngine = new Engine(new Configuration
-            {
-                Scope = new Dictionary<string, object>
-                {
-                    { "e", Math.E }, // e is not contained in the default mages engine
-                }
-            });
+            value = Evaluator.Evaluate(query.Search);
         }
-
-        public List<Result> Query(Query query)
+        catch (Exception e)
         {
-            if (string.IsNullOrWhiteSpace(query.Search))
+            Result error = new()
             {
-                return EmptyResults;
-            }
-
-            try
-            {
-                var search = query.Search;
-                bool isFunctionPresent = FunctionRegex.IsMatch(search);
-
-                // Mages is case sensitive, so we need to convert all function names to lower case.
-                search = FunctionRegex.Replace(search, m => m.Value.ToLowerInvariant());
-
-                var decimalSep = GetDecimalSeparator();
-                var groupSep = GetGroupSeparator(decimalSep);
-                var expression = NumberRegex.Replace(search, m => NormalizeNumber(m.Value, isFunctionPresent, decimalSep, groupSep));
-
-                // WORKAROUND START: The 'pow' function in Mages v3.0.0 is broken.
-                // https://github.com/FlorianRappl/Mages/issues/132
-                // We bypass it by rewriting any pow(x,y) expression to the equivalent (x^y) expression
-                // before the engine sees it. This loop handles nested calls.
-                {
-                    string previous;
-                    do
-                    {
-                        previous = expression;
-                        expression = PowRegex.Replace(previous, PowMatchEvaluator);
-                    } while (previous != expression);
-                }
-                // WORKAROUND END
-
-                // WORKAROUND START: The 'log' & 'ln' function in Mages v3.0.0 are broken.
-                // https://github.com/FlorianRappl/Mages/issues/137
-                // We bypass it by rewriting any log & ln expression to the equivalent (log10 & log) expression
-                // before the engine sees it. This loop handles nested calls.
-                {
-                    string previous;
-                    do
-                    {
-                        previous = expression;
-                        expression = LogRegex.Replace(previous, LogMatchEvaluator);
-                    } while (previous != expression);
-                }
-                {
-                    string previous;
-                    do
-                    {
-                        previous = expression;
-                        expression = LnRegex.Replace(previous, LnMatchEvaluator);
-                    } while (previous != expression);
-                }
-                // WORKAROUND END
-
-                var result = MagesEngine.Interpret(expression);
-
-                if (result == null || string.IsNullOrEmpty(result.ToString()))
-                {
-                    if (!_settings.ShowErrorMessage) return EmptyResults;
-                    return
-                    [
-                        new Result
-                        {
-                            Title = Localize.Error_ExpressionNotComplete,
-                            IcoPath = IcoPath
-                        }
-                    ];
-                }
-
-                if (result?.ToString() != "NaN" && result is not Function && !string.IsNullOrEmpty(result?.ToString()))
-                {
-                    decimal roundedResult = Math.Round(Convert.ToDecimal(result), _settings.MaxDecimalPlaces, MidpointRounding.AwayFromZero);
-                    string newResult = FormatResult(roundedResult);
-
-                    string hex = (roundedResult > long.MaxValue || roundedResult < long.MinValue)
-                        ? string.Empty
-                        : "0x" + ((long)roundedResult).ToString("X");
-                    string subtitle = string.IsNullOrEmpty(hex)
-                        ? string.Empty
-                        : hex + " (CTRL + Click to copy)";
-
-                    return
-                    [
-                        new Result
-                        {
-                            Title = newResult,
-                            IcoPath = IcoPath,
-                            Score = 300,
-                            SubTitle = subtitle,
-                            CopyText = newResult,
-                            Action = c =>
-                            {
-                                if (c.PressedKeys.CtrlPressed)
-                                {
-                                    if (!string.IsNullOrEmpty(hex))
-                                    {
-                                        Context.API.CopyToClipboard(hex, showDefaultNotification: false);
-                                        return true;
-                                    }
-                                }
-
-                                // Remove group separators before copying value
-                                string decimalSeparator = GetDecimalSeparator();
-                                string groupSeparator = GetGroupSeparator(decimalSeparator);
-                                string value = newResult.Replace(groupSeparator, "");
-
-                                Context.API.CopyToClipboard(value, showDefaultNotification: false);
-                                return true;
-                            }
-                        }
-                    ];
-                }
-            }
-            catch (Exception)
-            {
-                // Mages engine can throw various exceptions, for simplicity we catch them all and show a generic message.
-                if (!_settings.ShowErrorMessage) return EmptyResults;
-                return
-                [
-                    new Result
-                    {
-                        Title = Localize.Error_ExpressionNotComplete,
-                        IcoPath = IcoPath
-                    }
-                ];
-            }
-
-            return EmptyResults;
-        }
-
-        private static string PowMatchEvaluator(Match m)
-        {
-            // m.Groups[1].Value will be `(...)` with parens
-            var contentWithParen = m.Groups[1].Value;
-            // remove outer parens. `(min(2,3), 4)` becomes `min(2,3), 4`
-            var argsContent = contentWithParen[1..^1];
-
-            var bracketCount = 0;
-            var splitIndex = -1;
-
-            // Find the top-level comma that separates the two arguments of pow.
-            for (var i = 0; i < argsContent.Length; i++)
-            {
-                switch (argsContent[i])
-                {
-                    case '(':
-                    case '[':
-                        bracketCount++;
-                        break;
-                    case ')':
-                    case ']':
-                        bracketCount--;
-                        break;
-                    case ',' when bracketCount == 0:
-                        splitIndex = i;
-                        break;
-                }
-
-                if (splitIndex != -1)
-                    break;
-            }
-
-            if (splitIndex == -1)
-            {
-                // This indicates malformed arguments for pow, e.g., pow(5) or pow().
-                // Return original string to let Mages handle the error.
-                return m.Value;
-            }
-
-            var arg1 = argsContent[..splitIndex].Trim();
-            var arg2 = argsContent[(splitIndex + 1)..].Trim();
-
-            // Check for empty arguments which can happen with stray commas, e.g., pow(,5)
-            if (string.IsNullOrEmpty(arg1) || string.IsNullOrEmpty(arg2))
-            {
-                return m.Value;
-            }
-
-            return $"({arg1}^{arg2})";
-        }
-
-        private static string LogMatchEvaluator(Match m)
-        {
-            // m.Groups[1].Value will be `(...)` with parens
-            var contentWithParen = m.Groups[1].Value;
-            var argsContent = contentWithParen[1..^1];
-
-            // log is unary — if malformed, return original to let Mages handle it
-            var arg = argsContent.Trim();
-            if (string.IsNullOrEmpty(arg)) return m.Value;
-
-            // log(x) -> log10(x)   (natural log)
-            return $"(log10({arg}))";
-        }
-
-        private static string LnMatchEvaluator(Match m)
-        {
-            // m.Groups[1].Value will be `(...)` with parens
-            var contentWithParen = m.Groups[1].Value;
-            var argsContent = contentWithParen[1..^1];
-
-            // ln is unary — if malformed, return original to let Mages handle it
-            var arg = argsContent.Trim();
-            if (string.IsNullOrEmpty(arg)) return m.Value;
-
-            // ln(x) -> log(x)   (natural log)
-            return $"(log({arg}))";
-        }
-        private static string NormalizeNumber(string numberStr, bool isFunctionPresent, string decimalSep, string groupSep)
-        {
-            if (isFunctionPresent)
-            {
-                // STRICT MODE: When functions are present, ',' is ALWAYS an argument separator.
-                if (numberStr.Contains(','))
-                {
-                    return numberStr;
-                }
-
-                string processedStr = numberStr;
-
-                // Handle group separator, with special care for ambiguous dot.
-                if (!string.IsNullOrEmpty(groupSep))
-                {
-                    if (groupSep == ".")
-                    {
-                        var parts = processedStr.Split('.');
-                        if (parts.Length > 1)
-                        {
-                            var culture = CultureInfo.CurrentCulture;
-                            if (IsValidGrouping(parts, culture.NumberFormat.NumberGroupSizes))
-                            {
-                                processedStr = processedStr.Replace(groupSep, "");
-                            }
-                            // If not grouped, it's likely a decimal number, so we don't strip dots.
-                        }
-                    }
-                    else
-                    {
-                        processedStr = processedStr.Replace(groupSep, "");
-                    }
-                }
-
-                // Handle decimal separator.
-                if (decimalSep != ".")
-                {
-                    processedStr = processedStr.Replace(decimalSep, ".");
-                }
-
-                return processedStr;
-            }
-            else
-            {
-                // LENIENT MODE: No functions are present, so we can be flexible.
-                string processedStr = numberStr;
-                if (!string.IsNullOrEmpty(groupSep))
-                {
-                    processedStr = processedStr.Replace(groupSep, "");
-                }
-                if (decimalSep != ".")
-                {
-                    processedStr = processedStr.Replace(decimalSep, ".");
-                }
-                return processedStr;
-            }
-        }
-
-        private static bool IsValidGrouping(string[] parts, int[] groupSizes)
-        {
-            if (parts.Length <= 1) return true;
-
-            if (groupSizes is null || groupSizes.Length == 0 || groupSizes[0] == 0)
-                return false; // has groups, but culture defines none.
-
-            var firstPart = parts[0];
-            if (firstPart.StartsWith('-')) firstPart = firstPart[1..];
-            if (firstPart.Length == 0) return false; // e.g. ",123"
-
-            if (firstPart.Length > groupSizes[0]) return false;
-
-            var lastGroupSize = groupSizes.Last();
-            var canRepeatLastGroup = lastGroupSize != 0;
-
-            int groupIndex = 0;
-            for (int i = parts.Length - 1; i > 0; i--)
-            {
-                int expectedSize;
-                if (groupIndex < groupSizes.Length)
-                {
-                    expectedSize = groupSizes[groupIndex];
-                }
-                else if (canRepeatLastGroup)
-                {
-                    expectedSize = lastGroupSize;
-                }
-                else
-                {
-                    return false;
-                }
-
-                if (parts[i].Length != expectedSize) return false;
-
-                groupIndex++;
-            }
-
-            return true;
-        }
-
-        private string FormatResult(decimal roundedResult)
-        {
-            string decimalSeparator = GetDecimalSeparator();
-            string groupSeparator = GetGroupSeparator(decimalSeparator);
-
-            string resultStr = roundedResult.ToString(CultureInfo.InvariantCulture);
-
-            string[] parts = resultStr.Split('.');
-            string integerPart = parts[0];
-            string fractionalPart = parts.Length > 1 ? parts[1] : string.Empty;
-
-            if (integerPart.Length > 3)
-            {
-                integerPart = ThousandGroupRegex.Replace(integerPart, groupSeparator);
-            }
-
-            if (!string.IsNullOrEmpty(fractionalPart))
-            {
-                return integerPart + decimalSeparator + fractionalPart;
-            }
-
-            return integerPart;
-        }
-
-        private string GetGroupSeparator(string decimalSeparator)
-        {
-            var culture = CultureInfo.CurrentCulture;
-            var systemGroupSeparator = culture.NumberFormat.NumberGroupSeparator;
-
-            if (_settings.DecimalSeparator == DecimalSeparator.UseSystemLocale)
-            {
-                return systemGroupSeparator;
-            }
-
-            // When a custom decimal separator is used,
-            // use the system's group separator unless it conflicts with the custom decimal separator.
-            if (decimalSeparator == systemGroupSeparator)
-            {
-                // Conflict: use the opposite of the decimal separator as a fallback.
-                return decimalSeparator == Dot ? Comma : Dot;
-            }
-
-            return systemGroupSeparator;
-        }
-
-        private string GetDecimalSeparator()
-        {
-            string systemDecimalSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
-            return _settings.DecimalSeparator switch
-            {
-                DecimalSeparator.UseSystemLocale => systemDecimalSeparator,
-                DecimalSeparator.Dot => Dot,
-                DecimalSeparator.Comma => Comma,
-                _ => systemDecimalSeparator,
+                Title = "Error",
+                SubTitle = e.Message,
+                IcoPath = PluginMetadataDefinition.Metadata.IcoPath,
+                Score = 300,
             };
+
+            return [error];
         }
 
-        public Control CreateSettingPanel()
+        if (value is not { } v)
+            return [];
+
+        string valueString = v.ToString();
+        Result res = new()
         {
-            return new CalculatorSettings(_settings);
-        }
+            Title = valueString,
+            IcoPath = PluginMetadataDefinition.Metadata.IcoPath,
+            Score = 300,
+            // SubTitle = subtitle,
+            CopyText = valueString
+        };
+
+        return [res];
     }
 }

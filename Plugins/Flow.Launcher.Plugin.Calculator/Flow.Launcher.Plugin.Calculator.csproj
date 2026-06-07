@@ -1,38 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Library</OutputType>
     <TargetFramework>net10.0-windows</TargetFramework>
-    <ProjectGuid>{59BD9891-3837-438A-958D-ADC7F91F6F7E}</ProjectGuid>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Flow.Launcher.Plugin.Calculator</RootNamespace>
-    <AssemblyName>Flow.Launcher.Plugin.Calculator</AssemblyName>
-    <UseWPF>true</UseWPF>
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>true</ImplicitUsings>
+    
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-    <Nullable>enable</Nullable>
-
-    <!-- 
-    Required by CommunityToolkit.Mvvm to use the 'field' keyword
-    for some reason, even though it's available by default on .NET 10
-    -->
-    <LangVersion>preview</LangVersion>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
-  
+
   <ItemGroup>
-    <ProjectReference Include="..\..\Flow.Launcher.Infrastructure\Flow.Launcher.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Flow.Launcher.PluginSDK\Flow.Launcher.PluginSDK.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Images\*.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Mages" Version="3.0.1" />
   </ItemGroup>
   
 </Project>
