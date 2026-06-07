@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Flow.Launcher.Infrastructure.Plugins;
+﻿using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 using Flow.Launcher.Infrastructure.Results;
 
@@ -24,28 +22,36 @@ namespace Flow.Launcher.Plugin.PluginIndicator
 
     public class Main : IPlugin, IHomeQuery
     {
-        internal static PluginInitContext Context { get; private set; }
+#pragma warning disable CS8618
+        private PluginInitContext _context;
+#pragma warning restore CS8618
 
         public void Init(PluginInitContext context)
         {
-            Context = context;
+            _context = context;
         }
 
-        public List<Result> Query(Query query)
+        public List<Result>? Query(Query query)
         {
             return QueryResults(query);
         }
 
-        private static List<Result> QueryResults(Query query = null)
+        public List<Result>? HomeQuery()
         {
-            var nonGlobalPlugins = GetNonGlobalPlugins();
-            var querySearch = query?.Search ?? string.Empty;
+            return QueryResults();
+        }
 
-            var results =
+        private List<Result> QueryResults(Query? query = null)
+        {
+            Dictionary<string, PluginMetadata> nonGlobalPlugins = GetNonGlobalPlugins();
+            string querySearch = query?.Search ?? string.Empty;
+
+            IEnumerable<Result> results =
                 from keyword in nonGlobalPlugins.Keys
                 let plugin = nonGlobalPlugins[keyword]
-                let keywordSearchResult = Context.API.FuzzySearch(querySearch, keyword)
-                let searchResult = keywordSearchResult.IsSearchPrecisionScoreMet ? keywordSearchResult : Context.API.FuzzySearch(querySearch, plugin.Name)
+                let keywordSearchResult = _context.API.FuzzySearch(querySearch, keyword)
+                let searchResult = keywordSearchResult.IsSearchPrecisionScoreMet
+                    ? keywordSearchResult : _context.API.FuzzySearch(querySearch, plugin.Name)
                 let score = searchResult.Score
                 where (searchResult.IsSearchPrecisionScoreMet
                         || string.IsNullOrEmpty(querySearch)) // To list all available action keywords
@@ -59,35 +65,34 @@ namespace Flow.Launcher.Plugin.PluginIndicator
                     AutoCompleteText = $"{keyword}{Infrastructure.Results.Query.TermSeparator}",
                     Action = c =>
                     {
-                        Context.API.ChangeQuery($"{keyword}{Infrastructure.Results.Query.TermSeparator}");
+                        _context.API.ChangeQuery($"{keyword}{Infrastructure.Results.Query.TermSeparator}");
                         return false;
                     }
                 };
+
             return [.. results];
         }
 
-        private static Dictionary<string, PluginMetadata> GetNonGlobalPlugins()
+        private Dictionary<string, PluginMetadata> GetNonGlobalPlugins()
         {
-            var nonGlobalPlugins = new Dictionary<string, PluginMetadata>();
-            foreach (var plugin in Context.API.GetAllPlugins())
+            Dictionary<string, PluginMetadata> nonGlobalPlugins = [];
+            foreach (PluginMetadata plugin in _context.API.GetAllPlugins())
             {
-                foreach (var actionKeyword in plugin.ActionKeywords)
+                foreach (string actionKeyword in plugin.ActionKeywords)
                 {
                     // Skip global keywords
-                    if (actionKeyword == Infrastructure.Results.Query.GlobalPluginWildcard) continue;
+                    if (actionKeyword == Infrastructure.Results.Query.GlobalPluginWildcard)
+                        continue;
 
-                    // Skip dulpicated keywords
-                    if (nonGlobalPlugins.ContainsKey(actionKeyword)) continue;
+                    // Skip duplicated keywords
+                    if (nonGlobalPlugins.ContainsKey(actionKeyword))
+                        continue;
 
                     nonGlobalPlugins.Add(actionKeyword, plugin);
                 }
             }
-            return nonGlobalPlugins;
-        }
 
-        public List<Result> HomeQuery()
-        {
-            return QueryResults();
+            return nonGlobalPlugins;
         }
     }
 }
