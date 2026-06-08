@@ -26,7 +26,8 @@ public static class Evaluator
 
             // Unary Operators (highest precedence)
             // Prefix
-            OperatorType.UnaryPlus or OperatorType.UnaryMinus => 7,
+            OperatorType.UnaryPlus or OperatorType.UnaryMinus
+                or OperatorType.UnaryBitwiseNot => 7,
             // Postfix
             OperatorType.UnaryFactorial or OperatorType.UnaryPercentage => 8,
 
@@ -177,6 +178,9 @@ public static class Evaluator
                 OperatorType.UnaryMinus => val.IsDecimal
                     ? new Value(-val.AsDecimal())
                     : new Value(-val.AsInt128()),
+                OperatorType.UnaryBitwiseNot => !val.IsDecimal
+                    ? new Value(~val.AsInt128())
+                    : throw new InvalidOperationException("Bitwise operations not supported on decimal values"),
 
                 // Unary postfix operators
                 OperatorType.UnaryFactorial => val.Factorial(),

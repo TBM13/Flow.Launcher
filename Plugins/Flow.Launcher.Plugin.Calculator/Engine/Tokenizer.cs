@@ -19,21 +19,21 @@ public enum OperatorType : byte
     OpenParentheses,
     UnaryPlus,
     UnaryMinus,
+    UnaryBitwiseNot,
 
     // Unary postfix operators
     CloseParentheses,
     UnaryFactorial,
     UnaryPercentage,
 
-    // Basic operations
+    // Binary operators
     Add,
     Subtract,
     Multiply,
     Divide,
     Remainder,
     FloorDivide,
-
-    // Bitwise operations
+    // Bitwise binary operators
     BitwiseAnd,
     BitwiseOr,
     BitwiseXor,
@@ -47,13 +47,16 @@ public static class OperatorTypeExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsUnaryPrefixOperator(this OperatorType op)
     {
-        return op is OperatorType.OpenParentheses or OperatorType.UnaryPlus or OperatorType.UnaryMinus;
+        return op is OperatorType.OpenParentheses
+            or OperatorType.UnaryPlus or OperatorType.UnaryMinus
+            or OperatorType.UnaryBitwiseNot;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsUnaryPostfixOperator(this OperatorType op)
     {
-        return op is OperatorType.CloseParentheses or OperatorType.UnaryFactorial or OperatorType.UnaryPercentage;
+        return op is OperatorType.CloseParentheses
+            or OperatorType.UnaryFactorial or OperatorType.UnaryPercentage;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -149,6 +152,7 @@ public ref struct Tokenizer(ReadOnlySpan<char> input)
                     '(' => new Token(TokenType.Operator, OperatorType.OpenParentheses, default),
                     '+' => new Token(TokenType.Operator, OperatorType.UnaryPlus, default),
                     '-' => new Token(TokenType.Operator, OperatorType.UnaryMinus, default),
+                    '~' => new Token(TokenType.Operator, OperatorType.UnaryBitwiseNot, default),
 
                     _ => default
                 };
