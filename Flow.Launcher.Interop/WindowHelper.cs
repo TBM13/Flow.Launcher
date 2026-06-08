@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Buffers;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
@@ -50,15 +51,124 @@ public static class WindowHelper
     }
 
     /// <summary>
-    /// Checks whether the foreground window is in actual fullscreen mode.
+    /// Returns a list with all window handles.
+    /// </summary>
+    /// <exception cref="Win32Exception"></exception>
+    public static List<nint> GetAllWindows()
+    {
+        List<nint> visibleWindows = new(256);
+        bool res = PInvoke.EnumWindows((hWnd, _) =>
+        {
+            visibleWindows.Add(hWnd);
+            return true;
+        }, default);
+
+        if (!res)
+            throw new Win32Exception(Marshal.GetLastPInvokeError());
+
+        return visibleWindows;
+    }
+
+    /// <summary>
+    /// Retrieves the ID of the thread that created the specified window and, optionally, the ID of the process that created the window.
+    /// </summary>
+    /// <exception cref="Win32Exception"></exception>
+    public static uint GetWindowThreadProcessId(nint hwnd, out uint processId)
+    {
+        uint res = PInvoke.GetWindowThreadProcessId(new(hwnd), out processId);
+        if (res == 0)
+            throw new Win32Exception(Marshal.GetLastPInvokeError());
+
+        return res;
+    }
+
+    /// <summary>
+    /// Gets the title of the given window.
+    /// </summary>
+    /// <exception cref="Win32Exception"></exception>
+    public static string GetWindowTitle(nint hwnd)
+    {
+        HWND hWnd = new(hwnd);
+
+        Span<char> buffer = stackalloc char[512];  // 1024 bytes
+        int copied = PInvoke.GetWindowText(hWnd, buffer);
+
+        if (copied >= buffer.Length - 1)
+        {
+            // The title likely did not fit on the buffer
+            int titleLength = PInvoke.GetWindowTextLength(hWnd);
+            if (titleLength == 0)
+            {
+                int lastError = Marshal.GetLastPInvokeError();
+                if (lastError != 0)
+                    throw new Win32Exception(lastError);
+
+                return string.Empty;
+            }
+
+            int bufferSize = titleLength + 1;
+            char[] rentedArray = ArrayPool<char>.Shared.Rent(bufferSize);
+            buffer = rentedArray.AsSpan(0, bufferSize);
+
+            try
+            {
+                copied = PInvoke.GetWindowText(hWnd, buffer);
+            }
+            finally
+            {
+                ArrayPool<char>.Shared.Return(rentedArray);
+            }
+        }
+
+        if (copied == 0)
+        {
+            int lastError = Marshal.GetLastPInvokeError();
+            if (lastError != 0)
+                throw new Win32Exception(lastError);
+        }
+
+        return buffer[..copied].ToString();
+    }
+
+    /// <summary>
+    /// Checks whether the given window is actually visible.
+    /// </summary>
+    /// <exception cref="Win32Exception"/>
+    public static bool IsWindowVisible(nint hwnd)
+    {
+        HWND hWnd = new(hwnd);
+
+        // Window must have WS_VISIBLE style
+        if (!PInvoke.IsWindowVisible(hWnd))
+            return false;
+
+        // Must not be cloaked (virtual desktops, minimized UWP apps, etc)
+        unsafe
+        {
+            int cloaked = 0;
+            PInvoke.DwmGetWindowAttribute(
+                hWnd,
+                DWMWINDOWATTRIBUTE.DWMWA_CLOAKED,
+                &cloaked,
+                sizeof(int)).ThrowOnFailure();
+
+            if (cloaked != 0)
+                return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Checks whether the given window is in actual fullscreen mode.
     /// </summary>
     /// <returns>
     /// True for most fullscreen games but false for most fullscreen apps
     /// (like explorer or a browser when F11 is pressed or a fullscreen video is playing).
     /// </returns>
-    public static bool IsForegroundWindowFullscreen()
+    public static bool IsWindowFullscreen(nint hwnd)
     {
-        HWND foregroundHwnd = PInvoke.GetForegroundWindow();
+        HWND foregroundHwnd = new(hwnd);
         if (foregroundHwnd.IsNull)
             return false;
 
@@ -135,6 +245,7 @@ public static class WindowHelper
         SetWindowStyle(hwnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE, style);
     }
 
+    /// <exception cref="Win32Exception"></exception>
     private static int GetWindowStyle(HWND hWnd, WINDOW_LONG_PTR_INDEX nIndex)
     {
         int style = PInvoke.GetWindowLong(hWnd, nIndex);
@@ -144,6 +255,7 @@ public static class WindowHelper
         return style;
     }
 
+    /// <exception cref="Win32Exception"></exception>
     private static nint SetWindowStyle(HWND hWnd, WINDOW_LONG_PTR_INDEX nIndex, int dwNewLong)
     {
         nint result = PInvoke.SetWindowLong(hWnd, nIndex, dwNewLong);

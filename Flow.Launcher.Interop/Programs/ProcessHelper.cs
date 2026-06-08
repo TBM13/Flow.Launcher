@@ -281,4 +281,35 @@ public static class ProcessHelper
             if (!hShellProcess.IsNull) PInvoke.CloseHandle(hShellProcess);
         }
     }
+
+    /// <summary>
+    /// Gets the file name of the specified process.
+    /// </summary>
+    /// <exception cref="Win32Exception"></exception>
+    public static unsafe string GetProcessFileName(uint processId)
+    {
+        HANDLE hProcess = PInvoke.OpenProcess(
+            PROCESS_ACCESS_RIGHTS.PROCESS_QUERY_LIMITED_INFORMATION,
+            false,
+            processId
+        );
+
+        if (hProcess.IsNull)
+            throw new Win32Exception(Marshal.GetLastPInvokeError());
+
+        try
+        {
+            uint capacity = PInvoke.MAX_PATH;
+            char* buffer = stackalloc char[(int)capacity];
+
+            if (!PInvoke.QueryFullProcessImageName(hProcess, PROCESS_NAME_FORMAT.PROCESS_NAME_WIN32, buffer, &capacity))
+                throw new Win32Exception(Marshal.GetLastPInvokeError());
+
+            return new string(buffer, 0, (int)capacity);
+        }
+        finally
+        {
+            PInvoke.CloseHandle(hProcess);
+        }
+    }
 }

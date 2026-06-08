@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows.Controls;
 using Flow.Launcher.Infrastructure.Plugins;
@@ -165,7 +166,8 @@ namespace Flow.Launcher.Plugin.ProcessKiller
             foreach (var pr in processlist)
             {
                 var p = pr.Process;
-                var path = ProcessHelper.TryGetProcessFilename(p);
+                string path = ProcessHelper.TryGetProcessFileName(p);
+
                 results.Add(new Result()
                 {
                     IcoPath = path,

@@ -12,6 +12,7 @@ SHCreateItemFromParsingName
 DeleteObject
 IShellItem
 IShellItemImageFactory
+DwmGetWindowAttribute
 DwmSetWindowAttribute
 IsZoomed
 WINDOW_LONG_PTR_INDEX
@@ -89,3 +90,7 @@ PostThreadMessage
 WM_QUIT
 GetCurrentThreadId
 GetAsyncKeyState
+GetWindowTextLength
+GetWindowText
+EnumWindows
+QueryFullProcessImageName

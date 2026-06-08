@@ -70,7 +70,7 @@ public class HotkeyManager : IDisposable
 
     private bool ShouldIgnoreHotkeys()
     {
-        return (_settings.IgnoreHotkeysOnFullscreen && WindowHelper.IsForegroundWindowFullscreen())
+        return (_settings.IgnoreHotkeysOnFullscreen && WindowHelper.IsWindowFullscreen(WindowHelper.GetForegroundWindow()))
             || IPublicAPI.Instance.IsGameModeOn();
     }
 
