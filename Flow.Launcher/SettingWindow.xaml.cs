@@ -5,6 +5,7 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Core.Settings;
 using Flow.Launcher.PluginSDK.API;
+using Flow.Launcher.Resources.Controls;
 using Flow.Launcher.SettingPages.Views;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern.Controls;
@@ -28,8 +29,6 @@ public partial class SettingWindow
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        RefreshMaximizeRestoreButton();
-
         UpdateWindowState();
 
         _viewModel.PropertyChanged += ViewModel_PropertyChanged;
@@ -79,50 +78,10 @@ public partial class SettingWindow
         textBox.MoveFocus(tRequest);
     }
 
-    private void Window_StateChanged(object sender, EventArgs e)
+    private void OnLastNonMinimizedWindowStateChanged(object sender, CustomWindowTitleBar.WindowStateChangedEventArgs e)
     {
-        RefreshMaximizeRestoreButton();
-        if (IsLoaded && WindowState != WindowState.Minimized)
-        {
-            _settings.SettingWindowState = WindowState;
-        }
-    }
-
-    #endregion
-
-    #region Window Custom TitleBar
-
-    private void OnMinimizeButtonClick(object sender, RoutedEventArgs e)
-    {
-        WindowState = WindowState.Minimized;
-    }
-
-    private void OnMaximizeRestoreButtonClick(object sender, RoutedEventArgs e)
-    {
-        WindowState = WindowState switch
-        {
-            WindowState.Maximized => WindowState.Normal,
-            _ => WindowState.Maximized
-        };
-    }
-
-    private void OnCloseButtonClick(object sender, RoutedEventArgs e)
-    {
-        Close();
-    }
-
-    private void RefreshMaximizeRestoreButton()
-    {
-        if (WindowState == WindowState.Maximized)
-        {
-            MaximizeButton.Visibility = Visibility.Hidden;
-            RestoreButton.Visibility = Visibility.Visible;
-        }
-        else
-        {
-            MaximizeButton.Visibility = Visibility.Visible;
-            RestoreButton.Visibility = Visibility.Hidden;
-        }
+        if (IsLoaded)
+            _settings.SettingWindowState = e.CurrentState;
     }
 
     #endregion

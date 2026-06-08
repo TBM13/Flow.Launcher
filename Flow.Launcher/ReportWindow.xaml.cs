@@ -79,9 +79,5 @@ namespace Flow.Launcher
             return paragraph;
         }
 
-        private void BtnCancel_OnClick(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
     }
 }
