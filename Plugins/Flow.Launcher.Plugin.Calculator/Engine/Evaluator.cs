@@ -25,8 +25,10 @@ public static class Evaluator
                 or OperatorType.FloorDivide or OperatorType.Remainder => 6,
 
             // Unary Operators (highest precedence)
+            // Prefix
             OperatorType.UnaryPlus or OperatorType.UnaryMinus => 7,
-            OperatorType.UnaryFactorial => 8,
+            // Postfix
+            OperatorType.UnaryFactorial or OperatorType.UnaryPercentage => 8,
 
             _ => throw new InvalidOperationException($"Operator {op} does not have a precedence defined")
         };
@@ -143,26 +145,30 @@ public static class Evaluator
         if (valueCount < requiredOperands)
             return false;       // Invalid expression structure
 
+        Value res;
         if (isUnary)
         {
             Value val = values[--valueCount];
-            Value res = ExecuteUnaryOperator(op, val);
-            values[valueCount++] = res;
+
+            if (op != OperatorType.UnaryPercentage)
+                res = ExecuteUnaryOperator(op, val);
+            else
+                res = ExecuteUnaryPercentage(val, values, operators, valueCount, opCount);
         }
         else
         {
             Value right = values[--valueCount];
             Value left = values[--valueCount];
-            Value res = ExecuteBinaryOperator(op, left, right);
-            values[valueCount++] = res;
+            res = ExecuteBinaryOperator(op, left, right);
         }
 
+        values[valueCount++] = res;
         return true;
     }
 
     private static Value ExecuteUnaryOperator(OperatorType op, in Value val)
     {
-        checked        // Ensure exceptions are thrown when overflow occurs
+        checked
         {
             Value res = op switch
             {
@@ -173,13 +179,12 @@ public static class Evaluator
                     : new Value(-val.AsInt128()),
 
                 // Unary postfix operators
-                OperatorType.UnaryFactorial => Factorial(val),
+                OperatorType.UnaryFactorial => val.Factorial(),
 
                 _ => throw new NotSupportedException($"Unary operator {op} not implemented")
             };
 
-            // If the result is a decimal but does not have a fractional part,
-            // convert it to integer since it has a larger scale capacity
+            // Convert decimal to int128 if there's no fractional part to maximize capacity
             if (res.IsDecimal && decimal.IsInteger(res.AsDecimal()))
                 res = new Value(res.AsInt128());
 
@@ -191,7 +196,7 @@ public static class Evaluator
     {
         bool useDecimalMath = left.IsDecimal || right.IsDecimal;
 
-        checked     // Ensure exceptions are thrown when overflow occurs
+        checked
         {
             Value res = op switch
             {
@@ -238,8 +243,7 @@ public static class Evaluator
                 _ => throw new NotSupportedException($"Binary operator {op} not implemented")
             };
 
-            // If the result is a decimal but does not have a fractional part,
-            // convert it to integer since it has a larger scale capacity
+            // Convert decimal to int128 if there's no fractional part to maximize capacity
             if (res.IsDecimal && decimal.IsInteger(res.AsDecimal()))
                 res = new Value(res.AsInt128());
 
@@ -247,20 +251,47 @@ public static class Evaluator
         }
     }
 
-    private static Value Factorial(in Value val)
+    private static Value ExecuteUnaryPercentage(Value value,
+        Span<Value> values, Span<OperatorType> operators, int valueCount, int opCount)
     {
-        // Factorial is only mathematically valid for non-negative integers
-        Int128 n = val.AsInt128();
-        if (n < 0)
-            throw new ArgumentException("Factorial is not defined for negative numbers");
+        Value res;
+
+        // Find the closest binary operator in the same context
+        OperatorType contextOp = OperatorType.Invalid;
+        for (int i = opCount - 1; i >= 0; i--)
+        {
+            OperatorType op = operators[i];
+            if (op.IsUnaryOperator() && op is not OperatorType.OpenParentheses)
+                continue;
+
+            contextOp = op;
+            break;
+        }
+
+        // Contextual percentage applies if the binary operator is Add or Subtract
+        // E.g: "100 - 30%" = 70     "50 + 10%" = 55
+        bool isContextual = valueCount > 0 && contextOp is OperatorType.Add or OperatorType.Subtract;
+        // TODO: The next token might have higher precedence than the binary operator
+        // E.g.: "100 - 30% * 2" should ideally be evaluated as "100 - (30% * 2)"
+        // but is currently evaluated as "100 - (30 * 2)%"
 
         checked
         {
-            Int128 result = 1;
-            for (Int128 i = 2; i <= n; i++)
-                result *= i;
-
-            return new Value(result);
+            decimal percentageFactor = value.AsDecimal() / 100m;
+            if (isContextual)
+            {
+                // Left operand of the binary operator
+                Value baseVal = values[valueCount - 1];
+                res = new Value(baseVal.AsDecimal() * percentageFactor);
+            }
+            else
+                res = new Value(percentageFactor);
         }
+
+        // Convert decimal to int128 if there's no fractional part to maximize capacity
+        if (res.IsDecimal && decimal.IsInteger(res.AsDecimal()))
+            res = new Value(res.AsInt128());
+
+        return res;
     }
 }

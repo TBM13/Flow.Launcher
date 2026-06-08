@@ -23,6 +23,7 @@ public enum OperatorType : byte
     // Unary postfix operators
     CloseParentheses,
     UnaryFactorial,
+    UnaryPercentage,
 
     // Basic operations
     Add,
@@ -52,7 +53,7 @@ public static class OperatorTypeExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsUnaryPostfixOperator(this OperatorType op)
     {
-        return op is OperatorType.CloseParentheses or OperatorType.UnaryFactorial;
+        return op is OperatorType.CloseParentheses or OperatorType.UnaryFactorial or OperatorType.UnaryPercentage;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -74,6 +75,9 @@ public ref struct Tokenizer(ReadOnlySpan<char> input)
 
     public Token Current { get; private set; }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool IsWhitespace(char c) => c is ' ' or '\t';
+
     /// <returns>True if there are more valid tokens to read.</returns>
     public bool MoveNext()
     {
@@ -86,7 +90,7 @@ public ref struct Tokenizer(ReadOnlySpan<char> input)
             char c = _input[_index];
 
             // Spaces
-            if (c is ' ' or '\t')
+            if (IsWhitespace(c))
             {
                 _index++;
                 continue;
@@ -102,6 +106,12 @@ public ref struct Tokenizer(ReadOnlySpan<char> input)
                     // Unary postfix operators
                     ')' => new Token(TokenType.Operator, OperatorType.CloseParentheses, default),
                     '!' => new Token(TokenType.Operator, OperatorType.UnaryFactorial, default),
+                    '%' when
+                            // 4% is unary percentage but 4 % 2 is binary remainder
+                            _index > 0 && !IsWhitespace(_input[_index - 1]) &&
+                            // 4%2 is binary remainder
+                            (_index + 1 == _input.Length || !char.IsAsciiDigit(_input[_index + 1]))
+                        => new Token(TokenType.Operator, OperatorType.UnaryPercentage, default),
 
                     // Basic operations
                     '+' => new Token(TokenType.Operator, OperatorType.Add, default),

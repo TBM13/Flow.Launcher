@@ -62,4 +62,22 @@ public readonly struct Value
     }
 
     public override string ToString() => IsDecimal ? _decimalValue.ToString() : _integerValue.ToString();
+
+    /// <exception cref="ArgumentException"></exception>
+    public Value Factorial()
+    {
+        // Factorial is only mathematically valid for non-negative integers
+        Int128 n = AsInt128();
+        if (n < 0)
+            throw new ArgumentException("Factorial is not defined for negative numbers");
+
+        checked
+        {
+            Int128 result = 1;
+            for (Int128 i = 2; i <= n; i++)
+                result *= i;
+
+            return new Value(result);
+        }
+    }
 }
