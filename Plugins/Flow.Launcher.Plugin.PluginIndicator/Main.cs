@@ -59,7 +59,7 @@ namespace Flow.Launcher.Plugin.PluginIndicator
                 select new Result
                 {
                     Title = keyword,
-                    SubTitle = Localize.ResultSubtitle(plugin.Name),
+                    SubTitle = $"Activate {plugin.Name} plugin action keyword",
                     Score = score,
                     IcoPath = plugin.IcoPath,
                     AutoCompleteText = $"{keyword}{Infrastructure.Results.Query.TermSeparator}",
