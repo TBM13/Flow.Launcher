@@ -58,9 +58,9 @@ public class Main : IPlugin
         Result res = new()
         {
             Title = valueString,
+            SubTitle = v.IsDecimal ? string.Empty : $"0x{v.AsInt128():X}",
             IcoPath = PluginMetadataDefinition.Metadata.IcoPath,
             Score = 300,
-            // SubTitle = subtitle,
             CopyText = valueString
         };
 
