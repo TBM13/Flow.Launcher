@@ -259,7 +259,7 @@ public static class Evaluator
         }
     }
 
-    private static Value ExecuteUnaryPercentage(Value value,
+    private static Value ExecuteUnaryPercentage(in Value value,
         Span<Value> values, Span<OperatorType> operators, int valueCount, int opCount)
     {
         Value res;
