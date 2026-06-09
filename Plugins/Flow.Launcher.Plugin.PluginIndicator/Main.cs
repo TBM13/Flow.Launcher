@@ -1,98 +1,91 @@
-﻿using Flow.Launcher.Infrastructure.Plugins;
+﻿using Flow.Launcher.Infrastructure.Helpers;
+using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 using Flow.Launcher.Infrastructure.Results;
 
-namespace Flow.Launcher.Plugin.PluginIndicator
-{
-    public static class PluginMetadataDefinition
-    {
-        public static readonly PluginMetadata Metadata = new()
-        {
-            ID = "6A122269676E40EB86EB543B945932B9",
-            ActionKeywords = ["?"],
-            Name = "Plugin Indicator",
-            Description = "Provides plugin action keyword suggestions",
-            Author = "qianlifeng",
-            Version = "1.0.0",
-            IcoPath = "Images/Plugin.PluginIndicator.png",
+namespace Flow.Launcher.Plugin.PluginIndicator;
 
-            Plugin = new Main()
-        };
+public static class PluginMetadataDefinition
+{
+    public static readonly PluginMetadata Metadata = new()
+    {
+        ID = "6A122269676E40EB86EB543B945932B9",
+        ActionKeywords = ["?"],
+        Name = "Plugin Indicator",
+        Description = "Provides plugin action keyword suggestions",
+        Author = "qianlifeng",
+        Version = "1.0.0",
+        IcoPath = "Images/Plugin.PluginIndicator.png",
+
+        Plugin = new Main()
+    };
+}
+
+public class Main : IPlugin, IHomeQuery
+{
+    private PluginInitContext _context = null!;
+
+    public void Init(PluginInitContext context)
+    {
+        _context = context;
     }
 
-    public class Main : IPlugin, IHomeQuery
+    public List<Result>? Query(Query query)
     {
-#pragma warning disable CS8618
-        private PluginInitContext _context;
-#pragma warning restore CS8618
+        return QueryResults(query);
+    }
 
-        public void Init(PluginInitContext context)
+    public List<Result>? HomeQuery()
+    {
+        return QueryResults();
+    }
+
+    private List<Result> QueryResults(Query? query = null)
+    {
+        List<Result> results = [];
+
+        foreach (PluginMetadata plugin in _context.API.GetAllInitializedPlugins(includeFailed: false))
         {
-            _context = context;
-        }
+            if (plugin.Disabled)
+                continue;
 
-        public List<Result>? Query(Query query)
-        {
-            return QueryResults(query);
-        }
+            foreach (string keyword in plugin.ActionKeywords)
+            {
+                // Skip global keywords
+                if (keyword == Infrastructure.Results.Query.GlobalPluginWildcard)
+                    continue;
 
-        public List<Result>? HomeQuery()
-        {
-            return QueryResults();
-        }
+                // If not a home query, filter results with search term
+                MatchResult searchResult;
+                if (query?.Search is string querySearch && !string.IsNullOrWhiteSpace(querySearch))
+                {
+                    searchResult = _context.API.FuzzySearch(querySearch, keyword);
+                    if (!searchResult.IsSearchPrecisionScoreMet)
+                        searchResult = _context.API.FuzzySearch(querySearch, plugin.Name);
 
-        private List<Result> QueryResults(Query? query = null)
-        {
-            Dictionary<string, PluginMetadata> nonGlobalPlugins = GetNonGlobalPlugins();
-            string querySearch = query?.Search ?? string.Empty;
+                    if (!searchResult.IsSearchPrecisionScoreMet)
+                        continue;
+                }
+                else
+                    searchResult = default;
 
-            IEnumerable<Result> results =
-                from keyword in nonGlobalPlugins.Keys
-                let plugin = nonGlobalPlugins[keyword]
-                let keywordSearchResult = _context.API.FuzzySearch(querySearch, keyword)
-                let searchResult = keywordSearchResult.IsSearchPrecisionScoreMet
-                    ? keywordSearchResult : _context.API.FuzzySearch(querySearch, plugin.Name)
-                let score = searchResult.Score
-                where (searchResult.IsSearchPrecisionScoreMet
-                        || string.IsNullOrEmpty(querySearch)) // To list all available action keywords
-                    && !plugin.Disabled
-                select new Result
+                string autoCompleteText = $"{keyword}{Infrastructure.Results.Query.TermSeparator}";
+                results.Add(new Result
                 {
                     Title = keyword,
-                    SubTitle = $"Activate {plugin.Name} plugin action keyword",
-                    Score = score,
+                    SubTitle = plugin.Name,
+                    Score = searchResult.Score,
                     IcoPath = plugin.IcoPath,
-                    AutoCompleteText = $"{keyword}{Infrastructure.Results.Query.TermSeparator}",
-                    Action = c =>
+                    AutoCompleteText = autoCompleteText,
+                    Action = _ =>
                     {
-                        _context.API.ChangeQuery($"{keyword}{Infrastructure.Results.Query.TermSeparator}");
+                        _context.API.ChangeQuery(autoCompleteText);
                         return false;
                     }
-                };
-
-            return [.. results];
-        }
-
-        private Dictionary<string, PluginMetadata> GetNonGlobalPlugins()
-        {
-            Dictionary<string, PluginMetadata> nonGlobalPlugins = [];
-            foreach (PluginMetadata plugin in _context.API.GetAllPlugins())
-            {
-                foreach (string actionKeyword in plugin.ActionKeywords)
-                {
-                    // Skip global keywords
-                    if (actionKeyword == Infrastructure.Results.Query.GlobalPluginWildcard)
-                        continue;
-
-                    // Skip duplicated keywords
-                    if (nonGlobalPlugins.ContainsKey(actionKeyword))
-                        continue;
-
-                    nonGlobalPlugins.Add(actionKeyword, plugin);
-                }
+                });
             }
-
-            return nonGlobalPlugins;
         }
+
+        return results;
     }
 }
