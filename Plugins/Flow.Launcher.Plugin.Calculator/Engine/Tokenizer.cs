@@ -46,7 +46,7 @@ public ref struct Tokenizer(ReadOnlySpan<char> input)
                             // 4% is unary percentage but 4 % 2 is binary remainder
                             _index > 0 && !IsWhitespace(_input[_index - 1]) &&
                             // 4%2 is binary remainder
-                            (_index + 1 == _input.Length || !char.IsAsciiDigit(_input[_index + 1]))
+                            (_index + 1 == _input.Length || _input[_index + 1] is not (>= '0' and <= '9' or '('))
                         => new Token(TokenType.Operator, OperatorType.UnaryPercentage, default),
 
                     // Basic operations
