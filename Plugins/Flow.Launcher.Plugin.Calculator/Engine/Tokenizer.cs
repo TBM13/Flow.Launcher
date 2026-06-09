@@ -2,75 +2,6 @@
 
 namespace Flow.Launcher.Plugin.Calculator.Engine;
 
-public enum TokenType : byte
-{
-    Invalid = default,
-
-    Integer,
-    Decimal,
-    Operator,
-}
-
-public enum OperatorType : byte
-{
-    Invalid = default,
-
-    // Unary prefix operators
-    OpenParentheses,
-    UnaryPlus,
-    UnaryMinus,
-    UnaryBitwiseNot,
-
-    // Unary postfix operators
-    CloseParentheses,
-    UnaryFactorial,
-    UnaryPercentage,
-
-    // Binary operators
-    Add,
-    Subtract,
-    Multiply,
-    Divide,
-    Remainder,
-    FloorDivide,
-    // Bitwise binary operators
-    BitwiseAnd,
-    BitwiseOr,
-    BitwiseXor,
-    LeftShift,
-    ArithmeticRightShift,
-    LogicalRightShift,
-}
-
-public static class OperatorTypeExtensions
-{
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsUnaryPrefixOperator(this OperatorType op)
-    {
-        return op is OperatorType.OpenParentheses
-            or OperatorType.UnaryPlus or OperatorType.UnaryMinus
-            or OperatorType.UnaryBitwiseNot;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsUnaryPostfixOperator(this OperatorType op)
-    {
-        return op is OperatorType.CloseParentheses
-            or OperatorType.UnaryFactorial or OperatorType.UnaryPercentage;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsUnaryOperator(this OperatorType op)
-        => op.IsUnaryPrefixOperator() || op.IsUnaryPostfixOperator();
-}
-
-public readonly ref struct Token(TokenType type, OperatorType @operator, ReadOnlySpan<char> value)
-{
-    public readonly ReadOnlySpan<char> Value = value;
-    public readonly TokenType Type = type;
-    public readonly OperatorType Operator = @operator;
-}
-
 public ref struct Tokenizer(ReadOnlySpan<char> input)
 {
     private readonly ReadOnlySpan<char> _input = input;
@@ -80,6 +11,9 @@ public ref struct Tokenizer(ReadOnlySpan<char> input)
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool IsWhitespace(char c) => c is ' ' or '\t';
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool IsHexChar(char c) => c is >= 'a' and <= 'f' or >= 'A' and <= 'F';
 
     /// <returns>True if there are more valid tokens to read.</returns>
     public bool MoveNext()
@@ -99,8 +33,7 @@ public ref struct Tokenizer(ReadOnlySpan<char> input)
                 continue;
             }
 
-            if (Current.Type is TokenType.Decimal or TokenType.Integer
-                || Current.Operator.IsUnaryPostfixOperator())
+            if (Current.Type.IsNumber() || Current.Operator.IsUnaryPostfixOperator())
             {
                 // Previous token was a number (or a postfix operator like factorial)
                 // so we are expecting an unary postfix operator or a binary operator
@@ -143,7 +76,7 @@ public ref struct Tokenizer(ReadOnlySpan<char> input)
             {
                 // Previous token was a binary operator or an unary prefix operator,
                 // so we are expecting a number or an unary prefix operator
-                if (char.IsAsciiDigit(c) || c == '.')
+                if (char.IsAsciiDigit(c))
                     return ReadNumber();
 
                 Current = c switch
@@ -185,23 +118,32 @@ public ref struct Tokenizer(ReadOnlySpan<char> input)
 
     private bool ReadNumber()
     {
-        char c = _input[_index];
+        bool isDecimal = false;
+        bool isHex = _input[_index] == '0' && _index + 1 < _input.Length
+                       && _input[_index + 1] is 'x' or 'X';
 
-        int start = _index;
-        bool isDecimal = c == '.';
-        _index++;
+        int start;
+        if (isHex)
+        {
+            start = _index + 2;
+            _index += 2;
+        }
+        else
+        {
+            start = _index;
+            _index++;
+        }
 
         while (_index < _input.Length)
         {
             char next = _input[_index];
-            if (char.IsAsciiDigit(next))
+            if (char.IsAsciiDigit(next) || (isHex && IsHexChar(next)))
                 _index++;
             else if (next == '.')
             {
-                if (isDecimal)
+                if (isDecimal || isHex)
                 {
-                    // Multiple dots, not a valid number (e.g. "42.6.3")
-                    // Abort tokenization
+                    // Multiple dots or an hex number with a dot. Abort
                     Current = default;
                     _index = -1;
                     return false;
@@ -215,7 +157,7 @@ public ref struct Tokenizer(ReadOnlySpan<char> input)
         }
 
         ReadOnlySpan<char> number = _input[start.._index];
-        if (isDecimal && (number[0] == '.' || number[^1] == '.'))
+        if (number.Length == 0 || (isDecimal && number[^1] == '.'))
         {
             // Not a valid number. Abort tokenization
             Current = default;
@@ -223,7 +165,11 @@ public ref struct Tokenizer(ReadOnlySpan<char> input)
             return false;
         }
 
-        Current = new Token(isDecimal ? TokenType.Decimal : TokenType.Integer, default, number);
+        TokenType type = isHex
+            ? TokenType.Hexadecimal
+            : isDecimal ? TokenType.Decimal : TokenType.Integer;
+
+        Current = new Token(type, default, number);
         return true;
     }
 }

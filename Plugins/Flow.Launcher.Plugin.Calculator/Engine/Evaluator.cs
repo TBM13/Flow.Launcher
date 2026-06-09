@@ -66,6 +66,10 @@ public static class Evaluator
                     decimal d = decimal.Parse(token.Value, CultureInfo.InvariantCulture);
                     values[valueCount++] = new Value(d);
                     break;
+                case TokenType.Hexadecimal:
+                    Int128 h = Int128.Parse(token.Value, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+                    values[valueCount++] = new Value(h);
+                    break;
 
                 // Operators
                 case TokenType.Operator:
