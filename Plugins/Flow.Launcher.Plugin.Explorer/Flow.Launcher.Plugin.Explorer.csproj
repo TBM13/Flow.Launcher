@@ -10,22 +10,12 @@
     <Nullable>enable</Nullable>
     <ApplicationIcon />
     <StartupObject />
-
-    <!-- 
-    Required by CommunityToolkit.Mvvm to use the 'field' keyword
-    for some reason, even though it's available by default on .NET 10
-    -->
-    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <Content Include="Images\*.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  
-  <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
   </ItemGroup>
 
   <ItemGroup>

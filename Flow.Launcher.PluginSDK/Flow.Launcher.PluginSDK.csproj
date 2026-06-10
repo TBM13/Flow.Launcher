@@ -9,12 +9,6 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <GenerateDependencyFile>false</GenerateDependencyFile>
-
-    <!-- 
-    Required by CommunityToolkit.Mvvm to use the 'field' keyword
-    for some reason, even though it's available by default on .NET 10
-    -->
-    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -28,7 +22,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="ZLogger" Version="2.5.10" />
     <PackageReference Include="MemoryPack" Version="1.21.4" />
   </ItemGroup>
