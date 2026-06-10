@@ -9,7 +9,7 @@ public partial class PreviewPanel : UserControl
         InitializeComponent();
 
         TitleTextblock.Text = svcResult.DisplayName;
-        DescriptionTextblock.Text = svcResult.GetDescription() ?? Localize.Error_GetDescriptionFail;
+        DescriptionTextblock.Text = svcResult.GetDescription() ?? Localize.Error_NoDescription;
         PathTextblock.Text = svcResult.GetImagePath() ?? Localize.Error_GetPathFail;
         PathTextblock.ToolTip = PathTextblock.Text;
     }

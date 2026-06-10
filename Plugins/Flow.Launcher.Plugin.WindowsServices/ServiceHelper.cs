@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.ServiceProcess;
 using System.Windows.Controls;
 using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Infrastructure.WPF;
+using Flow.Launcher.Interop.Shell;
 using Flow.Launcher.Plugin.WindowsServices.Preview;
 using Microsoft.Win32;
-using Windows.Win32;
-using Windows.Win32.Foundation;
 
 
 namespace Flow.Launcher.Plugin.WindowsServices;
@@ -117,6 +113,10 @@ public class ServiceResult
         return _description;
     }
 
+    /// <summary>
+    /// Tries to read the service description from the registry.
+    /// </summary>
+    /// <returns>Null if the description is not found</returns>
     private string? GetDescriptionFromRegistry()
     {
         using var key = Registry.LocalMachine.OpenSubKey($@"SYSTEM\CurrentControlSet\Services\{ServiceName}");
@@ -126,24 +126,17 @@ public class ServiceResult
         // Check if the description is an indirect string and try to resolve it
         if (value.StartsWith('@'))
         {
-            char[] buffer = new char[2048];
-            while (true)
+            try
             {
-                int hr = PInvoke.SHLoadIndirectString(value, buffer);
-                if (hr != HRESULT.S_OK)
-                {
-                    if (hr == unchecked((int)0x8007007A)) // ERROR_INSUFFICIENT_BUFFER
-                    {
-                        if (buffer.Length >= 65536) return null;
-                        buffer = new char[buffer.Length * 2];
-                        continue;
-                    }
+                value = ShellHelper.LoadIndirectString(value);
 
-                    return null;
-                }
+            }
+            catch (Exception ex)
+            {
+                Main.Context.Logger.LogError(
+                    ex, $"Failed to read description of service '{ServiceName}' ({value})");
 
-                int len = Array.IndexOf(buffer, '\0');
-                return new string(buffer, 0, len);
+                value = $"Failed to read description {value} ({ex.Message})";
             }
         }
 
@@ -206,7 +199,7 @@ public static class ServiceHelper
                 Title = svcResult.DisplayName,
                 SubTitle = GetResultSubTitle(svcResult),
                 Glyph = GetResultGlyph(svcResult),
-                IcoPath = Main.PLUGIN_ICON,
+                IcoPath = PluginMetadataDefinition.Metadata.IcoPath,
                 ContextData = svcResult,
                 CopyText = svcResult.ServiceName,
                 Score = score,
@@ -292,7 +285,7 @@ public static class ServiceHelper
                     break;
 
                 default:
-                    throw new Exception("Unknown action");
+                    throw new InvalidOperationException("Unknown action");
             }
 
             // No need to de-elevate since we are opening a windows tool which cannot bring security risks
@@ -312,9 +305,9 @@ public static class ServiceHelper
     private static GlyphInfo GetResultGlyph(ServiceResult svc)
     {
         if (svc.StartType == ServiceStartMode.Disabled && svc.Status == ServiceControllerStatus.Stopped)
-            return new(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xeb90");
+            return new(Glyph: "\xeb90");
 
-        return new(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: svc.Status switch
+        return new(Glyph: svc.Status switch
         {
             ServiceControllerStatus.Stopped => "\xea39",
             ServiceControllerStatus.Running => "\xe930",

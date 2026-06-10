@@ -94,3 +94,4 @@ GetWindowTextLength
 GetWindowText
 EnumWindows
 QueryFullProcessImageName
+SHLoadIndirectString

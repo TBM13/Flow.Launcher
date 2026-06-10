@@ -43,6 +43,6 @@ public static class Localize
     public const string Error_StopServiceFail = "Failed to stop service";
     public const string Error_RestartServiceFail = "Failed to restart service";
     public const string Error_ChangeStartupTypeFail = "Failed to change startup type";
-    public const string Error_GetDescriptionFail = "The service doesn't have a description or we failed to read it.";
+    public const string Error_NoDescription = "The service does not have a description.";
     public const string Error_GetPathFail = "Failed to get the service's path";
 }

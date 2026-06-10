@@ -1,7 +1,4 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.ServiceProcess;
+﻿using System.ServiceProcess;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 using Flow.Launcher.Infrastructure.Results;
@@ -15,7 +12,7 @@ public static class PluginMetadataDefinition
         ID = "42f63e8d-3d3d-4b4b-9e91-c6094bf240ec",
         ActionKeywords = ["svc"],
         Name = "Windows Services Manager",
-        Description = "Manage Windows services from Flow Launcher",
+        Description = "Manage Windows services.",
         Author = "TBM13",
         Version = "1.1.1",
         IcoPath = "Images/Plugin.WindowsServices.png",
@@ -26,21 +23,19 @@ public static class PluginMetadataDefinition
 
 public class Main : IPlugin, IContextMenu
 {
-    public static readonly string PLUGIN_ICON = PluginMetadataDefinition.Metadata.IcoPath;
-
-    internal static PluginInitContext Context { get; private set; } = null!;
+    public static PluginInitContext Context { get; private set; } = null!;
 
     public void Init(PluginInitContext context)
     {
         Context = context;
     }
 
-    public List<Result> Query(Query query)
+    public List<Result>? Query(Query query)
     {
         return [.. ServiceHelper.Search(query.Search)];
     }
 
-    private static bool EnableService(ServiceResult service, Action action)
+    private bool EnableService(ServiceResult service, Action action)
     {
         try
         {
@@ -69,7 +64,7 @@ public class Main : IPlugin, IContextMenu
         return true;
     }
 
-    private static bool DisableService(ServiceResult service)
+    private bool DisableService(ServiceResult service)
     {
         try
         {
@@ -111,8 +106,8 @@ public class Main : IPlugin, IContextMenu
                 results.Add(new Result()
                 {
                     Title = Localize.Action_RestartService,
-                    Glyph = new(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xe777"),
-                    Action = (c) =>
+                    Glyph = new(Glyph: "\xe777"),
+                    Action = c =>
                     {
                         try
                         {
@@ -133,8 +128,8 @@ public class Main : IPlugin, IContextMenu
             results.Add(new Result()
             {
                 Title = Localize.Action_StopService,
-                Glyph = new(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xe769"),
-                Action = (c) =>
+                Glyph = new(Glyph: "\xe769"),
+                Action = c =>
                 {
                     try
                     {
@@ -156,8 +151,8 @@ public class Main : IPlugin, IContextMenu
             results.Add(new Result()
             {
                 Title = Localize.Action_StartService,
-                Glyph = new(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xe768"),
-                Action = (c) =>
+                Glyph = new(Glyph: "\xe768"),
+                Action = c =>
                 {
                     try
                     {
@@ -183,7 +178,7 @@ public class Main : IPlugin, IContextMenu
                 SubTitle = service.IsRunning ?
                     Localize.Action_EnableManual_Description :
                     Localize.Action_EnableManualAndStart_Description,
-                Glyph = new(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xEB49"),
+                Glyph = new(Glyph: "\xEB49"),
                 Action = c => EnableService(service, Action.EnableManual)
             });
 
@@ -193,7 +188,7 @@ public class Main : IPlugin, IContextMenu
                 SubTitle = service.IsRunning ?
                     Localize.Action_EnableAutomatic_Description :
                     Localize.Action_EnableAutomaticAndStart_Description,
-                Glyph = new(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xEB49"),
+                Glyph = new(Glyph: "\xEB49"),
                 Action = c => EnableService(service, Action.EnableAutomatic)
             });
 
@@ -203,7 +198,7 @@ public class Main : IPlugin, IContextMenu
                 SubTitle = service.IsRunning ?
                     Localize.Action_EnableAutomaticDelayed_Description :
                     Localize.Action_EnableAutomaticDelayedAndStart_Description,
-                Glyph = new(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xEB49"),
+                Glyph = new(Glyph: "\xEB49"),
                 Action = c => EnableService(service, Action.EnableAutomaticDelayed)
             });
         }
@@ -215,7 +210,7 @@ public class Main : IPlugin, IContextMenu
                 SubTitle = service.IsRunning ?
                     Localize.Action_DisableAndStop_Description :
                     Localize.Action_Disable_Description,
-                Glyph = new(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xEB4A"),
+                Glyph = new(Glyph: "\xEB4A"),
                 Action = c => DisableService(service)
             });
         }
