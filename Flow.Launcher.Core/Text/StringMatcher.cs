@@ -95,7 +95,7 @@ public class StringMatcher(Settings settings)
     /// The match score (from 0 to 100) if all characters on query sequentially match
     /// with an acronym in target. Otherwise, returns 0.
     /// </returns>
-    private static double AcronymMatch(TokenizedString query, TokenizedString target)
+    private static double AcronymMatch(in TokenizedString query, in TokenizedString target)
     {
         // If query is larger than target, it does not make sense to perform an acronym match
         // E.g. query "Visual Studio 2019" should not match "VS 2019"
@@ -136,7 +136,7 @@ public class StringMatcher(Settings settings)
     }
 
     // TODO: Improve this mess after adding tests
-    private static double FuzzySearch(TokenizedString query, TokenizedString target)
+    private static double FuzzySearch(in TokenizedString query, in TokenizedString target)
     {
         // If query is larger than target, it does not make sense to perform an acronym match
         // E.g. query "Visual Studio 2019" should not match "VS 2019"
@@ -236,7 +236,7 @@ public class StringMatcher(Settings settings)
 
     private static bool AllPreviousCharsMatched(
         int startIndexToVerify, int currentQueryTokenCharIndex,
-        TokenizedString target, ReadOnlySpan<char> currentQueryToken)
+        in TokenizedString target, ReadOnlySpan<char> currentQueryToken)
     {
         TokenizedStringCharEnumerator targetEnum = target.GetCharEnumerator(startIndexToVerify);
         for (int i = 0; i < currentQueryTokenCharIndex; i++)
@@ -251,7 +251,8 @@ public class StringMatcher(Settings settings)
         return true;
     }
 
-    private static int CalculateClosestSpaceIndex(Span<int> spaceIndices, int spaceIndicesLength, int firstMatchIndex)
+    private static int CalculateClosestSpaceIndex(
+        Span<int> spaceIndices, int spaceIndicesLength, int firstMatchIndex)
     {
         int closestSpaceIndex = -1;
 
@@ -268,7 +269,7 @@ public class StringMatcher(Settings settings)
     }
 
     private static int CalculateSearchScore(
-        TokenizedString query, TokenizedString target,
+        in TokenizedString query, in TokenizedString target,
         int firstIndex, int targetTokensCount, int matchLen,
         bool allQueryTokensMatched)
     {
