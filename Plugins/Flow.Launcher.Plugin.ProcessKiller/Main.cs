@@ -1,225 +1,158 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Windows.Controls;
+using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Plugin.ProcessKiller.ViewModels;
 using Flow.Launcher.Plugin.ProcessKiller.Views;
 
-namespace Flow.Launcher.Plugin.ProcessKiller
-{
-    public static class PluginMetadataDefinition
-    {
-        public static readonly PluginMetadata Metadata = new()
-        {
-            ID = "b64d0a79-329a-48b0-b53f-d658318a1bf6",
-            ActionKeywords = ["kill"],
-            Name = "Process Killer",
-            Description = "Kill running processes from Flow",
-            Author = "Flow-Launcher",
-            Version = "1.0.0",
-            IcoPath = "Images/Plugin.ProcessKiller.png",
+namespace Flow.Launcher.Plugin.ProcessKiller;
 
-            Plugin = new Main()
-        };
+public static class PluginMetadataDefinition
+{
+    public static readonly PluginMetadata Metadata = new()
+    {
+        ID = "b64d0a79-329a-48b0-b53f-d658318a1bf6",
+        ActionKeywords = ["kill"],
+        Name = "Process Killer",
+        Description = "Kill running processes from Flow",
+        Author = "Flow-Launcher",
+        Version = "1.0.0",
+        IcoPath = "Images/Plugin.ProcessKiller.png",
+
+        Plugin = new Main()
+    };
+}
+
+public class Main : IPlugin, IContextMenu, ISettingProvider
+{
+    private Settings _settings = null!;
+    private SettingsViewModel _viewModel = null!;
+
+    public static PluginInitContext Context { get; private set; } = null!;
+
+    public void Init(PluginInitContext context)
+    {
+        Context = context;
+        _settings = context.API.LoadSettingJsonStorage<Settings>();
+        _viewModel = new SettingsViewModel(_settings);
     }
 
-    public class Main : IPlugin, IContextMenu, ISettingProvider
+    public List<Result>? Query(Query query)
     {
-        internal static PluginInitContext Context { get; private set; }
+        List<ProcessInfo>? killableProcesses = ProcessUtils.GetKillableProcesses(_settings);
+        if (killableProcesses is null)
+            return null;
 
-        private Settings _settings;
-        private readonly ProcessHelper processHelper = new();
-        private SettingsViewModel _viewModel;
-
-        public void Init(PluginInitContext context)
+        List<Result> results = [];
+        string searchTerm = query.Search;
+        foreach (ProcessInfo pr in killableProcesses)
         {
-            Context = context;
-            _settings = context.API.LoadSettingJsonStorage<Settings>();
-            _viewModel = new SettingsViewModel(_settings);
-        }
+            Process p = pr.Process;
+            string processNameIdTitle = p.ProcessName + " - " + p.Id;
 
-        public List<Result> Query(Query query)
-        {
-            return CreateResultsFromQuery(query);
-        }
-
-        public List<Result> LoadContextMenus(Result result)
-        {
-            var menuOptions = new List<Result>();
-            var processPath = result.SubTitle;
-
-            // get all non-system processes whose file path matches that of the given result (processPath)
-            var similarProcesses = processHelper.GetSimilarProcesses(processPath);
-
-            if (similarProcesses.Any())
+            int score = 0;
+            if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                menuOptions.Add(new Result
-                {
-                    Title = Localize.Action_KillAllInstances,
-                    SubTitle = processPath,
-                    Action = _ =>
-                    {
-                        foreach (var p in similarProcesses)
-                        {
-                            ProcessHelper.TryKill(p);
-                        }
+                // Get max score from searching window title, process name & ID and process path
+                MatchResult windowTitleMatch = pr.WindowTitle is not null
+                    ? Context.API.FuzzySearch(searchTerm, pr.WindowTitle) : default;
+                MatchResult processPathMatch = Context.API.FuzzySearch(searchTerm, pr.Path);
+                MatchResult processNameIdMatch = Context.API.FuzzySearch(searchTerm, processNameIdTitle);
 
-                        return true;
-                    },
-                    IcoPath = processPath
-                });
+                score = Math.Max(windowTitleMatch.Score, processNameIdMatch.Score);
+                score = Math.Max(score, processPathMatch.Score);
+                if (score <= 0)
+                    continue;
             }
 
-            return menuOptions;
-        }
+            // Add score to prioritize processes with visible windows
+            if (_settings.PutVisibleWindowProcessesTop && pr.AnyWindowVisible)
+                score += 200;
 
-        private List<Result> CreateResultsFromQuery(Query query)
-        {
-            // Get all non-system processes
-            var allProcessList = processHelper.GetMatchingProcesses();
-            if (allProcessList.Count == 0)
+            results.Add(new Result()
             {
-                return null;
-            }
-
-            // Filter processes based on search term
-            var searchTerm = query.Search;
-            var processlist = new List<ProcessResult>();
-            var processWindowTitle =
-                _settings.ShowWindowTitle || _settings.PutVisibleWindowProcessesTop ?
-                ProcessHelper.GetProcessesWithNonEmptyWindowTitle() :
-                [];
-            if (string.IsNullOrWhiteSpace(searchTerm))
-            {
-                foreach (var p in allProcessList)
+                IcoPath = pr.Path,
+                Title = _settings.ShowWindowTitle && pr.WindowTitle is not null
+                    ? pr.WindowTitle : processNameIdTitle,
+                TitleToolTip = processNameIdTitle,
+                SubTitle = pr.Path,
+                Score = score,
+                ContextData = pr.Path,
+                AutoCompleteText = $"{query.ActionKeyword}{Infrastructure.Results.Query.TermSeparator}{p.ProcessName}",
+                Action = c =>
                 {
-                    var progressNameIdTitle = ProcessHelper.GetProcessNameIdTitle(p);
-
-                    if (processWindowTitle.TryGetValue(p.Id, out var windowTitle))
-                    {
-                        // Add score to prioritize processes with visible windows
-                        // Use window title for those processes if enabled
-                        processlist.Add(new ProcessResult(
-                            p,
-                            _settings.PutVisibleWindowProcessesTop ? 200 : 0,
-                            _settings.ShowWindowTitle ? windowTitle : progressNameIdTitle,
-                            progressNameIdTitle));
-                    }
-                    else
-                    {
-                        processlist.Add(new ProcessResult(
-                            p,
-                            0,
-                            progressNameIdTitle,
-                            progressNameIdTitle));
-                    }
+                    ProcessUtils.TryKill(p);
+                    // Re-query to refresh process list
+                    Context.API.ReQuery();
+                    return true;
                 }
-            }
-            else
+            });
+        }
+
+        // If all results have the same process path and they are ALL the instances
+        // of that process, add a result to kill all of them at once
+        if (results.Count > 1 && !string.IsNullOrWhiteSpace(searchTerm)
+            && results.All(r => r.SubTitle == results[0].SubTitle))
+        {
+            Result firstResult = results[0];
+            List<ProcessInfo> processesWithSamePath =
+                [.. killableProcesses.Where(
+                    pr => pr.Path.Equals(firstResult.SubTitle, StringComparison.OrdinalIgnoreCase))];
+
+            if (processesWithSamePath.Count == results.Count)
             {
-                foreach (var p in allProcessList)
-                {
-                    var progressNameIdTitle = ProcessHelper.GetProcessNameIdTitle(p);
-
-                    if (processWindowTitle.TryGetValue(p.Id, out var windowTitle))
-                    {
-                        // Get max score from searching process name, window title and process id
-                        var windowTitleMatch = Context.API.FuzzySearch(searchTerm, windowTitle);
-                        var processNameIdMatch = Context.API.FuzzySearch(searchTerm, progressNameIdTitle);
-                        var score = Math.Max(windowTitleMatch.Score, processNameIdMatch.Score);
-                        if (score > 0)
-                        {
-                            // Add score to prioritize processes with visible windows
-                            // Use window title for those processes
-                            if (_settings.PutVisibleWindowProcessesTop)
-                            {
-                                score += 200;
-                            }
-                            processlist.Add(new ProcessResult(
-                                p,
-                                score,
-                                _settings.ShowWindowTitle ? windowTitle : progressNameIdTitle,
-                                progressNameIdTitle));
-                        }
-                    }
-                    else
-                    {
-                        var processNameIdMatch = Context.API.FuzzySearch(searchTerm, progressNameIdTitle);
-                        var score = processNameIdMatch.Score;
-                        if (score > 0)
-                        {
-                            processlist.Add(new ProcessResult(
-                                p,
-                                score,
-                                progressNameIdTitle,
-                                progressNameIdTitle));
-                        }
-                    }
-                }
-            }
-
-            var results = new List<Result>();
-            foreach (var pr in processlist)
-            {
-                var p = pr.Process;
-                string path = ProcessHelper.TryGetProcessFileName(p);
-
+                string processName = processesWithSamePath[0].Process.ProcessName;
                 results.Add(new Result()
                 {
-                    IcoPath = path,
-                    Title = pr.Title,
-                    TitleToolTip = pr.Tooltip,
-                    SubTitle = path,
-                    Score = pr.Score,
-                    ContextData = p.ProcessName,
-                    AutoCompleteText = $"{query.ActionKeyword}{Infrastructure.Results.Query.TermSeparator}{p.ProcessName}",
-                    Action = (c) =>
+                    IcoPath = firstResult.IcoPath,
+                    Title = $"Kill all instances of \"{processName}\"",
+                    SubTitle = $"Kill {processesWithSamePath.Count} processes",
+                    Score = 2000,
+                    Action = c =>
                     {
-                        ProcessHelper.TryKill(p);
+                        foreach (ProcessInfo p in processesWithSamePath)
+                            ProcessUtils.TryKill(p.Process);
+
                         // Re-query to refresh process list
                         Context.API.ReQuery();
                         return true;
                     }
                 });
             }
-
-            // Order results by process name for processes without visible windows
-            var sortedResults = results.OrderBy(x => x.Title).ToList();
-
-            // When there are multiple results AND all of them are instances of the same executable
-            // add a quick option to kill them all at the top of the results.
-            var firstResult = sortedResults.FirstOrDefault(x => !string.IsNullOrEmpty(x.SubTitle));
-            if (processlist.Count > 1 && !string.IsNullOrEmpty(searchTerm) && sortedResults.All(r => r.SubTitle == firstResult?.SubTitle))
-            {
-                sortedResults.Insert(1, new Result()
-                {
-                    IcoPath = firstResult?.IcoPath,
-                    Title = Localize.Action_KillAllInstancesOf((string)firstResult?.ContextData),
-                    SubTitle = Localize.Action_KillAll(processlist.Count),
-                    Score = 200,
-                    Action = (c) =>
-                    {
-                        foreach (var p in processlist)
-                        {
-                            ProcessHelper.TryKill(p.Process);
-                        }
-                        // Re-query to refresh process list
-                        Context.API.ReQuery();
-                        return true;
-                    }
-                });
-            }
-
-            return sortedResults;
         }
 
-        public Control CreateSettingPanel()
+        return results;
+    }
+
+    public List<Result>? LoadContextMenus(Result result)
+    {
+        string processPath = (string)result.ContextData!;
+
+        // get all non-system processes whose file path matches that of the given result (processPath)
+        List<Process> processes = [.. ProcessUtils.GetProcessesWithPath(processPath)];
+        if (processes.Count == 0)
+            return null;
+
+        Result res = new()
         {
-            return new SettingsControl(_viewModel);
-        }
+            Title = $"Kill all instances ({processes.Count})",
+            SubTitle = $"Kill all instances of {processPath}",
+            Action = _ =>
+            {
+                foreach (Process p in processes)
+                    ProcessUtils.TryKill(p);
+
+                return true;
+            },
+            IcoPath = processPath
+        };
+        return [res];
+    }
+
+    public Control CreateSettingPanel()
+    {
+        return new SettingsControl(_viewModel);
     }
 }

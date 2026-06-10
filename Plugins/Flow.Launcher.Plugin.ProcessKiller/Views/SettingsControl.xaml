@@ -5,26 +5,23 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:Flow.Launcher.Plugin.ProcessKiller.ViewModels"
-    xmlns:root="clr-namespace:Flow.Launcher.Plugin.ProcessKiller"
     d:DataContext="{d:DesignInstance Type=vm:SettingsViewModel}"
     d:DesignHeight="300"
     d:DesignWidth="500"
     mc:Ignorable="d">
 
-    <Grid Margin="{StaticResource SettingPanelMargin}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto" />
-            <RowDefinition Height="auto" />
-        </Grid.RowDefinitions>
+    <StackPanel Margin="{StaticResource SettingPanelMargin}">
         <CheckBox
-            Grid.Row="0"
             Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
-            Content="{x:Static root:Localize.Settings_ShowWindowTitle}"
+            Content="Show window titles when possible"
             IsChecked="{Binding Settings.ShowWindowTitle}" />
         <CheckBox
-            Grid.Row="1"
             Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
-            Content="{x:Static root:Localize.Settings_PutVisibleWindowsOnTop}"
+            Content="Put processes with visible windows on top of the list"
             IsChecked="{Binding Settings.PutVisibleWindowProcessesTop}" />
-    </Grid>
+        <CheckBox
+            Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
+            Content="Filter service processes (svchost)"
+            IsChecked="{Binding Settings.FilterSvchostProcesses}" />
+    </StackPanel>
 </UserControl>

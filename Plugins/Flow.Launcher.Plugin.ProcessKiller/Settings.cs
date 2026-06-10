@@ -1,13 +1,15 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace Flow.Launcher.Plugin.ProcessKiller
-{
-    public partial class Settings : ObservableObject
-    {
-        [ObservableProperty]
-        public partial bool ShowWindowTitle { get; set; } = true;
+namespace Flow.Launcher.Plugin.ProcessKiller;
 
-        [ObservableProperty]
-        public partial bool PutVisibleWindowProcessesTop { get; set; } = false;
-    }
+public partial class Settings : ObservableObject
+{
+    [ObservableProperty]
+    public partial bool ShowWindowTitle { get; set; } = true;
+
+    [ObservableProperty]
+    public partial bool PutVisibleWindowProcessesTop { get; set; } = false;
+
+    [ObservableProperty]
+    public partial bool FilterSvchostProcesses { get; set; } = true;
 }
