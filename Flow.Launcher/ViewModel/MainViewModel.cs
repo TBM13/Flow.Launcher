@@ -17,7 +17,6 @@ using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Infrastructure.Hotkeys;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
 using Flow.Launcher.Infrastructure.Results;
@@ -431,7 +430,7 @@ namespace Flow.Launcher.ViewModel
         private void IncreaseWidth()
         {
             MainWindowWidth += 100;
-            Settings.WindowLeft -= 50;
+            MainWindowLeft -= 50;
         }
 
         [RelayCommand]
@@ -444,7 +443,7 @@ namespace Flow.Launcher.ViewModel
             else
             {
                 MainWindowWidth -= 100;
-                Settings.WindowLeft += 50;
+                MainWindowLeft += 50;
             }
         }
 
@@ -614,6 +613,9 @@ namespace Flow.Launcher.ViewModel
                 Settings.WindowWidth = value;
             }
         }
+
+        [ObservableProperty]
+        public partial double MainWindowLeft { get; set; }
 
         [ObservableProperty]
         public partial ImageSource? PluginIconSource { get; private set; } = null;

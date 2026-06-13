@@ -204,12 +204,6 @@ namespace Flow.Launcher
             {
                 switch (e.PropertyName)
                 {
-                    case nameof(Settings.WindowLeft):
-                        Left = _settings.WindowLeft;
-                        break;
-                    case nameof(Settings.WindowTop):
-                        Top = _settings.WindowTop;
-                        break;
                     case nameof(Settings.FixedWindowSize):
                         SetupResizeMode();
                         break;
@@ -277,20 +271,8 @@ namespace Flow.Launcher
             }
         }
 
-        private void OnLocationChanged(object sender, EventArgs e)
-        {
-            if (IsLoaded)
-            {
-                _settings.WindowLeft = Left;
-                _settings.WindowTop = Top;
-            }
-        }
-
         private void OnDeactivated(object sender, EventArgs e)
         {
-            _settings.WindowLeft = Left;
-            _settings.WindowTop = Top;
-
             // This condition stops extra hide call when animator is on,
             // which causes the toggling to occasional hide instead of show.
             if (_viewModel.MainWindowVisibilityStatus)
@@ -462,7 +444,7 @@ namespace Flow.Launcher
                     //Prevent updating the number of results when the window height is below the height of a single result item.
                     //This situation occurs not only when the user manually resizes the window, but also when the window is released from a side snap, as the OS automatically adjusts the window height.
                     //(Without this check, releasing from a snap can cause the window height to hit the minimum, resulting in only 2 results being shown.)
-                    if (_initialHeight != (int)Height && Height > (_settings.WindowHeightSize + _settings.ItemHeightSize))
+                    if (_initialHeight != (int)Height && Height > (QueryTextBox.Height + Const.ItemHeightSize))
                     {
                         if (!_settings.FixedWindowSize)
                         {
@@ -475,7 +457,7 @@ namespace Flow.Launcher
                             }
 
                             // Calculate max results to show
-                            var itemCount = (Height - (_settings.WindowHeightSize + 14) - shadowMargin) / _settings.ItemHeightSize;
+                            var itemCount = (Height - (QueryTextBox.Height + 14) - shadowMargin) / Const.ItemHeightSize;
                             if (itemCount < 2)
                             {
                                 _settings.MaxResultsToShow = 2;
@@ -569,9 +551,6 @@ namespace Flow.Launcher
                         AdjustPositionForResolutionChange();
                         return;
                     }
-
-                    Left = _settings.WindowLeft;
-                    Top = _settings.WindowTop;
                 }
                 else
                 {
@@ -613,8 +592,8 @@ namespace Flow.Launcher
             var screenHeight = SystemParameters.VirtualScreenHeight;
             GetDpi(out var currentDpiX, out var currentDpiY);
 
-            var previousLeft = _settings.WindowLeft;
-            var previousTop = _settings.WindowTop;
+            var previousLeft = Left;
+            var previousTop = Top;
             GetDpi(out var previousDpiX, out var previousDpiY);
 
             var widthRatio = screenWidth / _settings.LastDisplayWidth;

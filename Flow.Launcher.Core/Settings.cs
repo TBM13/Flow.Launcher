@@ -89,20 +89,6 @@ public partial class Settings : ObservableObject, ISettingsAPI
 
     [ObservableProperty]
     public partial double WindowWidth { get; set; } = 785;
-    [ObservableProperty]
-    public partial double WindowLeft { get; set; }
-    [ObservableProperty]
-    public partial double WindowTop { get; set; }
-    [ObservableProperty]
-    public partial double WindowHeightSize { get; set; } = 42;
-    [ObservableProperty]
-    public partial double ItemHeightSize { get; set; } = 58;
-    [ObservableProperty]
-    public partial double QueryBoxFontSize { get; set; } = 16;
-    [ObservableProperty]
-    public partial double ResultItemFontSize { get; set; } = 16;
-    [ObservableProperty]
-    public partial double ResultSubItemFontSize { get; set; } = 13;
 
     [ObservableProperty]
     public partial double SettingWindowWidth { get; set; } = 1000;

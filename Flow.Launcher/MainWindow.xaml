@@ -3,13 +3,13 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="clr-namespace:Flow.Launcher.Converters"
+    xmlns:core="clr-namespace:Flow.Launcher.Core;assembly=Flow.Launcher.Core"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:flowlauncher="clr-namespace:Flow.Launcher"
+    xmlns:infsUi="clr-namespace:Flow.Launcher.Infrastructure.WPF;assembly=Flow.Launcher.PluginSDK"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     xmlns:vm="clr-namespace:Flow.Launcher.ViewModel"
-    xmlns:core="clr-namespace:Flow.Launcher.Core;assembly=Flow.Launcher.Core"
-    xmlns:infsUi="clr-namespace:Flow.Launcher.Infrastructure.WPF;assembly=Flow.Launcher.PluginSDK"
     Name="FlowMainWindow"
     Title="Flow Launcher"
     Width="{Binding MainWindowWidth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -23,9 +23,8 @@
     Closing="OnClosing"
     Deactivated="OnDeactivated"
     Icon="Images/app.png"
-    Left="{Binding Settings.WindowLeft, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+    Left="{Binding MainWindowLeft, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
     Loaded="OnLoaded"
-    LocationChanged="OnLocationChanged"
     PreviewKeyDown="OnKeyDown"
     PreviewKeyUp="OnKeyUp"
     PreviewMouseMove="OnPreviewMouseMove"
@@ -108,24 +107,12 @@
             Key="C"
             Command="{Binding CopyAlternativeCommand}"
             Modifiers="Ctrl+Shift" />
-        <infsUi:KeyBinding
-            Command="{Binding TogglePreviewCommand}"
-            Hotkey="{Binding Path=Hotkey, Source={x:Static core:DefaultHotkeys.TogglePreview}}"/>
-        <infsUi:KeyBinding
-            Command="{Binding AutocompleteQueryCommand}"
-            Hotkey="{Binding Path=Hotkey, Source={x:Static core:DefaultHotkeys.Autocomplete}}"/>
-        <infsUi:KeyBinding
-            Command="{Binding SelectNextItemCommand}"
-            Hotkey="{Binding Path=Hotkey, Source={x:Static core:DefaultHotkeys.SelectNextResult}}"/>
-        <infsUi:KeyBinding
-            Command="{Binding SelectPrevItemCommand}"
-            Hotkey="{Binding Path=Hotkey, Source={x:Static core:DefaultHotkeys.SelectPreviousResult}}"/>
-        <infsUi:KeyBinding
-            Command="{Binding SelectNextPageCommand}"
-            Hotkey="{Binding Path=Hotkey, Source={x:Static core:DefaultHotkeys.SelectNextPage}}"/>
-        <infsUi:KeyBinding
-            Command="{Binding SelectPrevPageCommand}"
-            Hotkey="{Binding Path=Hotkey, Source={x:Static core:DefaultHotkeys.SelectPreviousPage}}"/>
+        <infsUi:KeyBinding Command="{Binding TogglePreviewCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static core:DefaultHotkeys.TogglePreview}}" />
+        <infsUi:KeyBinding Command="{Binding AutocompleteQueryCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static core:DefaultHotkeys.Autocomplete}}" />
+        <infsUi:KeyBinding Command="{Binding SelectNextItemCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static core:DefaultHotkeys.SelectNextResult}}" />
+        <infsUi:KeyBinding Command="{Binding SelectPrevItemCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static core:DefaultHotkeys.SelectPreviousResult}}" />
+        <infsUi:KeyBinding Command="{Binding SelectNextPageCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static core:DefaultHotkeys.SelectNextPage}}" />
+        <infsUi:KeyBinding Command="{Binding SelectPrevPageCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static core:DefaultHotkeys.SelectPreviousPage}}" />
     </Window.InputBindings>
 
     <Border MouseDown="OnMouseDown" Style="{DynamicResource WindowBorderStyle}">
@@ -134,10 +121,10 @@
                 <Grid>
                     <TextBox
                         x:Name="QueryTextBox"
-                        Height="{Binding Settings.WindowHeightSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Height="42"
                         AllowDrop="True"
                         AutomationProperties.Name="{Binding SelectedResults.SelectedItem.Result.Title}"
-                        FontSize="{Binding Settings.QueryBoxFontSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        FontSize="16"
                         PreviewDragOver="QueryTextBox_OnPreviewDragOver"
                         PreviewKeyUp="QueryTextBox_KeyUp"
                         Style="{DynamicResource QueryBoxStyle}"
@@ -183,7 +170,6 @@
                     </TextBox>
 
                     <Image
-                        WindowChrome.IsHitTestVisibleInChrome="True"
                         x:Name="PluginActivationIcon"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Center"
@@ -191,7 +177,8 @@
                         RenderOptions.BitmapScalingMode="LowQuality"
                         Source="{Binding PluginIconSource}"
                         Stretch="Uniform"
-                        Style="{DynamicResource PluginActivationIcon}" />
+                        Style="{DynamicResource PluginActivationIcon}"
+                        WindowChrome.IsHitTestVisibleInChrome="True" />
                 </Grid>
             </Border>
 
@@ -213,15 +200,14 @@
 
                     <Rectangle
                         Name="MiddleSeparator"
-                        Width="Auto"
                         Grid.Column="0"
                         Grid.ColumnSpan="3"
+                        Width="Auto"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Top"
                         Style="{DynamicResource SeparatorStyle}"
-                        Visibility="{Binding MiddleSeparatorVisibility}">
-                    </Rectangle>
-                    
+                        Visibility="{Binding MiddleSeparatorVisibility}" />
+
                     <flowlauncher:ResultListBox
                         x:Name="ResultListBox"
                         Grid.Column="0"
@@ -250,14 +236,13 @@
                     <ContentPresenter
                         x:Name="Preview"
                         Grid.Column="2"
-                        VerticalAlignment="Stretch"
                         MinHeight="{Binding PreviewMinHeight}"
                         MaxHeight="{Binding ElementName=ResultListBox, Path=ActualHeight}"
                         Margin="0 0 10 5"
+                        VerticalAlignment="Stretch"
+                        Content="{Binding PreviewContent}"
                         Style="{DynamicResource PreviewArea}"
-                        Visibility="{Binding PreviewVisibility}"
-                        Content="{Binding PreviewContent}">
-                    </ContentPresenter>
+                        Visibility="{Binding PreviewVisibility}" />
                 </Grid>
             </Border>
         </StackPanel>

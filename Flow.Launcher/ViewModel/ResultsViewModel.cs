@@ -42,9 +42,6 @@ namespace Flow.Launcher.ViewModel
                     case nameof(_settings.MaxResultsToShow):
                         OnPropertyChanged(nameof(MaxHeight));
                         break;
-                    case nameof(_settings.ItemHeightSize):
-                        OnPropertyChanged(nameof(MaxHeight));
-                        break;
                 }
             };
         }
@@ -59,13 +56,13 @@ namespace Flow.Launcher.ViewModel
                 var newResultsCount = _settings.MaxResultsToShow;
                 if (IsPreviewOn)
                 {
-                    newResultsCount = (int)Math.Ceiling(380 / _settings.ItemHeightSize);
+                    newResultsCount = (int)Math.Ceiling(380 / Const.ItemHeightSize);
                     if (newResultsCount < _settings.MaxResultsToShow)
                     {
                         newResultsCount = _settings.MaxResultsToShow;
                     }
                 }
-                return newResultsCount * _settings.ItemHeightSize;
+                return newResultsCount * Const.ItemHeightSize;
             }
         }
 

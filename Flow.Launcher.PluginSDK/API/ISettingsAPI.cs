@@ -170,13 +170,6 @@ public interface ISettingsAPI : INotifyPropertyChanged, INotifyPropertyChanging
     /// The current width of the Flow Launcher window.
     /// </summary>
     public double WindowWidth { get; set; }
-    public double WindowLeft { get; set; }
-    public double WindowTop { get; set; }
-    public double WindowHeightSize { get; set; }
-    public double ItemHeightSize { get; set; }
-    public double QueryBoxFontSize { get; set; }
-    public double ResultItemFontSize { get; set; }
-    public double ResultSubItemFontSize { get; set; }
     #endregion
 
     #region Hotkeys
