@@ -5,9 +5,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Core;
-using Flow.Launcher.Helper;
-using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.SettingPages.Views;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern.Controls;
@@ -16,26 +13,16 @@ namespace Flow.Launcher;
 
 public partial class SettingWindow
 {
-    #region Private Fields
-
     private readonly Settings _settings;
     private readonly SettingWindowViewModel _viewModel;
-
-    #endregion
-
-    #region Constructor
-
     public SettingWindow()
     {
         _settings = Ioc.Default.GetRequiredService<Settings>();
         _viewModel = Ioc.Default.GetRequiredService<SettingWindowViewModel>();
         DataContext = _viewModel;
-        // Since WindowStartupLocation is set to Manual, initialize the window position before calling InitializeComponent
-        UpdatePositionAndState();
+        UpdateWindowState();
         InitializeComponent();
     }
-
-    #endregion
 
     #region Window Events
 
@@ -43,7 +30,7 @@ public partial class SettingWindow
     {
         RefreshMaximizeRestoreButton();
 
-        UpdatePositionAndState();
+        UpdateWindowState();
 
         _viewModel.PropertyChanged += ViewModel_PropertyChanged;
     }
@@ -101,15 +88,6 @@ public partial class SettingWindow
         }
     }
 
-    private void Window_LocationChanged(object sender, EventArgs e)
-    {
-        if (IsLoaded)
-        {
-            _settings.SettingWindowTop = Top;
-            _settings.SettingWindowLeft = Left;
-        }
-    }
-
     #endregion
 
     #region Window Custom TitleBar
@@ -149,82 +127,13 @@ public partial class SettingWindow
 
     #endregion
 
-    #region Window Position
+    #region Window State
 
-    public void UpdatePositionAndState()
+    public void UpdateWindowState()
     {
-        var previousTop = _settings.SettingWindowTop;
-        var previousLeft = _settings.SettingWindowLeft;
-
-        if (previousTop == null || previousLeft == null || !IsPositionValid(previousTop.Value, previousLeft.Value))
-        {
-            SetWindowPosition(WindowTop(), WindowLeft());
-        }
-        else
-        {
-            var left = _settings.SettingWindowLeft.Value;
-            var top = _settings.SettingWindowTop.Value;
-            AdjustWindowPosition(ref top, ref left);
-            SetWindowPosition(top, left);
-        }
-
         WindowState = _settings.SettingWindowState == WindowState.Minimized
             ? WindowState.Normal
             : _settings.SettingWindowState;
-    }
-
-    private void SetWindowPosition(double top, double left)
-    {
-        // Ensure window does not exceed screen boundaries
-        top = Math.Max(top, SystemParameters.VirtualScreenTop);
-        left = Math.Max(left, SystemParameters.VirtualScreenLeft);
-        top = Math.Min(top, SystemParameters.VirtualScreenHeight - ActualHeight);
-        left = Math.Min(left, SystemParameters.VirtualScreenWidth - ActualWidth);
-
-        Top = top;
-        Left = left;
-    }
-
-    private void AdjustWindowPosition(ref double top, ref double left)
-    {
-        // Adjust window position if it exceeds screen boundaries
-        top = Math.Max(top, SystemParameters.VirtualScreenTop);
-        left = Math.Max(left, SystemParameters.VirtualScreenLeft);
-        top = Math.Min(top, SystemParameters.VirtualScreenHeight - ActualHeight);
-        left = Math.Min(left, SystemParameters.VirtualScreenWidth - ActualWidth);
-    }
-
-    private static bool IsPositionValid(double top, double left)
-    {
-        foreach (var screen in MonitorHelper.GetDisplayMonitors())
-        {
-            var workingArea = screen.WorkingArea;
-
-            if (left >= workingArea.Left && left < workingArea.Right &&
-                top >= workingArea.Top && top < workingArea.Bottom)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private double WindowLeft()
-    {
-        var screen = MonitorHelper.GetCursorDisplayMonitor();
-        var dip1 = WpfHelper.TransformPixelsToDIP(this, screen.WorkingArea.X, 0);
-        var dip2 = WpfHelper.TransformPixelsToDIP(this, screen.WorkingArea.Width, 0);
-        var left = (dip2.X - ActualWidth) / 2 + dip1.X;
-        return left;
-    }
-
-    private double WindowTop()
-    {
-        var screen = MonitorHelper.GetCursorDisplayMonitor();
-        var dip1 = WpfHelper.TransformPixelsToDIP(this, 0, screen.WorkingArea.Y);
-        var dip2 = WpfHelper.TransformPixelsToDIP(this, 0, screen.WorkingArea.Height);
-        var top = (dip2.Y - ActualHeight) / 2 + dip1.Y - 20;
-        return top;
     }
 
     #endregion

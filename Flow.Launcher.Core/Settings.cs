@@ -95,10 +95,6 @@ public partial class Settings : ObservableObject, ISettingsAPI
     [ObservableProperty]
     public partial double SettingWindowHeight { get; set; } = 700;
     [ObservableProperty]
-    public partial double? SettingWindowTop { get; set; } = null;
-    [ObservableProperty]
-    public partial double? SettingWindowLeft { get; set; } = null;
-    [ObservableProperty]
     public partial WindowState SettingWindowState { get; set; } = WindowState.Normal;
     #endregion
 

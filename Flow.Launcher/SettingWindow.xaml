@@ -15,16 +15,12 @@
     Closed="OnClosed"
     FontFamily="{DynamicResource SettingWindowFont}"
     Icon="Images\app.ico"
-    Left="{Binding Settings.SettingWindowLeft, Mode=TwoWay}"
     Loaded="OnLoaded"
-    LocationChanged="Window_LocationChanged"
     MouseDown="window_MouseDown"
     ResizeMode="CanResize"
     SnapsToDevicePixels="True"
     StateChanged="Window_StateChanged"
-    Top="{Binding Settings.SettingWindowTop, Mode=TwoWay}"
     UseLayoutRounding="True"
-    WindowStartupLocation="Manual"
     mc:Ignorable="d">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="32" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
