@@ -88,16 +88,6 @@ namespace Flow.Launcher
 
         private void OnLoaded(object sender, RoutedEventArgs _)
         {
-            // Check first launch
-            if (_settings.FirstLaunch)
-            {
-                // Set First Launch to false
-                _settings.FirstLaunch = false;
-
-                // Save settings
-                App.API.SaveAppAllSettings();
-            }
-
             // Hide window if need
             if (_settings.HideOnStartup)
             {

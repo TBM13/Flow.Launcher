@@ -19,9 +19,6 @@ public partial class Settings : ObservableObject, ISettingsAPI
     public void Save()
         => _storage.Save();
 
-    [ObservableProperty]
-    public partial bool FirstLaunch { get; set; } = true;
-
     #region General
     [ObservableProperty]
     public partial bool AlwaysRunAsAdmin { get; set; } = false;
