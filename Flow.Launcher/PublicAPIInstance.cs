@@ -410,9 +410,6 @@ namespace Flow.Launcher
             MessageBoxResult defaultResult = MessageBoxResult.OK) =>
             MessageBoxEx.Show(messageBoxText, caption, button, icon, defaultResult);
 
-        public Task ShowProgressBoxAsync(string caption, Func<Action<double>, Task> reportProgressAsync,
-            Action? cancelProgress = null) => ProgressBoxEx.ShowAsync(caption, reportProgressAsync, cancelProgress);
-
         private readonly ConcurrentDictionary<(string, string, Type), ISavable> _pluginBinaryStorages = new();
 
         public void SavePluginCaches()

@@ -298,19 +298,6 @@ public interface IPublicAPI
     public MessageBoxResult ShowMsgBox(string messageBoxText, string caption = "", MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage icon = MessageBoxImage.None, MessageBoxResult defaultResult = MessageBoxResult.OK);
 
     /// <summary>
-    /// Displays a standardised Flow progress box.
-    /// </summary>
-    /// <param name="caption">The caption of the progress box.</param>
-    /// <param name="reportProgressAsync">
-    /// Time-consuming task function, whose input is the action to report progress.
-    /// The input of the action is the progress value which is a double value between 0 and 100.
-    /// If there are any exceptions, this action will be null.
-    /// </param>
-    /// <param name="cancelProgress">When user cancel the progress, this action will be called.</param>
-    /// <returns></returns>
-    public Task ShowProgressBoxAsync(string caption, Func<Action<double>, Task> reportProgressAsync, Action? cancelProgress = null);
-
-    /// <summary>
     /// Save all Flow's plugins caches
     /// </summary>
     void SavePluginCaches();
