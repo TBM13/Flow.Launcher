@@ -68,7 +68,7 @@ public partial class App : Application
         }
 
         // Restart as admin if needed
-        if (settings.AlwaysRunAsAdministrator && !Environment.IsPrivilegedProcess)
+        if (settings.AlwaysRunAsAdmin && !Environment.IsPrivilegedProcess)
         {
             // Only restart when we are not debugging on Visual Studio
             if (!Debugger.IsAttached)

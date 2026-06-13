@@ -25,7 +25,7 @@
     <system:String x:Key="showTaskbarWhenOpened">Show taskbar when Flow Launcher is opened</system:String>
     <system:String x:Key="showTaskbarWhenOpenedToolTip">Temporarily show the taskbar when Flow Launcher is opened, useful for auto-hidden taskbars.</system:String>
     <system:String x:Key="SearchWindowPosition">Search Window Location</system:String>
-    <system:String x:Key="SearchWindowAlign">Search Window Position on Monitor</system:String>
+    <system:String x:Key="DisplayPosition">Search Window Position on Monitor</system:String>
     <system:String x:Key="language">Language</system:String>
     <system:String x:Key="lastQueryMode">Last Query Style</system:String>
     <system:String x:Key="lastQueryModeToolTip">Show/Hide previous results when Flow Launcher is reactivated.</system:String>
@@ -85,8 +85,8 @@
     <system:String x:Key="windowMode">Window Mode</system:String>
     <system:String x:Key="opacity">Opacity</system:String>
     <system:String x:Key="ColorScheme">Color Scheme</system:String>
-    <system:String x:Key="KeepMaxResults">Fixed Window Size</system:String>
-    <system:String x:Key="KeepMaxResultsToolTip">The window size is not adjustable by dragging.</system:String>
+    <system:String x:Key="FixedWindowSize">Fixed Window Size</system:String>
+    <system:String x:Key="FixedWindowSizeToolTip">The window size is not adjustable by dragging.</system:String>
 
     <!--  Setting Hotkey  -->
     <system:String x:Key="hotkey">Hotkey</system:String>

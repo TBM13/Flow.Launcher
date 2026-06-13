@@ -24,6 +24,7 @@ using Flow.Launcher.Infrastructure.Storage;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Interop;
 using Flow.Launcher.Interop.Programs;
+using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Logging;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern;
@@ -59,6 +60,8 @@ namespace Flow.Launcher
 
             IPublicAPI.Instance = this;
         }
+
+        public ISettingsAPI Settings => _settings;
 
         #region Public API
 

@@ -50,7 +50,7 @@ namespace Flow.Launcher.Core.Resource
 
             /* Ignore Theme Window Width and use setting */
             Style windowStyle = dict["WindowStyle"] as Style ?? throw new NullReferenceException("WindowStyle not found in resource dictionary.");
-            double width = _settings.WindowSize;
+            double width = _settings.WindowWidth;
             windowStyle.Setters.Add(new Setter(FrameworkElement.WidthProperty, width));
             return dict;
         }

@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Flow.Launcher.Core;
 using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.WPF;
+using Flow.Launcher.PluginSDK.API;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
 
@@ -12,11 +13,11 @@ public partial class SettingsPaneGeneralViewModel(Settings settings) : Observabl
 {
     public Settings Settings { get; } = settings;
 
-    public IReadOnlyList<LocalizedEnumItem<SearchWindowScreens>> SearchWindowScreens { get; } =
-        EnumLocalization<SearchWindowScreens>.Items;
+    public IReadOnlyList<LocalizedEnumItem<DisplayType>> Display { get; } =
+        EnumLocalization<DisplayType>.Items;
 
-    public IReadOnlyList<LocalizedEnumItem<SearchWindowAligns>> SearchWindowAligns { get; } =
-        EnumLocalization<SearchWindowAligns>.Items;
+    public IReadOnlyList<LocalizedEnumItem<DisplayPosition>> DisplayPositions { get; } =
+        EnumLocalization<DisplayPosition>.Items;
 
     public IReadOnlyList<LocalizedEnumItem<SearchPrecision>> SearchPrecisionScores { get; } =
         EnumLocalization<SearchPrecision>.Items;
@@ -36,20 +37,20 @@ public partial class SettingsPaneGeneralViewModel(Settings settings) : Observabl
         }
     }
 
-    public IReadOnlyList<LocalizedEnumItem<LastQueryModes>> LastQueryModes { get; } =
-        EnumLocalization<LastQueryModes>.Items;
+    public IReadOnlyList<LocalizedEnumItem<LastQueryMode>> LastQueryMode { get; } =
+        EnumLocalization<LastQueryMode>.Items;
 
     public static string AlwaysPreviewToolTip
         => Localize.AlwaysPreviewToolTip(DefaultHotkeys.TogglePreview.Hotkey.ToString());
 
-    public bool AlwaysRunAsAdministrator
+    public bool AlwaysRunAsAdmin
     {
-        get => Settings.AlwaysRunAsAdministrator;
+        get => Settings.AlwaysRunAsAdmin;
         set
         {
-            if (AlwaysRunAsAdministrator == value) return;
+            if (AlwaysRunAsAdmin == value) return;
 
-            Settings.AlwaysRunAsAdministrator = value;
+            Settings.AlwaysRunAsAdmin = value;
             OnPropertyChanged();
             CheckAdminChangeAndAskForRestart();
         }
@@ -59,7 +60,7 @@ public partial class SettingsPaneGeneralViewModel(Settings settings) : Observabl
     {
         // When we change from non-admin to admin, we need to restart the app as administrator to apply the changes
         // Under non-administrator, we cannot delete or set the logon task which is run as administrator
-        if (AlwaysRunAsAdministrator && !Environment.IsPrivilegedProcess)
+        if (AlwaysRunAsAdmin && !Environment.IsPrivilegedProcess)
         {
             if (App.API.ShowMsgBox(
                 App.API.GetTranslation("runAsAdministratorChangeAndRestart"),

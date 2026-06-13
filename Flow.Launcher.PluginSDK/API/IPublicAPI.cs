@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Media;
 using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Plugins;
+using Flow.Launcher.PluginSDK.API;
 
 namespace Flow.Launcher.Infrastructure.API;
 
@@ -14,6 +15,8 @@ public interface IPublicAPI
 #pragma warning disable CS8618
     public static IPublicAPI Instance { get; internal set; }
 #pragma warning restore CS8618
+
+    ISettingsAPI Settings { get; }
 
     /// <summary>
     /// Change Flow.Launcher query.

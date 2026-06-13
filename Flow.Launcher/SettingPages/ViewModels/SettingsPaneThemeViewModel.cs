@@ -5,6 +5,7 @@ using Flow.Launcher.Core;
 using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Infrastructure.WPF;
 using Flow.Launcher.Interop;
+using Flow.Launcher.PluginSDK.API;
 using iNKORE.UI.WPF.Modern;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
@@ -34,18 +35,18 @@ public partial class SettingsPaneThemeViewModel(Settings settings, Theme theme) 
         }
     }
 
-    public IReadOnlyList<LocalizedEnumItem<SystemColorScheme>> ColorSchemes { get; }
-        = EnumLocalization<SystemColorScheme>.Items;
-    public SystemColorScheme ColorScheme
+    public IReadOnlyList<LocalizedEnumItem<ColorScheme>> ColorSchemes { get; }
+        = EnumLocalization<ColorScheme>.Items;
+    public ColorScheme ColorScheme
     {
         get => Settings.ColorScheme;
         set
         {
             ThemeManager.Current.ApplicationTheme = value switch
             {
-                SystemColorScheme.Light => ApplicationTheme.Light,
-                SystemColorScheme.Dark => ApplicationTheme.Dark,
-                SystemColorScheme.System => null,
+                ColorScheme.Light => ApplicationTheme.Light,
+                ColorScheme.Dark => ApplicationTheme.Dark,
+                ColorScheme.System => null,
                 _ => ThemeManager.Current.ApplicationTheme
             };
 
@@ -57,9 +58,9 @@ public partial class SettingsPaneThemeViewModel(Settings settings, Theme theme) 
 
     public IEnumerable<int> MaxResultsRange => Enumerable.Range(2, 16);
 
-    public bool KeepMaxResults
+    public bool FixedWindowSize
     {
-        get => Settings.KeepMaxResults;
-        set => Settings.KeepMaxResults = value;
+        get => Settings.FixedWindowSize;
+        set => Settings.FixedWindowSize = value;
     }
 }

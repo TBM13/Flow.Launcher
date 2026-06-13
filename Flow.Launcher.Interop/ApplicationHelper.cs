@@ -1,18 +1,8 @@
-﻿using System.ComponentModel;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+using Flow.Launcher.PluginSDK.API;
 using Windows.Win32;
 
 namespace Flow.Launcher.Interop;
-
-public enum SystemColorScheme
-{
-    [Description("System Default")]
-    System = 1,
-    [Description("Dark")]
-    Dark = 2,
-    [Description("Light")]
-    Light = 3
-}
 
 /// <summary>
 /// Contains methods that interact with the current application.
@@ -26,14 +16,23 @@ public static partial class ApplicationHelper
     /// <summary>
     /// Calls a hidden Windows API to enable/disable dark mode on things like context menus.
     /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the color scheme is not recognized.</exception>
     // Inspired by https://github.com/ysc3839/win32-darkmode
-    public static void SetWin32DarkMode(SystemColorScheme scheme)
+    public static void SetWin32DarkMode(ColorScheme scheme)
     {
         // Undocumented API from Windows 10 1809
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
             Environment.OSVersion.Version.Build >= 17763)
         {
-            _ = SetPreferredAppMode((int)scheme);
+            int appMode = scheme switch
+            {
+                ColorScheme.System => 1, // AllowDark,
+                ColorScheme.Dark => 2, // ForceDark,
+                ColorScheme.Light => 3, // ForceLight,
+                _ => throw new ArgumentOutOfRangeException(nameof(scheme), scheme, null)
+            };
+
+            _ = SetPreferredAppMode(appMode);
         }
     }
 

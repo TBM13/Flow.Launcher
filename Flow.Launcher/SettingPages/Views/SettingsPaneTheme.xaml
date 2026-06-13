@@ -52,14 +52,14 @@
             <!--  Fixed size  -->
             <ui:SettingsExpander
                 Margin="0 20 0 0"
-                Description="{DynamicResource KeepMaxResultsToolTip}"
-                Header="{DynamicResource KeepMaxResults}">
+                Description="{DynamicResource FixedWindowSizeToolTip}"
+                Header="{DynamicResource FixedWindowSize}">
                 <ui:SettingsExpander.HeaderIcon>
                     <ui:FontIcon Glyph="&#xE744;" />
                 </ui:SettingsExpander.HeaderIcon>
                 <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
                     <ui:ToggleSwitch
-                        IsOn="{Binding KeepMaxResults}"
+                        IsOn="{Binding FixedWindowSize}"
                         OffContent="{DynamicResource disable}"
                         OnContent="{DynamicResource enable}" />
                 </StackPanel>

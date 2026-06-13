@@ -26,6 +26,7 @@ using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Infrastructure.WPF;
 using Flow.Launcher.Interop;
 using Flow.Launcher.Interop.Shell;
+using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Logging;
 using Flow.Launcher.Storage;
 using iNKORE.UI.WPF.Modern;
@@ -73,7 +74,7 @@ namespace Flow.Launcher.ViewModel
             {
                 switch (args.PropertyName)
                 {
-                    case nameof(Settings.WindowSize):
+                    case nameof(Settings.WindowWidth):
                         OnPropertyChanged(nameof(MainWindowWidth));
                         break;
                 }
@@ -606,11 +607,11 @@ namespace Flow.Launcher.ViewModel
 
         public double MainWindowWidth
         {
-            get => Settings.WindowSize;
+            get => Settings.WindowWidth;
             set
             {
                 if (!MainWindowVisibilityStatus) return;
-                Settings.WindowSize = value;
+                Settings.WindowWidth = value;
             }
         }
 
@@ -1293,7 +1294,7 @@ namespace Flow.Launcher.ViewModel
             VisibilityChanged?.Invoke(this, new VisibilityChangedEventArgs { IsVisible = true });
 
             // Show the taskbar if the setting is enabled
-            if (Settings.ShowTaskbarWhenInvoked && !_taskbarShownByFlow)
+            if (Settings.ShowTaskbarWhenOpened && !_taskbarShownByFlow)
             {
                 TaskbarHelper.ShowTaskbar();
                 _taskbarShownByFlow = true;
@@ -1311,22 +1312,22 @@ namespace Flow.Launcher.ViewModel
 
             switch (Settings.LastQueryMode)
             {
-                case LastQueryModes.Empty:
+                case LastQueryMode.Empty:
                     await ChangeQueryTextAsync(string.Empty);
                     break;
-                case LastQueryModes.Preserved:
-                case LastQueryModes.Selected:
-                    LastQuerySelected = Settings.LastQueryMode == LastQueryModes.Preserved;
+                case LastQueryMode.Preserved:
+                case LastQueryMode.Selected:
+                    LastQuerySelected = Settings.LastQueryMode == LastQueryMode.Preserved;
                     break;
-                case LastQueryModes.ActionKeywordPreserved:
-                case LastQueryModes.ActionKeywordSelected:
+                case LastQueryMode.ActionKeywordPreserved:
+                case LastQueryMode.ActionKeywordSelected:
                     var newQuery = _lastQuery?.ActionKeyword;
 
                     if (!string.IsNullOrEmpty(newQuery))
                         newQuery += " ";
                     await ChangeQueryTextAsync(newQuery);
 
-                    if (Settings.LastQueryMode == LastQueryModes.ActionKeywordSelected)
+                    if (Settings.LastQueryMode == LastQueryMode.ActionKeywordSelected)
                         LastQuerySelected = false;
                     break;
             }

@@ -16,6 +16,7 @@ using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Hotkeys;
 using Flow.Launcher.Interop;
+using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Logging;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern;
@@ -108,11 +109,11 @@ namespace Flow.Launcher
             }
 
             // Initialize color scheme
-            if (_settings.ColorScheme == SystemColorScheme.Light)
+            if (_settings.ColorScheme == ColorScheme.Light)
             {
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
             }
-            else if (_settings.ColorScheme == SystemColorScheme.Dark)
+            else if (_settings.ColorScheme == ColorScheme.Dark)
             {
                 ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
             }
@@ -209,7 +210,7 @@ namespace Flow.Launcher
                     case nameof(Settings.WindowTop):
                         Top = _settings.WindowTop;
                         break;
-                    case nameof(Settings.KeepMaxResults):
+                    case nameof(Settings.FixedWindowSize):
                         SetupResizeMode();
                         break;
                     case nameof(Settings.ShowHomePage):
@@ -294,7 +295,7 @@ namespace Flow.Launcher
             // which causes the toggling to occasional hide instead of show.
             if (_viewModel.MainWindowVisibilityStatus)
             {
-                if (_settings.HideWhenDeactivated && !_viewModel.ExternalPreviewVisible)
+                if (_settings.HideOnLostFocus && !_viewModel.ExternalPreviewVisible)
                 {
                     _viewModel.Hide();
                 }
@@ -463,7 +464,7 @@ namespace Flow.Launcher
                     //(Without this check, releasing from a snap can cause the window height to hit the minimum, resulting in only 2 results being shown.)
                     if (_initialHeight != (int)Height && Height > (_settings.WindowHeightSize + _settings.ItemHeightSize))
                     {
-                        if (!_settings.KeepMaxResults)
+                        if (!_settings.FixedWindowSize)
                         {
                             // Get shadow margin
                             var shadowMargin = 0;
@@ -495,10 +496,10 @@ namespace Flow.Launcher
 
                     if (_initialWidth != (int)Width)
                     {
-                        if (!_settings.KeepMaxResults)
+                        if (!_settings.FixedWindowSize)
                         {
                             // Update width
-                            _settings.WindowSize = Width;
+                            _settings.WindowWidth = Width;
                         }
 
                         SizeToContent = SizeToContent.Height;
@@ -549,20 +550,20 @@ namespace Flow.Launcher
 
             void InitializePositionInner()
             {
-                if (_settings.SearchWindowScreen == SearchWindowScreens.RememberLastLaunchLocation)
+                if (_settings.Display == DisplayType.RememberLastDisplay)
                 {
-                    var previousScreenWidth = _settings.PreviousScreenWidth;
-                    var previousScreenHeight = _settings.PreviousScreenHeight;
+                    var lastDisplayWidth = _settings.LastDisplayWidth;
+                    var lastDisplayHeight = _settings.LastDisplayHeight;
                     GetDpi(out var previousDpiX, out var previousDpiY);
 
-                    _settings.PreviousScreenWidth = SystemParameters.VirtualScreenWidth;
-                    _settings.PreviousScreenHeight = SystemParameters.VirtualScreenHeight;
+                    _settings.LastDisplayWidth = SystemParameters.VirtualScreenWidth;
+                    _settings.LastDisplayHeight = SystemParameters.VirtualScreenHeight;
                     GetDpi(out var currentDpiX, out var currentDpiY);
 
-                    if (previousScreenWidth != 0 && previousScreenHeight != 0 &&
+                    if (lastDisplayWidth != 0 && lastDisplayHeight != 0 &&
                         previousDpiX != 0 && previousDpiY != 0 &&
-                        (previousScreenWidth != SystemParameters.VirtualScreenWidth ||
-                         previousScreenHeight != SystemParameters.VirtualScreenHeight ||
+                        (lastDisplayWidth != SystemParameters.VirtualScreenWidth ||
+                         lastDisplayHeight != SystemParameters.VirtualScreenHeight ||
                          previousDpiX != currentDpiX || previousDpiY != currentDpiY))
                     {
                         AdjustPositionForResolutionChange();
@@ -575,29 +576,29 @@ namespace Flow.Launcher
                 else
                 {
                     var screen = SelectedScreen();
-                    switch (_settings.SearchWindowAlign)
+                    switch (_settings.DisplayPosition)
                     {
-                        case SearchWindowAligns.Center:
+                        case DisplayPosition.Center:
                             Left = HorizonCenter(screen);
                             Top = VerticalCenter(screen);
                             break;
-                        case SearchWindowAligns.CenterTop:
+                        case DisplayPosition.CenterTop:
                             Left = HorizonCenter(screen);
                             Top = VerticalTop(screen);
                             break;
-                        case SearchWindowAligns.LeftTop:
+                        case DisplayPosition.LeftTop:
                             Left = HorizonLeft(screen);
                             Top = VerticalTop(screen);
                             break;
-                        case SearchWindowAligns.RightTop:
+                        case DisplayPosition.RightTop:
                             Left = HorizonRight(screen);
                             Top = VerticalTop(screen);
                             break;
-                        case SearchWindowAligns.Custom:
+                        case DisplayPosition.Custom:
                             var customLeft = WpfHelper.TransformPixelsToDIP(this,
-                                screen.WorkingArea.X + _settings.CustomWindowLeft, 0);
+                                screen.WorkingArea.X + _settings.CustomDisplayPositionLeft, 0);
                             var customTop = WpfHelper.TransformPixelsToDIP(this, 0,
-                                screen.WorkingArea.Y + _settings.CustomWindowTop);
+                                screen.WorkingArea.Y + _settings.CustomDisplayPositionTop);
                             Left = customLeft.X;
                             Top = customTop.Y;
                             break;
@@ -616,8 +617,8 @@ namespace Flow.Launcher
             var previousTop = _settings.WindowTop;
             GetDpi(out var previousDpiX, out var previousDpiY);
 
-            var widthRatio = screenWidth / _settings.PreviousScreenWidth;
-            var heightRatio = screenHeight / _settings.PreviousScreenHeight;
+            var widthRatio = screenWidth / _settings.LastDisplayWidth;
+            var heightRatio = screenHeight / _settings.LastDisplayHeight;
             var dpiXRatio = currentDpiX / previousDpiX;
             var dpiYRatio = currentDpiY / previousDpiY;
 
@@ -656,21 +657,21 @@ namespace Flow.Launcher
         private MonitorInfo SelectedScreen()
         {
             MonitorInfo? screen;
-            switch (_settings.SearchWindowScreen)
+            switch (_settings.Display)
             {
-                case SearchWindowScreens.Cursor:
+                case DisplayType.Cursor:
                     screen = MonitorHelper.GetCursorDisplayMonitor();
                     break;
-                case SearchWindowScreens.Focus:
+                case DisplayType.Focus:
                     screen = MonitorHelper.GetNearestDisplayMonitor(WindowHelper.GetForegroundWindow());
                     break;
-                case SearchWindowScreens.Primary:
+                case DisplayType.Primary:
                     screen = MonitorHelper.GetPrimaryDisplayMonitor();
                     break;
-                case SearchWindowScreens.Custom:
+                case DisplayType.Custom:
                     var allScreens = MonitorHelper.GetDisplayMonitors();
-                    if (_settings.CustomScreenNumber <= allScreens.Count)
-                        screen = allScreens[_settings.CustomScreenNumber - 1];
+                    if (_settings.DisplayNumber <= allScreens.Count)
+                        screen = allScreens[_settings.DisplayNumber - 1];
                     else
                         screen = allScreens[0];
                     break;
@@ -778,10 +779,10 @@ namespace Flow.Launcher
 
         private void SetupResizeMode()
         {
-            ResizeMode = _settings.KeepMaxResults ? ResizeMode.NoResize : ResizeMode.CanResize;
+            ResizeMode = _settings.FixedWindowSize ? ResizeMode.NoResize : ResizeMode.CanResize;
             if (WindowChrome.GetWindowChrome(this) is WindowChrome windowChrome)
             {
-                if (_settings.KeepMaxResults)
+                if (_settings.FixedWindowSize)
                     windowChrome.ResizeBorderThickness = new(0);
                 else
                     windowChrome.ResizeBorderThickness = _theme.ThemeResizeBorderThickness;
