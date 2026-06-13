@@ -127,7 +127,14 @@ public partial class App : Application
                     // TODO: Log to file
 
                     if (Debugger.IsAttached)
+                    {
                         logging.AddDebug();
+#if DEBUG
+                        // TODO: Use a log level setting instead
+                        logging.SetMinimumLevel(LogLevel.Trace);
+#endif
+                    }
+
 #if DEBUG
                     logging.AddZLoggerConsole();
 #endif
