@@ -5,6 +5,11 @@
 /// </summary>
 public readonly ref struct TokenizedString
 {
+    /// <summary>
+    /// The maximum amount of tokens that a <see cref="TokenizedString"/> is expected to have.
+    /// </summary>
+    public const int MaxTokens = 96;
+
     private readonly ReadOnlySpan<char> _source;
     private readonly ReadOnlySpan<Range> _tokenRanges;
 
@@ -70,7 +75,28 @@ public readonly ref struct TokenizedString
     public TokenizedStringCharEnumerator GetCharEnumerator(int startIndex = 0)
         => new(_source, _tokenRanges, startIndex);
 
-    public override string ToString() => _source.ToString();
+    public override string ToString()
+    {
+        if (_tokenRanges.IsEmpty)
+            return string.Empty;
+
+        return string.Create(CharCount, this, static (dest, state) =>
+        {
+            int destIndex = 0;
+            for (int i = 0; i < state._tokenRanges.Length; i++)
+            {
+                // Space
+                if (i > 0)
+                    dest[destIndex++] = ' ';
+
+                // Token
+                ReadOnlySpan<char> token = state._source[state._tokenRanges[i]];
+                token.CopyTo(dest[destIndex..]);
+                destIndex += token.Length;
+            }
+        });
+    }
 
     public ReadOnlySpan<char> this[int index] => _source[_tokenRanges[index]];
+    public TokenizedString this[Range range] => new(_source, _tokenRanges[range]);
 }

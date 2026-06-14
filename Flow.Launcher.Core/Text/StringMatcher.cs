@@ -40,13 +40,14 @@ public class StringMatcher(Settings settings)
         // =======================================================
         // Tokenize strings (separate words by whitespace)
         // =======================================================
-        Span<Range> queryTokens = stackalloc Range[64];
-        Span<Range> targetTokens = stackalloc Range[64];
+        Span<Range> queryTokens = stackalloc Range[TokenizedString.MaxTokens];
+        Span<Range> targetTokens = stackalloc Range[TokenizedString.MaxTokens];
         TokenizedString tokenizedQuery = TokenizedString.Tokenize(query, queryTokens);
         TokenizedString tokenizedTarget = TokenizedString.Tokenize(target, targetTokens);
-        if (tokenizedQuery.TokenCount == 64 || tokenizedTarget.TokenCount == 64)
+        if (tokenizedQuery.TokenCount == TokenizedString.MaxTokens
+            || tokenizedTarget.TokenCount == TokenizedString.MaxTokens)
         {
-            //  TODO: Log error if there are more than 64 tokens
+            //  TODO: Log error if the query exceeds the token limit
             return default;
         }
 
