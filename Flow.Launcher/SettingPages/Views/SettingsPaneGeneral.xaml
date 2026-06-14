@@ -2,12 +2,12 @@
     x:Class="Flow.Launcher.SettingPages.Views.SettingsPaneGeneral"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:api="clr-namespace:Flow.Launcher.PluginSDK.API;assembly=Flow.Launcher.PluginSDK"
     xmlns:converters="clr-namespace:Flow.Launcher.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:ext="clr-namespace:Flow.Launcher.Resources.MarkupExtensions"
     xmlns:ikw="http://schemas.inkore.net/lib/ui/wpf"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:settings="clr-namespace:Flow.Launcher.Core.Settings;assembly=Flow.Launcher.Core"
     xmlns:settingsViewModels="clr-namespace:Flow.Launcher.SettingPages.ViewModels"
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     Title="General"
@@ -108,7 +108,7 @@
                         ItemsSource="{Binding ScreenNumbers}"
                         SelectedValue="{Binding Settings.DisplayNumber}"
                         Visibility="{ext:VisibleWhen {Binding Settings.Display},
-                                                     IsEqualTo={x:Static api:DisplayType.Custom}}" />
+                                                     IsEqualTo={x:Static settings:DisplayType.Custom}}" />
                 </StackPanel>
             </ui:SettingsCard>
 
@@ -116,7 +116,7 @@
                 Margin="0 4 0 0"
                 Header="{DynamicResource DisplayPosition}"
                 Visibility="{ext:CollapsedWhen {Binding Settings.Display},
-                                               IsEqualTo={x:Static api:DisplayType.RememberLastDisplay}}">
+                                               IsEqualTo={x:Static settings:DisplayType.RememberLastDisplay}}">
                 <ui:SettingsCard.HeaderIcon>
                     <ui:FontIcon Glyph="&#xe7f4;" />
                 </ui:SettingsCard.HeaderIcon>
@@ -136,7 +136,7 @@
                         VerticalAlignment="Center"
                         Orientation="Horizontal"
                         Visibility="{ext:VisibleWhen {Binding Settings.DisplayPosition},
-                                                     IsEqualTo={x:Static api:DisplayPosition.Custom}}">
+                                                     IsEqualTo={x:Static settings:DisplayPosition.Custom}}">
                         <TextBox
                             MinWidth="80"
                             VerticalAlignment="Center"

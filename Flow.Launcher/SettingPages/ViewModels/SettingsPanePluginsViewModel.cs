@@ -1,21 +1,18 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Flow.Launcher.Core;
+using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Infrastructure.WPF;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern.Controls;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
 
-public partial class SettingsPanePluginsViewModel(Settings settings) : ObservableObject
+public partial class SettingsPanePluginsViewModel(ISettingsAPI settings) : ObservableObject
 {
-    private readonly Settings _settings = settings;
+    private readonly ISettingsAPI _settings = settings;
 
     public IReadOnlyList<LocalizedEnumItem<DisplayMode>> DisplayModes { get; } =
         EnumLocalization<DisplayMode>.Items;

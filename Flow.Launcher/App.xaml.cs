@@ -1,19 +1,16 @@
-﻿using System;
 using System.Diagnostics;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Core;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Resource;
+using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Core.Text;
 using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.API;
 using Flow.Launcher.Infrastructure.Image;
-using Flow.Launcher.Infrastructure.Storage;
 using Flow.Launcher.Interop;
 using Flow.Launcher.SettingPages.ViewModels;
 using Flow.Launcher.ViewModel;
@@ -36,7 +33,7 @@ public partial class App : Application
 
     private static MainWindow _mainWindow;
     private IHost? _host;
-    private readonly Settings _settings;
+    private readonly ISettingsAPI _settings;
     private readonly PluginSDK.Logging.Logger<App>? _logger;
 
     public static readonly string RuntimeInfo = "\n\n" +
@@ -54,12 +51,10 @@ public partial class App : Application
             return;
         }
 
-        Settings settings;
+        ISettingsAPI settings;
         try
         {
-            FlowLauncherJsonStorage<Settings> storage = new();
-            settings = storage.Load();
-            settings.SetStorage(storage);
+            settings = SettingsFactory.LoadSettings();
         }
         catch (Exception e)
         {
@@ -109,7 +104,7 @@ public partial class App : Application
         Current?.Shutdown();
     }
 
-    public App(Settings settings)
+    public App(ISettingsAPI settings)
     {
         SetupErrorHandling();
         _settings = settings;
@@ -213,7 +208,13 @@ public partial class App : Application
         Ioc.Default.GetRequiredService<Notification>().Install();
 
         // Enable Win32 dark mode if the system is in dark mode before creating all windows
-        ApplicationHelper.SetWin32DarkMode(_settings.ColorScheme);
+        ApplicationHelper.SetAppMode(_settings.ColorScheme switch
+        {
+            ColorScheme.System => AppMode.AllowDark,
+            ColorScheme.Light => AppMode.ForceLight,
+            ColorScheme.Dark => AppMode.ForceDark,
+            _ => throw new InvalidOperationException($"Unknown color scheme: {_settings.ColorScheme}")
+        });
 
         // Initialize language before portable clean up since it needs translations
         await Ioc.Default.GetRequiredService<Internationalization>().InitializeLanguageAsync();

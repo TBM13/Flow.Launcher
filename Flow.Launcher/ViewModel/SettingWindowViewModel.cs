@@ -1,12 +1,11 @@
-﻿using System;
-using CommunityToolkit.Mvvm.ComponentModel;
-using Flow.Launcher.Core;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Flow.Launcher.Core.Settings;
 
 namespace Flow.Launcher.ViewModel;
 
-public partial class SettingWindowViewModel(Settings settings) : ObservableObject
+public partial class SettingWindowViewModel(ISettingsAPI settings) : ObservableObject
 {
-    public Settings Settings { get; } = settings;
+    public ISettingsAPI Settings { get; } = settings;
 
     public bool SetPageType(Type? pageType)
     {

@@ -12,6 +12,7 @@ using System.Windows.Media;
 using Flow.Launcher.Core;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Resource;
+using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Core.Text;
 using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
@@ -24,7 +25,6 @@ using Flow.Launcher.Infrastructure.Storage;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Interop;
 using Flow.Launcher.Interop.Programs;
-using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Logging;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern;
@@ -34,7 +34,7 @@ namespace Flow.Launcher
     public class PublicAPIInstance : Plugin.IPublicAPI
     {
         private readonly Logger<PublicAPIInstance> _logger;
-        private readonly Settings _settings;
+        private readonly ISettingsAPI _settings;
         private readonly MainViewModel _mainVM;
         private readonly Internationalization _internationalization;
         private readonly ImageLoader _imageLoader;
@@ -45,7 +45,7 @@ namespace Flow.Launcher
         private readonly object _saveSettingsLock = new();
 
         public PublicAPIInstance(Logger<PublicAPIInstance> logger,
-            MainViewModel mainVM, Settings settings, Internationalization internationalization,
+            MainViewModel mainVM, ISettingsAPI settings, Internationalization internationalization,
             ImageLoader imageLoader, PluginManager pluginManager, Notification notification,
             StringMatcher stringMatcher)
         {
@@ -60,8 +60,6 @@ namespace Flow.Launcher
 
             IPublicAPI.Instance = this;
         }
-
-        public ISettingsAPI Settings => _settings;
 
         #region Public API
 

@@ -6,16 +6,16 @@ using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Storage;
 using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Interop;
-using Flow.Launcher.PluginSDK.API;
 
-namespace Flow.Launcher.Core;
+namespace Flow.Launcher.Core.Settings;
 
-public partial class Settings : ObservableObject, ISettingsAPI
+internal partial class Settings : ObservableObject, ISettingsAPI
 {
     private FlowLauncherJsonStorage<Settings> _storage = null!;
 
-    public void SetStorage(FlowLauncherJsonStorage<Settings> storage)
+    internal void SetStorage(FlowLauncherJsonStorage<Settings> storage)
         => _storage = storage;
+
     public void Save()
         => _storage.Save();
 
@@ -101,6 +101,7 @@ public partial class Settings : ObservableObject, ISettingsAPI
 
     public Dictionary<string, string> Hotkeys { get; init; } = [];
     public ObservableCollection<CustomPluginHotkey> CustomPluginHotkeys { get; init; } = [];
+    #endregion
 
     public ObservableCollection<CustomShortcutModel> CustomShortcuts { get; init; } = [];
 
@@ -110,7 +111,6 @@ public partial class Settings : ObservableObject, ISettingsAPI
         new AsyncBuiltinShortcutModel("{clipboard}", "shortcut_clipboard_description", () => ApplicationHelper.StartSTATaskAsync(Clipboard.GetText)),
         new BuiltinShortcutModel("{active_explorer_path}", "shortcut_active_explorer_path", () => FileExplorerHelper.GetForegroundExplorerPath() ?? "<error>")
     ];
-    #endregion
 
 
     // This needs to be loaded last by staying at the bottom

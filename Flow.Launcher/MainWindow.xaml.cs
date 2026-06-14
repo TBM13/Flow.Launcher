@@ -11,12 +11,12 @@ using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Core;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Resource;
+using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Helper;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.Hotkeys;
 using Flow.Launcher.Interop;
-using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Logging;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern;
@@ -32,7 +32,7 @@ namespace Flow.Launcher
 
         private readonly Logger<MainWindow> _logger;
         private readonly MainViewModel _viewModel;
-        private readonly Settings _settings;
+        private readonly ISettingsAPI _settings;
         private readonly Theme _theme;
         private readonly PluginManager _pluginManager;
         private readonly HotkeyManager _hotkeyManager;
@@ -50,7 +50,7 @@ namespace Flow.Launcher
         private double _resultListboxVerticalOffset = 0;
 
         public MainWindow(Logger<MainWindow> logger, MainViewModel viewModel,
-            Settings settings, Theme theme, PluginManager pluginManager, HotkeyManager hotkeyManager)
+            ISettingsAPI settings, Theme theme, PluginManager pluginManager, HotkeyManager hotkeyManager)
         {
             _logger = logger;
             _viewModel = viewModel;
@@ -194,16 +194,16 @@ namespace Flow.Launcher
             {
                 switch (e.PropertyName)
                 {
-                    case nameof(Settings.FixedWindowSize):
+                    case nameof(ISettingsAPI.FixedWindowSize):
                         SetupResizeMode();
                         break;
-                    case nameof(Settings.ShowHomePage):
+                    case nameof(ISettingsAPI.ShowHomePage):
                         if (_viewModel.QueryResultsSelected() && string.IsNullOrEmpty(_viewModel.QueryText))
                         {
                             _viewModel.QueryResults();
                         }
                         break;
-                    case nameof(Settings.ShowAtTopmost):
+                    case nameof(ISettingsAPI.ShowAtTopmost):
                         Topmost = _settings.ShowAtTopmost;
                         break;
                 }

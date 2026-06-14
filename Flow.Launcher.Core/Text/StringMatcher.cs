@@ -1,10 +1,11 @@
-﻿using Flow.Launcher.Infrastructure.Helpers;
+﻿using Flow.Launcher.Core.Settings;
+using Flow.Launcher.Infrastructure.Helpers;
 
 namespace Flow.Launcher.Core.Text;
 
-public class StringMatcher(Settings settings)
+public class StringMatcher(ISettingsAPI settings)
 {
-    private readonly Settings _settings = settings;
+    private readonly ISettingsAPI _settings = settings;
 
     /// <summary>
     /// Current method has two parts, Acronym Match and Fuzzy Search:

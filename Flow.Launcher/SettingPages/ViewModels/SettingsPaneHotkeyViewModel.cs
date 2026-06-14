@@ -1,19 +1,19 @@
-﻿using System.Linq;
-using System.Windows;
+﻿using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core;
+using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Infrastructure.UserSettings;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
 
-public partial class SettingsPaneHotkeyViewModel(Settings settings) : ObservableObject
+public partial class SettingsPaneHotkeyViewModel(ISettingsAPI settings) : ObservableObject
 {
     // TODO: Check if there is any better alternative
     private readonly HotkeyManager _hotkeyManager = Ioc.Default.GetRequiredService<HotkeyManager>();
 
-    public Settings Settings { get; } = settings;
+    public ISettingsAPI Settings { get; } = settings;
 
     [ObservableProperty]
     public partial CustomPluginHotkey SelectedCustomPluginHotkey { get; set; }

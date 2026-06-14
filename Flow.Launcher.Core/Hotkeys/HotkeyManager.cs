@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Infrastructure.API;
 using Flow.Launcher.Infrastructure.Hotkeys;
 using Flow.Launcher.Infrastructure.Plugins;
@@ -17,7 +18,7 @@ namespace Flow.Launcher.Core;
 public class HotkeyManager : IDisposable
 {
     private readonly Logger<HotkeyManager> _logger;
-    private readonly Settings _settings;
+    private readonly ISettingsAPI _settings;
     private readonly KeyboardManager _keyboardManager = new();
 
     /// <summary>
@@ -45,7 +46,7 @@ public class HotkeyManager : IDisposable
     /// </summary>
     public Hotkey? LastGlobalHotkey { get; private set; }
 
-    public HotkeyManager(Logger<HotkeyManager> logger, Settings settings)
+    public HotkeyManager(Logger<HotkeyManager> logger, ISettingsAPI settings)
     {
         _logger = logger;
         _settings = settings;

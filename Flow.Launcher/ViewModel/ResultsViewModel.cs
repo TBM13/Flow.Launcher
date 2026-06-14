@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Threading;
+﻿using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Flow.Launcher.Core;
 using Flow.Launcher.Core.Plugin;
+using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.PluginSDK.Logging;
 
@@ -18,14 +14,14 @@ namespace Flow.Launcher.ViewModel
     {
         private readonly Logger<ResultsViewModel> _logger;
         private readonly MainViewModel _mainVM;
-        private readonly Settings _settings;
+        private readonly ISettingsAPI _settings;
         private readonly PluginManager _pluginManager;
         private readonly object _collectionLock = new();
 
         public ResultCollection Results { get; }
 
         public ResultsViewModel(Logger<ResultsViewModel> logger,
-            MainViewModel mainVM, Settings settings, PluginManager pluginManager)
+            MainViewModel mainVM, ISettingsAPI settings, PluginManager pluginManager)
         {
             _logger = logger;
             _mainVM = mainVM;

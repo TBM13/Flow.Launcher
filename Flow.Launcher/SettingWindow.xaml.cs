@@ -1,10 +1,9 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.DependencyInjection;
-using Flow.Launcher.Core;
+using Flow.Launcher.Core.Settings;
 using Flow.Launcher.SettingPages.Views;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern.Controls;
@@ -13,11 +12,11 @@ namespace Flow.Launcher;
 
 public partial class SettingWindow
 {
-    private readonly Settings _settings;
+    private readonly ISettingsAPI _settings;
     private readonly SettingWindowViewModel _viewModel;
     public SettingWindow()
     {
-        _settings = Ioc.Default.GetRequiredService<Settings>();
+        _settings = Ioc.Default.GetRequiredService<ISettingsAPI>();
         _viewModel = Ioc.Default.GetRequiredService<SettingWindowViewModel>();
         DataContext = _viewModel;
         UpdateWindowState();

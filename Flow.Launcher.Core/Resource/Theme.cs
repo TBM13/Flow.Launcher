@@ -2,16 +2,17 @@
 using System.Windows.Media.Effects;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Infrastructure;
 
 namespace Flow.Launcher.Core.Resource
 {
-    public partial class Theme(Settings settings) : ObservableObject
+    public partial class Theme(ISettingsAPI settings) : ObservableObject
     {
         private const int ShadowExtraMargin = 32;
         private static readonly string DefaultThemePath = $@"{Constant.ProgramDirectory}\{Constant.Themes}\{Constant.DefaultTheme}.xaml";
 
-        private readonly Settings _settings = settings;
+        private readonly ISettingsAPI _settings = settings;
         private ResourceDictionary? _oldResource;
 
         /// <summary>

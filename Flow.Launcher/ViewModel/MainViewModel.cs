@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using System.Threading;
 using System.Threading.Channels;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -16,6 +11,7 @@ using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core;
 using Flow.Launcher.Core.Plugin;
+using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Infrastructure;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
@@ -25,7 +21,6 @@ using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Infrastructure.WPF;
 using Flow.Launcher.Interop;
 using Flow.Launcher.Interop.Shell;
-using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Logging;
 using Flow.Launcher.Storage;
 using iNKORE.UI.WPF.Modern;
@@ -58,7 +53,7 @@ namespace Flow.Launcher.ViewModel
         private bool _taskbarShownByFlow = false;
 
         public MainViewModel(Logger<MainViewModel> logger,
-            Settings settings, PluginManager pluginManager, HotkeyManager hotkeyManager)
+            ISettingsAPI settings, PluginManager pluginManager, HotkeyManager hotkeyManager)
         {
             _logger = logger;
             _pluginManager = pluginManager;
@@ -410,7 +405,7 @@ namespace Flow.Launcher.ViewModel
         #endregion
 
         #region ViewModel Properties
-        public Settings Settings { get; }
+        public ISettingsAPI Settings { get; }
 
         [ObservableProperty]
         public partial bool GameModeStatus { get; set; } = false;

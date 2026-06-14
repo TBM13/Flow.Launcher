@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Windows;
+﻿using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Flow.Launcher.Core;
+using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.Infrastructure.WPF;
-using Flow.Launcher.PluginSDK.API;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
 
-public partial class SettingsPaneGeneralViewModel(Settings settings) : ObservableObject
+public partial class SettingsPaneGeneralViewModel(ISettingsAPI settings) : ObservableObject
 {
-    public Settings Settings { get; } = settings;
+    public ISettingsAPI Settings { get; } = settings;
 
     public IReadOnlyList<LocalizedEnumItem<DisplayType>> Display { get; } =
         EnumLocalization<DisplayType>.Items;

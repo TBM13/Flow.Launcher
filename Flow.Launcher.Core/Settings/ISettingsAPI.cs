@@ -1,7 +1,10 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Windows;
 using Flow.Launcher.Infrastructure.Helpers;
+using Flow.Launcher.Infrastructure.UserSettings;
 
-namespace Flow.Launcher.PluginSDK.API;
+namespace Flow.Launcher.Core.Settings;
 
 public enum LastQueryMode
 {
@@ -60,58 +63,60 @@ public enum DisplayPosition
 /// </summary>
 public interface ISettingsAPI : INotifyPropertyChanged, INotifyPropertyChanging
 {
+    void Save();
+
     #region General
     /// <summary>
     /// When true, Flow Launcher will always run with administrator privileges.
     /// </summary>
     /// <remarks>Don't use this to determine whether we are running as admin or not.</remarks>
-    public bool AlwaysRunAsAdmin { get; set; }
+    bool AlwaysRunAsAdmin { get; set; }
     /// <summary>
     /// Indicates whether the Windows taskbar should be shown when Flow Launcher is shown.
     /// </summary>
     /// <remarks>Only has an effect when the taskbar is configured to auto-hide.</remarks>
-    public bool ShowTaskbarWhenOpened { get; set; }
+    bool ShowTaskbarWhenOpened { get; set; }
 
     #region Display
     /// <summary>
     /// Indicates which display Flow Launcher should be shown on.
     /// </summary>
-    public DisplayType Display { get; set; }
+    DisplayType Display { get; set; }
     /// <summary>
     /// The number of the display where Flow Launcher should be shown when 
     /// <see cref="Display"/> is set to <see cref="DisplayType.Custom"/>.
     /// </summary>
-    public int DisplayNumber { get; set; }
+    int DisplayNumber { get; set; }
     /// <summary>
     /// Used to remember the last display Flow Launcher was shown on when 
     /// <see cref="Display"/> is set to <see cref="DisplayType.RememberLastDisplay"/>.
     /// </summary>
-    public double LastDisplayWidth { get; set; }
+    double LastDisplayWidth { get; set; }
     /// <summary>
     /// Used to remember the last display Flow Launcher was shown on when 
     /// <see cref="Display"/> is set to <see cref="DisplayType.RememberLastDisplay"/>.
     /// </summary>
-    public double LastDisplayHeight { get; set; }
+    double LastDisplayHeight { get; set; }
 
     /// <summary>
     /// Indicates where on the display Flow Launcher should be shown.
     /// </summary>
-    public DisplayPosition DisplayPosition { get; set; }
+    DisplayPosition DisplayPosition { get; set; }
     /// <summary>
     /// The custom position of Flow Launcher on the screen when 
     /// <see cref="DisplayPosition"/> is set to <see cref="DisplayPosition.Custom"/>.
     /// </summary>
-    public double CustomDisplayPositionLeft { get; set; }
+    double CustomDisplayPositionLeft { get; set; }
     /// <summary>
     /// The custom position of Flow Launcher on the screen when 
     /// <see cref="DisplayPosition"/> is set to <see cref="DisplayPosition.Custom"/>.
     /// </summary>
-    public double CustomDisplayPositionTop { get; set; }
+    double CustomDisplayPositionTop { get; set; }
 
     /// <summary>
     /// Indicates whether Flow Launcher should always be shown on top of all other windows.
     /// </summary>
-    public bool ShowAtTopmost { get; set; }
+    bool ShowAtTopmost { get; set; }
 
     /// <summary>
     /// When true, Flow Launcher will not show itself on startup.
@@ -119,31 +124,31 @@ public interface ISettingsAPI : INotifyPropertyChanged, INotifyPropertyChanging
     /// <remarks>
     /// Useful when Flow Launcher is configured to start on system startup.
     /// </remarks>
-    public bool HideOnStartup { get; set; }
+    bool HideOnStartup { get; set; }
     /// <summary>
     /// Indicates whether Flow Launcher should hide when it loses focus.
     /// </summary>
-    public bool HideOnLostFocus { get; set; }
+    bool HideOnLostFocus { get; set; }
     #endregion
 
     #region Query & Results
     /// <summary>
     /// If true, plugins will be able to provide results when the query is empty.
     /// </summary>
-    public bool ShowHomePage { get; set; }
+    bool ShowHomePage { get; set; }
     /// <summary>
     /// Indicates whether the preview panel is automatically shown.
     /// </summary>
-    public bool AlwaysPreview { get; set; }
+    bool AlwaysPreview { get; set; }
 
     /// <summary>
     /// Indicates how identical the query and the result should be for the result to be shown.
     /// </summary>
-    public SearchPrecision QuerySearchPrecision { get; set; }
+    SearchPrecision QuerySearchPrecision { get; set; }
     /// <summary>
     /// Indicates what should happen to the last query and its results when Flow Launcher is shown.
     /// </summary>
-    public LastQueryMode LastQueryMode { get; set; }
+    LastQueryMode LastQueryMode { get; set; }
     #endregion
     #endregion
 
@@ -151,31 +156,42 @@ public interface ISettingsAPI : INotifyPropertyChanged, INotifyPropertyChanging
     /// <summary>
     /// Indicates the color scheme of Flow Launcher.
     /// </summary>
-    public ColorScheme ColorScheme { get; set; }
+    ColorScheme ColorScheme { get; set; }
     /// <summary>
     /// Indicates whether Flow Launcher should use a drop shadow effect for its window.
     /// </summary>
-    public bool UseDropShadowEffect { get; set; }
+    bool UseDropShadowEffect { get; set; }
 
     /// <summary>
     /// Determines the height of the Flow Launcher window based on the number of results that should be shown.
     /// </summary>
-    public int MaxResultsToShow { get; set; }
+    int MaxResultsToShow { get; set; }
     /// <summary>
     /// Indicates whether the window size is fixed (not adjustable by dragging).
     /// </summary>
-    public bool FixedWindowSize { get; set; }
+    bool FixedWindowSize { get; set; }
 
     /// <summary>
     /// The current width of the Flow Launcher window.
     /// </summary>
-    public double WindowWidth { get; set; }
+    double WindowWidth { get; set; }
+
+    double SettingWindowWidth { get; set; }
+    double SettingWindowHeight { get; set; }
+    WindowState SettingWindowState { get; set; }
     #endregion
 
     #region Hotkeys
     /// <summary>
     /// Indicates whether Flow Launcher should ignore hotkeys when a fullscreen application is running.
     /// </summary>
-    public bool IgnoreHotkeysOnFullscreen { get; set; }
+    bool IgnoreHotkeysOnFullscreen { get; set; }
+
+    Dictionary<string, string> Hotkeys { get; }
+    ObservableCollection<CustomPluginHotkey> CustomPluginHotkeys { get; }
     #endregion
+
+    ObservableCollection<CustomShortcutModel> CustomShortcuts { get; }
+    ObservableCollection<BaseBuiltinShortcutModel> BuiltinShortcuts { get; }
+    PluginsSettings PluginSettings { get; }
 }

@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing.Text;
+﻿using System.Drawing.Text;
 using System.IO;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
-using Flow.Launcher.Core;
+using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Infrastructure.Image;
 using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Infrastructure.WPF;
@@ -23,7 +20,7 @@ namespace Flow.Launcher.ViewModel
         private static readonly PrivateFontCollection _fontCollection = new();
         private static readonly Dictionary<string, string> _fonts = [];
 
-        public ResultViewModel(Result result, Settings settings)
+        public ResultViewModel(Result result, ISettingsAPI settings)
         {
             Settings = settings;
             Result = result;
@@ -59,7 +56,7 @@ namespace Flow.Launcher.ViewModel
             }
         }
 
-        public Settings Settings { get; }
+        public ISettingsAPI Settings { get; }
 
         /// <summary>
         /// Gets the center point of this result's UI element in screen coordinates.

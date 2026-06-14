@@ -1,18 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using CommunityToolkit.Mvvm.ComponentModel;
-using Flow.Launcher.Core;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Flow.Launcher.Core.Resource;
+using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Infrastructure.WPF;
 using Flow.Launcher.Interop;
-using Flow.Launcher.PluginSDK.API;
 using iNKORE.UI.WPF.Modern;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
 
-public partial class SettingsPaneThemeViewModel(Settings settings, Theme theme) : ObservableObject
+public partial class SettingsPaneThemeViewModel(ISettingsAPI settings, Theme theme) : ObservableObject
 {
-    public Settings Settings { get; } = settings;
+    public ISettingsAPI Settings { get; } = settings;
 
     private readonly Theme _theme = theme;
 
@@ -52,7 +49,13 @@ public partial class SettingsPaneThemeViewModel(Settings settings, Theme theme) 
 
             Settings.ColorScheme = value;
             _ = _theme.RefreshFrameAsync();
-            ApplicationHelper.SetWin32DarkMode(value);
+            ApplicationHelper.SetAppMode(value switch
+            {
+                ColorScheme.System => AppMode.AllowDark,
+                ColorScheme.Light => AppMode.ForceLight,
+                ColorScheme.Dark => AppMode.ForceDark,
+                _ => throw new InvalidOperationException($"Unexpected color scheme: {value}")
+            });
         }
     }
 

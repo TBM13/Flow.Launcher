@@ -1,13 +1,11 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
-using Flow.Launcher.Core;
 using Flow.Launcher.Core.Plugin;
+using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Infrastructure.Image;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Plugins.Interfaces;
@@ -23,7 +21,7 @@ namespace Flow.Launcher.ViewModel
         private static readonly Logger<PluginViewModel> _logger = Ioc.Default.GetRequiredService<Logger<PluginViewModel>>();
         private static readonly ImageLoader _imageLoader = Ioc.Default.GetRequiredService<ImageLoader>();
         private static readonly PluginManager _pluginManager = Ioc.Default.GetRequiredService<PluginManager>();
-        private static readonly Settings _settings = Ioc.Default.GetRequiredService<Settings>();
+        private static readonly ISettingsAPI _settings = Ioc.Default.GetRequiredService<ISettingsAPI>();
         private static readonly Thickness _settingPanelMargin = (Thickness)Application.Current.FindResource("SettingPanelMargin");
         private static readonly Thickness _settingPanelItemTopBottomMargin = (Thickness)Application.Current.FindResource("SettingPanelItemTopBottomMargin");
 
