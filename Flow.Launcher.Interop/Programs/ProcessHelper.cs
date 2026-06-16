@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using Windows.Win32;
@@ -285,6 +286,7 @@ public static class ProcessHelper
     /// <summary>
     /// Gets the file name of the specified process.
     /// </summary>
+    /// <exception cref="PathTooLongException"></exception>
     /// <exception cref="Win32Exception"></exception>
     public static unsafe string GetProcessFileName(uint processId)
     {
@@ -304,6 +306,8 @@ public static class ProcessHelper
 
             if (!PInvoke.QueryFullProcessImageName(hProcess, PROCESS_NAME_FORMAT.PROCESS_NAME_WIN32, buffer, &capacity))
                 throw new Win32Exception(Marshal.GetLastPInvokeError());
+            if (capacity >= PInvoke.MAX_PATH - 1)
+                throw new PathTooLongException("Process file name is too long");
 
             return new string(buffer, 0, (int)capacity);
         }

@@ -316,8 +316,16 @@ public sealed class ShellContextMenu : IDisposable
                 try
                 {
                     Span<char> buffer = stackalloc char[(int)PInvoke.MAX_PATH];
-                    PInvoke.StrRetToBuf(ref strRet, null, buffer);
-                    _parentFolderPath = buffer.TrimEnd('\0').ToString();
+                    PInvoke.StrRetToBuf(ref strRet, null, buffer).ThrowOnFailure();
+
+                    int nullIndex = buffer.IndexOf('\0');
+                    if (nullIndex >= 0)
+                        buffer = buffer[..nullIndex];
+                    if (buffer.Length >= PInvoke.MAX_PATH - 1)
+                        throw new PathTooLongException(
+                            "The parent folder path exceeds the maximum allowed length");
+
+                    _parentFolderPath = buffer.ToString();
                 }
                 finally
                 {

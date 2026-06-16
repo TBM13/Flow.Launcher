@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.IO;
+using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.Com;
@@ -40,6 +41,7 @@ public static class ShortcutHelper
         }
     }
 
+    /// <exception cref="PathTooLongException"></exception>
     /// <exception cref="COMException"></exception>
     public static unsafe string RetrieveTargetPath(string path)
     {
@@ -54,7 +56,12 @@ public static class ShortcutHelper
 
             char* buffer = stackalloc char[(int)PInvoke.MAX_PATH];
             link.GetPath(buffer, (int)PInvoke.MAX_PATH, null, 0);
-            return new string(buffer);
+
+            string targetPath = new string(buffer);
+            if (targetPath.Length >= PInvoke.MAX_PATH - 1)
+                throw new PathTooLongException("Target path is too long");
+
+            return targetPath;
         }
         finally
         {
