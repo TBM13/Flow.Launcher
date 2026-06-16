@@ -1,0 +1,34 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+  </Configurations>
+  <Folder Name="/Plugins/">
+    <Project Path="Plugins/Flow.Launcher.Plugin.Calculator/Flow.Launcher.Plugin.Calculator.csproj" />
+    <Project Path="Plugins/Flow.Launcher.Plugin.Explorer/Flow.Launcher.Plugin.Explorer.csproj" />
+    <Project Path="Plugins/Flow.Launcher.Plugin.PluginIndicator/Flow.Launcher.Plugin.PluginIndicator.csproj" />
+    <Project Path="Plugins/Flow.Launcher.Plugin.ProcessKiller/Flow.Launcher.Plugin.ProcessKiller.csproj" />
+    <Project Path="Plugins/Flow.Launcher.Plugin.Program/Flow.Launcher.Plugin.Program.csproj" />
+    <Project Path="Plugins/Flow.Launcher.Plugin.Sys/Flow.Launcher.Plugin.Sys.csproj" />
+    <Project Path="Plugins/Flow.Launcher.Plugin.WindowsServices/Flow.Launcher.Plugin.WindowsServices.csproj" />
+    <Project Path="Plugins/Flow.Launcher.Plugin.WindowsSettings/Flow.Launcher.Plugin.WindowsSettings.csproj" />
+    <Project Path="Plugins/Flow.Launcher.Plugin.WindowsTasks/Flow.Launcher.Plugin.WindowsTasks.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="Directory.Build.props" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+    <File Path="Settings.XamlStyler" />
+    <File Path="SolutionAssemblyInfo.cs" />
+  </Folder>
+  <Project Path="Flow.Launcher.Command/Flow.Launcher.Command.csproj" />
+  <Project Path="Flow.Launcher.Core/Flow.Launcher.Core.csproj" />
+  <Project Path="Flow.Launcher.Infrastructure/Flow.Launcher.Infrastructure.csproj" />
+  <Project Path="Flow.Launcher.Interop/Flow.Launcher.Interop.csproj" />
+  <Project Path="Flow.Launcher.PluginSDK/Flow.Launcher.PluginSDK.csproj" />
+  <Project Path="Flow.Launcher/Flow.Launcher.csproj">
+    <BuildDependency Project="Flow.Launcher.Command/Flow.Launcher.Command.csproj" />
+  </Project>
+</Solution>
