@@ -337,12 +337,8 @@ public interface IPublicAPI
     /// <param name="loadFullImage">
     /// Load full image or not.
     /// </param>
-    /// <param name="cacheImage">
-    /// Cache the image or not. Cached image will be stored in FL cache.
-    /// If the image is just used one time, it's better to set this to false.
-    /// </param>
     /// <returns></returns>
-    ValueTask<ImageSource> LoadImageAsync(string path, bool loadFullImage = false, bool cacheImage = true);
+    ValueTask<ImageSource> LoadImageAsync(string path, bool loadFullImage = false);
 
     /// <summary>
     /// Representing whether the application is using a dark theme

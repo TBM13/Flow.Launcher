@@ -95,3 +95,9 @@ GetWindowText
 EnumWindows
 QueryFullProcessImageName
 SHLoadIndirectString
+E_PENDING
+GetFileAttributes
+INVALID_FILE_ATTRIBUTES
+FILE_FLAGS_AND_ATTRIBUTES
+SHGFI_FLAGS
+SHGetFileInfo

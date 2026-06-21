@@ -115,8 +115,8 @@ namespace Flow.Launcher.ViewModel
         private volatile bool _imageLoaded;
         private volatile bool _previewImageLoaded;
 
-        private ImageSource _image = _imageLoader.LoadingImage;
-        private ImageSource _previewImage = _imageLoader.LoadingImage;
+        private ImageSource _image = _imageLoader.LoadingIcon;
+        private ImageSource _previewImage = _imageLoader.LoadingIcon;
 
         public ImageSource Image
         {
@@ -181,14 +181,7 @@ namespace Flow.Launcher.ViewModel
             var imagePath = Result.IcoPath;
             var iconDelegate = Result.Icon;
 
-            if (imagePath is not null && _imageLoader.TryGetValue(imagePath, false, out var img))
-            {
-                _image = img;
-                return;
-            }
-
-            // We need to modify the property not field here to trigger the OnPropertyChanged event
-            Image = await LoadImageInternalAsync(imagePath, iconDelegate, false).ConfigureAwait(false);
+            Image = await LoadImageInternalAsync(imagePath, iconDelegate, false);
         }
 
         private async Task LoadPreviewImageAsync()
@@ -196,14 +189,7 @@ namespace Flow.Launcher.ViewModel
             var imagePath = Result.Preview.PreviewImagePath ?? Result.IcoPath;
             var iconDelegate = Result.Preview.PreviewDelegate ?? Result.Icon;
 
-            if (imagePath is not null && _imageLoader.TryGetValue(imagePath, true, out var img))
-            {
-                _previewImage = img;
-                return;
-            }
-
-            // We need to modify the property not field here to trigger the OnPropertyChanged event
-            PreviewImage = await LoadImageInternalAsync(imagePath, iconDelegate, true).ConfigureAwait(false);
+            PreviewImage = await LoadImageInternalAsync(imagePath, iconDelegate, true);
         }
 
         public void LoadPreviewImage()

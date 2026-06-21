@@ -1,239 +1,216 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Concurrent;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Flow.Launcher.PluginSDK.Logging;
 
 namespace Flow.Launcher.Infrastructure.Image;
 
-public class ImageLoader(Logger<ImageLoader> logger)
+public class ImageLoader
 {
-    private readonly Logger<ImageLoader> _logger = logger;
-    private readonly ImageCache _imageCache = new();
-    private readonly ConcurrentDictionary<string, string> _guidToKey = new();
-    private readonly string[] _imageExtensions = [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".ico"];
+    private readonly Logger<ImageLoader> _logger;
 
-    public ImageSource Image => _imageCache[Constant.ImageIcon, false]!;
-    public ImageSource MissingImage => _imageCache[Constant.MissingImgIcon, false]!;
-    public ImageSource LoadingImage => _imageCache[Constant.LoadingImgIcon, false]!;
+    private readonly ImageCache<string> _pathCache = new(400, StringComparer.OrdinalIgnoreCase);
+    private readonly ImageCache<(int iconIndex, int overlayIndex)> _iconIndexCache = new(250);
+    private readonly ConcurrentDictionary<(string, bool), Lazy<Task<ImageSource>>> _inFlightLoads = new();
+
     public const int SmallIconSize = 64;
     public const int FullIconSize = 256;
-    public const int FullImageSize = 320;
+    public const int FullImageSize = 384;
+    public ImageSource GenericImageIcon { get; } = null!;
+    public ImageSource GenericProgramIcon { get; } = null!;
+    public ImageSource LoadingIcon { get; } = null!;
 
-    private record ImageResult(ImageSource ImageSource, ImageType ImageType);
-    private enum ImageType
+    public ImageLoader(Logger<ImageLoader> logger)
     {
-        File,
-        Folder,
-        Data,
-        ImageFile,
-        FullImageFile,
-        Error,
-        Cache
+        _logger = logger;
+
+        // Load default icons
+        GenericImageIcon = LoadFullBitmap(NormalizePath(Constant.ImageIcon));
+        GenericProgramIcon = LoadFullBitmap(NormalizePath(Constant.MissingImgIcon));
+        LoadingIcon = LoadFullBitmap(NormalizePath(Constant.LoadingImgIcon));
     }
 
-    public async Task InitializeAsync()
+    /// <summary>
+    /// Gets the full (absolute) path for the given path, resolving relative paths against Flow's directory.
+    /// </summary>
+    private static string NormalizePath(string path)
     {
-        await Task.Run(() =>
-        {
-            foreach (var icon in new[] { Constant.DefaultIcon, Constant.ImageIcon, Constant.MissingImgIcon, Constant.LoadingImgIcon })
+        path = Environment.ExpandEnvironmentVariables(path);
+        path = Path.GetFullPath(path, Constant.ProgramDirectory);
+        return path;
+    }
+
+    /// <summary>
+    /// Loads the image from disk, or returns the cached image if available.
+    /// </summary>
+    /// <param name="path">The image's path. Can be relative and can contain environment variables.</param>
+    /// <param name="loadFullImage">Whether to load the image with its full resolution (may increase memory usage).</param>
+    /// <returns>The requested image or a generic error image when something goes wrong.</returns>
+    public ValueTask<ImageSource> LoadAsync(
+        string path, bool loadFullImage = false)
+    {
+        path = NormalizePath(path);
+
+        // Return cached image if available
+        if (_pathCache.TryGetValue(path, loadFullImage, out ImageSource? cachedImage))
+            return new(cachedImage);
+
+        return new(LoadFromDiskAsync(path, loadFullImage));
+    }
+
+    private async Task<ImageSource> LoadFromDiskAsync(string normalizedPath, bool loadFullImage)
+    {
+        var key = (normalizedPath, loadFullImage);
+        // Create a lazy task that will load the image
+        // (or get the existing task if the image is already being loaded)
+        var lazyTask = _inFlightLoads.GetOrAdd(key, k => new(() =>
+            // Switch to background thread to avoid blocking the UI while loading the image
+            Task.Run(() =>
             {
-                ImageSource img = new BitmapImage(new Uri(icon));
-                img.Freeze();
-                _imageCache[icon, false] = img;
-            }
-        });
+                try
+                {
+                    ImageSource img = LoadFromDisk(k.Item1, k.Item2);
+
+                    // Cache image
+                    _pathCache[k.Item1, k.Item2] = img;
+                    return img;
+                }
+                finally
+                {
+                    // Image finished loading
+                    _inFlightLoads.TryRemove(k, out _);
+                }
+            })
+        ));
+
+        // Load image or wait for it to load if it is already being loaded
+        return await lazyTask.Value.ConfigureAwait(false);
     }
 
-    public bool TryGetValue(string path, bool loadFullImage, [NotNullWhen(true)] out ImageSource? image)
-    {
-        return _imageCache.TryGetValue(path, loadFullImage, out image);
-    }
-
-    private static BitmapSource GetThumbnail(string path,
-        ThumbnailOptions option = ThumbnailOptions.ThumbnailOnly, int size = SmallIconSize)
-    {
-        return WindowsThumbnailProvider.GetThumbnail(
-            path,
-            size,
-            size,
-            option);
-    }
-
-    private static BitmapImage LoadFullImage(string path)
-    {
-        path = Path.GetFullPath(path);
-        Uri uri = new Uri(path);
-
-        int decodedWidth = 0, decodedHeight = 0;
-        // Peek at the image dimensions without fully loading it
-        BitmapFrame frame = BitmapFrame.Create(uri, BitmapCreateOptions.DelayCreation, BitmapCacheOption.None);
-        if (frame.PixelWidth > FullImageSize || frame.PixelHeight > FullImageSize)
-        {
-            if (frame.PixelWidth > frame.PixelHeight)
-                // Image is landscape, constraining the width is enough
-                // (since the aspect ratio is maintained)
-                decodedWidth = FullImageSize;
-            else
-                // Image is portrait, constraining the height is enough
-                decodedHeight = FullImageSize;
-        }
-
-        BitmapImage image = new BitmapImage();
-        image.BeginInit();
-        image.CacheOption = BitmapCacheOption.OnLoad;
-        image.UriSource = uri;
-        image.CreateOptions = BitmapCreateOptions.IgnoreColorProfile;
-        image.EndInit();
-
-        if (decodedWidth > 0)
-            image.DecodePixelWidth = decodedWidth;
-        if (decodedHeight > 0)
-            image.DecodePixelHeight = decodedHeight;
-
-        image.Freeze();
-        return image;
-    }
-
-    private ImageResult GetThumbnailResult(string path, bool loadFullImage = false)
+    private ImageSource LoadFromDisk(string normalizedPath, bool loadFullImage = false)
     {
         ImageSource image;
-        ImageType type = ImageType.Error;
+        int size = loadFullImage ? FullIconSize : SmallIconSize;
 
-        if (Directory.Exists(path))
+        // For image files, load the thumbnail or image directly
+        if (ImageHelper.HasImageExtension(normalizedPath))
         {
-            /* Directories can also have thumbnails instead of shell icons.
-             * Generating thumbnails for a bunch of folder results while scrolling
-             * could have a big impact on performance and Flow.Launcher responsibility.
-             * - Solution: just load the icon
-             */
-            type = ImageType.Folder;
-            image = GetThumbnail(path, ThumbnailOptions.IconOnly);
-        }
-        else if (File.Exists(path))
-        {
-            var extension = Path.GetExtension(path).ToLower();
-            if (_imageExtensions.Contains(extension))
+            if (loadFullImage)
             {
-                type = ImageType.ImageFile;
-                if (loadFullImage)
+                // Load thumbnail instead of the full bitmap because even
+                // if we constrain the decoded dimensions, WPF still uses a lot of memory
+                // image = LoadFullBitmap(normalizedPath);
+
+                _logger.LogDebug($"Loading full thumbnail of file '{normalizedPath}'");
+                try
                 {
-                    try
-                    {
-                        image = LoadFullImage(path);
-                        type = ImageType.FullImageFile;
-                    }
-                    catch (NotSupportedException ex)
-                    {
-                        image = Image;
-                        type = ImageType.Error;
-                        _logger.LogError(ex, $"Failed to load image file from {path}");
-                    }
+                    image = ShellImageHelper.GetThumbnailOrIcon(
+                        normalizedPath, FullImageSize, FullImageSize, ShellItemImageFlags.ThumbnailOnly);
                 }
-                else
+                catch (Exception e)
                 {
-                    /* Although the documentation for GetImage on MSDN indicates that
-                     * if a thumbnail is available it will return one, this has proved to not
-                     * be the case in many situations while testing.
-                     * - Solution: explicitly pass the ThumbnailOnly flag
-                     */
-                    image = GetThumbnail(path, ThumbnailOptions.ThumbnailOnly);
+                    _logger.LogError(e, $"Failed to get thumbnail of file '{normalizedPath}'");
+                    image = GenericImageIcon;
                 }
             }
             else
             {
-                type = ImageType.File;
-                image = GetThumbnail(path, ThumbnailOptions.None, loadFullImage ? FullIconSize : SmallIconSize);
+                _logger.LogDebug($"Loading thumbnail/icon of file '{normalizedPath}'");
+                try
+                {
+                    image = ShellImageHelper.GetThumbnailOrIcon(
+                        normalizedPath, size, size, ShellItemImageFlags.Default);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, $"Failed to get thumbnail/icon of file '{normalizedPath}'");
+                    image = GenericImageIcon;
+                }
             }
+
+            return image;
         }
-        else
+
+        // For other files, load the icon (no thumbnails)
+        var iconIndexes = ShellImageHelper.GetIconIndex(normalizedPath);
+        if (iconIndexes is not (int iconIndex, int overlayIndex))
         {
-            image = MissingImage;
+            // The path is likely invalid
+            _logger.LogError($"Failed to get icon index of file '{normalizedPath}'");
+            return GenericProgramIcon;
         }
 
-        if (type != ImageType.Error)
-        {
-            image.Freeze();
-        }
+        // If the base icon + overlay is already cached, return it
+        // This is to avoid having multiple copies of the same icon in memory
+        if (_iconIndexCache.TryGetValue((iconIndex, overlayIndex), loadFullImage, out ImageSource? cachedIcon))
+            return cachedIcon;
 
-        return new ImageResult(image, type);
-    }
-
-    private async ValueTask<ImageResult> LoadInternalAsync(string path, bool loadFullImage = false)
-    {
-        ImageResult imageResult;
-
+        _logger.LogDebug($"Loading icon of '{normalizedPath}'");
         try
         {
-            imageResult = await Task.Run(() => GetThumbnailResult(path, loadFullImage));
+            image = ShellImageHelper.GetThumbnailOrIcon(
+                normalizedPath, size, size, ShellItemImageFlags.IconOnly);
+
+            // Add icon to cache
+            _iconIndexCache[(iconIndex, overlayIndex), loadFullImage] = image;
         }
         catch (Exception e)
         {
-            try
-            {
-                // Get thumbnail may fail for certain images on the first try, retry again has proven to work
-                imageResult = GetThumbnailResult(path, loadFullImage);
-            }
-            catch (Exception e2)
-            {
-                _logger.LogError(e2, $"Failed to get thumbnail for {path} on first try");
-                _logger.LogError(e2, $"Failed to get thumbnail for {path} on second try");
-
-                ImageSource image = MissingImage;
-                _imageCache[path, false] = image;
-                imageResult = new ImageResult(image, ImageType.Error);
-            }
+            _logger.LogError(e, $"Failed to get icon of '{normalizedPath}'");
+            image = GenericProgramIcon;
         }
 
-        return imageResult;
+        return image;
     }
 
-    public async ValueTask<ImageSource> LoadAsync(string path, bool loadFullImage = false, bool cacheImage = true)
+    /// <summary>
+    /// Loads the given image with its full resolution
+    /// (capped by <see cref="FullImageSize"/> to avoid excessive memory usage).
+    /// </summary>
+    /// <remarks>This function may cause RAM usage spikes.</remarks>
+    private ImageSource LoadFullBitmap(string path)
     {
-        // If the path is relative combine it with FlowLauncher's directory,
-        // since the working directory may be different
-        if (!Path.IsPathFullyQualified(path))
+        try
         {
-            path = Path.Combine(Constant.ProgramDirectory, path);
-        }
-        path = path.ToLowerInvariant();
+            // Use a stream instead of Uri to avoid WPF internally caching the full image
+            // and increasing memory usage
+            using FileStream fs = new(path, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-        // Use cached image if available
-        if (_imageCache.TryGetValue(path, loadFullImage, out ImageSource? cachedImage))
-            return cachedImage;
-
-        var imageResult = await LoadInternalAsync(path, loadFullImage);
-
-        var img = imageResult.ImageSource;
-        if (imageResult.ImageType != ImageType.Error && imageResult.ImageType != ImageType.Cache)
-        {
-            // we need to get image hash
-            string? hash = ImageHashGenerator.GetHashFromImage(img);
-            if (hash is not null)
+            // Peek at the image dimensions. Contrain the biggest dimension to FullImageSize
+            BitmapDecoder decoder = BitmapDecoder.Create(
+                fs, BitmapCreateOptions.DelayCreation, BitmapCacheOption.None);
+            BitmapFrame frame = decoder.Frames[0];
+            int decodedWidth = 0, decodedHeight = 0;
+            if (frame.PixelWidth > FullImageSize || frame.PixelHeight > FullImageSize)
             {
-                if (_guidToKey.TryGetValue(hash, out string? key))
-                {
-                    // image already exists
-                    img = _imageCache[key, loadFullImage] ?? img;
-                }
-                else if (cacheImage)
-                {
-                    // save guid key
-                    _guidToKey[hash] = path;
-                }
+                if (frame.PixelWidth > frame.PixelHeight)
+                    decodedWidth = FullImageSize;
+                else
+                    decodedHeight = FullImageSize;
             }
 
-            if (cacheImage)
-            {
-                // update cache
-                _imageCache[path, loadFullImage] = img;
-            }
-        }
+            fs.Position = 0;
 
-        return img;
+            BitmapImage image = new();
+            image.BeginInit();
+            image.StreamSource = fs;
+            image.CacheOption = BitmapCacheOption.OnLoad;
+            // We don't care about color accuracy so skip color profile for performance
+            image.CreateOptions = BitmapCreateOptions.IgnoreColorProfile;
+
+            if (decodedWidth > 0)
+                image.DecodePixelWidth = decodedWidth;
+            else if (decodedHeight > 0)
+                image.DecodePixelHeight = decodedHeight;
+
+            image.EndInit();
+            image.Freeze();
+            return image;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, $"Failed to load full image '{path}'");
+            return GenericImageIcon;
+        }
     }
 }

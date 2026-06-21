@@ -436,8 +436,8 @@ namespace Flow.Launcher
             await ((PluginBinaryStorage<T>)_pluginBinaryStorages[(cacheName, cacheDirectory, type)]).SaveAsync();
         }
 
-        public ValueTask<ImageSource> LoadImageAsync(string path, bool loadFullImage = false, bool cacheImage = true) =>
-            _imageLoader.LoadAsync(path, loadFullImage, cacheImage);
+        public ValueTask<ImageSource> LoadImageAsync(string path, bool loadFullImage = false) =>
+            _imageLoader.LoadAsync(path, loadFullImage);
 
         public bool IsApplicationDarkTheme()
         {

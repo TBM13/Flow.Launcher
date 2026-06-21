@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text;
 using System.Windows;
 using CommunityToolkit.Mvvm.DependencyInjection;
@@ -221,8 +221,6 @@ public partial class App : Application
 
         _logger!.LogInfo($"Begin Flow Launcher startup ----------------------------------------------------");
         _logger.LogInfo($"Runtime info:{RuntimeInfo}");
-
-        await Ioc.Default.GetRequiredService<ImageLoader>().InitializeAsync();
 
         // Initialize MainWindow and HotkeyManager
         _mainWindow = Ioc.Default.GetRequiredService<MainWindow>();

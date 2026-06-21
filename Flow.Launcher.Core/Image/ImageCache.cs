@@ -1,80 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Windows.Media;
+using BitFaster.Caching;
 using BitFaster.Caching.Lfu;
 
 namespace Flow.Launcher.Infrastructure.Image;
 
-public class ImageCache
+public class ImageCache<Key>(int capacity, IEqualityComparer<Key>? keyComparer = null) where Key : notnull
 {
-    private const int MaxCached = 150;
+    private readonly ICache<(Key, bool), ImageSource> _cache =
+        new ConcurrentLfuBuilder<(Key, bool), ImageSource>()
+            .WithKeyComparer(new ImageCacheKeyComparer(keyComparer ?? EqualityComparer<Key>.Default))
+            .WithCapacity(capacity)
+            .Build();
 
-    private ConcurrentLfu<(string, bool), ImageSource?> CacheManager { get; set; } = new(MaxCached);
-
-    public void Initialize(IEnumerable<(string, bool)> usage)
+    private class ImageCacheKeyComparer(IEqualityComparer<Key> keyComparer) : IEqualityComparer<(Key Key, bool IsFullImage)>
     {
-        foreach (var key in usage)
+        public bool Equals((Key Key, bool IsFullImage) x, (Key Key, bool IsFullImage) y)
         {
-            CacheManager.AddOrUpdate(key, null);
+            return x.IsFullImage == y.IsFullImage
+                && keyComparer.Equals(x.Key, y.Key);
+        }
+
+        public int GetHashCode((Key Key, bool IsFullImage) obj)
+        {
+            return HashCode.Combine(
+                keyComparer.GetHashCode(obj.Key),
+                obj.IsFullImage
+            );
         }
     }
 
-    public ImageSource? this[string path, bool isFullImage = false]
+    public ImageSource? this[Key key, bool isFullImage = false]
     {
-        get
-        {
-            return CacheManager.TryGet((path, isFullImage), out var value) ? value : null;
-        }
+        get => _cache.TryGet((key, isFullImage), out var value) ? value : null;
         set
         {
-            CacheManager.AddOrUpdate((path, isFullImage), value);
+            ArgumentNullException.ThrowIfNull(value);
+            _cache.AddOrUpdate((key, isFullImage), value);
         }
     }
 
-    public async ValueTask<ImageSource?> GetOrAddAsync(string key,
-        Func<(string, bool), Task<ImageSource?>> valueFactory,
-        bool isFullImage = false)
+    public bool TryGetValue(Key key, bool isFullImage, [NotNullWhen(true)] out ImageSource? image)
     {
-        return await CacheManager.GetOrAddAsync((key, isFullImage), valueFactory);
-    }
-
-    public bool ContainsKey(string key, bool isFullImage)
-    {
-        return CacheManager.TryGet((key, isFullImage), out _);
-    }
-
-    public bool TryGetValue(string key, bool isFullImage, [NotNullWhen(true)] out ImageSource? image)
-    {
-        if (CacheManager.TryGet((key, isFullImage), out var value))
-        {
-            image = value;
-            return image is not null;
-        }
-
-        image = null;
-        return false;
-    }
-
-    public int CacheSize()
-    {
-        return CacheManager.Count;
-    }
-
-    /// <summary>
-    /// return the number of unique images in the cache (by reference not by checking images content)
-    /// </summary>
-    public int UniqueImagesInCache()
-    {
-        return CacheManager.Select(x => x.Value)
-            .Distinct()
-            .Count();
-    }
-
-    public IEnumerable<KeyValuePair<(string, bool), ImageSource?>> EnumerateEntries()
-    {
-        return CacheManager;
+        return _cache.TryGet((key, isFullImage), out image);
     }
 }

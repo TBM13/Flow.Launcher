@@ -104,7 +104,7 @@ namespace Flow.Launcher.ViewModel
                         ? TryCreateSettingPanel(PluginMetadata)
                         : null
                 : null;
-        private ImageSource _image = _imageLoader.MissingImage;
+        private ImageSource _image = _imageLoader.GenericProgramIcon;
 
         private static Control TryCreateSettingPanel(PluginMetadata metadata)
         {
