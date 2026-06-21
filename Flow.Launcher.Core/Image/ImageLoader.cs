@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Flow.Launcher.Infrastructure.Helpers;
 using Flow.Launcher.PluginSDK.Logging;
 
 namespace Flow.Launcher.Infrastructure.Image;
@@ -94,10 +95,11 @@ public class ImageLoader
     private ImageSource LoadFromDisk(string normalizedPath, bool loadFullImage = false)
     {
         ImageSource image;
-        int size = loadFullImage ? FullIconSize : SmallIconSize;
+        int iconSize = loadFullImage ? FullIconSize : SmallIconSize;
+        ReadOnlySpan<char> extension = Path.GetExtension(normalizedPath);
 
         // For image files, load the thumbnail or image directly
-        if (ImageHelper.HasImageExtension(normalizedPath))
+        if (ImageHelper.IsImageExtension(extension))
         {
             if (loadFullImage)
             {
@@ -105,7 +107,6 @@ public class ImageLoader
                 // if we constrain the decoded dimensions, WPF still uses a lot of memory
                 // image = LoadFullBitmap(normalizedPath);
 
-                _logger.LogDebug($"Loading full thumbnail of file '{normalizedPath}'");
                 try
                 {
                     image = ShellImageHelper.GetThumbnailOrIcon(
@@ -119,11 +120,10 @@ public class ImageLoader
             }
             else
             {
-                _logger.LogDebug($"Loading thumbnail/icon of file '{normalizedPath}'");
                 try
                 {
                     image = ShellImageHelper.GetThumbnailOrIcon(
-                        normalizedPath, size, size, ShellItemImageFlags.Default);
+                        normalizedPath, iconSize, iconSize, ShellItemImageFlags.Default);
                 }
                 catch (Exception e)
                 {
@@ -131,37 +131,57 @@ public class ImageLoader
                     image = GenericImageIcon;
                 }
             }
-
-            return image;
         }
-
         // For other files, load the icon (no thumbnails)
-        var iconIndexes = ShellImageHelper.GetIconIndex(normalizedPath);
-        if (iconIndexes is not (int iconIndex, int overlayIndex))
+        else
         {
-            // The path is likely invalid
-            _logger.LogError($"Failed to get icon index of file '{normalizedPath}'");
-            return GenericProgramIcon;
-        }
+            // For internet shortcut files, try to load its custom icon first
+            if (extension.Equals(InternetShortcutHelper.INTERNET_SHORTCUT_EXTENSION, StringComparison.OrdinalIgnoreCase))
+            {
+                try
+                {
+                    InternetShortcutInfo info = InternetShortcutHelper.Parse(normalizedPath);
+                    BitmapSource? customIcon = InternetShortcutHelper.GetCustomIcon(info, iconSize, iconSize);
+                    if (customIcon is not null)
+                        return customIcon;
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, $"Failed to get custom icon of internet shortcut '{normalizedPath}'");
+                }
 
-        // If the base icon + overlay is already cached, return it
-        // This is to avoid having multiple copies of the same icon in memory
-        if (_iconIndexCache.TryGetValue((iconIndex, overlayIndex), loadFullImage, out ImageSource? cachedIcon))
-            return cachedIcon;
+                // Fallback to normal icon loading. Seems like it fails and returns a generic file icon,
+                // likely because we are not in an STA thread
+            }
 
-        _logger.LogDebug($"Loading icon of '{normalizedPath}'");
-        try
-        {
-            image = ShellImageHelper.GetThumbnailOrIcon(
-                normalizedPath, size, size, ShellItemImageFlags.IconOnly);
+            // Get the icon index of the file and check if it is cached
+            var iconIndexes = ShellImageHelper.GetIconIndex(normalizedPath);
+            if (iconIndexes is not (int iconIndex, int overlayIndex))
+            {
+                // The path is likely invalid
+                _logger.LogError($"Failed to get icon index of file '{normalizedPath}'");
+                return GenericProgramIcon;
+            }
 
-            // Add icon to cache
-            _iconIndexCache[(iconIndex, overlayIndex), loadFullImage] = image;
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, $"Failed to get icon of '{normalizedPath}'");
-            image = GenericProgramIcon;
+            // If the base icon + overlay is already cached, return it
+            // This is to avoid having multiple copies of the same icon in memory
+            if (_iconIndexCache.TryGetValue((iconIndex, overlayIndex), loadFullImage, out ImageSource? cachedIcon))
+                return cachedIcon;
+
+            _logger.LogDebug($"Obtaining icon of '{normalizedPath}' (index {iconIndex}, overlay {overlayIndex})");
+            try
+            {
+                image = ShellImageHelper.GetThumbnailOrIcon(
+                    normalizedPath, iconSize, iconSize, ShellItemImageFlags.IconOnly);
+
+                // Add icon to cache
+                _iconIndexCache[(iconIndex, overlayIndex), loadFullImage] = image;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Failed to get icon of '{normalizedPath}'");
+                image = GenericProgramIcon;
+            }
         }
 
         return image;

@@ -1,9 +1,7 @@
-﻿using System.IO;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
-using Flow.Launcher.Infrastructure.Helpers;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Gdi;
@@ -70,39 +68,13 @@ public static class ShellImageHelper
     /// <summary>
     /// Obtains the icon or thumbnail for the specified file.
     /// </summary>
-    /// <remarks>For Internet Shortcut files (.url), uses its custom icon when available.</remarks>
+    /// <remarks>Does not support Internet Shortcut files (returns generic file icon).</remarks>
     /// <param name="fullPath">The absolute path to the file.</param>
     /// <param name="width">Width in physical device pixels.</param>
     /// <param name="height">Height in physical device pixels.</param>
     public static BitmapSource GetThumbnailOrIcon(
         string fullPath, int width, int height, ShellItemImageFlags options)
     {
-        ReadOnlySpan<char> extension = Path.GetExtension(fullPath.AsSpan());
-        // If the file is an internet shortcut, resolve the icon specified in it and use it if valid
-        if (extension.Equals(InternetShortcutHelper.INTERNET_SHORTCUT_EXTENSION,
-            StringComparison.OrdinalIgnoreCase))
-        {
-            try
-            {
-                InternetShortcutInfo shortcutInfo = InternetShortcutHelper.Parse(fullPath);
-                string? shortcutDir = Path.GetDirectoryName(fullPath);
-
-                if (shortcutInfo.IconFile is not null && shortcutDir is not null)
-                {
-                    // Expand environment variables & resolve relative paths using
-                    // the .url file's directory as the base path
-                    string shortcutIconPath = Environment.ExpandEnvironmentVariables(shortcutInfo.IconFile);
-                    shortcutIconPath = Path.GetFullPath(shortcutIconPath, shortcutDir);
-                    if (File.Exists(shortcutIconPath))
-                        fullPath = shortcutIconPath;
-                }
-            }
-            catch
-            {
-                // fallback to getting the thumbnail/icon directly from the .url file
-            }
-        }
-
         HBITMAP hBitmap = GetHBitmap(fullPath, width, height, options);
         try
         {
@@ -173,6 +145,7 @@ public static class ShellImageHelper
     /// <summary>
     /// Tries to get the icon index and overlay index of a file/directory.
     /// </summary>
+    /// <remarks>Does not support Internet Shortcut files (returns generic file index).</remarks>
     /// <returns>Null if the indexes could not be retrieved.</returns>
     public static (int iconIndex, int overlayIndex)? GetIconIndex(string path)
     {
