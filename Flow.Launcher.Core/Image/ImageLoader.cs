@@ -163,6 +163,9 @@ public class ImageLoader
                 return GenericProgramIcon;
             }
 
+            // TODO: GetThumbnailOrIcon does not add overlays. Figure out what to do
+            overlayIndex = 0;
+
             // If the base icon + overlay is already cached, return it
             // This is to avoid having multiple copies of the same icon in memory
             if (_iconIndexCache.TryGetValue((iconIndex, overlayIndex), loadFullImage, out ImageSource? cachedIcon))
