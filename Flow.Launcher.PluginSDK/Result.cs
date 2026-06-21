@@ -164,11 +164,6 @@ public record Result
         public string? PreviewImagePath { get; set; } = null;
 
         /// <summary>
-        /// Determines if the preview image should occupy the full width of the preview panel.
-        /// </summary>
-        public bool IsMedia { get; set; } = false;
-
-        /// <summary>
         /// Result description text that is shown at the bottom of the preview panel.
         /// </summary>
         /// <remarks>

@@ -150,11 +150,6 @@ namespace Flow.Launcher.ViewModel
 
         public string PreviewDescription => Result.Preview.Description ?? Result.SubTitle;
 
-        /// <summary>
-        /// Determines if to use the full width of the preview panel
-        /// </summary>
-        public bool UseBigThumbnail => Result.Preview.IsMedia;
-
         public GlyphInfo? Glyph { get; init; }
 
         private async Task<ImageSource> LoadImageInternalAsync(string? imagePath, Result.IconDelegate? icon, bool loadFullImage)

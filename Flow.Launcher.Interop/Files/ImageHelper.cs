@@ -1,9 +1,11 @@
-﻿namespace Flow.Launcher.Infrastructure.Image;
+﻿using System.IO;
+
+namespace Flow.Launcher.Infrastructure.Image;
 
 public static class ImageHelper
 {
     /// <summary>
-    /// Checks whether the given path has a known image file extension.
+    /// Checks whether the given lowercase path has a known image file extension.
     /// </summary>
     /// <param name="lowercasePath">The path of the file, in lowercase.</param>
     public static bool HasImageExtension(ReadOnlySpan<char> lowercasePath)

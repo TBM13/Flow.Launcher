@@ -423,7 +423,6 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 IcoPath = LogoPath,
                 Preview = new Result.PreviewInfo
                 {
-                    IsMedia = false,
                     PreviewImagePath = PreviewImagePath,
                     Description = Description
                 },

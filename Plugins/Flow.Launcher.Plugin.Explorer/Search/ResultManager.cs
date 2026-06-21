@@ -245,7 +245,6 @@ namespace Flow.Launcher.Plugin.Explorer.Search
         internal static Result CreateFileResult(string filePath, Query query, bool isRecursiveSearch, int score = 0)
         {
             var isShellLink = filePath.EndsWith(".lnk", StringComparison.InvariantCultureIgnoreCase);
-            var isMedia = IsMedia(Path.GetExtension(filePath));
             var title = Path.GetFileName(filePath) ?? string.Empty;
             var directory = Path.GetDirectoryName(filePath) ?? string.Empty;
 
@@ -257,12 +256,6 @@ namespace Flow.Launcher.Plugin.Explorer.Search
                     isShellLink ? ShortcutHelper.RetrieveTargetPath(filePath) :
                     string.Empty,
                 IcoPath = filePath,
-                Preview = new Result.PreviewInfo
-                {
-                    IsMedia = isMedia,
-                    PreviewImagePath = isMedia ? filePath : null,
-                    FilePath = filePath,
-                },
                 AutoCompleteText = GetAutoCompleteText(query, filePath, ResultType.File),
                 Score = score,
                 CopyText = filePath,
@@ -305,13 +298,6 @@ namespace Flow.Launcher.Plugin.Explorer.Search
             return result;
         }
 
-        private static bool IsMedia(string extension)
-        {
-            if (string.IsNullOrEmpty(extension)) { return false; }
-
-            return MediaExtensions.Contains(extension.ToLowerInvariant());
-        }
-
         private static void OpenFile(string filePath, string workingDir = "", bool asAdmin = false)
         {
             string verb = asAdmin ? "runas" : string.Empty;
@@ -329,12 +315,6 @@ namespace Flow.Launcher.Plugin.Explorer.Search
         {
             Main.Context.API.OpenDirectory(folderPath, fileNameOrFilePath);
         }
-
-        private static readonly string[] MediaExtensions =
-        {
-            ".jpg", ".png", ".avi", ".mkv", ".bmp", ".gif", ".wmv", ".mp3", ".flac", ".mp4",
-            ".m4a", ".m4v", ".heic", ".mov", ".flv", ".webm"
-        };
     }
 
     public enum ResultType

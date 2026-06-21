@@ -9,12 +9,15 @@ public class ImageLoader
 {
     private readonly Logger<ImageLoader> _logger;
 
+    // TODO: Split path cache into two: One for small icons/thumbnails with more capacity
+    // and another one for big thumbnails/images with less capacity
     private readonly ImageCache<string> _pathCache = new(400, StringComparer.OrdinalIgnoreCase);
     private readonly ImageCache<(int iconIndex, int overlayIndex)> _iconIndexCache = new(250);
     private readonly ConcurrentDictionary<(string, bool), Lazy<Task<ImageSource>>> _inFlightLoads = new();
 
+    // TODO: Consider DPI and/or make this customizable in settings
     public const int SmallIconSize = 64;
-    public const int FullIconSize = 256;
+    public const int FullIconSize = 128;
     public const int FullImageSize = 384;
     public ImageSource GenericImageIcon { get; } = null!;
     public ImageSource GenericProgramIcon { get; } = null!;
@@ -25,6 +28,7 @@ public class ImageLoader
         _logger = logger;
 
         // Load default icons
+        // TODO: Maybe integrate them into the app itself?
         GenericImageIcon = LoadFullBitmap(NormalizePath(Constant.ImageIcon));
         GenericProgramIcon = LoadFullBitmap(NormalizePath(Constant.MissingImgIcon));
         LoadingIcon = LoadFullBitmap(NormalizePath(Constant.LoadingImgIcon));
@@ -210,6 +214,17 @@ public class ImageLoader
         catch (Exception e)
         {
             _logger.LogError(e, $"Failed to load full image '{path}'");
+            if (GenericImageIcon is null)
+            {
+                // GenericImageIcon might be null since this function is called
+                // from the constructor
+                BitmapSource fallback = BitmapSource.Create(
+                    1, 1, 96, 96, PixelFormats.Indexed1, BitmapPalettes.BlackAndWhite, new byte[] { 128 }, 1);
+
+                fallback.Freeze();
+                return fallback;
+            }
+
             return GenericImageIcon;
         }
     }
