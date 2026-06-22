@@ -273,17 +273,22 @@ public partial class App : Application
             Exception exceptionToReport = ex
                 ?? new InvalidOperationException($"{message} (No exception provided)");
 
-            if (Current?.Dispatcher?.CheckAccess() == true)
+            try
             {
-                ReportWindow reportWindow = new(exceptionToReport);
-                reportWindow.ShowDialog();
+                if (Current?.Dispatcher?.CheckAccess() == true)
+                {
+                    ReportWindow reportWindow = new(exceptionToReport);
+                    reportWindow.ShowDialog();
+                    return;
+                }
             }
-            else
+            catch
             {
-                // We are on a background thread, show a simple MessageBox
-                MessageBox.Show($"{message}\n\n{exceptionToReport}", Constant.FlowLauncher,
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                // Fallback to messagebox
             }
+
+            MessageBox.Show($"{message}\n\n{exceptionToReport}", Constant.FlowLauncher,
+                MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         AppDomain.CurrentDomain.UnhandledException += (s, e) =>
