@@ -1,6 +1,7 @@
-﻿using Flow.Launcher.Infrastructure.Results;
+﻿using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.Plugins;
 
-namespace Flow.Launcher.Infrastructure.Plugins.Interfaces;
+namespace Flow.Launcher.PluginSDK.Plugins.Interfaces;
 
 /// <summary>
 /// Synchronous Plugin Model for Flow Launcher

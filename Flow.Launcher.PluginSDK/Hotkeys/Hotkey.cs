@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Windows.Input;
 
-namespace Flow.Launcher.Infrastructure.Hotkeys;
+namespace Flow.Launcher.PluginSDK.Hotkeys;
 
 public readonly record struct Hotkey
 {

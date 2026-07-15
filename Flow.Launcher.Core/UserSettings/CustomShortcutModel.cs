@@ -2,7 +2,7 @@
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace Flow.Launcher.Infrastructure.UserSettings;
+namespace Flow.Launcher.Core.UserSettings;
 
 #region Base
 

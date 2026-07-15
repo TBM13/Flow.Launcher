@@ -8,7 +8,7 @@
     xmlns:ikw="http://schemas.inkore.net/lib/ui/wpf"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
-    xmlns:userSettings="clr-namespace:Flow.Launcher.Infrastructure.UserSettings;assembly=Flow.Launcher.Infrastructure"
+    xmlns:userSettings="clr-namespace:Flow.Launcher.Core.UserSettings;assembly=Flow.Launcher.Core"
     xmlns:viewModels="clr-namespace:Flow.Launcher.SettingPages.ViewModels"
     Title="Theme"
     d:DataContext="{d:DesignInstance viewModels:SettingsPaneThemeViewModel}"

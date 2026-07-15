@@ -1,7 +1,7 @@
-﻿using Flow.Launcher.Infrastructure.API;
+﻿using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Logging;
 
-namespace Flow.Launcher.Infrastructure.Plugins;
+namespace Flow.Launcher.PluginSDK.Plugins;
 
 /// <summary>
 /// Carries data passed to a plugin when it gets initialized.

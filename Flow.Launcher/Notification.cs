@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.IO;
 using System.Windows;
-using Flow.Launcher.Infrastructure;
+using Flow.Launcher.Core;
 using Flow.Launcher.PluginSDK.Logging;
 using Microsoft.Toolkit.Uwp.Notifications;
 

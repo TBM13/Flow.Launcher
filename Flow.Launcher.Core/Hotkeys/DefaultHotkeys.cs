@@ -1,10 +1,10 @@
 ﻿using System.Windows.Input;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Core.Plugin;
-using Flow.Launcher.Infrastructure.API;
-using Flow.Launcher.Infrastructure.Hotkeys;
+using Flow.Launcher.PluginSDK.API;
+using Flow.Launcher.PluginSDK.Hotkeys;
 
-namespace Flow.Launcher.Core;
+namespace Flow.Launcher.Core.Hotkeys;
 
 public static class DefaultHotkeys
 {

@@ -1,8 +1,8 @@
 ﻿using System.Globalization;
-using Flow.Launcher.Infrastructure.Plugins.Interfaces;
+using Flow.Launcher.PluginSDK.Plugins.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace Flow.Launcher.Infrastructure.Storage;
+namespace Flow.Launcher.Core.Storage;
 
 /// <summary>
 /// Serialize and deserialize an object to and from a file.

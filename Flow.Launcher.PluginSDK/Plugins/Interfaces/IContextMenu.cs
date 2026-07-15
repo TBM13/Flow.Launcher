@@ -1,6 +1,4 @@
-﻿using Flow.Launcher.Infrastructure.Results;
-
-namespace Flow.Launcher.Infrastructure.Plugins.Interfaces;
+﻿namespace Flow.Launcher.PluginSDK.Plugins.Interfaces;
 
 /// <summary>
 /// Adds support for presenting additional options for a given <see cref="Result"/> from a context menu.

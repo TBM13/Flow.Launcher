@@ -1,9 +1,10 @@
 ﻿using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Flow.Launcher.Core;
 using Flow.Launcher.Core.Settings;
-using Flow.Launcher.Infrastructure.Helpers;
-using Flow.Launcher.Infrastructure.WPF;
+using Flow.Launcher.Core.Hotkeys;
+using Flow.Launcher.PluginSDK.WPF;
+using Flow.Launcher.PluginSDK;
+using Flow.Launcher.Interop.Hardware;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
 

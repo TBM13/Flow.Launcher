@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Flow.Launcher.Infrastructure.Results;
 
-namespace Flow.Launcher.Infrastructure.Hotkeys;
+namespace Flow.Launcher.PluginSDK.Hotkeys;
 
 /// <summary>
 /// Represents the information of a hotkey that can be triggered even when

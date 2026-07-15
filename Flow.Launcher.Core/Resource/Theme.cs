@@ -3,7 +3,6 @@ using System.Windows.Media.Effects;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Flow.Launcher.Core.Settings;
-using Flow.Launcher.Infrastructure;
 
 namespace Flow.Launcher.Core.Resource
 {

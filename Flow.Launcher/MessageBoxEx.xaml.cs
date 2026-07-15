@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.DependencyInjection;
-using Flow.Launcher.Infrastructure;
+using Flow.Launcher.Core;
 using Flow.Launcher.PluginSDK.Logging;
 
 namespace Flow.Launcher

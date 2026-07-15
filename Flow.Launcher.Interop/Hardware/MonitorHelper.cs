@@ -5,7 +5,7 @@ using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Gdi;
 
-namespace Flow.Launcher.Infrastructure.Helpers;
+namespace Flow.Launcher.Interop.Hardware;
 
 /// <summary>
 /// Represents the information of a display monitor.

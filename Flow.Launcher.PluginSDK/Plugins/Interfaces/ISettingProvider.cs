@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace Flow.Launcher.Infrastructure.Plugins.Interfaces;
+namespace Flow.Launcher.PluginSDK.Plugins.Interfaces;
 
 /// <summary>
 /// This interface is used to create settings panel for .Net plugins

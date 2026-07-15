@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
-using Flow.Launcher.Infrastructure.Plugins;
-using Flow.Launcher.Infrastructure.Plugins.Interfaces;
-using Flow.Launcher.Infrastructure.Results;
-using Flow.Launcher.Infrastructure.WPF;
+using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.Plugins;
+using Flow.Launcher.PluginSDK.Plugins.Interfaces;
 using Microsoft.Win32;
 using Windows.Win32;
 using Windows.Win32.Foundation;

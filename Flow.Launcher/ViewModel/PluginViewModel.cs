@@ -6,12 +6,12 @@ using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Settings;
-using Flow.Launcher.Infrastructure.Image;
-using Flow.Launcher.Infrastructure.Plugins;
-using Flow.Launcher.Infrastructure.Plugins.Interfaces;
-using Flow.Launcher.Infrastructure.Results;
+using Flow.Launcher.Core.Image;
 using Flow.Launcher.PluginSDK.Logging;
 using Flow.Launcher.Resources.Controls;
+using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.Plugins;
+using Flow.Launcher.PluginSDK.Plugins.Interfaces;
 
 namespace Flow.Launcher.ViewModel
 {
@@ -126,7 +126,7 @@ namespace Flow.Launcher.ViewModel
 
         public string Version => Localize.plugin_query_version() + " " + PluginMetadata.Version;
         public string ActionKeywordsText => string.Join(Query.TermSeparator, PluginMetadata.ActionKeywords);
-        public Infrastructure.UserSettings.Plugin? PluginSettingsObject { get; init; }
+        public Core.UserSettings.Plugin? PluginSettingsObject { get; init; }
         public bool HomeEnabled => _settings.ShowHomePage && _pluginManager.IsHomePlugin(PluginMetadata.ID);
 
         public void OnActionKeywordsTextChanged()

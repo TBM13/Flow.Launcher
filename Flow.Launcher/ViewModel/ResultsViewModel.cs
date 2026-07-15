@@ -5,8 +5,8 @@ using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Settings;
-using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.PluginSDK.Logging;
+using Flow.Launcher.PluginSDK;
 
 namespace Flow.Launcher.ViewModel
 {

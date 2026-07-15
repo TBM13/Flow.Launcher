@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using System.Windows;
 using CommunityToolkit.Mvvm.DependencyInjection;
-using Flow.Launcher.Core;
-using Flow.Launcher.Infrastructure.Hotkeys;
+using Flow.Launcher.Core.Hotkeys;
+using Flow.Launcher.PluginSDK.Hotkeys;
 
 namespace Flow.Launcher
 {

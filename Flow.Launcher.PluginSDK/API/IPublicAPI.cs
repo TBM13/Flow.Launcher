@@ -1,9 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Media;
-using Flow.Launcher.Infrastructure.Helpers;
-using Flow.Launcher.Infrastructure.Plugins;
+using Flow.Launcher.PluginSDK.Plugins;
 
-namespace Flow.Launcher.Infrastructure.API;
+namespace Flow.Launcher.PluginSDK.API;
 
 /// <summary>
 /// Public APIs that plugin can use

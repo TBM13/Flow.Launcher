@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Flow.Launcher.Infrastructure.Image;
+namespace Flow.Launcher.Interop.Files;
 
 public static class ImageHelper
 {

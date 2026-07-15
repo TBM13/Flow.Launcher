@@ -1,8 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Input;
-using Flow.Launcher.Infrastructure.Hotkeys;
+using Flow.Launcher.PluginSDK.Hotkeys;
 
-namespace Flow.Launcher.Infrastructure.WPF;
+namespace Flow.Launcher.PluginSDK.WPF;
 
 public class KeyBinding : System.Windows.Input.KeyBinding
 {

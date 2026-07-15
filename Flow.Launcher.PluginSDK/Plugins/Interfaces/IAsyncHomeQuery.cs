@@ -1,6 +1,4 @@
-﻿using Flow.Launcher.Infrastructure.Results;
-
-namespace Flow.Launcher.Infrastructure.Plugins.Interfaces;
+﻿namespace Flow.Launcher.PluginSDK.Plugins.Interfaces;
 
 /// <summary>
 /// Asynchronous Query Model for Flow Launcher When Query Text is Empty

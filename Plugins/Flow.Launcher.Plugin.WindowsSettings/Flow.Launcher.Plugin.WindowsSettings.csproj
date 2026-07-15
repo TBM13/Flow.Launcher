@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Flow.Launcher.PluginSDK\Flow.Launcher.PluginSDK.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -29,11 +33,6 @@
   <ItemGroup>
     <EmbeddedResource Include="WindowsSettings.json">
     </EmbeddedResource>
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\Flow.Launcher.Infrastructure\Flow.Launcher.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

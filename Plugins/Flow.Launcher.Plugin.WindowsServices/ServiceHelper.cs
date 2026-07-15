@@ -2,11 +2,9 @@
 using System.Diagnostics;
 using System.ServiceProcess;
 using System.Windows.Controls;
-using Flow.Launcher.Infrastructure.Helpers;
-using Flow.Launcher.Infrastructure.Results;
-using Flow.Launcher.Infrastructure.WPF;
 using Flow.Launcher.Interop.Shell;
 using Flow.Launcher.Plugin.WindowsServices.Preview;
+using Flow.Launcher.PluginSDK;
 using Microsoft.Win32;
 
 

@@ -1,11 +1,11 @@
 ﻿using System.Windows.Controls;
-using Flow.Launcher.Infrastructure.Helpers;
-using Flow.Launcher.Infrastructure.Plugins;
-using Flow.Launcher.Infrastructure.Plugins.Interfaces;
-using Flow.Launcher.Infrastructure.Results;
+using Flow.Launcher.Interop.Shell;
 using Flow.Launcher.Plugin.Explorer.Search;
 using Flow.Launcher.Plugin.Explorer.ViewModels;
 using Flow.Launcher.Plugin.Explorer.Views;
+using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.Plugins;
+using Flow.Launcher.PluginSDK.Plugins.Interfaces;
 
 namespace Flow.Launcher.Plugin.Explorer;
 

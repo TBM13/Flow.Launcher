@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace Flow.Launcher.Infrastructure.UserSettings;
+namespace Flow.Launcher.Core.UserSettings;
 
 public partial class CustomPluginHotkey(string hotkey, string actionKeyword) : ObservableObject
 {

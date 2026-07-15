@@ -1,8 +1,7 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Media;
-using Flow.Launcher.Infrastructure.WPF;
 
-namespace Flow.Launcher.Infrastructure.Results;
+namespace Flow.Launcher.PluginSDK;
 
 /// <summary>
 /// Describes a result of a <see cref="Query"/>.

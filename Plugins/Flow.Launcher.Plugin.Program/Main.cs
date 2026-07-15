@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.IO;
 using System.Windows.Controls;
-using Flow.Launcher.Infrastructure.Plugins;
-using Flow.Launcher.Infrastructure.Plugins.Interfaces;
-using Flow.Launcher.Infrastructure.Results;
-using Flow.Launcher.Infrastructure.WPF;
 using Flow.Launcher.Plugin.Program.Programs;
 using Flow.Launcher.Plugin.Program.Views;
 using Flow.Launcher.Plugin.Program.Views.Models;
+using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.Plugins;
+using Flow.Launcher.PluginSDK.Plugins.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 using Path = System.IO.Path;
 

@@ -3,9 +3,9 @@ using System.Globalization;
 using System.Text;
 using System.Windows;
 using System.Windows.Documents;
+using Flow.Launcher.Core;
 using Flow.Launcher.Helper;
-using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Infrastructure.Helpers;
+using Flow.Launcher.Interop.Programs;
 
 namespace Flow.Launcher
 {

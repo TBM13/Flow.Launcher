@@ -1,7 +1,7 @@
 ﻿using System.IO;
-using Flow.Launcher.Infrastructure.Plugins;
-using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Plugin.Explorer.Search.DirectoryInfo;
+using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.Plugins;
 
 namespace Flow.Launcher.Plugin.Explorer.Search;
 

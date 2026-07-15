@@ -3,7 +3,7 @@ using System.Windows.Input;
 using Flow.Launcher.PluginSDK.Hotkeys;
 using Windows.Win32.UI.Input.KeyboardAndMouse;
 
-namespace Flow.Launcher.Infrastructure.Hotkeys;
+namespace Flow.Launcher.Interop.Input;
 
 /// <inheritdoc cref="IPressedKeys{TSelf}"/>
 public readonly struct PressedKeys : IPressedKeys, IEquatable<PressedKeys>

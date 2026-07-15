@@ -8,20 +8,20 @@ using System.Windows.Interop;
 using System.Windows.Shell;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.DependencyInjection;
-using Flow.Launcher.Core;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Helper;
-using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Infrastructure.Helpers;
-using Flow.Launcher.Infrastructure.Hotkeys;
+using Flow.Launcher.Core.Hotkeys;
 using Flow.Launcher.Interop;
 using Flow.Launcher.PluginSDK.Logging;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern;
 using DataObject = System.Windows.DataObject;
 using Key = System.Windows.Input.Key;
+using Flow.Launcher.PluginSDK;
+using Flow.Launcher.Interop.Input;
+using Flow.Launcher.Interop.Hardware;
 
 namespace Flow.Launcher
 {

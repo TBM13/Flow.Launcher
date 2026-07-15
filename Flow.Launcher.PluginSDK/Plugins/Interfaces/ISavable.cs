@@ -1,4 +1,4 @@
-﻿namespace Flow.Launcher.Infrastructure.Plugins.Interfaces;
+﻿namespace Flow.Launcher.PluginSDK.Plugins.Interfaces;
 
 /// <summary>
 /// Implement this interface if you need to manually save stuff.

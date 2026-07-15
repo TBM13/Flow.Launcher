@@ -1,4 +1,4 @@
-﻿namespace Flow.Launcher.Infrastructure;
+﻿namespace Flow.Launcher.PluginSDK;
 
 /// <summary>
 /// A delegate for when the visibility is changed

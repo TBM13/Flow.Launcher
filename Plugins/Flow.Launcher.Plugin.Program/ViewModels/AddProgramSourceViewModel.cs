@@ -2,10 +2,10 @@
 using System.IO;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Flow.Launcher.Infrastructure.API;
-using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Plugin.Program.Views;
 using Flow.Launcher.Plugin.Program.Views.Models;
+using Flow.Launcher.PluginSDK.API;
+using Flow.Launcher.PluginSDK.Plugins;
 
 namespace Flow.Launcher.Plugin.Program.ViewModels
 {

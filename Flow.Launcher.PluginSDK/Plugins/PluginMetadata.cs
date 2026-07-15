@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Flow.Launcher.Infrastructure.Plugins.Interfaces;
+using Flow.Launcher.PluginSDK.Plugins.Interfaces;
 
-namespace Flow.Launcher.Infrastructure.Plugins;
+namespace Flow.Launcher.PluginSDK.Plugins;
 
 public record PluginMetadata
 {

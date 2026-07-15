@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Core.Settings;
-using Flow.Launcher.Infrastructure.WPF;
 using Flow.Launcher.Interop;
+using Flow.Launcher.PluginSDK.WPF;
 using iNKORE.UI.WPF.Modern;
 
 namespace Flow.Launcher.SettingPages.ViewModels;

@@ -1,5 +1,5 @@
 ﻿using Flow.Launcher.Core.Settings;
-using Flow.Launcher.Infrastructure.Helpers;
+using Flow.Launcher.PluginSDK;
 
 namespace Flow.Launcher.Core.Text;
 

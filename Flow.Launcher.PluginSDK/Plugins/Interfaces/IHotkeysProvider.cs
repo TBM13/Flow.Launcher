@@ -1,4 +1,4 @@
-﻿using Flow.Launcher.Infrastructure.Hotkeys;
+﻿using Flow.Launcher.PluginSDK.Hotkeys;
 
 namespace Flow.Launcher.PluginSDK.Plugins.Interfaces;
 

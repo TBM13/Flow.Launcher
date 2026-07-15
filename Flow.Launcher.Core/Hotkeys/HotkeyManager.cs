@@ -3,14 +3,15 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Flow.Launcher.Core.Settings;
-using Flow.Launcher.Infrastructure.API;
-using Flow.Launcher.Infrastructure.Hotkeys;
-using Flow.Launcher.Infrastructure.Plugins;
-using Flow.Launcher.Infrastructure.UserSettings;
+using Flow.Launcher.Core.UserSettings;
 using Flow.Launcher.Interop;
 using Flow.Launcher.PluginSDK.Logging;
+using Flow.Launcher.PluginSDK.Plugins;
+using Flow.Launcher.PluginSDK.Hotkeys;
+using Flow.Launcher.PluginSDK.API;
+using Flow.Launcher.Interop.Input;
 
-namespace Flow.Launcher.Core;
+namespace Flow.Launcher.Core.Hotkeys;
 
 /// <summary>
 /// Manages and keeps track of all the registered hotkeys in Flow Launcher.

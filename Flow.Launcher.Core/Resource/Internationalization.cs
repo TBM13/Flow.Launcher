@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using Flow.Launcher.Infrastructure;
 using Flow.Launcher.PluginSDK.Logging;
 
 namespace Flow.Launcher.Core.Resource

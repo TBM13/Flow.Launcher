@@ -3,7 +3,7 @@ using System.Windows.Media;
 using BitFaster.Caching;
 using BitFaster.Caching.Lfu;
 
-namespace Flow.Launcher.Infrastructure.Image;
+namespace Flow.Launcher.Core.Image;
 
 public class ImageCache<Key>(int capacity, IEqualityComparer<Key>? keyComparer = null) where Key : notnull
 {

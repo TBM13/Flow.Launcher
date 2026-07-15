@@ -1,5 +1,4 @@
 ﻿using System.Windows.Input;
-using Flow.Launcher.Infrastructure.Hotkeys;
 
 namespace Flow.Launcher.PluginSDK.Hotkeys;
 

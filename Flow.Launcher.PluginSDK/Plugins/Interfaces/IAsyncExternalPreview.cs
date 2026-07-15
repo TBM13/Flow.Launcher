@@ -1,4 +1,4 @@
-﻿namespace Flow.Launcher.Infrastructure.Plugins.Interfaces;
+﻿namespace Flow.Launcher.PluginSDK.Plugins.Interfaces;
 
 /// <summary>
 /// This interface is for plugins that wish to provide file preview (external preview) 

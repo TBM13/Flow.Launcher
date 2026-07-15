@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
 
-namespace Flow.Launcher.Infrastructure.WPF;
+namespace Flow.Launcher.PluginSDK.WPF;
 
 public class LocalizedEnumItem<T> where T : Enum
 {

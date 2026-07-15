@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows;
-using Flow.Launcher.Infrastructure.Plugins;
+using Flow.Launcher.PluginSDK.Plugins;
 
 namespace Flow.Launcher.Plugin.Program
 {

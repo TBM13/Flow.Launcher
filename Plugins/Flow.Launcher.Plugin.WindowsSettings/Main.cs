@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using Flow.Launcher.Infrastructure.Plugins;
-using Flow.Launcher.Infrastructure.Plugins.Interfaces;
-using Flow.Launcher.Infrastructure.Results;
-using Flow.Launcher.Plugin.WindowsSettings.Classes;
+﻿using Flow.Launcher.Plugin.WindowsSettings.Classes;
 using Flow.Launcher.Plugin.WindowsSettings.Helper;
+using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.Plugins;
+using Flow.Launcher.PluginSDK.Plugins.Interfaces;
 
 namespace Flow.Launcher.Plugin.WindowsSettings
 {

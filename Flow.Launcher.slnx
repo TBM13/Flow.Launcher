@@ -25,7 +25,6 @@
   </Folder>
   <Project Path="Flow.Launcher.Command/Flow.Launcher.Command.csproj" />
   <Project Path="Flow.Launcher.Core/Flow.Launcher.Core.csproj" />
-  <Project Path="Flow.Launcher.Infrastructure/Flow.Launcher.Infrastructure.csproj" />
   <Project Path="Flow.Launcher.Interop/Flow.Launcher.Interop.csproj" />
   <Project Path="Flow.Launcher.PluginSDK/Flow.Launcher.PluginSDK.csproj" />
   <Project Path="Flow.Launcher/Flow.Launcher.csproj">

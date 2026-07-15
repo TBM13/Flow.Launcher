@@ -2,10 +2,11 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Flow.Launcher.Infrastructure.Helpers;
-using Flow.Launcher.Infrastructure.Results;
+using Flow.Launcher.Interop.Files;
 using Flow.Launcher.Interop.Programs;
+using Flow.Launcher.Interop.Shell;
 using Flow.Launcher.Plugin.Explorer.Views;
+using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.Hotkeys;
 
 namespace Flow.Launcher.Plugin.Explorer.Search;

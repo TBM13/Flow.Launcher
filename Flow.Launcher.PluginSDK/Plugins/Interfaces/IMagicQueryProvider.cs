@@ -1,4 +1,4 @@
-﻿namespace Flow.Launcher.Infrastructure.Plugins.Interfaces;
+﻿namespace Flow.Launcher.PluginSDK.Plugins.Interfaces;
 
 /// <summary>
 /// Implemented by plugins that can generate a "magic query"

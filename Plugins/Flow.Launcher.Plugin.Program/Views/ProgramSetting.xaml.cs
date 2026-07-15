@@ -6,11 +6,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Plugin.Program.Programs;
 using Flow.Launcher.Plugin.Program.ViewModels;
 using Flow.Launcher.Plugin.Program.Views.Commands;
 using Flow.Launcher.Plugin.Program.Views.Models;
+using Flow.Launcher.PluginSDK.Plugins;
 
 namespace Flow.Launcher.Plugin.Program.Views
 {

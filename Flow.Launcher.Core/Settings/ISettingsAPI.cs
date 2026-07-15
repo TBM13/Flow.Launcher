@@ -1,8 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
-using Flow.Launcher.Infrastructure.Helpers;
-using Flow.Launcher.Infrastructure.UserSettings;
+using Flow.Launcher.Core.UserSettings;
+using Flow.Launcher.PluginSDK;
 
 namespace Flow.Launcher.Core.Settings;
 

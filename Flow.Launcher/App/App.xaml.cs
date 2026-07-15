@@ -8,9 +8,7 @@ using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Core.Text;
 using Flow.Launcher.Helper;
-using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Infrastructure.API;
-using Flow.Launcher.Infrastructure.Image;
+using Flow.Launcher.Core.Image;
 using Flow.Launcher.Interop;
 using Flow.Launcher.SettingPages.ViewModels;
 using Flow.Launcher.ViewModel;
@@ -19,6 +17,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Threading;
+using Flow.Launcher.Core.Hotkeys;
+using Flow.Launcher.PluginSDK.API;
 #if DEBUG
 using ZLogger;
 #endif

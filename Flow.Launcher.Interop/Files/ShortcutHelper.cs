@@ -8,7 +8,7 @@ using Windows.Win32.System.Variant;
 using Windows.Win32.UI.Shell;
 using Windows.Win32.UI.Shell.PropertiesSystem;
 
-namespace Flow.Launcher.Infrastructure.Helpers;
+namespace Flow.Launcher.Interop.Files;
 
 /// <summary>
 /// Helper class for interacting with Shell Link (.lnk) files.

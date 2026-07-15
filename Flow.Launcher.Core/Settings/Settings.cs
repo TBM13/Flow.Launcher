@@ -2,10 +2,11 @@
 using System.Text.Json.Serialization;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Flow.Launcher.Infrastructure.Helpers;
-using Flow.Launcher.Infrastructure.Storage;
-using Flow.Launcher.Infrastructure.UserSettings;
+using Flow.Launcher.Core.Storage;
+using Flow.Launcher.Core.UserSettings;
 using Flow.Launcher.Interop;
+using Flow.Launcher.Interop.Shell;
+using Flow.Launcher.PluginSDK;
 
 namespace Flow.Launcher.Core.Settings;
 

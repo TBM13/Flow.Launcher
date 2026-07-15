@@ -1,7 +1,6 @@
-﻿using Flow.Launcher.Infrastructure.Helpers;
-using Flow.Launcher.Infrastructure.Plugins;
-using Flow.Launcher.Infrastructure.Plugins.Interfaces;
-using Flow.Launcher.Infrastructure.Results;
+﻿using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.Plugins;
+using Flow.Launcher.PluginSDK.Plugins.Interfaces;
 
 namespace Flow.Launcher.Plugin.PluginIndicator;
 
@@ -52,7 +51,7 @@ public class Main : IPlugin, IHomeQuery
             foreach (string keyword in plugin.ActionKeywords)
             {
                 // Skip global keywords
-                if (keyword == Infrastructure.Results.Query.GlobalPluginWildcard)
+                if (keyword == PluginSDK.Query.GlobalPluginWildcard)
                     continue;
 
                 // If not a home query, filter results with search term
@@ -69,7 +68,7 @@ public class Main : IPlugin, IHomeQuery
                 else
                     searchResult = default;
 
-                string autoCompleteText = $"{keyword}{Infrastructure.Results.Query.TermSeparator}";
+                string autoCompleteText = $"{keyword}{PluginSDK.Query.TermSeparator}";
                 results.Add(new Result
                 {
                     Title = keyword,

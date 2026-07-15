@@ -1,20 +1,12 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Collections.Concurrent;
 using CommunityToolkit.Mvvm.DependencyInjection;
-using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Infrastructure.API;
-using Flow.Launcher.Infrastructure.Plugins;
-using Flow.Launcher.Infrastructure.Plugins.Interfaces;
-using Flow.Launcher.Infrastructure.Results;
-using Flow.Launcher.Infrastructure.UserSettings;
-using Flow.Launcher.PluginSDK.Logging;
+using Flow.Launcher.Core.UserSettings;
+using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.API;
+using Flow.Launcher.PluginSDK.Plugins;
+using Flow.Launcher.PluginSDK.Plugins.Interfaces;
 using Microsoft.Extensions.Logging;
-using ISavable = Flow.Launcher.Infrastructure.Plugins.Interfaces.ISavable;
+using ISavable = Flow.Launcher.PluginSDK.Plugins.Interfaces.ISavable;
 
 namespace Flow.Launcher.Core.Plugin
 {

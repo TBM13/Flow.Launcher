@@ -2,9 +2,9 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
-using Flow.Launcher.Core;
+using Flow.Launcher.Core.Hotkeys;
 using Flow.Launcher.Core.Settings;
-using Flow.Launcher.Infrastructure.UserSettings;
+using Flow.Launcher.Core.UserSettings;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
 

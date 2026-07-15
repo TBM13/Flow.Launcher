@@ -5,10 +5,9 @@ using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Core.Settings;
-using Flow.Launcher.Infrastructure.Image;
-using Flow.Launcher.Infrastructure.Results;
-using Flow.Launcher.Infrastructure.WPF;
+using Flow.Launcher.Core.Image;
 using Flow.Launcher.PluginSDK.Logging;
+using Flow.Launcher.PluginSDK;
 
 namespace Flow.Launcher.ViewModel
 {

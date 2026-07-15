@@ -9,7 +9,7 @@ using Windows.Win32.UI.Shell;
 using Windows.Win32.UI.Shell.Common;
 using Windows.Win32.UI.WindowsAndMessaging;
 
-namespace Flow.Launcher.Infrastructure.Helpers;
+namespace Flow.Launcher.Interop.Shell;
 
 /// <summary>
 /// Shows the Windows Explorer shell context menu for files, folders or drives.

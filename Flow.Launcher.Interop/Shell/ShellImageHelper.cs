@@ -7,7 +7,7 @@ using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.Shell;
 
-namespace Flow.Launcher.Infrastructure.Image;
+namespace Flow.Launcher.Interop.Shell;
 
 /// <summary>
 /// Subenum of <see cref="SIIGBF"/>.

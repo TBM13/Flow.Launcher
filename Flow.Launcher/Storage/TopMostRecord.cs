@@ -2,9 +2,9 @@
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Flow.Launcher.Infrastructure.Results;
-using Flow.Launcher.Infrastructure.Storage;
-using Flow.Launcher.Infrastructure.UserSettings;
+using Flow.Launcher.Core.Storage;
+using Flow.Launcher.Core.UserSettings;
+using Flow.Launcher.PluginSDK;
 using Microsoft.Extensions.Logging;
 
 namespace Flow.Launcher.Storage

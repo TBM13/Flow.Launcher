@@ -3,7 +3,7 @@
 // TODO:
 // Workaround to build with Flow.Launcher.Localization package
 // Remove this once we get rid of it
-public interface IPublicAPI : Infrastructure.API.IPublicAPI
+public interface IPublicAPI : PluginSDK.API.IPublicAPI
 {
 
 }

@@ -1,11 +1,10 @@
 ﻿using System.Diagnostics;
 using System.Windows.Controls;
-using Flow.Launcher.Infrastructure.Helpers;
-using Flow.Launcher.Infrastructure.Plugins;
-using Flow.Launcher.Infrastructure.Plugins.Interfaces;
-using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Plugin.ProcessKiller.ViewModels;
 using Flow.Launcher.Plugin.ProcessKiller.Views;
+using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.Plugins;
+using Flow.Launcher.PluginSDK.Plugins.Interfaces;
 
 namespace Flow.Launcher.Plugin.ProcessKiller;
 
@@ -80,7 +79,7 @@ public class Main : IPlugin, IContextMenu, ISettingProvider
                 SubTitle = pr.Path,
                 Score = score,
                 ContextData = pr.Path,
-                AutoCompleteText = $"{query.ActionKeyword}{Infrastructure.Results.Query.TermSeparator}{p.ProcessName}",
+                AutoCompleteText = $"{query.ActionKeyword}{PluginSDK.Query.TermSeparator}{p.ProcessName}",
                 Action = c =>
                 {
                     ProcessUtils.TryKill(p);

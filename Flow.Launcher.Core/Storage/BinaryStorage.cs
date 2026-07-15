@@ -1,7 +1,7 @@
 ﻿using MemoryPack;
 using Microsoft.Extensions.Logging;
 
-namespace Flow.Launcher.Infrastructure.Storage;
+namespace Flow.Launcher.Core.Storage;
 
 /// <summary>
 /// Serialize and deserialize an object to and from a binary file.

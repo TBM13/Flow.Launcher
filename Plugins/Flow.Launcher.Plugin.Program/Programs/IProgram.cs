@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Flow.Launcher.Infrastructure.API;
-using Flow.Launcher.Infrastructure.Results;
+using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.API;
 
 namespace Flow.Launcher.Plugin.Program.Programs
 {

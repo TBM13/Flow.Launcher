@@ -1,5 +1,5 @@
 ﻿using System;
-using Flow.Launcher.Infrastructure.Plugins;
+using Flow.Launcher.PluginSDK.Plugins;
 
 namespace Flow.Launcher.Core.Plugin
 {

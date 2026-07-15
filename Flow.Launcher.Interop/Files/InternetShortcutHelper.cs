@@ -5,7 +5,7 @@ using System.Windows.Media.Imaging;
 using Windows.Win32;
 using Windows.Win32.UI.WindowsAndMessaging;
 
-namespace Flow.Launcher.Infrastructure.Helpers;
+namespace Flow.Launcher.Interop.Files;
 
 /// <summary>
 /// Represents the information contained in an Internet Shortcut (.url) file.

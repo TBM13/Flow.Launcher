@@ -3,8 +3,8 @@ using System.IO;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Plugin.Explorer.Search;
+using Flow.Launcher.PluginSDK.Plugins;
 using Microsoft.Win32;
 
 namespace Flow.Launcher.Plugin.Explorer.ViewModels;

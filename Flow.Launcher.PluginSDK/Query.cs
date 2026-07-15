@@ -1,4 +1,4 @@
-﻿namespace Flow.Launcher.Infrastructure.Results;
+﻿namespace Flow.Launcher.PluginSDK;
 
 /// <summary>
 /// Represents a query that is sent to a plugin.

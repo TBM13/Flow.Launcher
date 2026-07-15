@@ -1,12 +1,13 @@
 ﻿using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows.Input;
+using Flow.Launcher.PluginSDK.Hotkeys;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Input.KeyboardAndMouse;
 using Windows.Win32.UI.WindowsAndMessaging;
 
-namespace Flow.Launcher.Infrastructure.Hotkeys;
+namespace Flow.Launcher.Interop.Input;
 
 /// <summary>
 /// Manages global keyboard hooks to detect hotkeys, pressed keys, etc.

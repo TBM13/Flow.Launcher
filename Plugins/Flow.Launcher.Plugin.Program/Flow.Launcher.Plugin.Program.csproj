@@ -17,7 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Flow.Launcher.Infrastructure\Flow.Launcher.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\Flow.Launcher.PluginSDK\Flow.Launcher.PluginSDK.csproj" />
+    <ProjectReference Include="..\..\Flow.Launcher.Interop\Flow.Launcher.Interop.csproj" />
   </ItemGroup>
   
   <ItemGroup>

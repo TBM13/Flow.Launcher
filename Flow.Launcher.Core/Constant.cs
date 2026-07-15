@@ -1,8 +1,7 @@
 ﻿using System.Diagnostics;
-using System.IO;
 using System.Reflection;
 
-namespace Flow.Launcher.Infrastructure;
+namespace Flow.Launcher.Core;
 
 public static class Constant
 {

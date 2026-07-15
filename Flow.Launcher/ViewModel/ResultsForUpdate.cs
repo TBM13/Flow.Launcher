@@ -1,5 +1,5 @@
-﻿using Flow.Launcher.Infrastructure.Plugins;
-using Flow.Launcher.Infrastructure.Results;
+﻿using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.Plugins;
 using System.Collections.Generic;
 using System.Threading;
 

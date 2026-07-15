@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Flow.Launcher.Infrastructure\Flow.Launcher.Infrastructure.csproj" />
     <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.Calculator\Flow.Launcher.Plugin.Calculator.csproj" />
     <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.Explorer\Flow.Launcher.Plugin.Explorer.csproj" />
     <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.PluginIndicator\Flow.Launcher.Plugin.PluginIndicator.csproj" />

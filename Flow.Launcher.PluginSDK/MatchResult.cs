@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Flow.Launcher.Infrastructure.Helpers;
+namespace Flow.Launcher.PluginSDK;
 
 /// <summary>
 /// Represents the search precision used to filter search results.

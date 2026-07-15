@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
+using Flow.Launcher.Core;
 
-namespace Flow.Launcher.Infrastructure.UserSettings;
+namespace Flow.Launcher.Core.UserSettings;
 
 public static class DataLocation
 {

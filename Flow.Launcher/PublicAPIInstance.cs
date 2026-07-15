@@ -17,20 +17,20 @@ using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Core.Text;
 using Flow.Launcher.Helper;
-using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Infrastructure.API;
-using Flow.Launcher.Infrastructure.Helpers;
-using Flow.Launcher.Infrastructure.Image;
-using Flow.Launcher.Infrastructure.Plugins;
-using Flow.Launcher.Infrastructure.Plugins.Interfaces;
-using Flow.Launcher.Infrastructure.Storage;
-using Flow.Launcher.Infrastructure.UserSettings;
+using Flow.Launcher.Core.Image;
+using Flow.Launcher.Core.Storage;
+using Flow.Launcher.Core.UserSettings;
 using Flow.Launcher.Interop;
 using Flow.Launcher.Interop.Programs;
 using Flow.Launcher.PluginSDK.Logging;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern;
 using Microsoft.Extensions.Logging;
+using Flow.Launcher.PluginSDK.Plugins;
+using Flow.Launcher.PluginSDK.API;
+using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.Plugins.Interfaces;
+using Flow.Launcher.Interop.Shell;
 
 namespace Flow.Launcher
 {

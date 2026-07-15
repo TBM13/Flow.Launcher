@@ -6,8 +6,8 @@ using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
-using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Infrastructure.UserSettings;
+using Flow.Launcher.Core;
+using Flow.Launcher.Core.UserSettings;
 using Flow.Launcher.PluginSDK.Logging;
 
 namespace Flow.Launcher.SettingPages.ViewModels;

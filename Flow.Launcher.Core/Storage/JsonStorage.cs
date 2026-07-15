@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
 
-namespace Flow.Launcher.Infrastructure.Storage;
+namespace Flow.Launcher.Core.Storage;
 
 /// <summary>
 /// Serialize and deserialize an object to and from a JSON file.

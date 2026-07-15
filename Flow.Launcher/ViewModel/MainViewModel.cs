@@ -11,17 +11,16 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core;
+using Flow.Launcher.Core.Hotkeys;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Settings;
-using Flow.Launcher.Infrastructure;
-using Flow.Launcher.Infrastructure.Plugins;
-using Flow.Launcher.Infrastructure.Plugins.Interfaces;
-using Flow.Launcher.Infrastructure.Results;
-using Flow.Launcher.Infrastructure.Storage;
-using Flow.Launcher.Infrastructure.UserSettings;
-using Flow.Launcher.Infrastructure.WPF;
+using Flow.Launcher.Core.Storage;
+using Flow.Launcher.Core.UserSettings;
 using Flow.Launcher.Interop;
 using Flow.Launcher.Interop.Shell;
+using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.Plugins;
+using Flow.Launcher.PluginSDK.Plugins.Interfaces;
 using Flow.Launcher.Storage;
 using iNKORE.UI.WPF.Modern;
 using Microsoft.Extensions.Logging;
@@ -241,7 +240,7 @@ namespace Flow.Launcher.ViewModel
             var query = QueryBuilder.Build(QueryText, isRequery: false, _pluginManager.GetNonGlobalPlugins());
             string actionKeyword = query.ActionKeyword.Length == 0
                 ? string.Empty
-                : query.ActionKeyword + Infrastructure.Results.Query.TermSeparator;
+                : query.ActionKeyword + PluginSDK.Query.TermSeparator;
 
             string search = query.Search;
             if (search.EndsWith('\\') || search.EndsWith('/'))

@@ -8,7 +8,7 @@
     xmlns:ikw="http://schemas.inkore.net/lib/ui/wpf"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
-    xmlns:userSettings="clr-namespace:Flow.Launcher.Infrastructure.UserSettings;assembly=Flow.Launcher.Infrastructure"
+    xmlns:userSettings="clr-namespace:Flow.Launcher.Core.UserSettings;assembly=Flow.Launcher.Core"
     xmlns:viewModels="clr-namespace:Flow.Launcher.SettingPages.ViewModels"
     Title="Hotkey"
     d:DataContext="{d:DesignInstance viewModels:SettingsPaneHotkeyViewModel}"
@@ -36,21 +36,15 @@
                     <ui:FontIcon Glyph="&#xeda7;" />
                 </ui:SettingsExpander.HeaderIcon>
 
-                <flowlauncher:HotkeyControl
-                   Id="ToggleFlowLauncher"
-                   WindowTitle="{DynamicResource flowlauncherHotkey}" />
+                <flowlauncher:HotkeyControl Id="ToggleFlowLauncher" WindowTitle="{DynamicResource flowlauncherHotkey}" />
 
                 <ui:SettingsExpander.Items>
-                    <ui:SettingsCard 
-                        Header="Magic Query"
-                        Description="Show Flow Launcher with a magic query depending on the computer's context (e.g. the explorer's path if a folder is opened and focused).">
+                    <ui:SettingsCard Description="Show Flow Launcher with a magic query depending on the computer's context (e.g. the explorer's path if a folder is opened and focused)." Header="Magic Query">
                         <ui:SettingsCard.HeaderIcon>
                             <ui:FontIcon Glyph="&#xeda7;" />
                         </ui:SettingsCard.HeaderIcon>
 
-                        <flowlauncher:HotkeyControl
-                           Id="MagicQuery"
-                           WindowTitle="Magic Query" />
+                        <flowlauncher:HotkeyControl Id="MagicQuery" WindowTitle="Magic Query" />
                     </ui:SettingsCard>
                 </ui:SettingsExpander.Items>
             </ui:SettingsExpander>
@@ -63,9 +57,7 @@
                     <ui:FontIcon Glyph="&#xe8a1;" />
                 </ui:SettingsCard.HeaderIcon>
 
-                <flowlauncher:HotkeyControl
-                    Id="TogglePreview"
-                    WindowTitle="{DynamicResource previewHotkey}" />
+                <flowlauncher:HotkeyControl Id="TogglePreview" WindowTitle="{DynamicResource previewHotkey}" />
             </ui:SettingsCard>
 
             <ui:SettingsExpander
@@ -138,14 +130,14 @@
                             <ui:FontIcon Glyph="&#xf0ad;" />
                         </ui:SettingsCard.HeaderIcon>
 
-                        <flowlauncher:HotkeyControl Id="SelectPreviousPage"/>
+                        <flowlauncher:HotkeyControl Id="SelectPreviousPage" />
                     </ui:SettingsCard>
                     <ui:SettingsCard Header="{DynamicResource SelectNextPageHotkey}">
                         <ui:SettingsCard.HeaderIcon>
                             <ui:FontIcon Glyph="&#xf0ae;" />
                         </ui:SettingsCard.HeaderIcon>
 
-                        <flowlauncher:HotkeyControl Id="SelectNextPage"/>
+                        <flowlauncher:HotkeyControl Id="SelectNextPage" />
                     </ui:SettingsCard>
 
                     <ui:SettingsCard Header="{DynamicResource QuickWidthHotkey}">
@@ -179,7 +171,7 @@
                     <ui:FontIcon Glyph="&#xe893;" />
                 </ui:SettingsExpander.HeaderIcon>
 
-                <flowlauncher:HotkeyControl Id="Autocomplete"/>
+                <flowlauncher:HotkeyControl Id="Autocomplete" />
             </ui:SettingsExpander>
 
             <ui:SettingsExpander Margin="0 4 0 0" Header="{DynamicResource SelectPrevItemHotkey}">
@@ -187,7 +179,7 @@
                     <ui:FontIcon Glyph="&#xe74a;" />
                 </ui:SettingsExpander.HeaderIcon>
 
-                <flowlauncher:HotkeyControl Id="SelectPreviousResult"/>
+                <flowlauncher:HotkeyControl Id="SelectPreviousResult" />
             </ui:SettingsExpander>
 
             <ui:SettingsExpander Margin="0 4 0 0" Header="{DynamicResource SelectNextItemHotkey}">
@@ -195,7 +187,7 @@
                     <ui:FontIcon Glyph="&#xe74b;" />
                 </ui:SettingsExpander.HeaderIcon>
 
-                <flowlauncher:HotkeyControl Id="SelectNextResult"/>
+                <flowlauncher:HotkeyControl Id="SelectNextResult" />
             </ui:SettingsExpander>
 
             <ui:SettingsExpander Margin="0 20 0 0" Header="{DynamicResource customQueryHotkey}">

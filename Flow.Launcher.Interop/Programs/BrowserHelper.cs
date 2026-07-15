@@ -1,8 +1,7 @@
 ﻿using System.IO;
-using Flow.Launcher.Interop.Programs;
 using Microsoft.Win32;
 
-namespace Flow.Launcher.Infrastructure.Helpers;
+namespace Flow.Launcher.Interop.Programs;
 
 /// <summary>
 /// Helper class for interacting with the default browser.

@@ -1,4 +1,4 @@
-﻿namespace Flow.Launcher.Infrastructure.WPF;
+﻿namespace Flow.Launcher.PluginSDK;
 
 /// <summary>
 /// Text with a font family.

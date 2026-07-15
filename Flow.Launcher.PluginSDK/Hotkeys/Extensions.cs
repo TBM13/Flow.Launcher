@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
-namespace Flow.Launcher.Infrastructure.Hotkeys;
+namespace Flow.Launcher.PluginSDK.Hotkeys;
 
 public static class Extensions
 {

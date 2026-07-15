@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Flow.Launcher.Infrastructure.UserSettings;
+using Flow.Launcher.Core.UserSettings;
 
 namespace Flow.Launcher
 {

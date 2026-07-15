@@ -1,10 +1,12 @@
 ﻿using System.Collections.Concurrent;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Flow.Launcher.Infrastructure.Helpers;
+using Flow.Launcher.Core;
+using Flow.Launcher.Interop.Files;
+using Flow.Launcher.Interop.Shell;
 using Flow.Launcher.PluginSDK.Logging;
 
-namespace Flow.Launcher.Infrastructure.Image;
+namespace Flow.Launcher.Core.Image;
 
 public class ImageLoader
 {

@@ -1,5 +1,5 @@
-﻿using Flow.Launcher.Infrastructure.Storage;
-using Flow.Launcher.Infrastructure.UserSettings;
+﻿using Flow.Launcher.Core.Storage;
+using Flow.Launcher.Core.UserSettings;
 using Microsoft.Extensions.Logging;
 
 namespace Flow.Launcher.Core.Settings;

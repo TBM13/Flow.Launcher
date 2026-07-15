@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using Flow.Launcher.PluginSDK.Hotkeys;
 
-namespace Flow.Launcher.Infrastructure.Results;
+namespace Flow.Launcher.PluginSDK;
 
 /// <summary>
 /// Context provided when invoking a <see cref="Result"/>'s action or hotkey.

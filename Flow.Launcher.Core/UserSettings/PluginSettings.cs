@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using Flow.Launcher.Infrastructure.Plugins;
+using Flow.Launcher.PluginSDK.Plugins;
 
-namespace Flow.Launcher.Infrastructure.UserSettings;
+namespace Flow.Launcher.Core.UserSettings;
 
 public class PluginsSettings
 {

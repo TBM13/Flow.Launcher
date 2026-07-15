@@ -1,11 +1,10 @@
 ﻿using System.Diagnostics;
 using System.IO;
-using Flow.Launcher.Infrastructure.Plugins;
-using Flow.Launcher.Infrastructure.Plugins.Interfaces;
-using Flow.Launcher.Infrastructure.Results;
-using Flow.Launcher.Infrastructure.WPF;
 using Flow.Launcher.Interop.Programs;
 using Flow.Launcher.Plugin.Explorer.Search;
+using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.Plugins;
+using Flow.Launcher.PluginSDK.Plugins.Interfaces;
 
 namespace Flow.Launcher.Plugin.Explorer;
 
