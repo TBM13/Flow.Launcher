@@ -3,13 +3,15 @@ using System.Text;
 using System.Windows;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Core;
+using Flow.Launcher.Core.Hotkeys;
+using Flow.Launcher.Core.Image;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Core.Text;
 using Flow.Launcher.Helper;
-using Flow.Launcher.Core.Image;
 using Flow.Launcher.Interop;
+using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.SettingPages.ViewModels;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern.Common;
@@ -17,8 +19,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Threading;
-using Flow.Launcher.Core.Hotkeys;
-using Flow.Launcher.PluginSDK.API;
 #if DEBUG
 using ZLogger;
 #endif
@@ -51,7 +51,7 @@ public partial class App : Application
             return;
         }
 
-        using EarlyLoggerFactory earlyLoggerFactory = new();
+        EarlyLoggerFactory earlyLoggerFactory = new();
 
         ISettingsAPI settings;
         try

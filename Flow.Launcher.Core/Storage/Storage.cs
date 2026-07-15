@@ -46,6 +46,7 @@ public abstract class Storage<T>(ILoggerFactory loggerFactory, string filePath, 
     }
     private T? TryLoad(string path)
     {
+        _logger.LogDebug($"Attempting to load and deserialize '{path}'");
         try
         {
             using FileStream stream = File.OpenRead(path);
@@ -94,6 +95,7 @@ public abstract class Storage<T>(ILoggerFactory loggerFactory, string filePath, 
     }
     private async Task<T?> TryLoadAsync(string path)
     {
+        _logger.LogDebug($"Attempting to load and deserialize '{path}'");
         try
         {
             await using FileStream stream = new(
@@ -150,6 +152,7 @@ public abstract class Storage<T>(ILoggerFactory loggerFactory, string filePath, 
     /// <exception cref="InvalidOperationException"/>
     public bool TrySave()
     {
+        _logger.LogDebug($"Attempting to serialize to '{_filePath}'");
         if (_data is null)
             throw new InvalidOperationException("Load must be called before Save()");
 
