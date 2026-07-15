@@ -1,95 +1,89 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.IO;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Plugin.Explorer.Search.DirectoryInfo;
 
-namespace Flow.Launcher.Plugin.Explorer.Search
+namespace Flow.Launcher.Plugin.Explorer.Search;
+
+public class SearchManager(Settings settings, PluginInitContext context)
 {
-    public class SearchManager(Settings settings, PluginInitContext context)
+    internal PluginInitContext Context = context;
+    internal Settings Settings = settings;
+
+    /// <summary>
+    /// Note: A path that ends with "\" and one that doesn't will not be regarded as equal.
+    /// </summary>
+    public class PathEqualityComparator : IEqualityComparer<Result>
     {
-        internal PluginInitContext Context = context;
-        internal Settings Settings = settings;
+        public static PathEqualityComparator Default => field ??= new PathEqualityComparator();
 
-        /// <summary>
-        /// Note: A path that ends with "\" and one that doesn't will not be regarded as equal.
-        /// </summary>
-        public class PathEqualityComparator : IEqualityComparer<Result>
+        public bool Equals(Result? x, Result? y)
         {
-            public static PathEqualityComparator Instance => field ??= new PathEqualityComparator();
+            if (ReferenceEquals(x, y)) return true;
+            if (x is null || y is null) return false;
 
-            public bool Equals(Result? x, Result? y)
-            {
-                if (ReferenceEquals(x, y)) return true;
-                if (x is null || y is null) return false;
-
-                return x.Title.Equals(y.Title, StringComparison.OrdinalIgnoreCase)
-                    && string.Equals(x.SubTitle, y.SubTitle, StringComparison.OrdinalIgnoreCase);
-            }
-
-            public int GetHashCode(Result obj)
-            {
-                return HashCode.Combine(obj.Title.ToLowerInvariant(), obj.SubTitle?.ToLowerInvariant() ?? "");
-            }
+            return x.Title.Equals(y.Title, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(x.SubTitle, y.SubTitle, StringComparison.OrdinalIgnoreCase);
         }
 
-        internal async Task<List<Result>> SearchAsync(Query query, CancellationToken token)
+        public int GetHashCode(Result obj)
         {
-            bool isPathSearch = Path.IsPathFullyQualified(query.Search)
-                || EnvironmentVariables.IsEnvironmentVariableSearch(query.Search)
-                || EnvironmentVariables.HasEnvironmentVar(query.Search);
-
-            if (isPathSearch)
-                return await PathSearchAsync(query, token).ConfigureAwait(false);
-
-            return [];
+            return HashCode.Combine(obj.Title.ToLowerInvariant(), obj.SubTitle?.ToLowerInvariant() ?? "");
         }
+    }
 
-        private async Task<List<Result>> PathSearchAsync(Query query, CancellationToken token = default)
-        {
-            var querySearch = query.Search;
-            var results = new HashSet<Result>(PathEqualityComparator.Instance);
+    internal async Task<List<Result>> SearchAsync(Query query, CancellationToken token)
+    {
+        bool isPathSearch = Path.IsPathFullyQualified(query.Search)
+            || EnvironmentVariables.IsEnvironmentVariableSearch(query.Search)
+            || EnvironmentVariables.HasEnvironmentVar(query.Search);
 
-            if (EnvironmentVariables.IsEnvironmentVariableSearch(querySearch))
-                return EnvironmentVariables.GetEnvironmentStringPathSuggestions(querySearch, query, Context);
+        if (isPathSearch)
+            return await PathSearchAsync(query, token).ConfigureAwait(false);
 
-            // Query is a location path with a full environment variable, eg. %appdata%\somefolder\, c:\users\%USERNAME%\downloads
-            var needToExpand = EnvironmentVariables.HasEnvironmentVar(querySearch);
-            var path = needToExpand ? Environment.ExpandEnvironmentVariables(querySearch) : querySearch;
+        return [];
+    }
 
-            // if user uses the unix directory separator, we need to convert it to windows directory separator
-            path = path.Replace(Constants.UnixDirectorySeparator, Constants.DirectorySeparator);
+    private async Task<List<Result>> PathSearchAsync(Query query, CancellationToken token = default)
+    {
+        var querySearch = query.Search;
+        var results = new HashSet<Result>(PathEqualityComparator.Default);
 
-            // Check that actual location exists, otherwise directory search will throw directory not found exception
-            string dirPath = Path.GetDirectoryName(path) ?? path;
-            if (!Directory.Exists(dirPath))
-                return [.. results];
+        if (EnvironmentVariables.IsEnvironmentVariableSearch(querySearch))
+            return EnvironmentVariables.GetEnvironmentStringPathSuggestions(querySearch, query, Context);
 
-            if (path.EndsWith('\\'))
-            {
-                results.Add(path.EndsWith(":\\")
-                    ? ResultManager.CreateDriveSpaceDisplayResult(query, path)
-                    : ResultManager.CreateOpenCurrentFolderResult(query, path));
-            }
+        // Query is a location path with a full environment variable, eg. %appdata%\somefolder\, c:\users\%USERNAME%\downloads
+        var needToExpand = EnvironmentVariables.HasEnvironmentVar(querySearch);
+        var path = needToExpand ? Environment.ExpandEnvironmentVariables(querySearch) : querySearch;
 
-            if (token.IsCancellationRequested)
-                return [];
+        // if user uses the unix directory separator, we need to convert it to windows directory separator
+        path = path.Replace(Constants.UnixDirectorySeparator, Path.DirectorySeparatorChar);
 
-            IAsyncEnumerable<SearchResult> directoryResult = DirectoryInfoSearch.TopLevelDirectorySearch(query, path, token, out bool isRecursive).ToAsyncEnumerable();
-
-            if (token.IsCancellationRequested)
-                return [];
-
-            await foreach (var directory in directoryResult.WithCancellation(token).ConfigureAwait(false))
-            {
-                results.Add(ResultManager.CreateResult(query, directory, isRecursive));
-            }
-
+        // Check that actual location exists, otherwise directory search will throw directory not found exception
+        string dirPath = Path.GetDirectoryName(path) ?? path;
+        if (!Directory.Exists(dirPath))
             return [.. results];
+
+        if (path.EndsWith('\\'))
+        {
+            results.Add(path.EndsWith(":\\")
+                ? ResultManager.CreateDriveSpaceDisplayResult(query, path)
+                : ResultManager.CreateOpenCurrentFolderResult(query, path));
         }
+
+        if (token.IsCancellationRequested)
+            return [];
+
+        IAsyncEnumerable<SearchResult> directoryResult = DirectoryInfoSearch.TopLevelDirectorySearch(path, token, out bool isRecursive).ToAsyncEnumerable();
+
+        if (token.IsCancellationRequested)
+            return [];
+
+        await foreach (var directory in directoryResult.WithCancellation(token).ConfigureAwait(false))
+        {
+            results.Add(ResultManager.CreateResult(query, directory, isRecursive));
+        }
+
+        return [.. results];
     }
 }

@@ -1,9 +1,15 @@
-﻿namespace Flow.Launcher.Plugin.Explorer.Search
+﻿namespace Flow.Launcher.Plugin.Explorer.Search;
+
+public enum ResultType
 {
-    public readonly record struct SearchResult
-    {
-        public string FullPath { get; init; }
-        public ResultType Type { get; init; }
-        public int Score { get; init; }
-    }
+    Volume,
+    Folder,
+    File
+}
+
+public readonly record struct SearchResult
+{
+    public string FullPath { get; init; }
+    public ResultType Type { get; init; }
+    public int Score { get; init; }
 }

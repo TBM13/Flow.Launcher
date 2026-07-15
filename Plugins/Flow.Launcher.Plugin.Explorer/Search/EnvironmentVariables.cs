@@ -1,108 +1,101 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.IO;
-using System.Linq;
 using Flow.Launcher.Infrastructure.Plugins;
 using Flow.Launcher.Infrastructure.Results;
 
-namespace Flow.Launcher.Plugin.Explorer.Search
+namespace Flow.Launcher.Plugin.Explorer.Search;
+
+public static class EnvironmentVariables
 {
-    public static class EnvironmentVariables
+    private static Dictionary<string, string> EnvStringPaths
     {
-        private static Dictionary<string, string> EnvStringPaths
+        get
         {
-            get
+            field ??= LoadEnvironmentStringPaths();
+            return field;
+        }
+    }
+
+    internal static bool IsEnvironmentVariableSearch(ReadOnlySpan<char> search)
+    {
+        return search.StartsWith('%')
+                && search != "%%"
+                && !search.Contains('\\')
+                && EnvStringPaths.Count > 0;
+    }
+
+    public static bool HasEnvironmentVar(string search)
+    {
+        // "c:\foo %appdata%\" returns false
+        string[] splited = search.Split(Path.DirectorySeparatorChar);
+        return splited.Any(dir => dir.StartsWith('%') &&
+                                    dir.EndsWith('%') &&
+                                    dir.Length > 2 &&
+                                    dir.Split('%').Length == 3);
+    }
+
+    private static Dictionary<string, string> LoadEnvironmentStringPaths()
+    {
+        Dictionary<string, string> dic = new(StringComparer.InvariantCultureIgnoreCase);
+        string homedrive = Environment.GetEnvironmentVariable("HOMEDRIVE") ?? "C:\\";
+
+        if (!homedrive.EndsWith('\\'))
+            homedrive += '\\';
+
+        foreach (DictionaryEntry special in Environment.GetEnvironmentVariables())
+        {
+            var path = special.Value!.ToString()!;
+            // we add a trailing slash to the path to make sure drive paths become valid absolute paths.
+            // for example, if %systemdrive% is C: we turn it to C:\
+            if (!path.EndsWith('\\'))
+                path += '\\';
+
+            // if we don't have an absolute path, we use Path.GetFullPath to get one.
+            // for example, if %homepath% is \Users\John we turn it to C:\Users\John
+            // Add basepath for GetFullPath() to parse %HOMEPATH% correctly
+            path = Path.IsPathFullyQualified(path) ? path : Path.GetFullPath(path, homedrive);
+
+            if (Directory.Exists(path))
             {
-                field ??= LoadEnvironmentStringPaths();
-                return field;
+                // Variables are returned with a mixture of all upper/lower case. 
+                // Call ToUpper() to make the results look consistent
+                dic.Add(special.Key.ToString()!.ToUpper(), path);
             }
         }
 
-        internal static bool IsEnvironmentVariableSearch(string search)
+        return dic;
+    }
+
+    internal static List<Result> GetEnvironmentStringPathSuggestions(string querySearch, Query query, PluginInitContext context)
+    {
+        var results = new List<Result>();
+        var search = querySearch;
+
+        if (querySearch.EndsWith('%') && search.Length > 1)
         {
-            return search.StartsWith('%')
-                    && search != "%%"
-                    && !search.Contains('\\')
-                    && EnvStringPaths.Count > 0;
+            // query starts and ends with a %, find an exact match from env-string paths
+            search = querySearch.Substring(1, search.Length - 2);
+
+            if (EnvStringPaths.TryGetValue(search, out var expandedPath))
+            {
+                results.Add(ResultManager.CreateFolderResult($"%{search}%", expandedPath, expandedPath, query));
+                return results;
+            }
         }
 
-        public static bool HasEnvironmentVar(string search)
+        if (querySearch == "%")
+            search = ""; // Get all paths
+        else
+            search = search[1..];
+
+        foreach (var p in EnvStringPaths)
         {
-            // "c:\foo %appdata%\" returns false
-            var splited = search.Split(Path.DirectorySeparatorChar);
-            return splited.Any(dir => dir.StartsWith('%') &&
-                                        dir.EndsWith('%') &&
-                                        dir.Length > 2 &&
-                                        dir.Split('%').Length == 3);
+            if (p.Key.StartsWith(search, StringComparison.InvariantCultureIgnoreCase))
+            {
+                results.Add(ResultManager.CreateFolderResult($"%{p.Key}%", p.Value, p.Value, query));
+            }
         }
 
-        private static Dictionary<string, string> LoadEnvironmentStringPaths()
-        {
-            var dic = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-            var homedrive = Environment.GetEnvironmentVariable("HOMEDRIVE") ?? "C:\\";
-            if (!homedrive.EndsWith('\\'))
-                homedrive += '\\';
-
-            foreach (DictionaryEntry special in Environment.GetEnvironmentVariables())
-            {
-                var path = special.Value!.ToString()!;
-                // we add a trailing slash to the path to make sure drive paths become valid absolute paths.
-                // for example, if %systemdrive% is C: we turn it to C:\
-                if (!path.EndsWith('\\'))
-                    path += '\\';
-
-                // if we don't have an absolute path, we use Path.GetFullPath to get one.
-                // for example, if %homepath% is \Users\John we turn it to C:\Users\John
-                // Add basepath for GetFullPath() to parse %HOMEPATH% correctly
-                path = Path.IsPathFullyQualified(path) ? path : Path.GetFullPath(path, homedrive);
-
-                if (Directory.Exists(path))
-                {
-                    // Variables are returned with a mixture of all upper/lower case. 
-                    // Call ToUpper() to make the results look consistent
-                    dic.Add(special.Key.ToString()!.ToUpper(), path);
-                }
-            }
-
-            return dic;
-        }
-
-        internal static List<Result> GetEnvironmentStringPathSuggestions(string querySearch, Query query, PluginInitContext context)
-        {
-            var results = new List<Result>();
-            var search = querySearch;
-
-            if (querySearch.EndsWith('%') && search.Length > 1)
-            {
-                // query starts and ends with a %, find an exact match from env-string paths
-                search = querySearch.Substring(1, search.Length - 2);
-
-                if (EnvStringPaths.TryGetValue(search, out var expandedPath))
-                {
-                    results.Add(ResultManager.CreateFolderResult($"%{search}%", expandedPath, expandedPath, query));
-                    return results;
-                }
-            }
-
-            if (querySearch == "%")
-            {
-                search = ""; // Get all paths
-            }
-            else
-            {
-                search = search.Substring(1);
-            }
-
-            foreach (var p in EnvStringPaths)
-            {
-                if (p.Key.StartsWith(search, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    results.Add(ResultManager.CreateFolderResult($"%{p.Key}%", p.Value, p.Value, query));
-                }
-            }
-
-            return results;
-        }
+        return results;
     }
 }

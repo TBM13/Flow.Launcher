@@ -1,46 +1,43 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using Flow.Launcher.Plugin.Explorer.ViewModels;
 
-namespace Flow.Launcher.Plugin.Explorer.Views
+namespace Flow.Launcher.Plugin.Explorer.Views;
+
+public partial class ExplorerSettings
 {
-    public partial class ExplorerSettings
+    private readonly List<Expander> _expanders;
+
+    public ExplorerSettings(SettingsViewModel viewModel)
     {
-        private readonly List<Expander> _expanders;
+        DataContext = viewModel;
+        InitializeComponent();
+        DataContext = viewModel;
 
-        public ExplorerSettings(SettingsViewModel viewModel)
+        _expanders =
+        [
+            GeneralSettingsExpander,
+            PreviewPanelExpander
+        ];
+    }
+
+    private void AllowOnlyNumericInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+    {
+        e.Handled = e.Text.ToCharArray().Any(c => !char.IsDigit(c));
+    }
+
+    private void Expander_Expanded(object sender, RoutedEventArgs e)
+    {
+        if (sender is Expander expandedExpander)
         {
-            DataContext = viewModel;
-            InitializeComponent();
-            DataContext = viewModel;
+            // Ensure _expanders is not null and contains items
+            if (_expanders == null || _expanders.Count == 0) return;
 
-            _expanders =
-            [
-                GeneralSettingsExpander,
-                PreviewPanelExpander
-            ];
-        }
-
-        private void AllowOnlyNumericInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
-        {
-            e.Handled = e.Text.ToCharArray().Any(c => !char.IsDigit(c));
-        }
-
-        private void Expander_Expanded(object sender, RoutedEventArgs e)
-        {
-            if (sender is Expander expandedExpander)
+            foreach (var expander in _expanders)
             {
-                // Ensure _expanders is not null and contains items
-                if (_expanders == null || _expanders.Count == 0) return;
-
-                foreach (var expander in _expanders)
+                if (expander != null && expander != expandedExpander && expander.IsExpanded)
                 {
-                    if (expander != null && expander != expandedExpander && expander.IsExpanded)
-                    {
-                        expander.IsExpanded = false;
-                    }
+                    expander.IsExpanded = false;
                 }
             }
         }
