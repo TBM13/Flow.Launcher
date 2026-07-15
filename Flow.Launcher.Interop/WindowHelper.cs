@@ -56,27 +56,29 @@ public static class WindowHelper
     /// <exception cref="Win32Exception"></exception>
     public static List<nint> GetAllWindows()
     {
-        List<nint> visibleWindows = new(256);
+        List<nint> windows = new(256);
         bool res = PInvoke.EnumWindows((hWnd, _) =>
         {
-            visibleWindows.Add(hWnd);
+            windows.Add(hWnd);
             return true;
         }, default);
 
         if (!res)
             throw new Win32Exception(Marshal.GetLastPInvokeError());
 
-        return visibleWindows;
+        return windows;
     }
 
     /// <summary>
     /// Retrieves the ID of the thread that created the specified window and, optionally, the ID of the process that created the window.
     /// </summary>
+    /// <param name="processId">The ID of the process. It is never zero.</param>
+    /// <returns>The ID of the thread that created the window. The ID is never zero.</returns>
     /// <exception cref="Win32Exception"></exception>
     public static uint GetWindowThreadProcessId(nint hwnd, out uint processId)
     {
         uint res = PInvoke.GetWindowThreadProcessId(new(hwnd), out processId);
-        if (res == 0)
+        if (res == 0 || processId == 0)
             throw new Win32Exception(Marshal.GetLastPInvokeError());
 
         return res;
@@ -133,6 +135,7 @@ public static class WindowHelper
     /// <summary>
     /// Checks whether the given window is actually visible.
     /// </summary>
+    /// <remarks>A minimized window may still be considered visible.</remarks>
     /// <exception cref="Win32Exception"/>
     public static bool IsWindowVisible(nint hwnd)
     {
