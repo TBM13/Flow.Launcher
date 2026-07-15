@@ -19,6 +19,7 @@ using Flow.Launcher.Core.UserSettings;
 using Flow.Launcher.Interop;
 using Flow.Launcher.Interop.Shell;
 using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Plugins;
 using Flow.Launcher.PluginSDK.Plugins.Interfaces;
 using Flow.Launcher.Storage;
@@ -197,7 +198,7 @@ namespace Flow.Launcher.ViewModel
             Hide();
 
             await _pluginManager.ReloadDataAsync().ConfigureAwait(false);
-            App.App.API.ShowMsg(Localize.success(),
+            IPublicAPI.Instance.ShowMsg(Localize.success(),
                 Localize.completedSuccessfully());
         }
 
@@ -317,7 +318,7 @@ namespace Flow.Launcher.ViewModel
         [RelayCommand]
         private void OpenSetting()
         {
-            App.App.API.OpenSettingDialog();
+            IPublicAPI.Instance.OpenSettingDialog();
         }
 
         [RelayCommand]
@@ -399,7 +400,7 @@ namespace Flow.Launcher.ViewModel
 
             if (result != null)
             {
-                App.App.API.CopyToClipboard(result, directCopy: false);
+                IPublicAPI.Instance.CopyToClipboard(result, directCopy: false);
             }
         }
 
@@ -896,10 +897,10 @@ namespace Flow.Launcher.ViewModel
                     (
                         r =>
                         {
-                            var match = App.App.API.FuzzySearch(query, r.Title);
+                            var match = IPublicAPI.Instance.FuzzySearch(query, r.Title);
                             if (!match.IsSearchPrecisionScoreMet)
                             {
-                                match = App.App.API.FuzzySearch(query, r.SubTitle);
+                                match = IPublicAPI.Instance.FuzzySearch(query, r.SubTitle);
                             }
 
                             if (!match.IsSearchPrecisionScoreMet) return false;
@@ -964,7 +965,7 @@ namespace Flow.Launcher.ViewModel
                 if (plugins.Count == 1)
                 {
                     PluginIconPath = plugins.Single().IcoPath;
-                    PluginIconSource = await App.App.API.LoadImageAsync(PluginIconPath);
+                    PluginIconSource = await IPublicAPI.Instance.LoadImageAsync(PluginIconPath);
                 }
                 else
                 {
@@ -1218,8 +1219,8 @@ namespace Flow.Launcher.ViewModel
                     Action = _ =>
                     {
                         _topMostRecord.Remove(result);
-                        App.App.API.ShowMsg(Localize.success());
-                        App.App.API.ReQuery();
+                        IPublicAPI.Instance.ShowMsg(Localize.success());
+                        IPublicAPI.Instance.ReQuery();
                         return false;
                     },
                     Glyph = new GlyphInfo(Glyph: "\uE74B"),
@@ -1234,8 +1235,8 @@ namespace Flow.Launcher.ViewModel
                     Action = _ =>
                     {
                         _topMostRecord.AddOrUpdate(result);
-                        App.App.API.ShowMsg(Localize.success());
-                        App.App.API.ReQuery();
+                        IPublicAPI.Instance.ShowMsg(Localize.success());
+                        IPublicAPI.Instance.ReQuery();
                         return false;
                     },
                     Glyph = new GlyphInfo(Glyph: "\uE74A"),

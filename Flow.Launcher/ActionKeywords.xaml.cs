@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows;
 using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Plugins;
 using Flow.Launcher.ViewModel;
 
@@ -46,9 +47,9 @@ namespace Flow.Launcher
             var addedActionKeywords = newActionKeywords.Except(oldActionKeywords).ToList();
             var removedActionKeywords = oldActionKeywords.Except(newActionKeywords).ToList();
 
-            if (addedActionKeywords.Any(App.App.API.ActionKeywordAssigned))
+            if (addedActionKeywords.Any(IPublicAPI.Instance.ActionKeywordAssigned))
             {
-                App.App.API.ShowMsgBox(Localize.newActionKeywordsHasBeenAssigned());
+                IPublicAPI.Instance.ShowMsgBox(Localize.newActionKeywordsHasBeenAssigned());
                 return;
             }
 
@@ -64,7 +65,7 @@ namespace Flow.Launcher
             if (sortedOldActionKeywords.SequenceEqual(sortedNewActionKeywords))
             {
                 // User just changes the sequence of action keywords
-                App.App.API.ShowMsgBox(Localize.newActionKeywordsSameAsOld());
+                IPublicAPI.Instance.ShowMsgBox(Localize.newActionKeywordsSameAsOld());
             }
             else
             {
@@ -76,11 +77,11 @@ namespace Flow.Launcher
         {
             foreach (var actionKeyword in removedActionKeywords)
             {
-                App.App.API.RemoveActionKeyword(id, actionKeyword);
+                IPublicAPI.Instance.RemoveActionKeyword(id, actionKeyword);
             }
             foreach (var actionKeyword in addedActionKeywords)
             {
-                App.App.API.AddActionKeyword(id, actionKeyword);
+                IPublicAPI.Instance.AddActionKeyword(id, actionKeyword);
             }
 
             // Update action keywords text and close window

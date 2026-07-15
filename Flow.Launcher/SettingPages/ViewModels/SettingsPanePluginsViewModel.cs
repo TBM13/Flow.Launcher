@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core.Settings;
+using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.WPF;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern.Controls;
@@ -42,7 +43,7 @@ public partial class SettingsPanePluginsViewModel(ISettingsAPI settings) : Obser
     // Get all plugins: Initializing & Initialized & Init failed plugins
     // Include init failed ones so that we can uninstall them
     // Include initializing ones so that we can change related settings like action keywords, etc.
-    public List<PluginViewModel> PluginViewModels => _pluginViewModels ??= App.App.API.GetAllPlugins()
+    public List<PluginViewModel> PluginViewModels => _pluginViewModels ??= IPublicAPI.Instance.GetAllPlugins()
         .OrderBy(plugin => plugin.Disabled)
         .ThenBy(plugin => plugin.Name)
         .Select(plugin => new PluginViewModel
@@ -56,8 +57,8 @@ public partial class SettingsPanePluginsViewModel(ISettingsAPI settings) : Obser
     public bool SatisfiesFilter(PluginViewModel plugin)
     {
         return string.IsNullOrEmpty(FilterText) ||
-            App.App.API.FuzzySearch(FilterText, plugin.PluginMetadata.Name).IsSearchPrecisionScoreMet ||
-            App.App.API.FuzzySearch(FilterText, plugin.PluginMetadata.Description).IsSearchPrecisionScoreMet;
+            IPublicAPI.Instance.FuzzySearch(FilterText, plugin.PluginMetadata.Name).IsSearchPrecisionScoreMet ||
+            IPublicAPI.Instance.FuzzySearch(FilterText, plugin.PluginMetadata.Description).IsSearchPrecisionScoreMet;
     }
 
     [RelayCommand]

@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core;
 using Flow.Launcher.Core.UserSettings;
+using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Logging;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
@@ -36,7 +34,7 @@ public partial class SettingsPaneAboutViewModel : ObservableObject
     [RelayCommand]
     private void AskClearCacheFolderConfirmation()
     {
-        var confirmResult = App.App.API.ShowMsgBox(
+        var confirmResult = IPublicAPI.Instance.ShowMsgBox(
             Localize.clearcachefolderMessage(),
             Localize.clearcachefolder(),
             MessageBoxButton.YesNo
@@ -46,7 +44,7 @@ public partial class SettingsPaneAboutViewModel : ObservableObject
         {
             if (!ClearCacheFolder())
             {
-                App.App.API.ShowMsgBox(Localize.clearfolderfailMessage());
+                IPublicAPI.Instance.ShowMsgBox(Localize.clearfolderfailMessage());
             }
         }
     }
@@ -54,13 +52,13 @@ public partial class SettingsPaneAboutViewModel : ObservableObject
     [RelayCommand]
     private void OpenSettingsFolder()
     {
-        App.App.API.OpenDirectory(DataLocation.SettingsDirectory);
+        IPublicAPI.Instance.OpenDirectory(DataLocation.SettingsDirectory);
     }
 
     [RelayCommand]
     private void OpenCacheFolder()
     {
-        App.App.API.OpenDirectory(DataLocation.CacheDirectory);
+        IPublicAPI.Instance.OpenDirectory(DataLocation.CacheDirectory);
     }
 
     private bool ClearCacheFolder()

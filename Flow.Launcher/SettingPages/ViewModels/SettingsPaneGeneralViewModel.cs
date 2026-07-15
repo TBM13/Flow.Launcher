@@ -1,10 +1,11 @@
 ﻿using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Core.Hotkeys;
-using Flow.Launcher.PluginSDK.WPF;
-using Flow.Launcher.PluginSDK;
+using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Interop.Hardware;
+using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.API;
+using Flow.Launcher.PluginSDK.WPF;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
 
@@ -61,13 +62,13 @@ public partial class SettingsPaneGeneralViewModel(ISettingsAPI settings) : Obser
         // Under non-administrator, we cannot delete or set the logon task which is run as administrator
         if (AlwaysRunAsAdmin && !Environment.IsPrivilegedProcess)
         {
-            if (App.App.API.ShowMsgBox(
-                App.App.API.GetTranslation("runAsAdministratorChangeAndRestart"),
-                App.App.API.GetTranslation("runAsAdministratorChange"),
+            if (IPublicAPI.Instance.ShowMsgBox(
+                IPublicAPI.Instance.GetTranslation("runAsAdministratorChangeAndRestart"),
+                IPublicAPI.Instance.GetTranslation("runAsAdministratorChange"),
                 MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 // Restart the app as administrator
-                App.App.API.RestartAppAsAdmin();
+                IPublicAPI.Instance.RestartAppAsAdmin();
             }
         }
     }

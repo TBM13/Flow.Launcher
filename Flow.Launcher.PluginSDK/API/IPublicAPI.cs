@@ -10,6 +10,7 @@ namespace Flow.Launcher.PluginSDK.API;
 public interface IPublicAPI
 {
 #pragma warning disable CS8618
+    // TODO: Check if we can remove this
     public static IPublicAPI Instance { get; internal set; }
 #pragma warning restore CS8618
 

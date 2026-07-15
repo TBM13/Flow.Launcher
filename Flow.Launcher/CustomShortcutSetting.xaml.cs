@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Input;
+using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.SettingPages.ViewModels;
 
 namespace Flow.Launcher
@@ -40,14 +41,14 @@ namespace Flow.Launcher
         {
             if (string.IsNullOrEmpty(Key) || string.IsNullOrEmpty(Value))
             {
-                App.App.API.ShowMsgBox(Localize.emptyShortcut());
+                IPublicAPI.Instance.ShowMsgBox(Localize.emptyShortcut());
                 return;
             }
 
             // Check if key is modified or adding a new one
             if (((update && originalKey != Key) || !update) && _hotkeyVm.DoesShortcutExist(Key))
             {
-                App.App.API.ShowMsgBox(Localize.duplicateShortcut());
+                IPublicAPI.Instance.ShowMsgBox(Localize.duplicateShortcut());
                 return;
             }
 
@@ -63,8 +64,8 @@ namespace Flow.Launcher
 
         private void BtnTestShortcut_OnClick(object sender, RoutedEventArgs e)
         {
-            App.App.API.ChangeQuery(tbExpand.Text);
-            App.App.API.ShowMainWindow();
+            IPublicAPI.Instance.ChangeQuery(tbExpand.Text);
+            IPublicAPI.Instance.ShowMainWindow();
             Application.Current.MainWindow.Focus();
         }
     }

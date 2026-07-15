@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Core.Settings;
+using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.SettingPages.Views;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern.Controls;
@@ -63,7 +64,7 @@ public partial class SettingWindow
         if (App.App.LoadingOrExiting) return;
         // Save settings when window is closed
         _settings.Save();
-        App.App.API.SavePluginSettings();
+        IPublicAPI.Instance.SavePluginSettings();
     }
 
     private void OnCloseExecuted(object sender, ExecutedRoutedEventArgs e)

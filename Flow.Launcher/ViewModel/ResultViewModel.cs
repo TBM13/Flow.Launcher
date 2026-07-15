@@ -4,10 +4,11 @@ using System.Windows;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
-using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Core.Image;
-using Flow.Launcher.PluginSDK.Logging;
+using Flow.Launcher.Core.Settings;
 using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.API;
+using Flow.Launcher.PluginSDK.Logging;
 
 namespace Flow.Launcher.ViewModel
 {
@@ -167,7 +168,7 @@ namespace Flow.Launcher.ViewModel
             }
 
             imagePath ??= string.Empty;
-            return await App.App.API.LoadImageAsync(imagePath, loadFullImage).ConfigureAwait(false);
+            return await IPublicAPI.Instance.LoadImageAsync(imagePath, loadFullImage).ConfigureAwait(false);
         }
 
         private async Task LoadImageAsync()

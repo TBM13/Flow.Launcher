@@ -8,20 +8,21 @@ using System.Windows.Interop;
 using System.Windows.Shell;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using Flow.Launcher.Core.Hotkeys;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Helper;
-using Flow.Launcher.Core.Hotkeys;
 using Flow.Launcher.Interop;
+using Flow.Launcher.Interop.Hardware;
+using Flow.Launcher.Interop.Input;
+using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Logging;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern;
 using DataObject = System.Windows.DataObject;
 using Key = System.Windows.Input.Key;
-using Flow.Launcher.PluginSDK;
-using Flow.Launcher.Interop.Input;
-using Flow.Launcher.Interop.Hardware;
 
 namespace Flow.Launcher
 {
@@ -232,7 +233,7 @@ namespace Flow.Launcher
             if (!CanClose)
             {
                 CanClose = true;
-                App.App.API.SaveAppAllSettings();
+                IPublicAPI.Instance.SaveAppAllSettings();
                 e.Cancel = true;
                 await _pluginManager.DisposePluginsAsync();
                 Ioc.Default.GetRequiredService<Notification>().Uninstall();
@@ -414,7 +415,7 @@ namespace Flow.Launcher
         private void OnContextMenusForSettingsClick(object sender, RoutedEventArgs e)
         {
             _viewModel.Hide();
-            App.App.API.OpenSettingDialog();
+            IPublicAPI.Instance.OpenSettingDialog();
         }
 
         #endregion
@@ -700,11 +701,11 @@ namespace Flow.Launcher
             if (QueryTextBox.SelectionLength == 0 && result != null)
             {
                 string copyText = result.CopyText;
-                App.App.API.CopyToClipboard(copyText, directCopy: true);
+                IPublicAPI.Instance.CopyToClipboard(copyText, directCopy: true);
             }
             else if (!string.IsNullOrEmpty(QueryTextBox.Text))
             {
-                App.App.API.CopyToClipboard(QueryTextBox.SelectedText, showDefaultNotification: false);
+                IPublicAPI.Instance.CopyToClipboard(QueryTextBox.SelectedText, showDefaultNotification: false);
             }
         }
 

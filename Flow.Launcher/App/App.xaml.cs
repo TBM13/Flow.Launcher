@@ -27,8 +27,6 @@ namespace Flow.Launcher.App;
 
 public partial class App : Application
 {
-    [Obsolete("TODO: Remove this")]
-    public static IPublicAPI API { get; private set; }
     public static bool LoadingOrExiting => _mainWindow is null || _mainWindow.CanClose;
 
     private static MainWindow _mainWindow;
@@ -180,7 +178,7 @@ public partial class App : Application
 
             // Initialize the API and Settings first
             // TODO: Check if this is needed
-            API = Ioc.Default.GetRequiredService<IPublicAPI>();
+            Ioc.Default.GetRequiredService<IPublicAPI>();
         }
         catch (Exception e)
         {
@@ -234,7 +232,7 @@ public partial class App : Application
 
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-        API.SaveAppAllSettings();
+        IPublicAPI.Instance.SaveAppAllSettings();
         _logger.LogInfo($"End Flow Launcher startup ------------------------------------------------------");
 
         _logger.LogInfo($"Begin plugin initialization ----------------------------------------------------");
@@ -251,7 +249,7 @@ public partial class App : Application
         }
 
         // Save all settings since we possibly update the plugin environment paths
-        API.SaveAppAllSettings();
+        IPublicAPI.Instance.SaveAppAllSettings();
 
         _logger.LogInfo($"End plugin initialization ------------------------------------------------------");
     }

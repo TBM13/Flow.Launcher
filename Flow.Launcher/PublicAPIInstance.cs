@@ -12,25 +12,25 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using Flow.Launcher.Core;
+using Flow.Launcher.Core.Image;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Core.Settings;
-using Flow.Launcher.Core.Text;
-using Flow.Launcher.Helper;
-using Flow.Launcher.Core.Image;
 using Flow.Launcher.Core.Storage;
+using Flow.Launcher.Core.Text;
 using Flow.Launcher.Core.UserSettings;
+using Flow.Launcher.Helper;
 using Flow.Launcher.Interop;
 using Flow.Launcher.Interop.Programs;
+using Flow.Launcher.Interop.Shell;
+using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Logging;
+using Flow.Launcher.PluginSDK.Plugins;
+using Flow.Launcher.PluginSDK.Plugins.Interfaces;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern;
 using Microsoft.Extensions.Logging;
-using Flow.Launcher.PluginSDK.Plugins;
-using Flow.Launcher.PluginSDK.API;
-using Flow.Launcher.PluginSDK;
-using Flow.Launcher.PluginSDK.Plugins.Interfaces;
-using Flow.Launcher.Interop.Shell;
 
 namespace Flow.Launcher
 {
@@ -425,7 +425,7 @@ namespace Flow.Launcher
         public MessageBoxResult ShowMsgBox(string messageBoxText, string caption = "",
             MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage icon = MessageBoxImage.None,
             MessageBoxResult defaultResult = MessageBoxResult.OK) =>
-            MessageBoxEx.Show(messageBoxText, caption, button, icon, defaultResult);
+            MessageBoxEx.Show(_imageLoader, messageBoxText, caption, button, icon, defaultResult);
 
         private readonly ConcurrentDictionary<(string, string, Type), ISavable> _pluginBinaryStorages = new();
 

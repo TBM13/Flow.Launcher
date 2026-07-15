@@ -1,10 +1,8 @@
-﻿using System;
-using System.IO;
-using System.Threading;
+﻿using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
+using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.ViewModel;
 
 namespace Flow.Launcher
@@ -13,7 +11,8 @@ namespace Flow.Launcher
     {
         protected Lock _lock = new();
         private Point _lastpos;
-        private ListBoxItem curItem = null;
+        private ListBoxItem? currentItem = null;
+
         public ResultListBox()
         {
             InitializeComponent();
@@ -61,7 +60,7 @@ namespace Flow.Launcher
         {
             lock (_lock)
             {
-                curItem = (ListBoxItem)sender;
+                currentItem = (ListBoxItem)sender;
                 var p = e.GetPosition(null);
                 _lastpos = p;
             }
@@ -126,10 +125,7 @@ namespace Flow.Launcher
         {
             lock (_lock)
             {
-                if (curItem != null)
-                {
-                    curItem.IsSelected = true;
-                }
+                currentItem?.IsSelected = true;
             }
         }
 
@@ -182,7 +178,7 @@ namespace Flow.Launcher
 
             _isDragging = false;
 
-            App.App.API.HideMainWindow();
+            IPublicAPI.Instance.HideMainWindow();
 
             var data = new DataObject(DataFormats.FileDrop, new[]
             {
@@ -194,7 +190,7 @@ namespace Flow.Launcher
             var trimmedQuery = _trimmedQuery;
             var effect = DragDrop.DoDragDrop((DependencyObject)sender, data, DragDropEffects.Move | DragDropEffects.Copy);
             if (effect == DragDropEffects.Move)
-                App.App.API.ChangeQuery(trimmedQuery, true);
+                IPublicAPI.Instance.ChangeQuery(trimmedQuery, true);
         }
 
         private void ResultListBox_OnPreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)

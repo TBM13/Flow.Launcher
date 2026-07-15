@@ -4,14 +4,15 @@ using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
+using Flow.Launcher.Core.Image;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Settings;
-using Flow.Launcher.Core.Image;
-using Flow.Launcher.PluginSDK.Logging;
-using Flow.Launcher.Resources.Controls;
 using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.API;
+using Flow.Launcher.PluginSDK.Logging;
 using Flow.Launcher.PluginSDK.Plugins;
 using Flow.Launcher.PluginSDK.Plugins.Interfaces;
+using Flow.Launcher.Resources.Controls;
 
 namespace Flow.Launcher.ViewModel
 {
@@ -29,7 +30,7 @@ namespace Flow.Launcher.ViewModel
 
         private async Task LoadIconAsync()
         {
-            Image = await App.App.API.LoadImageAsync(PluginMetadata.IcoPath);
+            Image = await IPublicAPI.Instance.LoadImageAsync(PluginMetadata.IcoPath);
             OnPropertyChanged(nameof(Image));
         }
 

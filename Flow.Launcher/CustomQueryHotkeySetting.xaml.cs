@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using Flow.Launcher.Core.UserSettings;
+using Flow.Launcher.PluginSDK.API;
 
 namespace Flow.Launcher
 {
@@ -44,7 +45,7 @@ namespace Flow.Launcher
 
             if (string.IsNullOrEmpty(Hotkey) && string.IsNullOrEmpty(ActionKeyword))
             {
-                App.App.API.ShowMsgBox(Localize.emptyPluginHotkey());
+                IPublicAPI.Instance.ShowMsgBox(Localize.emptyPluginHotkey());
                 return;
             }
 
@@ -54,8 +55,8 @@ namespace Flow.Launcher
 
         private void BtnTestActionKeyword_OnClick(object sender, RoutedEventArgs e)
         {
-            App.App.API.ChangeQuery(tbAction.Text);
-            App.App.API.ShowMainWindow();
+            IPublicAPI.Instance.ChangeQuery(tbAction.Text);
+            IPublicAPI.Instance.ShowMainWindow();
             Application.Current.MainWindow.Focus();
         }
 
