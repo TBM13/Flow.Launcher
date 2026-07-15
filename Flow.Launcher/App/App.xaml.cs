@@ -23,7 +23,7 @@ using Microsoft.VisualStudio.Threading;
 using ZLogger;
 #endif
 
-namespace Flow.Launcher;
+namespace Flow.Launcher.App;
 
 public partial class App : Application
 {
@@ -51,10 +51,12 @@ public partial class App : Application
             return;
         }
 
+        using EarlyLoggerFactory earlyLoggerFactory = new();
+
         ISettingsAPI settings;
         try
         {
-            settings = SettingsFactory.LoadSettings();
+            settings = SettingsFactory.LoadSettings(earlyLoggerFactory);
         }
         catch (Exception e)
         {
@@ -75,7 +77,7 @@ public partial class App : Application
 
         try
         {
-            App application = new(settings);
+            App application = new(earlyLoggerFactory, settings);
             application.InitializeComponent();
             application.Run();
         }
@@ -104,7 +106,7 @@ public partial class App : Application
         Current?.Shutdown();
     }
 
-    public App(ISettingsAPI settings)
+    public App(EarlyLoggerFactory earlyLoggerFactory, ISettingsAPI settings)
     {
         SetupErrorHandling();
         _settings = settings;
@@ -174,6 +176,7 @@ public partial class App : Application
         try
         {
             _logger = Ioc.Default.GetRequiredService<PluginSDK.Logging.Logger<App>>();
+            earlyLoggerFactory.FlushAndHandoff(Ioc.Default.GetRequiredService<ILoggerFactory>());
 
             // Initialize the API and Settings first
             // TODO: Check if this is needed

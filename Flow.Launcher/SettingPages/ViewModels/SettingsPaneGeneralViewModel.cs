@@ -60,13 +60,13 @@ public partial class SettingsPaneGeneralViewModel(ISettingsAPI settings) : Obser
         // Under non-administrator, we cannot delete or set the logon task which is run as administrator
         if (AlwaysRunAsAdmin && !Environment.IsPrivilegedProcess)
         {
-            if (App.API.ShowMsgBox(
-                App.API.GetTranslation("runAsAdministratorChangeAndRestart"),
-                App.API.GetTranslation("runAsAdministratorChange"),
+            if (App.App.API.ShowMsgBox(
+                App.App.API.GetTranslation("runAsAdministratorChangeAndRestart"),
+                App.App.API.GetTranslation("runAsAdministratorChange"),
                 MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 // Restart the app as administrator
-                App.API.RestartAppAsAdmin();
+                App.App.API.RestartAppAsAdmin();
             }
         }
     }

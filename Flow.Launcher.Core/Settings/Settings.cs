@@ -11,13 +11,13 @@ namespace Flow.Launcher.Core.Settings;
 
 internal partial class Settings : ObservableObject, ISettingsAPI
 {
-    private FlowLauncherJsonStorage<Settings> _storage = null!;
+    private JsonStorage<Settings> _storage = null!;
 
-    internal void SetStorage(FlowLauncherJsonStorage<Settings> storage)
+    internal void SetStorage(JsonStorage<Settings> storage)
         => _storage = storage;
 
     public void Save()
-        => _storage.Save();
+        => _storage.TrySave();
 
     #region General
     [ObservableProperty]

@@ -232,7 +232,7 @@ namespace Flow.Launcher
             if (!CanClose)
             {
                 CanClose = true;
-                App.API.SaveAppAllSettings();
+                App.App.API.SaveAppAllSettings();
                 e.Cancel = true;
                 await _pluginManager.DisposePluginsAsync();
                 Ioc.Default.GetRequiredService<Notification>().Uninstall();
@@ -414,7 +414,7 @@ namespace Flow.Launcher
         private void OnContextMenusForSettingsClick(object sender, RoutedEventArgs e)
         {
             _viewModel.Hide();
-            App.API.OpenSettingDialog();
+            App.App.API.OpenSettingDialog();
         }
 
         #endregion
@@ -700,11 +700,11 @@ namespace Flow.Launcher
             if (QueryTextBox.SelectionLength == 0 && result != null)
             {
                 string copyText = result.CopyText;
-                App.API.CopyToClipboard(copyText, directCopy: true);
+                App.App.API.CopyToClipboard(copyText, directCopy: true);
             }
             else if (!string.IsNullOrEmpty(QueryTextBox.Text))
             {
-                App.API.CopyToClipboard(QueryTextBox.SelectedText, showDefaultNotification: false);
+                App.App.API.CopyToClipboard(QueryTextBox.SelectedText, showDefaultNotification: false);
             }
         }
 

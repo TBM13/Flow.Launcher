@@ -27,7 +27,7 @@ namespace Flow.Launcher
             ErrorTextbox.Document.Blocks.Add(paragraph);
 
             var content = new StringBuilder();
-            content.AppendLine(App.RuntimeInfo);
+            content.AppendLine(App.App.RuntimeInfo);
             content.AppendLine();
             content.AppendLine($"Date: {DateTime.Now.ToString(CultureInfo.InvariantCulture)}");
             content.AppendLine("Exception:");

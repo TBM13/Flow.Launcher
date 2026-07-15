@@ -44,7 +44,7 @@ namespace Flow.Launcher
 
             if (string.IsNullOrEmpty(Hotkey) && string.IsNullOrEmpty(ActionKeyword))
             {
-                App.API.ShowMsgBox(Localize.emptyPluginHotkey());
+                App.App.API.ShowMsgBox(Localize.emptyPluginHotkey());
                 return;
             }
 
@@ -54,8 +54,8 @@ namespace Flow.Launcher
 
         private void BtnTestActionKeyword_OnClick(object sender, RoutedEventArgs e)
         {
-            App.API.ChangeQuery(tbAction.Text);
-            App.API.ShowMainWindow();
+            App.App.API.ChangeQuery(tbAction.Text);
+            App.App.API.ShowMainWindow();
             Application.Current.MainWindow.Focus();
         }
 

@@ -42,7 +42,7 @@ public partial class SettingsPanePluginsViewModel(ISettingsAPI settings) : Obser
     // Get all plugins: Initializing & Initialized & Init failed plugins
     // Include init failed ones so that we can uninstall them
     // Include initializing ones so that we can change related settings like action keywords, etc.
-    public List<PluginViewModel> PluginViewModels => _pluginViewModels ??= App.API.GetAllPlugins()
+    public List<PluginViewModel> PluginViewModels => _pluginViewModels ??= App.App.API.GetAllPlugins()
         .OrderBy(plugin => plugin.Disabled)
         .ThenBy(plugin => plugin.Name)
         .Select(plugin => new PluginViewModel
@@ -56,8 +56,8 @@ public partial class SettingsPanePluginsViewModel(ISettingsAPI settings) : Obser
     public bool SatisfiesFilter(PluginViewModel plugin)
     {
         return string.IsNullOrEmpty(FilterText) ||
-            App.API.FuzzySearch(FilterText, plugin.PluginMetadata.Name).IsSearchPrecisionScoreMet ||
-            App.API.FuzzySearch(FilterText, plugin.PluginMetadata.Description).IsSearchPrecisionScoreMet;
+            App.App.API.FuzzySearch(FilterText, plugin.PluginMetadata.Name).IsSearchPrecisionScoreMet ||
+            App.App.API.FuzzySearch(FilterText, plugin.PluginMetadata.Description).IsSearchPrecisionScoreMet;
     }
 
     [RelayCommand]

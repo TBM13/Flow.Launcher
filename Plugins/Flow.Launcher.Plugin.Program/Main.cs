@@ -364,7 +364,7 @@ namespace Flow.Launcher.Plugin.Program
                 {
                     ResetCache();
                 }
-                await Context.API.SaveCacheBinaryStorageAsync<List<Win32>>(Win32CacheName, Context.CurrentPluginMetadata.PluginCacheDirectoryPath);
+                Context.API.SaveCacheBinaryStorage<List<Win32>>(Win32CacheName, Context.CurrentPluginMetadata.PluginCacheDirectoryPath);
                 lock (_lastIndexTimeLock)
                 {
                     _settings.LastIndexTime = DateTime.Now;
@@ -395,7 +395,7 @@ namespace Flow.Launcher.Plugin.Program
                 {
                     ResetCache();
                 }
-                await Context.API.SaveCacheBinaryStorageAsync<List<UWPApp>>(UwpCacheName, Context.CurrentPluginMetadata.PluginCacheDirectoryPath);
+                Context.API.SaveCacheBinaryStorage<List<UWPApp>>(UwpCacheName, Context.CurrentPluginMetadata.PluginCacheDirectoryPath);
                 lock (_lastIndexTimeLock)
                 {
                     _settings.LastIndexTime = DateTime.Now;

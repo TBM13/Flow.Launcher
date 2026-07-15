@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-
-namespace Flow.Launcher.Helper;
+﻿namespace Flow.Launcher.App;
 
 /// <summary>
 /// Helper to ensure we are the only running instance of Flow Launcher.

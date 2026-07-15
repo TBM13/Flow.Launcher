@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Text;
 using System.Threading.Channels;
 using System.Windows;
@@ -21,16 +22,16 @@ using Flow.Launcher.Infrastructure.UserSettings;
 using Flow.Launcher.Infrastructure.WPF;
 using Flow.Launcher.Interop;
 using Flow.Launcher.Interop.Shell;
-using Flow.Launcher.PluginSDK.Logging;
 using Flow.Launcher.Storage;
 using iNKORE.UI.WPF.Modern;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Threading;
 
 namespace Flow.Launcher.ViewModel
 {
     public partial class MainViewModel : ObservableObject, ISavable, IDisposable
     {
-        private readonly Logger<MainViewModel> _logger;
+        private readonly PluginSDK.Logging.Logger<MainViewModel> _logger;
         private readonly PluginManager _pluginManager;
         private readonly HotkeyManager _hotkeyManager;
 
@@ -38,7 +39,7 @@ namespace Flow.Launcher.ViewModel
         private bool _previousIsHomeQuery;
         private string? _ignoredQueryText; // Used to ignore query text change when switching between context menu and query results
 
-        private readonly FlowLauncherJsonStorage<UserSelectedRecord> _userSelectedRecordStorage;
+        private readonly JsonStorage<UserSelectedRecord> _userSelectedRecordStorage;
         private readonly FlowLauncherJsonStorageTopMostRecord _topMostRecord;
         private readonly UserSelectedRecord _userSelectedRecord;
 
@@ -52,10 +53,10 @@ namespace Flow.Launcher.ViewModel
 
         private bool _taskbarShownByFlow = false;
 
-        public MainViewModel(Logger<MainViewModel> logger,
+        public MainViewModel(ILoggerFactory loggerFactory,
             ISettingsAPI settings, PluginManager pluginManager, HotkeyManager hotkeyManager)
         {
-            _logger = logger;
+            _logger = new(loggerFactory);
             _pluginManager = pluginManager;
             _hotkeyManager = hotkeyManager;
 
@@ -74,11 +75,12 @@ namespace Flow.Launcher.ViewModel
                 }
             };
 
-            _userSelectedRecordStorage = new FlowLauncherJsonStorage<UserSelectedRecord>();
-            _topMostRecord = new FlowLauncherJsonStorageTopMostRecord();
-            _userSelectedRecord = _userSelectedRecordStorage.Load();
+            _userSelectedRecordStorage = new JsonStorage<UserSelectedRecord>(
+                loggerFactory, Path.Combine(DataLocation.SettingsDirectory, "UserSelectedRecord.json"));
+            _topMostRecord = new FlowLauncherJsonStorageTopMostRecord(loggerFactory);
+            _userSelectedRecord = _userSelectedRecordStorage.TryLoad();
 
-            Logger<ResultsViewModel> resultsLogger = Ioc.Default.GetRequiredService<Logger<ResultsViewModel>>();
+            PluginSDK.Logging.Logger<ResultsViewModel> resultsLogger = new(loggerFactory);
             _contextMenu = new ResultsViewModel(resultsLogger, this, Settings, _pluginManager)
             {
                 LeftClickResultCommand = OpenResultCommand,
@@ -196,7 +198,7 @@ namespace Flow.Launcher.ViewModel
             Hide();
 
             await _pluginManager.ReloadDataAsync().ConfigureAwait(false);
-            App.API.ShowMsg(Localize.success(),
+            App.App.API.ShowMsg(Localize.success(),
                 Localize.completedSuccessfully());
         }
 
@@ -316,7 +318,7 @@ namespace Flow.Launcher.ViewModel
         [RelayCommand]
         private void OpenSetting()
         {
-            App.API.OpenSettingDialog();
+            App.App.API.OpenSettingDialog();
         }
 
         [RelayCommand]
@@ -398,7 +400,7 @@ namespace Flow.Launcher.ViewModel
 
             if (result != null)
             {
-                App.API.CopyToClipboard(result, directCopy: false);
+                App.App.API.CopyToClipboard(result, directCopy: false);
             }
         }
 
@@ -895,10 +897,10 @@ namespace Flow.Launcher.ViewModel
                     (
                         r =>
                         {
-                            var match = App.API.FuzzySearch(query, r.Title);
+                            var match = App.App.API.FuzzySearch(query, r.Title);
                             if (!match.IsSearchPrecisionScoreMet)
                             {
-                                match = App.API.FuzzySearch(query, r.SubTitle);
+                                match = App.App.API.FuzzySearch(query, r.SubTitle);
                             }
 
                             if (!match.IsSearchPrecisionScoreMet) return false;
@@ -963,7 +965,7 @@ namespace Flow.Launcher.ViewModel
                 if (plugins.Count == 1)
                 {
                     PluginIconPath = plugins.Single().IcoPath;
-                    PluginIconSource = await App.API.LoadImageAsync(PluginIconPath);
+                    PluginIconSource = await App.App.API.LoadImageAsync(PluginIconPath);
                 }
                 else
                 {
@@ -1217,8 +1219,8 @@ namespace Flow.Launcher.ViewModel
                     Action = _ =>
                     {
                         _topMostRecord.Remove(result);
-                        App.API.ShowMsg(Localize.success());
-                        App.API.ReQuery();
+                        App.App.API.ShowMsg(Localize.success());
+                        App.App.API.ReQuery();
                         return false;
                     },
                     Glyph = new GlyphInfo(Glyph: "\uE74B"),
@@ -1233,8 +1235,8 @@ namespace Flow.Launcher.ViewModel
                     Action = _ =>
                     {
                         _topMostRecord.AddOrUpdate(result);
-                        App.API.ShowMsg(Localize.success());
-                        App.API.ReQuery();
+                        App.App.API.ShowMsg(Localize.success());
+                        App.App.API.ReQuery();
                         return false;
                     },
                     Glyph = new GlyphInfo(Glyph: "\uE74A"),
@@ -1272,7 +1274,7 @@ namespace Flow.Launcher.ViewModel
         public void Show()
         {
             // When application is exiting, we should not show the main window
-            if (App.LoadingOrExiting) return;
+            if (App.App.LoadingOrExiting) return;
 
             // When application is exiting, the Application.Current will be null
             Application.Current?.Dispatcher.Invoke(() =>
@@ -1358,10 +1360,9 @@ namespace Flow.Launcher.ViewModel
         /// <summary>
         /// Save user selected records and top most records
         /// </summary>
-        public void Save()
+        public bool TrySave()
         {
-            _userSelectedRecordStorage.Save();
-            _topMostRecord.Save();
+            return _userSelectedRecordStorage.TrySave() && _topMostRecord.TrySave();
         }
 
         /// <summary>

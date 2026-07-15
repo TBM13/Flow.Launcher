@@ -61,7 +61,7 @@ namespace Flow.Launcher.Core.Plugin
                 var savable = metadata.Plugin as ISavable;
                 try
                 {
-                    savable?.Save();
+                    savable?.TrySave();
                 }
                 catch (Exception e)
                 {

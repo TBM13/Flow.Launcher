@@ -3,8 +3,10 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -28,12 +30,14 @@ using Flow.Launcher.Interop.Programs;
 using Flow.Launcher.PluginSDK.Logging;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern;
+using Microsoft.Extensions.Logging;
 
 namespace Flow.Launcher
 {
     public class PublicAPIInstance : Plugin.IPublicAPI
     {
-        private readonly Logger<PublicAPIInstance> _logger;
+        private readonly ILoggerFactory _loggerFactory;
+        private readonly PluginSDK.Logging.Logger<PublicAPIInstance> _logger;
         private readonly ISettingsAPI _settings;
         private readonly MainViewModel _mainVM;
         private readonly Internationalization _internationalization;
@@ -44,12 +48,13 @@ namespace Flow.Launcher
 
         private readonly object _saveSettingsLock = new();
 
-        public PublicAPIInstance(Logger<PublicAPIInstance> logger,
+        public PublicAPIInstance(ILoggerFactory loggerFactory,
             MainViewModel mainVM, ISettingsAPI settings, Internationalization internationalization,
             ImageLoader imageLoader, PluginManager pluginManager, Notification notification,
             StringMatcher stringMatcher)
         {
-            _logger = logger;
+            _loggerFactory = loggerFactory;
+            _logger = new(loggerFactory);
             _mainVM = mainVM;
             _settings = settings;
             _internationalization = internationalization;
@@ -73,7 +78,7 @@ namespace Flow.Launcher
         private void RestartApp(bool runAsAdmin)
         {
             _mainVM.Hide();
-            App.RestartApp(runAsAdmin);
+            App.App.RestartApp(runAsAdmin);
         }
 
         public void ShowMainWindow() => _mainVM.Show();
@@ -96,7 +101,7 @@ namespace Flow.Launcher
             {
                 _settings.Save();
                 _pluginManager.Save();
-                _mainVM.Save();
+                _mainVM.TrySave();
             }
         }
 
@@ -243,26 +248,40 @@ namespace Flow.Launcher
         {
             foreach (var savable in _pluginJsonStorages.Values)
             {
-                savable.Save();
+                savable.TrySave();
             }
         }
 
-        public T LoadSettingJsonStorage<T>() where T : new()
+        public T LoadSettingJsonStorage<T>() where T : class, new()
         {
-            var type = typeof(T);
-            if (!_pluginJsonStorages.ContainsKey(type))
-                _pluginJsonStorages[type] = new PluginJsonStorage<T>();
+            Type type = typeof(T);
+            if (!_pluginJsonStorages.TryGetValue(type, out ISavable? value))
+            {
+                string assemblyName = type.Assembly.GetName().Name
+                    ?? throw new NullReferenceException("Plugin's assembly name was null");
 
-            return ((PluginJsonStorage<T>)_pluginJsonStorages[type]).Load();
+                value = new JsonStorage<T>(
+                    _loggerFactory, Path.Combine(DataLocation.PluginSettingsDirectory, assemblyName, $"{type.Name}.json"));
+                _pluginJsonStorages[type] = value;
+            }
+
+            return ((JsonStorage<T>)value).TryLoad();
         }
 
-        public void SaveSettingJsonStorage<T>() where T : new()
+        public void SaveSettingJsonStorage<T>() where T : class, new()
         {
-            var type = typeof(T);
-            if (!_pluginJsonStorages.ContainsKey(type))
-                _pluginJsonStorages[type] = new PluginJsonStorage<T>();
+            Type type = typeof(T);
+            if (!_pluginJsonStorages.TryGetValue(type, out ISavable? value))
+            {
+                string assemblyName = type.Assembly.GetName().Name
+                    ?? throw new NullReferenceException("Plugin's assembly name was null");
 
-            ((PluginJsonStorage<T>)_pluginJsonStorages[type]).Save();
+                value = new JsonStorage<T>(
+                    _loggerFactory, Path.Combine(DataLocation.PluginSettingsDirectory, assemblyName, $"{type.Name}.json"));
+                _pluginJsonStorages[type] = value;
+            }
+
+            value.TrySave();
         }
 
         public void OpenDirectory(string directoryPath, string? fileNameOrFilePath = null)
@@ -414,26 +433,34 @@ namespace Flow.Launcher
         {
             foreach (var savable in _pluginBinaryStorages.Values)
             {
-                savable.Save();
+                savable.TrySave();
             }
         }
 
-        public async Task<T> LoadCacheBinaryStorageAsync<T>(string cacheName, string cacheDirectory, T defaultData) where T : new()
+        public async Task<T> LoadCacheBinaryStorageAsync<T>(string cacheName, string cacheDirectory, T defaultData) where T : class, new()
         {
-            var type = typeof(T);
-            if (!_pluginBinaryStorages.ContainsKey((cacheName, cacheDirectory, type)))
-                _pluginBinaryStorages[(cacheName, cacheDirectory, type)] = new PluginBinaryStorage<T>(cacheName, cacheDirectory);
+            Type type = typeof(T);
+            if (!_pluginBinaryStorages.TryGetValue((cacheName, cacheDirectory, type), out ISavable? value))
+            {
+                value = new BinaryStorage<T>(
+                    _loggerFactory, Path.Combine(DataLocation.PluginCacheDirectory, cacheDirectory, $"{cacheName}.cache"));
+                _pluginBinaryStorages[(cacheName, cacheDirectory, type)] = value;
+            }
 
-            return await ((PluginBinaryStorage<T>)_pluginBinaryStorages[(cacheName, cacheDirectory, type)]).TryLoadAsync(defaultData);
+            return await ((BinaryStorage<T>)value).TryLoadAsync();
         }
 
-        public async Task SaveCacheBinaryStorageAsync<T>(string cacheName, string cacheDirectory) where T : new()
+        public void SaveCacheBinaryStorage<T>(string cacheName, string cacheDirectory) where T : class, new()
         {
-            var type = typeof(T);
-            if (!_pluginBinaryStorages.ContainsKey((cacheName, cacheDirectory, type)))
-                _pluginBinaryStorages[(cacheName, cacheDirectory, type)] = new PluginBinaryStorage<T>(cacheName, cacheDirectory);
+            Type type = typeof(T);
+            if (!_pluginBinaryStorages.TryGetValue((cacheName, cacheDirectory, type), out ISavable? value))
+            {
+                value = new BinaryStorage<T>(
+                    _loggerFactory, Path.Combine(DataLocation.PluginCacheDirectory, cacheDirectory, $"{cacheName}.cache"));
+                _pluginBinaryStorages[(cacheName, cacheDirectory, type)] = value;
+            }
 
-            await ((PluginBinaryStorage<T>)_pluginBinaryStorages[(cacheName, cacheDirectory, type)]).SaveAsync();
+            value.TrySave();
         }
 
         public ValueTask<ImageSource> LoadImageAsync(string path, bool loadFullImage = false) =>

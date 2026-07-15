@@ -217,7 +217,7 @@ public interface IPublicAPI
     /// </summary>
     /// <typeparam name="T">Type for deserialization</typeparam>
     /// <returns></returns>
-    T LoadSettingJsonStorage<T>() where T : new();
+    T LoadSettingJsonStorage<T>() where T : class, new();
 
     /// <summary>
     /// Save JsonStorage for current plugin's setting. This is the method used to save settings to json in Flow.
@@ -227,7 +227,7 @@ public interface IPublicAPI
     /// </summary>
     /// <typeparam name="T">Type for Serialization</typeparam>
     /// <returns></returns>
-    void SaveSettingJsonStorage<T>() where T : new();
+    void SaveSettingJsonStorage<T>() where T : class, new();
 
     /// <summary>
     /// Open directory in an explorer configured by user via Flow's Settings. The default is Windows Explorer
@@ -310,13 +310,13 @@ public interface IPublicAPI
     /// <remarks>
     /// BinaryStorage utilizes MemoryPack, which means the object must be MemoryPackSerializable <see href="https://github.com/Cysharp/MemoryPack"/>
     /// </remarks>
-    Task<T> LoadCacheBinaryStorageAsync<T>(string cacheName, string cacheDirectory, T defaultData) where T : new();
+    Task<T> LoadCacheBinaryStorageAsync<T>(string cacheName, string cacheDirectory, T defaultData) where T : class, new();
 
     /// <summary>
     /// Save BinaryStorage for current plugin's cache. This is the method used to save cache to binary in Flow.
     /// This method will save the original instance loaded with LoadCacheBinaryStorageAsync.
     /// This API call is for manually Save.
-    /// Flow will automatically save all cache type that has called <see cref="LoadCacheBinaryStorageAsync"/> or <see cref="SaveCacheBinaryStorageAsync"/> previously.
+    /// Flow will automatically save all cache type that has called <see cref="LoadCacheBinaryStorageAsync"/> or <see cref="SaveCacheBinaryStorage"/> previously.
     /// </summary>
     /// <typeparam name="T">Type for Serialization</typeparam>
     /// <param name="cacheName">Cache file name</param>
@@ -325,7 +325,7 @@ public interface IPublicAPI
     /// <remarks>
     /// BinaryStorage utilizes MemoryPack, which means the object must be MemoryPackSerializable <see href="https://github.com/Cysharp/MemoryPack"/>
     /// </remarks>
-    Task SaveCacheBinaryStorageAsync<T>(string cacheName, string cacheDirectory) where T : new();
+    void SaveCacheBinaryStorage<T>(string cacheName, string cacheDirectory) where T : class, new();
 
     /// <summary>
     /// Load image from path.

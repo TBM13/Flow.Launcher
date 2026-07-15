@@ -182,7 +182,7 @@ namespace Flow.Launcher
 
             _isDragging = false;
 
-            App.API.HideMainWindow();
+            App.App.API.HideMainWindow();
 
             var data = new DataObject(DataFormats.FileDrop, new[]
             {
@@ -194,7 +194,7 @@ namespace Flow.Launcher
             var trimmedQuery = _trimmedQuery;
             var effect = DragDrop.DoDragDrop((DependencyObject)sender, data, DragDropEffects.Move | DragDropEffects.Copy);
             if (effect == DragDropEffects.Move)
-                App.API.ChangeQuery(trimmedQuery, true);
+                App.App.API.ChangeQuery(trimmedQuery, true);
         }
 
         private void ResultListBox_OnPreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)

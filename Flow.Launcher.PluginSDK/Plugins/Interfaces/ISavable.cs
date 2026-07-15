@@ -8,5 +8,5 @@ public interface ISavable
     /// <summary>
     /// Called by Flow Launcher when appropiate.
     /// </summary>
-    void Save();
+    bool TrySave();
 }

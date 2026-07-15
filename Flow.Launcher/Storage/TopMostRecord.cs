@@ -1,84 +1,29 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Concurrent;
+using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Flow.Launcher.Infrastructure.Results;
 using Flow.Launcher.Infrastructure.Storage;
+using Flow.Launcher.Infrastructure.UserSettings;
+using Microsoft.Extensions.Logging;
 
 namespace Flow.Launcher.Storage
 {
     public class FlowLauncherJsonStorageTopMostRecord
     {
-        private readonly FlowLauncherJsonStorage<MultipleTopMostRecord> _topMostRecordStorage;
+        private readonly JsonStorage<MultipleTopMostRecord> _topMostRecordStorage;
         private readonly MultipleTopMostRecord _topMostRecord;
 
-        public FlowLauncherJsonStorageTopMostRecord()
+        public FlowLauncherJsonStorageTopMostRecord(ILoggerFactory loggerFactory)
         {
-#pragma warning disable CS0618 // Type or member is obsolete
-            // Get old data & new data
-            var topMostRecordStorage = new FlowLauncherJsonStorage<TopMostRecord>();
-#pragma warning restore CS0618 // Type or member is obsolete
-            _topMostRecordStorage = new FlowLauncherJsonStorage<MultipleTopMostRecord>();
-
-            // Check if data exist
-            var oldDataExist = topMostRecordStorage.Exists();
-            var newDataExist = _topMostRecordStorage.Exists();
-
-            // If new data exist, it means we have already migrated the old data
-            // So we can safely delete the old data and load the new data
-            if (newDataExist)
-            {
-                try
-                {
-                    topMostRecordStorage.Delete();
-                }
-                catch
-                {
-                    // Ignored - Flow will delete the old data during next startup
-                }
-                _topMostRecord = _topMostRecordStorage.Load();
-            }
-            // If new data does not exist and old data exist, we need to migrate the old data to the new data
-            else if (oldDataExist)
-            {
-                // Migrate old data to new data
-                _topMostRecord = _topMostRecordStorage.Load();
-                var oldTopMostRecord = topMostRecordStorage.Load();
-                if (oldTopMostRecord == null || oldTopMostRecord.records.IsEmpty) return;
-                foreach (var record in oldTopMostRecord.records)
-                {
-                    var newValue = new ConcurrentQueue<Record>();
-                    newValue.Enqueue(record.Value);
-                    _topMostRecord.records.AddOrUpdate(record.Key, newValue, (key, oldValue) =>
-                    {
-                        oldValue.Enqueue(record.Value);
-                        return oldValue;
-                    });
-                }
-
-                // Delete old data and save the new data
-                try
-                {
-                    topMostRecordStorage.Delete();
-                }
-                catch
-                {
-                    // Ignored - Flow will delete the old data during next startup
-                }
-                Save();
-            }
-            // If both data do not exist, we just need to create a new data
-            else
-            {
-                _topMostRecord = _topMostRecordStorage.Load();
-            }
+            _topMostRecordStorage = new JsonStorage<MultipleTopMostRecord>(
+                loggerFactory, Path.Combine(DataLocation.SettingsDirectory, "MultipleTopMostRecord.json"));
+            _topMostRecord = _topMostRecordStorage.TryLoad();
         }
 
-        public void Save()
+        public bool TrySave()
         {
-            _topMostRecordStorage.Save();
+            return _topMostRecordStorage.TrySave();
         }
 
         public bool IsTopMost(Result result)
@@ -99,44 +44,6 @@ namespace Flow.Launcher.Storage
         public void AddOrUpdate(Result result)
         {
             _topMostRecord.AddOrUpdate(result);
-        }
-    }
-
-    /// <summary>
-    /// Old data structure to support only one top most record for the same query
-    /// </summary>
-    [Obsolete("Use MultipleTopMostRecord instead. This class will be removed in future versions.")]
-    internal class TopMostRecord
-    {
-        [JsonInclude]
-        public ConcurrentDictionary<string, Record> records { get; private set; } = new();
-
-        internal bool IsTopMost(Result result)
-        {
-            if (records.IsEmpty || !records.TryGetValue(result.OriginQuery.TrimmedQuery, out var value))
-            {
-                return false;
-            }
-
-            // since this dictionary should be very small (or empty) going over it should be pretty fast.
-            return value.Equals(result);
-        }
-
-        internal void Remove(Result result)
-        {
-            records.Remove(result.OriginQuery.TrimmedQuery, out _);
-        }
-
-        internal void AddOrUpdate(Result result)
-        {
-            var record = new Record
-            {
-                PluginID = result.PluginID,
-                Title = result.Title,
-                SubTitle = result.SubTitle,
-                RecordKey = result.RecordKey
-            };
-            records.AddOrUpdate(result.OriginQuery.TrimmedQuery, record, (key, oldValue) => record);
         }
     }
 

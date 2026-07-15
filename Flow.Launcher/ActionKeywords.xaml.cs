@@ -46,9 +46,9 @@ namespace Flow.Launcher
             var addedActionKeywords = newActionKeywords.Except(oldActionKeywords).ToList();
             var removedActionKeywords = oldActionKeywords.Except(newActionKeywords).ToList();
 
-            if (addedActionKeywords.Any(App.API.ActionKeywordAssigned))
+            if (addedActionKeywords.Any(App.App.API.ActionKeywordAssigned))
             {
-                App.API.ShowMsgBox(Localize.newActionKeywordsHasBeenAssigned());
+                App.App.API.ShowMsgBox(Localize.newActionKeywordsHasBeenAssigned());
                 return;
             }
 
@@ -64,7 +64,7 @@ namespace Flow.Launcher
             if (sortedOldActionKeywords.SequenceEqual(sortedNewActionKeywords))
             {
                 // User just changes the sequence of action keywords
-                App.API.ShowMsgBox(Localize.newActionKeywordsSameAsOld());
+                App.App.API.ShowMsgBox(Localize.newActionKeywordsSameAsOld());
             }
             else
             {
@@ -76,11 +76,11 @@ namespace Flow.Launcher
         {
             foreach (var actionKeyword in removedActionKeywords)
             {
-                App.API.RemoveActionKeyword(id, actionKeyword);
+                App.App.API.RemoveActionKeyword(id, actionKeyword);
             }
             foreach (var actionKeyword in addedActionKeywords)
             {
-                App.API.AddActionKeyword(id, actionKeyword);
+                App.App.API.AddActionKeyword(id, actionKeyword);
             }
 
             // Update action keywords text and close window

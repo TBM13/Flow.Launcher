@@ -5,9 +5,9 @@
     <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
     <UseWPF>true</UseWPF>
 
-    <StartupObject>Flow.Launcher.App</StartupObject>
-    <ApplicationIcon>Resources\app.ico</ApplicationIcon>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <StartupObject>Flow.Launcher.App.App</StartupObject>
+    <ApplicationIcon>App\app.ico</ApplicationIcon>
+    <ApplicationManifest>App\app.manifest</ApplicationManifest>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -17,11 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ApplicationDefinition Remove="App.xaml" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Page Include="App.xaml" />
+    <ApplicationDefinition Remove="App\App.xaml" />
   </ItemGroup>
 
   <ItemGroup>

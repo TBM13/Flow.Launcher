@@ -156,7 +156,7 @@ namespace Flow.Launcher
         private async Task SetImageAsync(string imageName)
         {
             var imagePath = Path.Combine(Constant.ProgramDirectory, "Images", imageName);
-            var imageSource = await App.API.LoadImageAsync(imagePath);
+            var imageSource = await App.App.API.LoadImageAsync(imagePath);
             Img.Source = imageSource;
         }
 

@@ -168,7 +168,7 @@ namespace Flow.Launcher.ViewModel
             }
 
             imagePath ??= string.Empty;
-            return await App.API.LoadImageAsync(imagePath, loadFullImage).ConfigureAwait(false);
+            return await App.App.API.LoadImageAsync(imagePath, loadFullImage).ConfigureAwait(false);
         }
 
         private async Task LoadImageAsync()

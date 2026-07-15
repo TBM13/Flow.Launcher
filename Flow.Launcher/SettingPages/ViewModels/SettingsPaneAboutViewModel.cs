@@ -36,7 +36,7 @@ public partial class SettingsPaneAboutViewModel : ObservableObject
     [RelayCommand]
     private void AskClearCacheFolderConfirmation()
     {
-        var confirmResult = App.API.ShowMsgBox(
+        var confirmResult = App.App.API.ShowMsgBox(
             Localize.clearcachefolderMessage(),
             Localize.clearcachefolder(),
             MessageBoxButton.YesNo
@@ -46,7 +46,7 @@ public partial class SettingsPaneAboutViewModel : ObservableObject
         {
             if (!ClearCacheFolder())
             {
-                App.API.ShowMsgBox(Localize.clearfolderfailMessage());
+                App.App.API.ShowMsgBox(Localize.clearfolderfailMessage());
             }
         }
     }
@@ -54,13 +54,13 @@ public partial class SettingsPaneAboutViewModel : ObservableObject
     [RelayCommand]
     private void OpenSettingsFolder()
     {
-        App.API.OpenDirectory(DataLocation.SettingsDirectory);
+        App.App.API.OpenDirectory(DataLocation.SettingsDirectory);
     }
 
     [RelayCommand]
     private void OpenCacheFolder()
     {
-        App.API.OpenDirectory(DataLocation.CacheDirectory);
+        App.App.API.OpenDirectory(DataLocation.CacheDirectory);
     }
 
     private bool ClearCacheFolder()
