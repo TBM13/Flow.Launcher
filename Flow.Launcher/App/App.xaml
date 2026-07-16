@@ -33,15 +33,6 @@
                 <ResourceDictionary Source="pack://application:,,,/Themes/Win11Light.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Languages/en.xaml" />
             </ResourceDictionary.MergedDictionaries>
-
-            <!--  Override styles in UI.Modern.WPF  -->
-            <Thickness x:Key="ListViewItemCompactSelectedBorderThemeThickness">2</Thickness>
-            <sys:Double x:Key="CheckBoxMinWidth">0</sys:Double>
-            <sys:Double x:Key="GridViewItemMinWidth">0</sys:Double>
-            <sys:Double x:Key="GridViewItemMinHeight">40</sys:Double>
-            <sys:Double x:Key="ListViewItemMinWidth">0</sys:Double>
-            <sys:Double x:Key="ListViewItemMinHeight">36</sys:Double>
-            <SolidColorBrush x:Key="NavigationViewSelectionIndicatorForeground" Color="#FF0063B1" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>
