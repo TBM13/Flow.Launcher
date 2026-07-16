@@ -138,8 +138,8 @@ public partial class App : Application
                 .ConfigureServices(services => services
                     // Core services
                     .AddTransient(typeof(PluginSDK.Logging.Logger<>))
-                    .AddSingleton<IPublicAPI, PublicAPIInstance>()
                     .AddSingleton<Plugin.IPublicAPI, PublicAPIInstance>()
+                    .AddSingleton<IPublicAPI>(provider => provider.GetRequiredService<Plugin.IPublicAPI>())
                     .AddSingleton(_settings)
                     .AddSingleton<Internationalization>()
                     .AddSingleton<Theme>()
