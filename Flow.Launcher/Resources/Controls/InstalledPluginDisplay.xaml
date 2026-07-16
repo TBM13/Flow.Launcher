@@ -15,114 +15,96 @@
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
-    <Expander
-        Padding="0"
-        BorderThickness="0"
+    <ui:SettingsExpander
         ClipToBounds="True"
+        Description="{Binding PluginMetadata.Description}"
+        Header="{Binding PluginMetadata.Name}"
         IsExpanded="{Binding Mode=TwoWay, Path=IsExpanded}"
         SnapsToDevicePixels="True"
-        Style="{StaticResource ExpanderStyle1}">
-        <Expander.Header>
-            <Border Padding="0 12">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="36" MinWidth="36" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <Image
-                        Grid.Column="0"
-                        Width="32"
-                        Height="32"
-                        Source="{Binding Image, Mode=OneWay, IsAsync=True}" />
-                    <StackPanel Grid.Column="1" Margin="16 0 14 0">
-                        <TextBlock
-                            Foreground="{DynamicResource Color05B}"
-                            Text="{Binding PluginMetadata.Name}"
-                            TextWrapping="Wrap"
-                            ToolTip="{Binding PluginMetadata.Version}" />
-                        <TextBlock
-                            Margin="0 2 0 0"
-                            FontSize="12"
-                            Foreground="{DynamicResource Color04B}"
-                            Text="{Binding PluginMetadata.Description}"
-                            TextWrapping="WrapWithOverflow" />
-                    </StackPanel>
+        ToolTip="{Binding PluginMetadata.Version}">
 
-                    <StackPanel
-                        Grid.Column="2"
-                        HorizontalAlignment="Right"
-                        Orientation="Horizontal">
-                        <StackPanel
-                            x:Name="PriorityControl"
-                            VerticalAlignment="Center"
-                            Orientation="Horizontal"
-                            Visibility="{Binding DataContext.IsPrioritySelected, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <TextBlock
-                                Margin="0 0 8 0"
-                                VerticalAlignment="Center"
-                                FontSize="13"
-                                Foreground="{DynamicResource Color08B}"
-                                Text="{DynamicResource priority}"
-                                ToolTip="{DynamicResource priorityToolTip}" />
-                            <ui:NumberBox
-                                MinWidth="120"
-                                Margin="0 0 8 0"
-                                Maximum="999"
-                                Minimum="-999"
-                                SpinButtonPlacementMode="Inline"
-                                ToolTip="{DynamicResource priorityToolTip}"
-                                ValueChanged="NumberBox_OnValueChanged"
-                                Value="{Binding Priority, Mode=TwoWay}" />
-                        </StackPanel>
+        <ui:SettingsExpander.HeaderIcon>
+            <Image Source="{Binding Image, Mode=OneWay}" />
+        </ui:SettingsExpander.HeaderIcon>
 
-                        <!--  Put OnOffControl after PriorityControl so that it can display correctly  -->
-                        <ui:ToggleSwitch
-                            x:Name="HomeOnOffControl"
-                            Margin="0 0 8 0"
-                            IsEnabled="{Binding HomeEnabled}"
-                            IsOn="{Binding PluginHomeState}"
-                            OffContent="{DynamicResource disable}"
-                            OnContent="{DynamicResource enable}"
-                            ToolTip="{DynamicResource homeToggleBoxToolTip}"
-                            Visibility="{Binding DataContext.IsHomeOnOffSelected, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        <ui:SettingsExpander.Content>
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                <StackPanel
+                    x:Name="PriorityControl"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Visibility="{Binding DataContext.IsPrioritySelected, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <TextBlock
+                        Margin="0 0 8 0"
+                        VerticalAlignment="Center"
+                        FontSize="13"
+                        Foreground="{DynamicResource Color08B}"
+                        Text="{DynamicResource priority}"
+                        ToolTip="{DynamicResource priorityToolTip}" />
+                    <ui:NumberBox
+                        MinWidth="120"
+                        Margin="0 0 8 0"
+                        Maximum="999"
+                        Minimum="-999"
+                        SpinButtonPlacementMode="Inline"
+                        ToolTip="{DynamicResource priorityToolTip}"
+                        ValueChanged="NumberBox_OnValueChanged"
+                        Value="{Binding Priority, Mode=TwoWay}" />
+                </StackPanel>
 
-                        <ui:ToggleSwitch
-                            x:Name="OnOffControl"
-                            Margin="0 0 8 0"
-                            IsOn="{Binding PluginState}"
-                            OffContent="{DynamicResource disable}"
-                            OnContent="{DynamicResource enable}"
-                            Visibility="{Binding DataContext.IsOnOffSelected, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                    </StackPanel>
-                </Grid>
-            </Border>
-        </Expander.Header>
+                <!--  Put OnOffControl after PriorityControl so that it can display correctly  -->
+                <ui:ToggleSwitch
+                    x:Name="HomeOnOffControl"
+                    Margin="0 0 8 0"
+                    HorizontalAlignment="Right"
+                    IsEnabled="{Binding HomeEnabled}"
+                    IsOn="{Binding PluginHomeState}"
+                    OffContent="{DynamicResource disable}"
+                    OnContent="{DynamicResource enable}"
+                    ToolTip="{DynamicResource homeToggleBoxToolTip}"
+                    Visibility="{Binding DataContext.IsHomeOnOffSelected, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-        <StackPanel>
-            <ContentControl Content="{Binding BottomPart1}" />
+                <ui:ToggleSwitch
+                    x:Name="OnOffControl"
+                    Margin="0 0 8 0"
+                    IsOn="{Binding PluginState}"
+                    OffContent="{DynamicResource disable}"
+                    OnContent="{DynamicResource enable}"
+                    Visibility="{Binding DataContext.IsOnOffSelected, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            </StackPanel>
+        </ui:SettingsExpander.Content>
 
-            <Border
-                Background="{DynamicResource Color00B}"
-                BorderBrush="{DynamicResource Color03B}"
-                BorderThickness="0 1 0 0">
-                <Border.Style>
-                    <Style TargetType="Border">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding HasSettingControl}" Value="False">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Border.Style>
-                <ContentControl
-                    Margin="0"
-                    Padding="1"
-                    VerticalAlignment="Stretch"
-                    Content="{Binding SettingControl}" />
-            </Border>
+        <ui:SettingsExpander.Items>
+            <ui:SettingsCard
+                Margin="0"
+                Padding="0"
+                ContentAlignment="Vertical">
+                <StackPanel>
+                    <ContentControl Content="{Binding BottomPart1}" />
 
-            <ContentControl Content="{Binding BottomPart2}" />
-        </StackPanel>
-    </Expander>
+                    <Border
+                        Background="{DynamicResource Color00B}"
+                        BorderBrush="{DynamicResource Color03B}"
+                        BorderThickness="0 1 0 0">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HasSettingControl}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <ContentControl
+                            Margin="0"
+                            Padding="1"
+                            VerticalAlignment="Stretch"
+                            Content="{Binding SettingControl}" />
+                    </Border>
+
+                    <ContentControl Content="{Binding BottomPart2}" />
+                </StackPanel>
+            </ui:SettingsCard>
+        </ui:SettingsExpander.Items>
+    </ui:SettingsExpander>
 </UserControl>

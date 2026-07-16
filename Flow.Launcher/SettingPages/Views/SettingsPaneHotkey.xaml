@@ -210,8 +210,7 @@
                                 BorderBrush="DarkGray"
                                 BorderThickness="1"
                                 ItemsSource="{Binding Settings.CustomPluginHotkeys}"
-                                SelectedItem="{Binding SelectedCustomPluginHotkey}"
-                                Style="{StaticResource {x:Static GridView.GridViewStyleKey}}">
+                                SelectedItem="{Binding SelectedCustomPluginHotkey}">
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Width="180" Header="{DynamicResource hotkey}">
@@ -273,8 +272,7 @@
                                 BorderBrush="DarkGray"
                                 BorderThickness="1"
                                 ItemsSource="{Binding Settings.CustomShortcuts}"
-                                SelectedItem="{Binding SelectedCustomShortcut}"
-                                Style="{StaticResource {x:Static GridView.GridViewStyleKey}}">
+                                SelectedItem="{Binding SelectedCustomShortcut}">
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Width="180" Header="{DynamicResource customShortcut}">
@@ -339,8 +337,7 @@
                                 Background="{DynamicResource Color02B}"
                                 BorderBrush="DarkGray"
                                 BorderThickness="1"
-                                ItemsSource="{Binding Settings.BuiltinShortcuts}"
-                                Style="{StaticResource {x:Static GridView.GridViewStyleKey}}">
+                                ItemsSource="{Binding Settings.BuiltinShortcuts}">
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Width="180" Header="{DynamicResource customShortcut}">
