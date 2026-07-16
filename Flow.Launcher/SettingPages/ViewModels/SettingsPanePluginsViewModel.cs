@@ -29,7 +29,7 @@ public partial class SettingsPanePluginsViewModel(ISettingsAPI settings) : Obser
     }
 
     [ObservableProperty]
-    public partial bool IsOnOffSelected { get; set; }
+    public partial bool IsOnOffSelected { get; set; } = true;
 
     [ObservableProperty]
     public partial bool IsPrioritySelected { get; set; }
@@ -44,8 +44,7 @@ public partial class SettingsPanePluginsViewModel(ISettingsAPI settings) : Obser
     // Include init failed ones so that we can uninstall them
     // Include initializing ones so that we can change related settings like action keywords, etc.
     public List<PluginViewModel> PluginViewModels => _pluginViewModels ??= IPublicAPI.Instance.GetAllPlugins()
-        .OrderBy(plugin => plugin.Disabled)
-        .ThenBy(plugin => plugin.Name)
+        .OrderBy(plugin => plugin.Name)
         .Select(plugin => new PluginViewModel
         {
             PluginMetadata = plugin,
