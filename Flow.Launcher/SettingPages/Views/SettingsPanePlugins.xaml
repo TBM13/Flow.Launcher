@@ -74,7 +74,6 @@
                     Margin="0 0 26 0"
                     VerticalContentAlignment="Center"
                     ui:ControlHelper.PlaceholderText="{DynamicResource searchplugin}"
-                    ContextMenu="{StaticResource TextBoxContextMenu}"
                     FontSize="14"
                     Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"
                     ToolTip="{DynamicResource searchpluginToolTip}"

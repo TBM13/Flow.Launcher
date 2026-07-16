@@ -99,7 +99,6 @@ public partial class SettingsPanePluginsViewModel(ISettingsAPI settings) : Obser
             },
             PrimaryButtonText = (string)Application.Current.Resources["commonOK"],
             CornerRadius = new CornerRadius(8),
-            Style = (Style)Application.Current.Resources["ContentDialog"]
         };
 
         await helpDialog.ShowAsync();

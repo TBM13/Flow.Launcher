@@ -8,8 +8,7 @@
     BorderThickness="0 1 0 0"
     CornerRadius="8"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
-    Foreground="{DynamicResource PopupTextColor}"
-    Style="{DynamicResource ContentDialog}">
+    Foreground="{DynamicResource PopupTextColor}">
     <ui:ContentDialog.Resources>
         <Thickness x:Key="ContentDialogPadding">0</Thickness>
         <Thickness x:Key="ContentDialogTitleMargin">0</Thickness>
@@ -80,10 +79,10 @@
                 <CheckBox
                     x:Name="LongPressCheckbox"
                     HorizontalAlignment="Center"
+                    Checked="LongPressCheckbox_Checked"
                     Content="Long Press"
                     ToolTip="If checked, the key(s) will need to be pressed for a little more than half a second."
-                    Checked="LongPressCheckbox_Checked"
-                    Unchecked="LongPressCheckbox_Unchecked"/>
+                    Unchecked="LongPressCheckbox_Unchecked" />
 
                 <!--  Warning message for when something went wrong with the new hotkey.  -->
                 <Border
@@ -137,29 +136,29 @@
                 Orientation="Horizontal">
                 <Button
                     x:Name="SaveBtn"
-                    MinHeight="36"
                     MinWidth="100"
+                    MinHeight="36"
                     Margin="0 0 4 0"
                     Click="Save"
                     Content="{DynamicResource commonSave}"
                     Style="{StaticResource AccentButtonStyle}" />
                 <Button
                     x:Name="ResetBtn"
-                    MinHeight="36"
                     MinWidth="100"
+                    MinHeight="36"
                     Margin="4 0 4 0"
                     Click="Reset"
                     Content="{DynamicResource commonReset}" />
                 <Button
                     x:Name="DeleteBtn"
-                    MinHeight="36"
                     MinWidth="100"
+                    MinHeight="36"
                     Margin="4 0 4 0"
                     Click="Delete"
                     Content="Disable" />
                 <Button
-                    MinHeight="36"
                     MinWidth="100"
+                    MinHeight="36"
                     Margin="4 0 0 0"
                     Click="Cancel"
                     Content="{DynamicResource commonCancel}" />
