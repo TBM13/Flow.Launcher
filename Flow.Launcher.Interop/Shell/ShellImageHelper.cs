@@ -63,8 +63,6 @@ public enum ShellItemImageFlags
 
 public static class ShellImageHelper
 {
-    private static readonly Guid ImageFactoryGuid = typeof(IShellItemImageFactory).GUID;
-
     /// <summary>
     /// Obtains the icon or thumbnail for the specified file.
     /// </summary>
@@ -95,28 +93,20 @@ public static class ShellImageHelper
     /// <exception cref="InvalidOperationException"></exception>
     private static unsafe HBITMAP GetHBitmap(string path, int width, int height, ShellItemImageFlags options)
     {
-        PInvoke.SHCreateItemFromParsingName(
-            path,
-            null,
-            ImageFactoryGuid,
-            out object shellItemObj).ThrowOnFailure();
-
-        if (shellItemObj is not IShellItemImageFactory imageFactory)
-        {
-            Marshal.ReleaseComObject(shellItemObj);
-            throw new InvalidOperationException("Failed to get IShellItemImageFactory");
-        }
-
-        SIZE size = new SIZE
-        {
-            cx = width,
-            cy = height
-        };
-
-        HBITMAP hBitmap = default;
-        int remainingAttempts = 3;
+        IShellItemImageFactory? imageFactory = null;
         try
         {
+            PInvoke.SHCreateItemFromParsingName<IShellItemImageFactory>(
+                path, null, out imageFactory).ThrowOnFailure();
+
+            SIZE size = new SIZE
+            {
+                cx = width,
+                cy = height
+            };
+
+            HBITMAP hBitmap = default;
+            int remainingAttempts = 3;
             while (true)
             {
                 try
@@ -133,13 +123,14 @@ public static class ShellImageHelper
                     remainingAttempts--;
                 }
             }
+
+            return hBitmap;
         }
         finally
         {
-            Marshal.ReleaseComObject(shellItemObj);
+            if (imageFactory is not null && Marshal.IsComObject(imageFactory))
+                Marshal.ReleaseComObject(imageFactory);
         }
-
-        return hBitmap;
     }
 
     /// <summary>
