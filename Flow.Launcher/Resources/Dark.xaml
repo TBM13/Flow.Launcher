@@ -106,9 +106,6 @@
     <!--  Resources for HotkeyControl  -->
     <SolidColorBrush x:Key="CustomHotkeyHover" Color="#323232" />
 
-    <!--  Resources for Expander  -->
-    <SolidColorBrush x:Key="CustomExpanderHover" Color="#323232" />
-
     <!--  Resource for ContentDialog  -->
     <SolidColorBrush x:Key="ContentDialogOverlayBG" Color="#58000000" />
 
