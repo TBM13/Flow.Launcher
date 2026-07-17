@@ -15,10 +15,18 @@ public static class BrowserHelper
     /// <exception cref="FileNotFoundException"></exception>
     public static string GetDefaultBrowserPath()
     {
-        using RegistryKey? regDefault = Registry.CurrentUser.OpenSubKey(
-            @"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice", false);
-        string browserProgramId = (string?)regDefault?.GetValue("ProgId")
-            ?? throw new InvalidOperationException("Couldn't find default browser program ID");
+        using RegistryKey? regDefaultLatest = Registry.CurrentUser.OpenSubKey(
+            @"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoiceLatest\ProgId", false);
+        string? browserProgramId = (string?)regDefaultLatest?.GetValue("ProgId");
+
+        // Try with older registry key
+        if (browserProgramId is null)
+        {
+            using RegistryKey? regDefault = Registry.CurrentUser.OpenSubKey(
+                @"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice", false);
+            browserProgramId = (string?)regDefault?.GetValue("ProgId")
+                ?? throw new InvalidOperationException("Couldn't find default browser program ID");
+        }
 
         using RegistryKey? regKey = Registry.ClassesRoot.OpenSubKey(browserProgramId + @"\shell\open\command", false);
         string path = (string?)regKey?.GetValue(null) ?? throw new InvalidOperationException(
