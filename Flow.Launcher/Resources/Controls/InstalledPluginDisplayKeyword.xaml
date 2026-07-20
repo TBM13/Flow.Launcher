@@ -31,7 +31,6 @@
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 DockPanel.Dock="Left"
-                Style="{DynamicResource SettingTitleLabel}"
                 Text="{DynamicResource actionKeywords}" />
             <!--  Here Margin="0 -4.5 0 -4.5" is to remove redundant top bottom margin from Margin="{StaticResource SettingPanelMargin}"  -->
             <Button

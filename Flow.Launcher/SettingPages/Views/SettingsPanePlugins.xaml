@@ -96,7 +96,6 @@
                 Loaded="PluginListBox_Loaded"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                 SnapsToDevicePixels="True"
-                Style="{DynamicResource PluginListStyle}"
                 VirtualizingPanel.ScrollUnit="Pixel"
                 VirtualizingStackPanel.IsVirtualizing="True"
                 VirtualizingStackPanel.VirtualizationMode="Recycling">
