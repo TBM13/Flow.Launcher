@@ -9,7 +9,7 @@ namespace Flow.Launcher.Core.Resource
     public partial class Theme(ISettingsAPI settings) : ObservableObject
     {
         private const int ShadowExtraMargin = 32;
-        private static readonly string DefaultThemePath = $@"{Constant.ProgramDirectory}\{Constant.Themes}\{Constant.DefaultTheme}.xaml";
+        private static readonly string DefaultThemePath = $@"{Constant.ProgramDirectory}\{Constant.Themes}\Base.xaml";
 
         private readonly ISettingsAPI _settings = settings;
         private ResourceDictionary? _oldResource;

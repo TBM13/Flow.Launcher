@@ -15,7 +15,6 @@
     IsSynchronizedWithCurrentItem="True"
     ItemsSource="{Binding Results}"
     KeyboardNavigation.DirectionalNavigation="Cycle"
-    PreviewMouseDown="ListBox_PreviewMouseDown"
     PreviewMouseLeftButtonDown="ResultList_PreviewMouseLeftButtonDown"
     PreviewMouseLeftButtonUp="ResultListBox_OnPreviewMouseUp"
     PreviewMouseMove="ResultList_MouseMove"
@@ -24,8 +23,7 @@
     SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
     SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
     SelectionChanged="OnSelectionChanged"
-    SelectionMode="Single"
-    Style="{DynamicResource BaseListboxStyle}"
+    Style="{StaticResource BaseListboxStyle}"
     VirtualizingPanel.CacheLength="1,1"
     VirtualizingPanel.CacheLengthUnit="Page"
     VirtualizingPanel.ScrollUnit="Pixel"
@@ -38,7 +36,6 @@
     <ListBox.ItemTemplate>
         <DataTemplate>
             <DockPanel
-                Margin="0"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 UseLayoutRounding="False">
@@ -93,21 +90,11 @@
                         ToolTipService.ShowOnDisabled="True" />
                 </StackPanel>
             </DockPanel>
-            <!--  a result item height is 52 including margin  -->
-            <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ListBoxItem}}, Path=IsSelected}" Value="True">
-                    <Setter TargetName="Title" Property="Style" Value="{DynamicResource ItemTitleSelectedStyle}" />
-                    <Setter TargetName="SubTitle" Property="Style" Value="{DynamicResource ItemSubTitleSelectedStyle}" />
-                    <Setter TargetName="GlyphIcon" Property="Style" Value="{DynamicResource ItemGlyphSelectedStyle}" />
-                </DataTrigger>
-            </DataTemplate.Triggers>
         </DataTemplate>
     </ListBox.ItemTemplate>
-    <!--  http://stackoverflow.com/questions/16819577/setting-background-color-or-wpf-4-0-listbox-windows-8/#16820062  -->
     <ListBox.ItemContainerStyle>
         <Style TargetType="{x:Type ListBoxItem}">
             <Setter Property="Height" Value="{x:Static root:Const.ItemHeightSize}" />
-            <Setter Property="Visibility" Value="Visible" />
             <EventSetter Event="Loaded" Handler="OnItemLoaded" />
             <EventSetter Event="MouseEnter" Handler="OnMouseEnter" />
             <EventSetter Event="MouseMove" Handler="OnMouseMove" />
