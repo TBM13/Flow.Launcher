@@ -15,14 +15,14 @@
                 <TextBlock
                     x:Name="TitleTextblock"
                     Margin="0 5 0 0"
-                    Style="{DynamicResource PreviewItemTitleStyle}"
+                    Style="{StaticResource PreviewItemTitleStyle}"
                     Text="Service Title"
                     TextAlignment="Center"
                     TextWrapping="Wrap" />
                 <TextBlock
                     x:Name="DescriptionTextblock"
                     Margin="0 5 0 0"
-                    Style="{DynamicResource PreviewItemSubTitleStyle}"
+                    Style="{StaticResource PreviewItemSubTitleStyle}"
                     Text="Service description."
                     TextWrapping="Wrap" />
             </StackPanel>
@@ -33,7 +33,7 @@
             Height="18"
             Margin="0 0 0 3"
             VerticalAlignment="Bottom"
-            Style="{DynamicResource PreviewItemSubTitleStyle}"
+            Style="{StaticResource PreviewItemSubTitleStyle}"
             Text="Service Path"
             TextTrimming="CharacterEllipsis" />
     </Grid>

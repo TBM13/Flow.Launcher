@@ -7,15 +7,16 @@
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     xmlns:userSettings="clr-namespace:Flow.Launcher.Core.UserSettings;assembly=Flow.Launcher.Core">
 
-    <Style x:Key="BaseQueryBoxStyle" TargetType="{x:Type TextBox}">
+    <Style x:Key="QueryBoxStyle" TargetType="{x:Type TextBox}">
+        <Setter Property="Padding" Value="0 0 50 0" />
+        <Setter Property="Foreground" Value="{DynamicResource Color05B}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource Color05B}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource SystemAccentColorLight1Brush}" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="Height" Value="42" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="FontSize" Value="28" />
         <Setter Property="Margin" Value="16 7 0 7" />
-        <Setter Property="Padding" Value="0 0 68 0" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Height" Value="48" />
-        <Setter Property="Foreground" Value="#E3E0E3" />
-        <Setter Property="CaretBrush" Value="#E3E0E3" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
@@ -50,23 +51,20 @@
     </Style>
 
     <!--  Further font customisations are dynamically loaded in Theme.cs  -->
-    <Style x:Key="BaseQueryBoxBgStyle" TargetType="{x:Type Border}">
+    <Style x:Key="QueryBoxBgStyle" TargetType="{x:Type Border}">
         <Setter Property="Margin" Value="0 0 0 0" />
     </Style>
-    <Style
-        x:Key="QueryBoxBgStyle"
-        BasedOn="{StaticResource BaseQueryBoxBgStyle}"
-        TargetType="{x:Type Border}" />
 
-    <Style x:Key="BaseWindowBorderStyle" TargetType="{x:Type Border}">
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Background" Value="#2F2F2F" />
+    <Style x:Key="WindowBorderStyle" TargetType="{x:Type Border}">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{DynamicResource SystemThemeBorder}" />
+        <Setter Property="Background" Value="{DynamicResource Color01B}" />
+        <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="Padding" Value="0 0 0 0" />
         <Setter Property="CornerRadius" Value="5" />
-        <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
     </Style>
-    <Style x:Key="BaseWindowStyle" TargetType="{x:Type Window}">
+    <Style x:Key="WindowStyle" TargetType="{x:Type Window}">
         <Setter Property="RenderOptions.ClearTypeHint" Value="Enabled" />
         <Setter Property="Width" Value="600" />
     </Style>
@@ -77,14 +75,14 @@
 
     <!--  Item Style  -->
 
-    <Style x:Key="BaseItemTitleStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="Foreground" Value="#FFFFF8" />
+    <Style x:Key="ItemTitleStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{DynamicResource Color05B}" />
         <Setter Property="FontSize" Value="16" />
         <Setter Property="Margin" Value="0 0 0 1" />
         <Setter Property="VerticalAlignment" Value="Bottom" />
     </Style>
-    <Style x:Key="BaseItemSubTitleStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="Foreground" Value="#D9D9D4" />
+    <Style x:Key="ItemSubTitleStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{DynamicResource SubTitleForeground}" />
         <Setter Property="Margin" Value="0 1 0 0" />
         <Setter Property="VerticalAlignment" Value="Top" />
         <Setter Property="FontSize" Value="13" />
@@ -94,51 +92,62 @@
             </DataTrigger>
         </Style.Triggers>
     </Style>
-    <Style x:Key="BaseGlyphStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="Foreground" Value="#ffffff" />
+    <Style x:Key="GlyphStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{DynamicResource Color05B}" />
+        <Setter Property="Margin" Value="-2 0 0 0" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="Width" Value="25" />
         <Setter Property="Height" Value="25" />
         <Setter Property="FontSize" Value="25" />
-    </Style>
-    <Style x:Key="BaseGlyphSelectedStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="Foreground" Value="#ffffff" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="HorizontalAlignment" Value="Center" />
-        <Setter Property="Width" Value="25" />
-        <Setter Property="Height" Value="25" />
-        <Setter Property="FontSize" Value="25" />
-    </Style>
-
-    <Style x:Key="BaseListboxStyle" TargetType="{x:Type ListBox}">
-        <Setter Property="BorderBrush" Value="Transparent" />
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
-        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
-        <Setter Property="Margin" Value="0 10 0 10" />
-        <Setter Property="Padding" Value="0 0 0 0" />
-
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="ListBox">
-                    <ui:ScrollViewerEx
-                        x:Name="ListBoxScrollViewer"
-                        Focusable="False"
-                        Template="{DynamicResource ScrollViewerControlTemplate}">
-                        <VirtualizingStackPanel IsItemsHost="True" />
-                    </ui:ScrollViewerEx>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Items.Count}" Value="0">
-                <Setter Property="Margin" Value="0" />
-            </DataTrigger>
-        </Style.Triggers>
     </Style>
 
     <!--  ScrollViewer Style  -->
+    <!--  button style in the middle of the scrollbar  -->
+    <Style x:Key="ThumbStyle" TargetType="{x:Type Thumb}">
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="IsTabStop" Value="false" />
+        <Setter Property="Focusable" Value="false" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Thumb}">
+                    <Border
+                        Background="{DynamicResource ThumbColor}"
+                        BorderBrush="Transparent"
+                        BorderThickness="0"
+                        CornerRadius="2"
+                        DockPanel.Dock="Right" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ScrollBarStyle" TargetType="{x:Type ScrollBar}">
+        <Setter Property="Stylus.IsPressAndHoldEnabled" Value="false" />
+        <Setter Property="Stylus.IsFlicksEnabled" Value="false" />
+        <Setter Property="Background" Value="Black" />
+        <!--  must set min width  -->
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="Width" Value="5" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ScrollBar}">
+                    <DockPanel>
+                        <Track
+                            x:Name="PART_Track"
+                            DockPanel.Dock="Right"
+                            IsDirectionReversed="true">
+                            <Track.Thumb>
+                                <Thumb Style="{StaticResource ThumbStyle}" />
+                            </Track.Thumb>
+                        </Track>
+                    </DockPanel>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <ControlTemplate x:Key="ScrollViewerControlTemplate" TargetType="{x:Type ScrollViewer}">
         <Grid x:Name="Grid" Background="{TemplateBinding Background}">
             <Grid.ColumnDefinitions>
@@ -169,68 +178,52 @@
                 Cursor="Arrow"
                 Maximum="{TemplateBinding ScrollableHeight}"
                 Minimum="0"
-                Style="{DynamicResource ScrollBarStyle}"
+                Style="{StaticResource ScrollBarStyle}"
                 ViewportSize="{TemplateBinding ViewportHeight}"
                 Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
                 Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
         </Grid>
     </ControlTemplate>
 
-    <Style x:Key="BaseScrollViewerStyle" TargetType="{x:Type ScrollViewer}">
-        <Setter Property="CanContentScroll" Value="False" />
-    </Style>
+    <Style x:Key="ListboxStyle" TargetType="{x:Type ListBox}">
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+        <Setter Property="Margin" Value="0 10 0 10" />
+        <Setter Property="Padding" Value="0 0 0 0" />
 
-    <!--  button style in the middle of the scrollbar  -->
-    <Style x:Key="BaseThumbStyle" TargetType="{x:Type Thumb}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
-        <Setter Property="OverridesDefaultStyle" Value="true" />
-        <Setter Property="IsTabStop" Value="false" />
-        <Setter Property="Focusable" Value="false" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Thumb}">
-                    <Border
-                        Background="#898989"
-                        BorderBrush="Transparent"
-                        CornerRadius="2"
-                        DockPanel.Dock="Right" />
+                <ControlTemplate TargetType="ListBox">
+                    <ui:ScrollViewerEx
+                        x:Name="ListBoxScrollViewer"
+                        Focusable="False"
+                        Template="{StaticResource ScrollViewerControlTemplate}">
+                        <VirtualizingStackPanel IsItemsHost="True" />
+                    </ui:ScrollViewerEx>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Items.Count}" Value="0">
+                <Setter Property="Margin" Value="0" />
+            </DataTrigger>
+        </Style.Triggers>
     </Style>
 
-    <Style x:Key="BaseScrollBarStyle" TargetType="{x:Type ScrollBar}">
-        <Setter Property="Stylus.IsPressAndHoldEnabled" Value="false" />
-        <Setter Property="Stylus.IsFlicksEnabled" Value="false" />
-        <Setter Property="Background" Value="Black" />
-        <!--  must set min width  -->
-        <Setter Property="MinWidth" Value="0" />
-        <Setter Property="Width" Value="5" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ScrollBar}">
-                    <DockPanel>
-                        <Track
-                            x:Name="PART_Track"
-                            DockPanel.Dock="Right"
-                            IsDirectionReversed="true">
-                            <Track.Thumb>
-                                <Thumb Style="{DynamicResource ThumbStyle}" />
-                            </Track.Thumb>
-                        </Track>
-                    </DockPanel>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
+    <Style x:Key="SeparatorStyle" TargetType="Rectangle">
+        <Setter Property="Fill" Value="{DynamicResource SeparatorForeground}" />
+        <Setter Property="Height" Value="1" />
+        <Setter Property="Margin" Value="0 0 0 0" />
     </Style>
-    <Style x:Key="BaseSeparatorStyle" TargetType="Rectangle" />
 
-    <Style x:Key="BasePreviewBorderStyle" TargetType="{x:Type Border}">
+    <Style x:Key="PreviewBorderStyle" TargetType="{x:Type Border}">
         <Setter Property="BorderThickness" Value="1 0 0 0" />
         <Setter Property="Width" Value="5" />
-        <Setter Property="BorderBrush" Value="#FFEAEAEA" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Margin" Value="0 0 10 10" />
+        <Setter Property="BorderBrush" Value="{DynamicResource SeparatorForeground}" />
+        <Setter Property="Margin" Value="5 0 10 0" />
         <Setter Property="Background" Value="Transparent" />
         <Style.Triggers>
             <MultiDataTrigger>
@@ -245,8 +238,8 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="BasePreviewGlyph" TargetType="{x:Type TextBlock}">
-        <Setter Property="Foreground" Value="#555555" />
+    <Style x:Key="PreviewGlyph" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{DynamicResource Color05B}" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="FontSize" Value="90" />
@@ -275,7 +268,6 @@
             </MultiDataTrigger>
         </Style.Triggers>
     </Style>
-    <!--  for classic themes  -->
 
     <Style x:Key="PluginActivationIcon" TargetType="{x:Type Image}">
         <Setter Property="Width" Value="32" />
@@ -285,16 +277,16 @@
     </Style>
 
 
-    <Style x:Key="BasePreviewItemTitleStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="Foreground" Value="#8f8f8f" />
+    <Style x:Key="PreviewItemTitleStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{DynamicResource Color05B}" />
         <Setter Property="FontSize" Value="15" />
         <Setter Property="Margin" Value="0 6 0 0" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="TextAlignment" Value="Center" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
-    <Style x:Key="BasePreviewItemSubTitleStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="Foreground" Value="#8f8f8f" />
+    <Style x:Key="PreviewItemSubTitleStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{DynamicResource SubTitleForeground}" />
         <Setter Property="FontSize" Value="12" />
         <Setter Property="FontWeight" Value="Normal" />
         <Setter Property="Margin" Value="5 6 0 10" />
@@ -309,110 +301,9 @@
         <Setter Property="Width" Value="32" />
         <Setter Property="Margin" Value="-2 0 0 0" />
     </Style>
-    <Style
-        x:Key="ItemGlyph"
-        BasedOn="{StaticResource BaseGlyphStyle}"
-        TargetType="{x:Type TextBlock}">
-        <Setter Property="Foreground" Value="{DynamicResource Color05B}" />
-        <Setter Property="Margin" Value="-2 0 0 0" />
-    </Style>
-    <Style
-        x:Key="QueryBoxStyle"
-        BasedOn="{StaticResource BaseQueryBoxStyle}"
-        TargetType="{x:Type TextBox}">
-        <Setter Property="Padding" Value="0 0 50 0" />
-        <Setter Property="Foreground" Value="{DynamicResource Color05B}" />
-        <Setter Property="CaretBrush" Value="{DynamicResource Color05B}" />
-        <Setter Property="SelectionBrush" Value="{DynamicResource SystemAccentColorLight1Brush}" />
-        <Setter Property="FontSize" Value="16" />
-        <Setter Property="Height" Value="42" />
-    </Style>
 
-    <Style
-        x:Key="WindowBorderStyle"
-        BasedOn="{StaticResource BaseWindowBorderStyle}"
-        TargetType="{x:Type Border}">
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="BorderBrush" Value="{DynamicResource SystemThemeBorder}" />
-        <Setter Property="Background" Value="{DynamicResource Color01B}" />
-        <Setter Property="UseLayoutRounding" Value="True" />
-    </Style>
-    <Style
-        x:Key="WindowStyle"
-        BasedOn="{StaticResource BaseWindowStyle}"
-        TargetType="{x:Type Window}" />
-
-    <!--  Item Style  -->
-    <Style
-        x:Key="ItemTitleStyle"
-        BasedOn="{StaticResource BaseItemTitleStyle}"
-        TargetType="{x:Type TextBlock}">
-        <Setter Property="Foreground" Value="{DynamicResource Color05B}" />
-    </Style>
-    <Style
-        x:Key="ItemSubTitleStyle"
-        BasedOn="{StaticResource BaseItemSubTitleStyle}"
-        TargetType="{x:Type TextBlock}">
-        <Setter Property="Foreground" Value="{DynamicResource SubTitleForeground}" />
-    </Style>
-    <Style
-        x:Key="SeparatorStyle"
-        BasedOn="{StaticResource BaseSeparatorStyle}"
-        TargetType="{x:Type Rectangle}">
-        <Setter Property="Fill" Value="{DynamicResource SeparatorForeground}" />
-        <Setter Property="Height" Value="1" />
-        <Setter Property="Margin" Value="0 0 0 0" />
-    </Style>
     <SolidColorBrush x:Key="ItemSelectedBackgroundColor" Color="{m:DynamicColor ItemSelectedBackgroundColorBrush}" />
-
-    <!--  button style in the middle of the scrollbar  -->
-    <Style
-        x:Key="ThumbStyle"
-        BasedOn="{StaticResource BaseThumbStyle}"
-        TargetType="{x:Type Thumb}">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Thumb}">
-                    <Border
-                        Background="{DynamicResource ThumbColor}"
-                        BorderBrush="Transparent"
-                        BorderThickness="0"
-                        CornerRadius="2"
-                        DockPanel.Dock="Right" />
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-    <Style
-        x:Key="ScrollBarStyle"
-        BasedOn="{StaticResource BaseScrollBarStyle}"
-        TargetType="{x:Type ScrollBar}" />
 
     <CornerRadius x:Key="ItemRadius">5</CornerRadius>
     <Thickness x:Key="ItemMargin">10 0 10 0</Thickness>
-    <Style
-        x:Key="PreviewBorderStyle"
-        BasedOn="{StaticResource BasePreviewBorderStyle}"
-        TargetType="{x:Type Border}">
-        <Setter Property="BorderBrush" Value="{DynamicResource SeparatorForeground}" />
-        <Setter Property="Margin" Value="5 0 10 0" />
-    </Style>
-    <Style
-        x:Key="PreviewItemTitleStyle"
-        BasedOn="{StaticResource BasePreviewItemTitleStyle}"
-        TargetType="{x:Type TextBlock}">
-        <Setter Property="Foreground" Value="{DynamicResource Color05B}" />
-    </Style>
-    <Style
-        x:Key="PreviewItemSubTitleStyle"
-        BasedOn="{StaticResource BasePreviewItemSubTitleStyle}"
-        TargetType="{x:Type TextBlock}">
-        <Setter Property="Foreground" Value="{DynamicResource SubTitleForeground}" />
-    </Style>
-    <Style
-        x:Key="PreviewGlyph"
-        BasedOn="{StaticResource BasePreviewGlyph}"
-        TargetType="{x:Type TextBlock}">
-        <Setter Property="Foreground" Value="{DynamicResource Color05B}" />
-    </Style>
 </ResourceDictionary>

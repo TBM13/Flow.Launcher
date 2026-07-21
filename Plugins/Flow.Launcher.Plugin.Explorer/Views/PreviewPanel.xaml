@@ -30,7 +30,7 @@
                     Margin="5 6 5 16"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Top"
-                    Style="{DynamicResource PreviewItemTitleStyle}"
+                    Style="{StaticResource PreviewItemTitleStyle}"
                     Text="{Binding FileName, Mode=OneTime}"
                     TextAlignment="Center"
                     TextWrapping="Wrap" />
@@ -43,10 +43,10 @@
                 Height="1"
                 Margin="0 0 5 0"
                 HorizontalAlignment="Stretch"
-                Style="{DynamicResource SeparatorStyle}" />
+                Style="{StaticResource SeparatorStyle}" />
             <TextBlock
                 Margin="5 8 8 8"
-                Style="{DynamicResource PreviewItemSubTitleStyle}"
+                Style="{StaticResource PreviewItemSubTitleStyle}"
                 Text="{Binding FilePath, Mode=OneTime}" />
             <Rectangle
                 Width="Auto"
@@ -85,7 +85,7 @@
                     Grid.Column="0"
                     Margin="5 0 0 0"
                     VerticalAlignment="Top"
-                    Style="{DynamicResource PreviewItemSubTitleStyle}"
+                    Style="{StaticResource PreviewItemSubTitleStyle}"
                     Text="{DynamicResource FileSize}"
                     TextWrapping="Wrap"
                     Visibility="{Binding FileSizeVisibility, Mode=OneTime}" />
@@ -95,7 +95,7 @@
                     Margin="0 0 13 0"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
-                    Style="{DynamicResource PreviewItemSubTitleStyle}"
+                    Style="{StaticResource PreviewItemSubTitleStyle}"
                     Text="{Binding FileSize, Mode=OneWay}"
                     TextWrapping="Wrap"
                     Visibility="{Binding FileSizeVisibility, Mode=OneTime}" />
@@ -105,7 +105,7 @@
                     Grid.Column="0"
                     Margin="5 0 8 0"
                     VerticalAlignment="Top"
-                    Style="{DynamicResource PreviewItemSubTitleStyle}"
+                    Style="{StaticResource PreviewItemSubTitleStyle}"
                     Text="{DynamicResource Created}"
                     TextWrapping="Wrap"
                     Visibility="{Binding CreatedAtVisibility, Mode=OneTime}" />
@@ -115,7 +115,7 @@
                     Margin="0 0 13 0"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
-                    Style="{DynamicResource PreviewItemSubTitleStyle}"
+                    Style="{StaticResource PreviewItemSubTitleStyle}"
                     Text="{Binding CreatedAt, Mode=OneWay}"
                     TextWrapping="Wrap"
                     Visibility="{Binding CreatedAtVisibility, Mode=OneTime}" />
@@ -125,7 +125,7 @@
                     Grid.Column="0"
                     Margin="5 0 8 0"
                     VerticalAlignment="Top"
-                    Style="{DynamicResource PreviewItemSubTitleStyle}"
+                    Style="{StaticResource PreviewItemSubTitleStyle}"
                     Text="{DynamicResource LastModified}"
                     TextWrapping="Wrap"
                     Visibility="{Binding LastModifiedAtVisibility, Mode=OneTime}" />
@@ -135,7 +135,7 @@
                     Margin="0 0 13 0"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
-                    Style="{DynamicResource PreviewItemSubTitleStyle}"
+                    Style="{StaticResource PreviewItemSubTitleStyle}"
                     Text="{Binding LastModifiedAt, Mode=OneWay}"
                     TextWrapping="Wrap"
                     Visibility="{Binding LastModifiedAtVisibility, Mode=OneTime}" />

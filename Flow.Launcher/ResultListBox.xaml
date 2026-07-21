@@ -23,7 +23,7 @@
     SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
     SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
     SelectionChanged="OnSelectionChanged"
-    Style="{StaticResource BaseListboxStyle}"
+    Style="{StaticResource ListboxStyle}"
     VirtualizingPanel.CacheLength="1,1"
     VirtualizingPanel.CacheLengthUnit="Page"
     VirtualizingPanel.ScrollUnit="Pixel"
@@ -51,7 +51,7 @@
                     Source="{Binding Image, TargetNullValue={x:Null}}"
                     Stretch="Uniform"
                     StretchDirection="DownOnly"
-                    Style="{DynamicResource ImageIconStyle}"
+                    Style="{StaticResource ImageIconStyle}"
                     Visibility="{Binding ShowIcon}" />
                 <TextBlock
                     x:Name="GlyphIcon"
@@ -60,7 +60,7 @@
                     VerticalAlignment="Center"
                     DockPanel.Dock="Left"
                     FontFamily="{Binding Glyph.FontFamily}"
-                    Style="{DynamicResource ItemGlyph}"
+                    Style="{StaticResource GlyphStyle}"
                     Text="{Binding Glyph.Glyph}"
                     TextAlignment="Center"
                     Visibility="{Binding ShowGlyph}" />
@@ -74,7 +74,7 @@
                         DockPanel.Dock="Left"
                         FontSize="16"
                         IsEnabled="False"
-                        Style="{DynamicResource ItemTitleStyle}"
+                        Style="{StaticResource ItemTitleStyle}"
                         Text="{Binding Result.Title}"
                         TextTrimming="CharacterEllipsis"
                         ToolTip="{Binding ShowTitleToolTip}"
@@ -83,7 +83,7 @@
                         x:Name="SubTitle"
                         FontSize="13"
                         IsEnabled="False"
-                        Style="{DynamicResource ItemSubTitleStyle}"
+                        Style="{StaticResource ItemSubTitleStyle}"
                         Text="{Binding Result.SubTitle}"
                         TextTrimming="CharacterEllipsis"
                         ToolTip="{Binding ShowSubTitleToolTip}"
@@ -106,10 +106,10 @@
                     <ControlTemplate TargetType="{x:Type ListBoxItem}">
                         <Border
                             x:Name="Bd"
-                            Margin="{DynamicResource ItemMargin}"
+                            Margin="{StaticResource ItemMargin}"
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
-                            CornerRadius="{DynamicResource ItemRadius}"
+                            CornerRadius="{StaticResource ItemRadius}"
                             SnapsToDevicePixels="True">
                             <ContentPresenter
                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"

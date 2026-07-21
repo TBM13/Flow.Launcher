@@ -117,7 +117,7 @@
 
     <Border MouseDown="OnMouseDown" Style="{DynamicResource WindowBorderStyle}">
         <StackPanel Orientation="Vertical">
-            <Border MinHeight="30" Style="{DynamicResource QueryBoxBgStyle}">
+            <Border MinHeight="30" Style="{StaticResource QueryBoxBgStyle}">
                 <Grid>
                     <TextBox
                         x:Name="QueryTextBox"
@@ -127,7 +127,7 @@
                         FontSize="16"
                         PreviewDragOver="QueryTextBox_OnPreviewDragOver"
                         PreviewKeyUp="QueryTextBox_KeyUp"
-                        Style="{DynamicResource QueryBoxStyle}"
+                        Style="{StaticResource QueryBoxStyle}"
                         TextChanged="QueryTextBox_TextChanged1"
                         Visibility="Visible"
                         WindowChrome.IsHitTestVisibleInChrome="True">
@@ -177,12 +177,12 @@
                         RenderOptions.BitmapScalingMode="LowQuality"
                         Source="{Binding PluginIconSource}"
                         Stretch="Uniform"
-                        Style="{DynamicResource PluginActivationIcon}"
+                        Style="{StaticResource PluginActivationIcon}"
                         WindowChrome.IsHitTestVisibleInChrome="True" />
                 </Grid>
             </Border>
 
-            <Border x:Name="ResultPreviewAreaBoarder" Style="{DynamicResource WindowRadius}">
+            <Border x:Name="ResultPreviewAreaBoarder" Style="{StaticResource WindowRadius}">
                 <Border.Clip>
                     <MultiBinding Converter="{StaticResource BorderClipConverter}">
                         <Binding Path="ActualWidth" RelativeSource="{RelativeSource Self}" />
@@ -205,7 +205,7 @@
                         Width="Auto"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Top"
-                        Style="{DynamicResource SeparatorStyle}"
+                        Style="{StaticResource SeparatorStyle}"
                         Visibility="{Binding MiddleSeparatorVisibility}" />
 
                     <flowlauncher:ResultListBox
@@ -228,7 +228,7 @@
                         Visibility="{Binding InternalPreviewVisible, Converter={StaticResource BoolToVisibilityConverter}}">
                         <GridSplitter.Template>
                             <ControlTemplate TargetType="{x:Type GridSplitter}">
-                                <Border Style="{DynamicResource PreviewBorderStyle}" />
+                                <Border Style="{StaticResource PreviewBorderStyle}" />
                             </ControlTemplate>
                         </GridSplitter.Template>
                     </GridSplitter>
@@ -241,7 +241,7 @@
                         Margin="0 0 10 5"
                         VerticalAlignment="Stretch"
                         Content="{Binding PreviewContent}"
-                        Style="{DynamicResource PreviewArea}"
+                        Style="{StaticResource PreviewArea}"
                         Visibility="{Binding PreviewVisibility}" />
                 </Grid>
             </Border>
