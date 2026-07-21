@@ -15,14 +15,6 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <ui:Page.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Resources/SettingWindowStyle.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-            <CollectionViewSource x:Key="SortedFonts" Source="{Binding Source={x:Static Fonts.SystemFontFamilies}}" />
-        </ResourceDictionary>
-    </ui:Page.Resources>
     <ui:ScrollViewerEx
         Padding="6 0 24 0"
         FontSize="14"

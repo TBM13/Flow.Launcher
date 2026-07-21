@@ -12,11 +12,6 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <ui:Page.Resources>
-        <ResourceDictionary>
-            <CollectionViewSource x:Key="SortedFonts" Source="{Binding Source={x:Static Fonts.SystemFontFamilies}}" />
-        </ResourceDictionary>
-    </ui:Page.Resources>
     <ui:ScrollViewerEx
         Margin="0"
         FontSize="14"

@@ -201,11 +201,6 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Items.Count}" Value="0">
-                <Setter Property="Margin" Value="0" />
-            </DataTrigger>
-        </Style.Triggers>
     </Style>
 
     <Style x:Key="SeparatorStyle" TargetType="Rectangle">
@@ -221,17 +216,7 @@
         <Setter Property="BorderBrush" Value="{DynamicResource SeparatorForeground}" />
         <Setter Property="Margin" Value="5 0 10 0" />
         <Setter Property="Background" Value="Transparent" />
-        <Style.Triggers>
-            <MultiDataTrigger>
-                <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding ElementName=ResultListBox, Path=Items.Count}" Value="0" />
-                </MultiDataTrigger.Conditions>
-                <MultiDataTrigger.Setters>
-                    <Setter Property="Height" Value="0" />
-                    <Setter Property="Margin" Value="0" />
-                </MultiDataTrigger.Setters>
-            </MultiDataTrigger>
-        </Style.Triggers>
+
     </Style>
 
     <Style x:Key="PreviewGlyph" TargetType="{x:Type TextBlock}">
@@ -242,27 +227,6 @@
         <Setter Property="MaxWidth" Value="96" />
         <Setter Property="Height" Value="Auto" />
         <Setter Property="MaxHeight" Value="96" />
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding ElementName=PreviewGlyphIcon, UpdateSourceTrigger=PropertyChanged, Path=Text.Length}" Value="0">
-                <Setter Property="Visibility" Value="Collapsed" />
-            </DataTrigger>
-        </Style.Triggers>
-    </Style>
-
-    <Style x:Key="PreviewArea" TargetType="{x:Type ContentPresenter}">
-        <Style.Triggers>
-            <MultiDataTrigger>
-                <MultiDataTrigger.Conditions>
-                    <!--
-                    <Condition Binding="{Binding ElementName=ResultListBox, Path=Visibility}" Value="Collapsed" />
-                    <Condition Binding="{Binding ElementName=ResultContextMenu, Path=Visibility}" Value="Collapsed" />-->
-                    <Condition Binding="{Binding ElementName=ResultListBox, Path=Items.Count}" Value="0" />
-                </MultiDataTrigger.Conditions>
-                <MultiDataTrigger.Setters>
-                    <Setter Property="Height" Value="0" />
-                </MultiDataTrigger.Setters>
-            </MultiDataTrigger>
-        </Style.Triggers>
     </Style>
 
     <Style x:Key="PluginActivationIcon" TargetType="{x:Type Image}">
@@ -302,4 +266,61 @@
 
     <CornerRadius x:Key="ItemRadius">5</CornerRadius>
     <Thickness x:Key="ItemMargin">10 0 10 0</Thickness>
+
+    <!--  Settings  -->
+    <Style x:Key="SettingGroupBox" TargetType="{x:Type Border}">
+        <Setter Property="Background" Value="{DynamicResource Color00B}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Color03B}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="Margin" Value="0 5 0 0" />
+        <Setter Property="Padding" Value="0 15 0 15" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+    </Style>
+
+    <Style
+        x:Key="PluginList"
+        BasedOn="{StaticResource DefaultListBoxItemStyle}"
+        TargetType="ListBoxItem">
+        <Setter Property="Background" Value="{DynamicResource Color00B}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Color03B}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Margin" Value="0 0 18 5" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="Height" Value="Auto" />
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBoxItem">
+                    <Border
+                        x:Name="Bd"
+                        Padding="{TemplateBinding Padding}"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="5"
+                        UseLayoutRounding="True">
+                        <ContentPresenter
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Color07B}" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource Color00B}" />
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource Color03B}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

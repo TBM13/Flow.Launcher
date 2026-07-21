@@ -30,7 +30,6 @@
                 <ui:XamlControlsResources />
                 <ResourceDictionary Source="pack://application:,,,/Resources/CustomControlTemplate.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Themes/Base.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Resources/SettingWindowStyle.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/Languages/en.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

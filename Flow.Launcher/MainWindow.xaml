@@ -42,7 +42,6 @@
         <WindowChrome CaptionHeight="9" GlassFrameThickness="0" />
     </WindowChrome.WindowChrome>
     <Window.Resources>
-        <converters:BorderClipConverter x:Key="BorderClipConverter" />
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <converters:SplitterConverter x:Key="SplitterConverter" />
     </Window.Resources>
@@ -183,15 +182,7 @@
             </Border>
 
             <Border x:Name="ResultPreviewAreaBoarder" Style="{StaticResource WindowRadius}">
-                <Border.Clip>
-                    <MultiBinding Converter="{StaticResource BorderClipConverter}">
-                        <Binding Path="ActualWidth" RelativeSource="{RelativeSource Self}" />
-                        <Binding Path="ActualHeight" RelativeSource="{RelativeSource Self}" />
-                        <Binding Path="CornerRadius" RelativeSource="{RelativeSource Self}" />
-                    </MultiBinding>
-                </Border.Clip>
-
-                <Grid x:Name="ResultPreviewArea">
+                <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" MinWidth="80" />
                         <ColumnDefinition Width="Auto" />
@@ -241,7 +232,6 @@
                         Margin="0 0 10 5"
                         VerticalAlignment="Stretch"
                         Content="{Binding PreviewContent}"
-                        Style="{StaticResource PreviewArea}"
                         Visibility="{Binding PreviewVisibility}" />
                 </Grid>
             </Border>
