@@ -10,6 +10,12 @@
     mc:Ignorable="d">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <Style x:Key="SettingPanelSeparatorStyle" TargetType="Separator">
+            <Setter Property="Margin" Value="-70 13.5 -18 13.5" />
+            <Setter Property="Height" Value="1" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="Background" Value="{DynamicResource Color03B}" />
+        </Style>
     </UserControl.Resources>
     <Grid Margin="{StaticResource SettingPanelMargin}">
         <Grid.RowDefinitions>

@@ -16,32 +16,15 @@
     ResizeMode="NoResize"
     Topmost="True"
     WindowStartupLocation="CenterScreen"
+    WindowStyle="ToolWindow"
     mc:Ignorable="d">
-    <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="32" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
-    </WindowChrome.WindowChrome>
-
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <controls:CustomWindowTitleBar
-            Grid.Row="0"
-            ShowCloseButton="True"
-            ShowMaximizeRestoreButton="False"
-            ShowMinimizeButton="False" />
-
-        <RichTextBox
-            x:Name="ErrorTextbox"
-            Grid.Row="1"
-            Margin="10"
-            BorderThickness="0"
-            FontSize="14"
-            HorizontalScrollBarVisibility="Auto"
-            IsDocumentEnabled="True"
-            IsReadOnly="True"
-            VerticalScrollBarVisibility="Auto" />
-    </Grid>
+    <RichTextBox
+        x:Name="ErrorTextbox"
+        Margin="10"
+        FontSize="14"
+        HorizontalScrollBarVisibility="Auto"
+        IsDocumentEnabled="True"
+        IsReadOnly="True"
+        VerticalScrollBarVisibility="Auto" />
 
 </Window>

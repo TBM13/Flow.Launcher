@@ -27,7 +27,6 @@
                 Grid.Row="2"
                 Margin="0 5"
                 FontSize="30"
-                Style="{StaticResource PageTitle}"
                 Text="General"
                 TextAlignment="left" />
 

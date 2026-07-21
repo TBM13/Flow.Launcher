@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     xmlns:viewModel="clr-namespace:Flow.Launcher.ViewModel"
     d:DataContext="{d:DesignInstance viewModel:PluginViewModel}"
     d:DesignHeight="300"
@@ -18,14 +19,12 @@
         CornerRadius="0"
         Style="{DynamicResource SettingGroupBox}">
         <DockPanel Margin="{StaticResource SettingPanelMargin}">
-            <TextBlock
+            <ui:FontIcon
                 Margin="{StaticResource SettingPanelItemRightMargin}"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 DockPanel.Dock="Left"
-                Style="{StaticResource Glyph}">
-                &#xe819;
-            </TextBlock>
+                Glyph="&#xe819;" />
             <TextBlock
                 Margin="{StaticResource SettingPanelItemRightMargin}"
                 HorizontalAlignment="Left"

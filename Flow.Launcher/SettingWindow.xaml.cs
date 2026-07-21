@@ -78,15 +78,13 @@ public partial class SettingWindow
         textBox.MoveFocus(tRequest);
     }
 
-    private void OnLastNonMinimizedWindowStateChanged(object sender, CustomWindowTitleBar.WindowStateChangedEventArgs e)
+    private void Window_StateChanged(object sender, EventArgs e)
     {
-        if (IsLoaded)
-            _settings.SettingWindowState = e.CurrentState;
+        if (IsLoaded && WindowState != WindowState.Minimized)
+            _settings.SettingWindowState = WindowState;
     }
 
     #endregion
-
-    #region Window State
 
     public void UpdateWindowState()
     {
@@ -94,8 +92,6 @@ public partial class SettingWindow
             ? WindowState.Normal
             : _settings.SettingWindowState;
     }
-
-    #endregion
 
     #region Navigation View Events
 

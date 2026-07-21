@@ -7,6 +7,10 @@
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     xmlns:userSettings="clr-namespace:Flow.Launcher.Core.UserSettings;assembly=Flow.Launcher.Core">
 
+    <Style TargetType="ui:FontIcon">
+        <Setter Property="FontFamily" Value="/Resources/#Segoe Fluent Icons" />
+    </Style>
+
     <Style x:Key="QueryBoxStyle" TargetType="{x:Type TextBox}">
         <Setter Property="Padding" Value="0 0 50 0" />
         <Setter Property="Foreground" Value="{DynamicResource Color05B}" />
@@ -268,6 +272,13 @@
     <Thickness x:Key="ItemMargin">10 0 10 0</Thickness>
 
     <!--  Settings  -->
+    <Thickness x:Key="SettingPanelMargin">70,13.5,18,13.5</Thickness>
+    <Thickness x:Key="SettingPanelItemLeftMargin">9,0,0,0</Thickness>
+    <Thickness x:Key="SettingPanelItemRightMargin">0,0,9,0</Thickness>
+    <Thickness x:Key="SettingPanelItemTopBottomMargin">0,4.5,0,4.5</Thickness>
+    <Thickness x:Key="SettingPanelItemLeftTopBottomMargin">9,4.5,0,4.5</Thickness>
+    <Thickness x:Key="SettingPanelItemRightTopBottomMargin">0,4.5,9,4.5</Thickness>
+
     <Style x:Key="SettingGroupBox" TargetType="{x:Type Border}">
         <Setter Property="Background" Value="{DynamicResource Color00B}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Color03B}" />

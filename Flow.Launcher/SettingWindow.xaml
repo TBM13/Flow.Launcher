@@ -13,18 +13,16 @@
     MinWidth="940"
     MinHeight="600"
     d:DataContext="{d:DesignInstance vm:SettingWindowViewModel}"
+    Background="{DynamicResource Color01B}"
     Closed="OnClosed"
-    FontFamily="{DynamicResource SettingWindowFont}"
     Icon="Images\app.ico"
     Loaded="OnLoaded"
     MouseDown="window_MouseDown"
     ResizeMode="CanResize"
     SnapsToDevicePixels="True"
+    StateChanged="Window_StateChanged"
     UseLayoutRounding="True"
     mc:Ignorable="d">
-    <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="32" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
-    </WindowChrome.WindowChrome>
     <Window.InputBindings>
         <KeyBinding Key="Escape" Command="Close" />
     </Window.InputBindings>
@@ -32,103 +30,91 @@
         <CommandBinding Command="Close" Executed="OnCloseExecuted" />
     </Window.CommandBindings>
 
-    <!--  New  -->
-    <Grid>
-        <Border Style="{StaticResource WindowMainPanelStyle}">
-            <Grid Background="{DynamicResource Color01B}">
+    <ui:NavigationView
+        x:Name="NavView"
+        Margin="0 0 0 0"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch"
+        AlwaysShowHeader="False"
+        Background="{DynamicResource Color01B}"
+        IsBackButtonVisible="Collapsed"
+        IsBackEnabled="False"
+        IsPaneToggleButtonVisible="False"
+        IsSettingsVisible="False"
+        IsTabStop="False"
+        Loaded="NavView_Loaded"
+        OpenPaneLength="240"
+        PaneDisplayMode="Left"
+        SelectionChanged="NavigationView_SelectionChanged">
+        <ui:NavigationView.HeaderTemplate>
+            <DataTemplate>
+                <TextBlock
+                    Margin="-8 18 0 5"
+                    VerticalAlignment="Center"
+                    FontSize="30"
+                    FontWeight="Medium"
+                    Foreground="{DynamicResource Color05B}"
+                    Text="{Binding}" />
+            </DataTemplate>
+        </ui:NavigationView.HeaderTemplate>
+        <ui:NavigationView.PaneCustomContent>
+            <Grid Margin="0 35 0 0" HorizontalAlignment="Center">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="32" />
-                    <RowDefinition />
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="27" />
+                    <RowDefinition Height="25" />
                 </Grid.RowDefinitions>
-                <controls:CustomWindowTitleBar Grid.Row="0" LastNonMinimizedWindowStateChanged="OnLastNonMinimizedWindowStateChanged" />
-
-                <ui:NavigationView
-                    x:Name="NavView"
+                <Image
+                    Grid.Row="0"
+                    Width="50"
+                    Height="50"
+                    RenderOptions.BitmapScalingMode="HighQuality"
+                    Source="images/app.png" />
+                <TextBlock
                     Grid.Row="1"
-                    Margin="0 0 0 0"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    AlwaysShowHeader="False"
-                    Background="{DynamicResource Color01B}"
-                    IsBackButtonVisible="Collapsed"
-                    IsBackEnabled="False"
-                    IsPaneToggleButtonVisible="False"
-                    IsSettingsVisible="False"
-                    IsTabStop="False"
-                    Loaded="NavView_Loaded"
-                    OpenPaneLength="240"
-                    PaneDisplayMode="Left"
-                    SelectionChanged="NavigationView_SelectionChanged">
-                    <ui:NavigationView.HeaderTemplate>
-                        <DataTemplate>
-                            <TextBlock
-                                Margin="-8 18 0 5"
-                                VerticalAlignment="Center"
-                                FontSize="30"
-                                FontWeight="Medium"
-                                Foreground="{DynamicResource Color05B}"
-                                Text="{Binding}" />
-                        </DataTemplate>
-                    </ui:NavigationView.HeaderTemplate>
-                    <ui:NavigationView.PaneCustomContent>
-                        <Grid Margin="0 35 0 0" HorizontalAlignment="Center">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="50" />
-                                <RowDefinition Height="27" />
-                                <RowDefinition Height="25" />
-                            </Grid.RowDefinitions>
-                            <Image
-                                Grid.Row="0"
-                                Width="50"
-                                Height="50"
-                                RenderOptions.BitmapScalingMode="HighQuality"
-                                Source="images/app.png" />
-                            <TextBlock
-                                Grid.Row="1"
-                                Margin="0 12 0 0"
-                                Style="{StaticResource TabMenu}"
-                                Text="Flow Launcher"
-                                TextAlignment="Center" />
-                        </Grid>
-                    </ui:NavigationView.PaneCustomContent>
-                    <ui:NavigationView.MenuItems>
-
-                        <ui:NavigationViewItem x:Name="General" Content="General">
-                            <ui:NavigationViewItem.Icon>
-                                <ui:BitmapIcon ShowAsMonochrome="False" UriSource="/Images/settings.png" />
-                            </ui:NavigationViewItem.Icon>
-                        </ui:NavigationViewItem>
-
-                        <ui:NavigationViewItem x:Name="Plugins" Content="Plugins">
-                            <ui:NavigationViewItem.Icon>
-                                <ui:BitmapIcon ShowAsMonochrome="False" UriSource="/Images/plugins.png" />
-                            </ui:NavigationViewItem.Icon>
-                        </ui:NavigationViewItem>
-
-                        <ui:NavigationViewItem x:Name="Theme" Content="Appearance">
-                            <ui:NavigationViewItem.Icon>
-                                <ui:BitmapIcon ShowAsMonochrome="False" UriSource="/Images/theme.png" />
-                            </ui:NavigationViewItem.Icon>
-                        </ui:NavigationViewItem>
-
-                        <ui:NavigationViewItem x:Name="Hotkey" Content="Hotkeys">
-                            <ui:NavigationViewItem.Icon>
-                                <ui:BitmapIcon ShowAsMonochrome="False" UriSource="/Images/keyboard.png" />
-                            </ui:NavigationViewItem.Icon>
-                        </ui:NavigationViewItem>
-
-                        <ui:NavigationViewItem x:Name="About" Content="About">
-                            <ui:NavigationViewItem.Icon>
-                                <ui:BitmapIcon ShowAsMonochrome="False" UriSource="/Images/info.png" />
-                            </ui:NavigationViewItem.Icon>
-                        </ui:NavigationViewItem>
-
-                    </ui:NavigationView.MenuItems>
-                    <Grid>
-                        <ui:Frame x:Name="ContentFrame" Margin="0" />
-                    </Grid>
-                </ui:NavigationView>
+                    Margin="0 12 0 0"
+                    VerticalAlignment="Center"
+                    FontSize="14"
+                    Foreground="{DynamicResource Color05B}"
+                    Text="Flow Launcher"
+                    TextAlignment="Center" />
             </Grid>
-        </Border>
-    </Grid>
+        </ui:NavigationView.PaneCustomContent>
+        <ui:NavigationView.MenuItems>
+
+            <ui:NavigationViewItem x:Name="General" Content="General">
+                <ui:NavigationViewItem.Icon>
+                    <ui:BitmapIcon ShowAsMonochrome="False" UriSource="/Images/settings.png" />
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+
+            <ui:NavigationViewItem x:Name="Plugins" Content="Plugins">
+                <ui:NavigationViewItem.Icon>
+                    <ui:BitmapIcon ShowAsMonochrome="False" UriSource="/Images/plugins.png" />
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+
+            <ui:NavigationViewItem x:Name="Theme" Content="Appearance">
+                <ui:NavigationViewItem.Icon>
+                    <ui:BitmapIcon ShowAsMonochrome="False" UriSource="/Images/theme.png" />
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+
+            <ui:NavigationViewItem x:Name="Hotkey" Content="Hotkeys">
+                <ui:NavigationViewItem.Icon>
+                    <ui:BitmapIcon ShowAsMonochrome="False" UriSource="/Images/keyboard.png" />
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+
+            <ui:NavigationViewItem x:Name="About" Content="About">
+                <ui:NavigationViewItem.Icon>
+                    <ui:BitmapIcon ShowAsMonochrome="False" UriSource="/Images/info.png" />
+                </ui:NavigationViewItem.Icon>
+            </ui:NavigationViewItem>
+
+        </ui:NavigationView.MenuItems>
+        <Grid>
+            <ui:Frame x:Name="ContentFrame" Margin="0" />
+        </Grid>
+    </ui:NavigationView>
 </Window>

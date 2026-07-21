@@ -21,7 +21,6 @@
             <TextBlock
                 Margin="0 5"
                 FontSize="30"
-                Style="{StaticResource PageTitle}"
                 Text="About"
                 TextAlignment="left" />
 

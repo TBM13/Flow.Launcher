@@ -24,7 +24,6 @@
             <TextBlock
                 Margin="0 5 0 6"
                 FontSize="30"
-                Style="{StaticResource PageTitle}"
                 Text="Hotkeys"
                 TextAlignment="left" />
 
@@ -197,11 +196,6 @@
 
                 <ui:SettingsExpander.ItemsHeader>
                     <StackPanel Background="{DynamicResource SettingsCardBackground}">
-                        <Separator
-                            Width="Auto"
-                            Margin="0"
-                            BorderThickness="1"
-                            Style="{StaticResource SettingSeparatorStyle}" />
                         <StackPanel Margin="18 18 18 0">
                             <ListView
                                 MinHeight="160"
@@ -259,11 +253,6 @@
 
                 <ui:SettingsExpander.ItemsHeader>
                     <StackPanel Background="{DynamicResource SettingsCardBackground}">
-                        <Separator
-                            Width="Auto"
-                            Margin="0"
-                            BorderThickness="1"
-                            Style="{StaticResource SettingSeparatorStyle}" />
                         <StackPanel Margin="18 12 18 0">
                             <ListView
                                 MinHeight="160"
@@ -325,11 +314,6 @@
 
                 <ui:SettingsExpander.ItemsHeader>
                     <StackPanel Background="{DynamicResource SettingsCardBackground}">
-                        <Separator
-                            Width="Auto"
-                            Margin="0"
-                            BorderThickness="1"
-                            Style="{StaticResource SettingSeparatorStyle}" />
                         <StackPanel Margin="16 8 16 0">
                             <ListView
                                 MinHeight="160"

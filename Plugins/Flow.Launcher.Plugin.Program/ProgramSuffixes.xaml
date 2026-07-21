@@ -14,10 +14,8 @@
     ResizeMode="NoResize"
     SizeToContent="Height"
     WindowStartupLocation="CenterScreen"
+    WindowStyle="ToolWindow"
     mc:Ignorable="d">
-    <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="32" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
-    </WindowChrome.WindowChrome>
     <Window.Resources>
         <Style
             x:Key="CustomFileTypeTextBox"
@@ -88,151 +86,116 @@
             <RowDefinition Height="80" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0">
-            <StackPanel>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <Button
-                        Grid.Column="4"
-                        Click="BtnCancel_OnClick"
-                        Style="{StaticResource TitleBarCloseButtonStyle}">
-                        <Path
-                            Width="46"
-                            Height="32"
-                            Data="M 18,11 27,20 M 18,20 27,11"
-                            Stroke="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
-                            StrokeThickness="1">
-                            <Path.Style>
-                                <Style TargetType="Path">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Path=IsActive, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" Value="False">
-                                            <Setter Property="Opacity" Value="0.5" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Path.Style>
-                        </Path>
-                    </Button>
-                </Grid>
-            </StackPanel>
-            <StackPanel Margin="26 12 26 0">
+        <StackPanel Grid.Row="0" Margin="26 12 26 0">
+            <StackPanel Margin="0 0 0 12">
 
-                <StackPanel Margin="0 0 0 12">
-
-                    <TextBlock
-                        Grid.Column="0"
-                        Margin="0 0 0 0"
-                        FontSize="20"
-                        FontWeight="SemiBold"
-                        Text="{x:Static root:Localize.Settings_ProgramSuffixes}"
-                        TextAlignment="Left" />
-                </StackPanel>
                 <TextBlock
-                    Margin="0 0 0 10"
+                    Grid.Column="0"
+                    Margin="0 0 0 0"
+                    FontSize="20"
+                    FontWeight="SemiBold"
+                    Text="{x:Static root:Localize.Settings_ProgramSuffixes}"
+                    TextAlignment="Left" />
+            </StackPanel>
+            <TextBlock
+                Margin="0 0 0 10"
+                FontSize="14"
+                Text="{DynamicResource flowlauncher_plugin_program_only_index_tip}"
+                TextWrapping="Wrap" />
+            <Border Style="{DynamicResource SettingGroupBoxURLToolTip}">
+                <TextBlock
                     FontSize="14"
-                    Text="{DynamicResource flowlauncher_plugin_program_only_index_tip}"
+                    Text="{x:Static root:Localize.Settings_ProtocolTooltip}"
                     TextWrapping="Wrap" />
-                <Border Style="{DynamicResource SettingGroupBoxURLToolTip}">
+            </Border>
+
+            <Border Style="{DynamicResource SettingGroupBoxSuffixToolTip}">
+                <TextBlock
+                    FontSize="14"
+                    Text="{x:Static root:Localize.Settings_SuffixesTooltip}"
+                    TextWrapping="Wrap" />
+            </Border>
+
+            <Grid Margin="0 20 0 12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="250" />
+                    <ColumnDefinition Width="250" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Margin="0 0 0 0">
                     <TextBlock
-                        FontSize="14"
-                        Text="{x:Static root:Localize.Settings_ProtocolTooltip}"
-                        TextWrapping="Wrap" />
-                </Border>
+                        Margin="0 0 0 8"
+                        FontSize="16"
+                        FontWeight="SemiBold"
+                        Text="{x:Static root:Localize.Settings_SuffixesExecutableTypes}" />
+                    <CheckBox
+                        Name="apprefMS"
+                        Margin="10 0 0 0"
+                        IsChecked="{Binding SuffixesStatus[appref-ms]}">
+                        appref-ms
+                    </CheckBox>
+                    <CheckBox
+                        Name="exe"
+                        Margin="10 0 0 0"
+                        IsChecked="{Binding SuffixesStatus[exe]}">
+                        exe
+                    </CheckBox>
+                    <CheckBox
+                        Name="lnk"
+                        Margin="10 0 0 0"
+                        IsChecked="{Binding SuffixesStatus[lnk]}">
+                        lnk
+                    </CheckBox>
+                    <CheckBox
+                        Name="CustomFiles"
+                        Margin="10 0 0 0"
+                        Content="{x:Static root:Localize.Settings_SuffixesCustomFileTypes}"
+                        IsChecked="{Binding UseCustomSuffixes}" />
+                    <TextBox
+                        x:Name="tbSuffixes"
+                        Margin="10 4 0 10"
+                        Style="{StaticResource CustomFileTypeTextBox}" />
+                </StackPanel>
 
-                <Border Style="{DynamicResource SettingGroupBoxSuffixToolTip}">
-                    <TextBlock
-                        FontSize="14"
-                        Text="{x:Static root:Localize.Settings_SuffixesTooltip}"
-                        TextWrapping="Wrap" />
-                </Border>
-
-                <Grid Margin="0 20 0 12">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="250" />
-                        <ColumnDefinition Width="250" />
-                    </Grid.ColumnDefinitions>
-
-                    <StackPanel Grid.Column="0" Margin="0 0 0 0">
+                <Border
+                    Grid.Column="1"
+                    Margin="20 0 0 10"
+                    Padding="20 0 0 0"
+                    BorderBrush="{DynamicResource PopupButtonAreaBorderColor}"
+                    BorderThickness="1 0 0 0">
+                    <StackPanel>
                         <TextBlock
                             Margin="0 0 0 8"
                             FontSize="16"
                             FontWeight="SemiBold"
-                            Text="{x:Static root:Localize.Settings_SuffixesExecutableTypes}" />
+                            Text="{x:Static root:Localize.Settings_SuffixesURLTypes}" />
                         <CheckBox
-                            Name="apprefMS"
+                            Name="steam"
                             Margin="10 0 0 0"
-                            IsChecked="{Binding SuffixesStatus[appref-ms]}">
-                            appref-ms
-                        </CheckBox>
+                            Content="{x:Static root:Localize.Settings_SuffixesURLSteam}"
+                            IsChecked="{Binding ProtocolsStatus[steam]}" />
                         <CheckBox
-                            Name="exe"
+                            Name="epic"
                             Margin="10 0 0 0"
-                            IsChecked="{Binding SuffixesStatus[exe]}">
-                            exe
-                        </CheckBox>
+                            Content="{x:Static root:Localize.Settings_SuffixesURLEpic}"
+                            IsChecked="{Binding ProtocolsStatus[epic]}" />
                         <CheckBox
-                            Name="lnk"
+                            Name="http"
                             Margin="10 0 0 0"
-                            IsChecked="{Binding SuffixesStatus[lnk]}">
-                            lnk
-                        </CheckBox>
+                            Content="{x:Static root:Localize.Settings_SuffixesURLHttp}"
+                            IsChecked="{Binding ProtocolsStatus[http]}" />
                         <CheckBox
-                            Name="CustomFiles"
+                            Name="CustomProtocol"
                             Margin="10 0 0 0"
-                            Content="{x:Static root:Localize.Settings_SuffixesCustomFileTypes}"
-                            IsChecked="{Binding UseCustomSuffixes}" />
+                            Content="{x:Static root:Localize.Settings_SuffixesCustomUrls}"
+                            IsChecked="{Binding UseCustomProtocols}" />
                         <TextBox
-                            x:Name="tbSuffixes"
-                            Margin="10 4 0 10"
-                            Style="{StaticResource CustomFileTypeTextBox}" />
+                            x:Name="tbProtocols"
+                            Margin="10 4 0 0"
+                            Style="{StaticResource CustomURLTypeTextBox}" />
                     </StackPanel>
-
-                    <Border
-                        Grid.Column="1"
-                        Margin="20 0 0 10"
-                        Padding="20 0 0 0"
-                        BorderBrush="{DynamicResource PopupButtonAreaBorderColor}"
-                        BorderThickness="1 0 0 0">
-                        <StackPanel>
-                            <TextBlock
-                                Margin="0 0 0 8"
-                                FontSize="16"
-                                FontWeight="SemiBold"
-                                Text="{x:Static root:Localize.Settings_SuffixesURLTypes}" />
-                            <CheckBox
-                                Name="steam"
-                                Margin="10 0 0 0"
-                                Content="{x:Static root:Localize.Settings_SuffixesURLSteam}"
-                                IsChecked="{Binding ProtocolsStatus[steam]}" />
-                            <CheckBox
-                                Name="epic"
-                                Margin="10 0 0 0"
-                                Content="{x:Static root:Localize.Settings_SuffixesURLEpic}"
-                                IsChecked="{Binding ProtocolsStatus[epic]}" />
-                            <CheckBox
-                                Name="http"
-                                Margin="10 0 0 0"
-                                Content="{x:Static root:Localize.Settings_SuffixesURLHttp}"
-                                IsChecked="{Binding ProtocolsStatus[http]}" />
-                            <CheckBox
-                                Name="CustomProtocol"
-                                Margin="10 0 0 0"
-                                Content="{x:Static root:Localize.Settings_SuffixesCustomUrls}"
-                                IsChecked="{Binding UseCustomProtocols}" />
-                            <TextBox
-                                x:Name="tbProtocols"
-                                Margin="10 4 0 0"
-                                Style="{StaticResource CustomURLTypeTextBox}" />
-                        </StackPanel>
-                    </Border>
-                </Grid>
-            </StackPanel>
+                </Border>
+            </Grid>
         </StackPanel>
         <Border
             Grid.Row="1"

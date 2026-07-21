@@ -15,10 +15,8 @@
     ResizeMode="NoResize"
     SizeToContent="Width"
     WindowStartupLocation="CenterScreen"
+    WindowStyle="ToolWindow"
     mc:Ignorable="d">
-    <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="32" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
-    </WindowChrome.WindowChrome>
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Window.Resources>
@@ -27,112 +25,78 @@
             <RowDefinition />
             <RowDefinition Height="80" />
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0">
+        <StackPanel Grid.Row="0" Margin="26 0 26 0">
+            <StackPanel Grid.Row="0" Margin="0 0 0 12">
+                <TextBlock
+                    Grid.Column="0"
+                    Margin="0 0 0 0"
+                    FontSize="20"
+                    FontWeight="SemiBold"
+                    Text="{x:Static root:Localize.ProgramSource_EditTitle}"
+                    TextAlignment="Left" />
+            </StackPanel>
             <StackPanel>
+                <TextBlock
+                    FontSize="14"
+                    Text="{x:Static root:Localize.ProgramSource_EditTips}"
+                    TextAlignment="Left"
+                    TextWrapping="WrapWithOverflow" />
+            </StackPanel>
+
+            <StackPanel Margin="0 10 10 0" Orientation="Horizontal">
                 <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <Button
-                        Grid.Column="4"
-                        Click="BtnCancel_OnClick"
-                        Style="{StaticResource TitleBarCloseButtonStyle}">
-                        <Path
-                            Width="46"
-                            Height="32"
-                            Data="M 18,11 27,20 M 18,20 27,11"
-                            Stroke="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
-                            StrokeThickness="1">
-                            <Path.Style>
-                                <Style TargetType="Path">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Path=IsActive, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" Value="False">
-                                            <Setter Property="Opacity" Value="0.5" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Path.Style>
-                        </Path>
-                    </Button>
-                </Grid>
-            </StackPanel>
-            <StackPanel Margin="26 0 26 0">
-                <StackPanel Grid.Row="0" Margin="0 0 0 12">
                     <TextBlock
+                        Grid.Row="0"
                         Grid.Column="0"
-                        Margin="0 0 0 0"
-                        FontSize="20"
-                        FontWeight="SemiBold"
-                        Text="{x:Static root:Localize.ProgramSource_EditTitle}"
-                        TextAlignment="Left" />
-                </StackPanel>
-                <StackPanel>
-                    <TextBlock
+                        Margin="10"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
                         FontSize="14"
-                        Text="{x:Static root:Localize.ProgramSource_EditTips}"
-                        TextAlignment="Left"
-                        TextWrapping="WrapWithOverflow" />
-                </StackPanel>
-
-                <StackPanel Margin="0 10 10 0" Orientation="Horizontal">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock
-                            Grid.Row="0"
-                            Grid.Column="0"
+                        Text="{x:Static root:Localize.Settings_Directory}" />
+                    <DockPanel
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        LastChildFill="True">
+                        <Button
+                            MinWidth="70"
+                            HorizontalAlignment="Stretch"
+                            Click="BrowseButton_Click"
+                            Content="{x:Static root:Localize.Settings_Browse}"
+                            DockPanel.Dock="Right"
+                            Visibility="{Binding IsCustomSource, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        <TextBox
+                            Name="Directory"
+                            Width="350"
                             Margin="10"
-                            HorizontalAlignment="Left"
+                            HorizontalAlignment="Stretch"
                             VerticalAlignment="Center"
-                            FontSize="14"
-                            Text="{x:Static root:Localize.Settings_Directory}" />
-                        <DockPanel
-                            Grid.Row="0"
-                            Grid.Column="1"
-                            LastChildFill="True">
-                            <Button
-                                MinWidth="70"
-                                HorizontalAlignment="Stretch"
-                                Click="BrowseButton_Click"
-                                Content="{x:Static root:Localize.Settings_Browse}"
-                                DockPanel.Dock="Right"
-                                Visibility="{Binding IsCustomSource, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                            <TextBox
-                                Name="Directory"
-                                Width="350"
-                                Margin="10"
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Center"
-                                IsReadOnly="{Binding IsNotCustomSource}"
-                                Text="{Binding Location, Mode=TwoWay}" />
-                        </DockPanel>
-                        <TextBlock
-                            Grid.Row="1"
-                            Grid.Column="0"
-                            Margin="10"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Center"
-                            FontSize="14"
-                            Text="{x:Static root:Localize.Settings_ProgramEnabled}" />
-                        <CheckBox
-                            x:Name="Chkbox"
-                            Grid.Row="1"
-                            Grid.Column="1"
-                            Margin="10 0"
-                            VerticalAlignment="Center"
-                            IsChecked="{Binding Enabled, Mode=TwoWay}" />
-                    </Grid>
-                </StackPanel>
+                            IsReadOnly="{Binding IsNotCustomSource}"
+                            Text="{Binding Location, Mode=TwoWay}" />
+                    </DockPanel>
+                    <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Margin="10"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        FontSize="14"
+                        Text="{x:Static root:Localize.Settings_ProgramEnabled}" />
+                    <CheckBox
+                        x:Name="Chkbox"
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Margin="10 0"
+                        VerticalAlignment="Center"
+                        IsChecked="{Binding Enabled, Mode=TwoWay}" />
+                </Grid>
             </StackPanel>
         </StackPanel>
         <Border

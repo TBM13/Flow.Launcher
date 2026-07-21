@@ -10,15 +10,14 @@
     Width="420"
     Height="Auto"
     Background="{DynamicResource PopuBGColor}"
+    Closing="MessageBoxWindow_Closing"
     Foreground="{DynamicResource PopupTextColor}"
     ResizeMode="NoResize"
     SizeToContent="Height"
     Topmost="True"
     WindowStartupLocation="CenterScreen"
+    WindowStyle="ToolWindow"
     mc:Ignorable="d">
-    <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="32" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
-    </WindowChrome.WindowChrome>
     <Window.InputBindings>
         <KeyBinding Key="Escape" Command="Close" />
     </Window.InputBindings>
@@ -27,21 +26,11 @@
     </Window.CommandBindings>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition />
             <RowDefinition MinHeight="68" />
         </Grid.RowDefinitions>
 
-        <controls:CustomWindowTitleBar
-            Grid.Row="0"
-            CloseButtonClick="Button_Cancel"
-            ShowCloseButton="True"
-            ShowIcon="False"
-            ShowMaximizeRestoreButton="False"
-            ShowMinimizeButton="False"
-            ShowTitle="False" />
-
-        <Grid Grid.Row="1" Margin="30 0 30 24">
+        <Grid Grid.Row="0" Margin="30 0 30 24">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -96,7 +85,7 @@
                 Visibility="Collapsed" />
         </Grid>
         <Border
-            Grid.Row="2"
+            Grid.Row="1"
             Margin="0 0 0 0"
             Background="{DynamicResource PopupButtonAreaBGColor}"
             BorderBrush="{DynamicResource PopupButtonAreaBorderColor}"

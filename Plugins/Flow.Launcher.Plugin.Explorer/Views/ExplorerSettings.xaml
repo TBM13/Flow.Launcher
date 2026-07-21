@@ -23,7 +23,7 @@
                 <ui:SettingsCard Header="{x:Static root:Localize.Settings_General_ShellPath}">
                     <StackPanel Orientation="Horizontal">
                         <TextBox
-                            Width="{StaticResource SettingPanelPathTextBoxWidth}"
+                            Width="240"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
                             Text="{Binding Settings.ShellPath, UpdateSourceTrigger=PropertyChanged}"
@@ -39,14 +39,14 @@
 
                 <ui:SettingsCard Header="{x:Static root:Localize.Settings_General_ExcludedFileTypes}">
                     <TextBox
-                        MinWidth="{StaticResource SettingPanelTextBoxMinWidth}"
+                        MinWidth="180"
                         Text="{Binding Settings.ExcludedFileTypes, UpdateSourceTrigger=PropertyChanged}"
                         ToolTip="{x:Static root:Localize.Settings_General_ExcludedFileTypes_Tooltip}" />
                 </ui:SettingsCard>
 
                 <ui:SettingsCard Header="{x:Static root:Localize.Settings_General_MaxResults}">
                     <TextBox
-                        MinWidth="{StaticResource SettingPanelTextBoxMinWidth}"
+                        MinWidth="180"
                         MaxLength="6"
                         PreviewTextInput="AllowOnlyNumericInput"
                         Text="{Binding Settings.MaxResult, UpdateSourceTrigger=PropertyChanged}" />

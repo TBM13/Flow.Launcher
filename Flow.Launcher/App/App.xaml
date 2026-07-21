@@ -28,8 +28,7 @@
                     </ui:ThemeResources.ThemeDictionaries>
                 </ui:ThemeResources>
                 <ui:XamlControlsResources />
-                <ResourceDictionary Source="pack://application:,,,/Resources/CustomControlTemplate.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Themes/Base.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Resources/Base.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

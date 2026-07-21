@@ -192,5 +192,19 @@ namespace Flow.Launcher
                 _result = MessageBoxResult.Cancel;
             Close();
         }
+
+        private void MessageBoxWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (_result != MessageBoxResult.None)
+                return;
+
+            if (_button == MessageBoxButton.YesNo)
+                // Follow System.Windows.MessageBox behavior
+                e.Cancel = true;
+            else if (_button == MessageBoxButton.OK)
+                _result = MessageBoxResult.OK;
+            else
+                _result = MessageBoxResult.Cancel;
+        }
     }
 }
