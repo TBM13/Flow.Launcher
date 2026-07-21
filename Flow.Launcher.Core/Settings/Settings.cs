@@ -76,8 +76,6 @@ internal partial class Settings : ObservableObject, ISettingsAPI
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public partial ColorScheme ColorScheme { get; set; } = ColorScheme.System;
 
-    [ObservableProperty]
-    public partial bool UseDropShadowEffect { get; set; } = true;
 
     [ObservableProperty]
     public partial int MaxResultsToShow { get; set; } = 5;

@@ -157,10 +157,6 @@ public interface ISettingsAPI : INotifyPropertyChanged, INotifyPropertyChanging
     /// Indicates the color scheme of Flow Launcher.
     /// </summary>
     ColorScheme ColorScheme { get; set; }
-    /// <summary>
-    /// Indicates whether Flow Launcher should use a drop shadow effect for its window.
-    /// </summary>
-    bool UseDropShadowEffect { get; set; }
 
     /// <summary>
     /// Determines the height of the Flow Launcher window based on the number of results that should be shown.

@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Interop;
 using Flow.Launcher.PluginSDK.WPF;
@@ -7,30 +6,9 @@ using iNKORE.UI.WPF.Modern;
 
 namespace Flow.Launcher.SettingPages.ViewModels;
 
-public partial class SettingsPaneThemeViewModel(ISettingsAPI settings, Theme theme) : ObservableObject
+public partial class SettingsPaneThemeViewModel(ISettingsAPI settings) : ObservableObject
 {
     public ISettingsAPI Settings { get; } = settings;
-
-    private readonly Theme _theme = theme;
-
-    public bool DropShadowEffect
-    {
-        get => Settings.UseDropShadowEffect;
-        set
-        {
-            if (value)
-            {
-                _theme.AddDropShadowEffectToCurrentTheme();
-            }
-            else
-            {
-                _theme.RemoveDropShadowEffectFromCurrentTheme();
-            }
-
-            Settings.UseDropShadowEffect = value;
-            OnPropertyChanged();
-        }
-    }
 
     public IReadOnlyList<LocalizedEnumItem<ColorScheme>> ColorSchemes { get; }
         = EnumLocalization<ColorScheme>.Items;
@@ -48,7 +26,6 @@ public partial class SettingsPaneThemeViewModel(ISettingsAPI settings, Theme the
             };
 
             Settings.ColorScheme = value;
-            _ = _theme.RefreshFrameAsync();
             ApplicationHelper.SetAppMode(value switch
             {
                 ColorScheme.System => AppMode.AllowDark,

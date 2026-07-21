@@ -37,18 +37,6 @@
                 Text="{DynamicResource appearance}"
                 TextAlignment="left" />
 
-            <!--  Drop shadow effect  -->
-            <ui:SettingsCard Margin="0 4 0 0" Header="{DynamicResource queryWindowShadowEffect}">
-                <ui:SettingsCard.HeaderIcon>
-                    <ui:FontIcon Glyph="&#xeb91;" />
-                </ui:SettingsCard.HeaderIcon>
-
-                <ui:ToggleSwitch
-                    IsOn="{Binding DropShadowEffect}"
-                    OffContent="{DynamicResource disable}"
-                    OnContent="{DynamicResource enable}" />
-            </ui:SettingsCard>
-
             <!--  Fixed size  -->
             <ui:SettingsExpander
                 Margin="0 20 0 0"

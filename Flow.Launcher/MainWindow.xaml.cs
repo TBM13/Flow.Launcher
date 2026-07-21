@@ -66,17 +66,11 @@ namespace Flow.Launcher
             InitializeComponent();
 
             DataObject.AddPastingHandler(QueryTextBox, QueryTextBox_OnPaste);
-            _viewModel.ActualApplicationThemeChanged += ViewModel_ActualApplicationThemeChanged;
         }
 
         #region Window Event
 
 #pragma warning disable VSTHRD100 // Avoid async void methods
-
-        private void ViewModel_ActualApplicationThemeChanged(object sender, ActualApplicationThemeChangedEventArgs args)
-        {
-            _ = _theme.RefreshFrameAsync();
-        }
 
         private void OnSourceInitialized(object sender, EventArgs e)
         {
@@ -245,8 +239,6 @@ namespace Flow.Launcher
 
         private void OnClosed(object sender, EventArgs e)
         {
-            _viewModel.ActualApplicationThemeChanged -= ViewModel_ActualApplicationThemeChanged;
-
             try
             {
                 _hwndSource?.RemoveHook(WndProc);
@@ -441,11 +433,6 @@ namespace Flow.Launcher
                         {
                             // Get shadow margin
                             var shadowMargin = 0;
-                            var useDropShadowEffect = _settings.UseDropShadowEffect;
-                            if (useDropShadowEffect)
-                            {
-                                shadowMargin = 32;
-                            }
 
                             // Calculate max results to show
                             var itemCount = (Height - (QueryTextBox.Height + 14) - shadowMargin) / Const.ItemHeightSize;

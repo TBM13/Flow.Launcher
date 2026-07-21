@@ -17,8 +17,6 @@
     MinHeight="30"
     d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
     AllowDrop="True"
-    AllowsTransparency="True"
-    Background="Transparent"
     Closed="OnClosed"
     Closing="OnClosing"
     Deactivated="OnDeactivated"
@@ -39,7 +37,9 @@
     mc:Ignorable="d">
     <!--  WindowChrome  -->
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="9" />
+        <!--  TODO: Using GlassFrameThickness="0" to fix flicker on the UI, but this also disables the Window's shadow  -->
+        <!--  Fix this once we move to Avalonia and ideally make the shadow bigger instead of using the OS default one  -->
+        <WindowChrome CaptionHeight="9" GlassFrameThickness="0" />
     </WindowChrome.WindowChrome>
     <Window.Resources>
         <converters:BorderClipConverter x:Key="BorderClipConverter" />
@@ -115,7 +115,7 @@
         <infsUi:KeyBinding Command="{Binding SelectPrevPageCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static hotkeys:DefaultHotkeys.SelectPreviousPage}}" />
     </Window.InputBindings>
 
-    <Border MouseDown="OnMouseDown" Style="{DynamicResource WindowBorderStyle}">
+    <Border MouseDown="OnMouseDown" Style="{StaticResource WindowBorderStyle}">
         <StackPanel Orientation="Vertical">
             <Border MinHeight="30" Style="{StaticResource QueryBoxBgStyle}">
                 <Grid>
