@@ -81,29 +81,30 @@
             </ikw:SimpleStackPanel>
         </DockPanel>
 
-        <Border
+        <ui:ScrollViewerEx
             Grid.Row="1"
             Grid.Column="0"
-            Background="{DynamicResource Color01B}">
-            <ListBox
+            Background="{DynamicResource Color01B}"
+            FontSize="14"
+            VerticalScrollBarVisibility="Auto"
+            VirtualizingPanel.ScrollUnit="Pixel"
+            VirtualizingStackPanel.IsVirtualizing="True"
+            VirtualizingStackPanel.VirtualizationMode="Recycling">
+            <ui:ItemsRepeater
                 Margin="5 0 0 10"
-                Padding="0 0 7 0"
-                Background="{DynamicResource Color01B}"
-                FontSize="14"
-                ItemContainerStyle="{StaticResource PluginList}"
                 ItemsSource="{Binding Source={StaticResource PluginCollectionView}}"
                 Loaded="PluginListBox_Loaded"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                SnapsToDevicePixels="True"
-                VirtualizingPanel.ScrollUnit="Pixel"
-                VirtualizingStackPanel.IsVirtualizing="True"
-                VirtualizingStackPanel.VirtualizationMode="Recycling">
-                <ListBox.ItemTemplate>
+                SnapsToDevicePixels="True">
+                <ui:ItemsRepeater.Layout>
+                    <ui:StackLayout Orientation="Vertical" Spacing="5" />
+                </ui:ItemsRepeater.Layout>
+                <ui:ItemsRepeater.ItemTemplate>
                     <DataTemplate>
                         <cc:InstalledPluginDisplay />
                     </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </Border>
+                </ui:ItemsRepeater.ItemTemplate>
+            </ui:ItemsRepeater>
+        </ui:ScrollViewerEx>
     </Grid>
 </ui:Page>

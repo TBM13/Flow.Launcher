@@ -33,7 +33,7 @@
                     x:Name="PriorityControl"
                     VerticalAlignment="Center"
                     Orientation="Horizontal"
-                    Visibility="{Binding DataContext.IsPrioritySelected, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    Visibility="{Binding DataContext.IsPrioritySelected, RelativeSource={RelativeSource AncestorType=ui:ItemsRepeater}, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <TextBlock
                         Margin="0 0 8 0"
                         VerticalAlignment="Center"
@@ -62,7 +62,7 @@
                     OffContent="Off"
                     OnContent="On"
                     ToolTip="This can only be edited if plugin supports Home feature and Home Page is enabled."
-                    Visibility="{Binding DataContext.IsHomeOnOffSelected, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                    Visibility="{Binding DataContext.IsHomeOnOffSelected, RelativeSource={RelativeSource AncestorType=ui:ItemsRepeater}, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
                 <ui:ToggleSwitch
                     x:Name="OnOffControl"
@@ -70,7 +70,7 @@
                     IsOn="{Binding PluginState}"
                     OffContent="Off"
                     OnContent="On"
-                    Visibility="{Binding DataContext.IsOnOffSelected, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                    Visibility="{Binding DataContext.IsOnOffSelected, RelativeSource={RelativeSource AncestorType=ui:ItemsRepeater}, Converter={StaticResource BooleanToVisibilityConverter}}" />
             </StackPanel>
         </ui:SettingsExpander.Content>
 
@@ -80,29 +80,76 @@
                 Padding="0"
                 ContentAlignment="Vertical">
                 <StackPanel>
-                    <ContentControl Content="{Binding BottomPart1}" />
+                    <!--  Action keyword setting  -->
+                    <DockPanel Margin="{StaticResource SettingPanelMargin}">
+                        <ui:FontIcon
+                            Margin="{StaticResource SettingPanelItemRightMargin}"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            DockPanel.Dock="Left"
+                            Glyph="&#xe819;" />
+                        <TextBlock
+                            Margin="{StaticResource SettingPanelItemRightMargin}"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            DockPanel.Dock="Left"
+                            Text="Action keyword" />
+                        <!--  Here Margin="0 -4.5 0 -4.5" is to remove redundant top bottom margin from Margin="{StaticResource SettingPanelMargin}"  -->
+                        <Button
+                            Width="auto"
+                            MinWidth="100"
+                            Margin="0 -4.5 0 -4.5"
+                            HorizontalAlignment="Right"
+                            Command="{Binding SetActionKeywordsCommand}"
+                            Content="{Binding ActionKeywordsText}"
+                            Cursor="Hand"
+                            DockPanel.Dock="Right"
+                            FontWeight="Bold"
+                            ToolTip="Change Action Keywords" />
+                    </DockPanel>
 
+                    <!--  Custom plugin settings  -->
+                    <ContentControl
+                        Margin="0"
+                        Padding="1"
+                        VerticalAlignment="Stretch"
+                        Content="{Binding SettingControl}" />
+
+                    <!--  Plugin info  -->
                     <Border
-                        Background="{DynamicResource Color00B}"
-                        BorderBrush="{DynamicResource Color03B}"
-                        BorderThickness="0 1 0 0">
-                        <Border.Style>
-                            <Style TargetType="Border">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding HasSettingControl}" Value="False">
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Border.Style>
-                        <ContentControl
-                            Margin="0"
-                            Padding="1"
-                            VerticalAlignment="Stretch"
-                            Content="{Binding SettingControl}" />
+                        Margin="0"
+                        Padding="15 10"
+                        VerticalAlignment="Center"
+                        BorderThickness="0 1 0 0"
+                        CornerRadius="0 0 5 5"
+                        Style="{DynamicResource SettingGroupBox}">
+                        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                            <TextBlock
+                                Margin="10 0 0 0"
+                                VerticalAlignment="center"
+                                FontSize="11"
+                                Foreground="{DynamicResource PluginInfoColor}"
+                                Text="by" />
+                            <TextBlock
+                                Margin="5 0 0 0"
+                                VerticalAlignment="center"
+                                FontSize="11"
+                                Foreground="{DynamicResource PluginInfoColor}"
+                                Text="{Binding PluginMetadata.Author}" />
+                            <TextBlock
+                                Margin="10 0 0 0"
+                                VerticalAlignment="Center"
+                                FontSize="11"
+                                Foreground="{DynamicResource PluginInfoColor}"
+                                Text="|" />
+                            <TextBlock
+                                Margin="10 0 5 0"
+                                VerticalAlignment="Center"
+                                FontSize="11"
+                                Foreground="{DynamicResource PluginInfoColor}"
+                                Text="{Binding Version}" />
+                        </StackPanel>
                     </Border>
-
-                    <ContentControl Content="{Binding BottomPart2}" />
                 </StackPanel>
             </ui:SettingsCard>
         </ui:SettingsExpander.Items>

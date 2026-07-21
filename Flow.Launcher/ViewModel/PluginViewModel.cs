@@ -74,8 +74,6 @@ namespace Flow.Launcher.ViewModel
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(SettingControl))]
-        [NotifyPropertyChangedFor(nameof(BottomPart1))]
-        [NotifyPropertyChangedFor(nameof(BottomPart2))]
         public partial bool IsExpanded { get; set; }
 
         public int Priority
@@ -90,8 +88,6 @@ namespace Flow.Launcher.ViewModel
         }
 
         private Control? _settingControl;
-        public Control? BottomPart1 => IsExpanded ? field ??= new InstalledPluginDisplayKeyword() : null;
-        public Control? BottomPart2 => IsExpanded ? field ??= new InstalledPluginDisplayBottomData() : null;
 
         public bool HasSettingControl =>
             // Here we do not check if the plugin is initialized successfully
