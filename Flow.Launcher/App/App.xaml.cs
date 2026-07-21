@@ -142,7 +142,6 @@ public partial class App : Application
                     .AddSingleton<IPublicAPI>(provider => provider.GetRequiredService<Plugin.IPublicAPI>())
                     .AddSingleton(_settings)
                     .AddSingleton<Internationalization>()
-                    .AddSingleton<Theme>()
                     .AddSingleton<HotkeyManager>()
                     .AddSingleton<ImageLoader>()
                     .AddSingleton<PluginManager>()
@@ -226,9 +225,6 @@ public partial class App : Application
         // Initialize MainWindow and HotkeyManager
         _mainWindow = Ioc.Default.GetRequiredService<MainWindow>();
         Ioc.Default.GetRequiredService<HotkeyManager>();
-
-        // Initialize theme for main window
-        Ioc.Default.GetRequiredService<Theme>().ChangeTheme();
 
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 

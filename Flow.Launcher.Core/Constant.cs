@@ -22,7 +22,6 @@ public static class Constant
     public static readonly string LoadingImgIcon = Path.Combine(ImagesDirectory, "loading.png");
     public static readonly string ImageIcon = Path.Combine(ImagesDirectory, "image.png");
 
-    public const string Themes = "Themes";
     public const string Settings = "Settings";
     public const string Cache = "Cache";
 }
