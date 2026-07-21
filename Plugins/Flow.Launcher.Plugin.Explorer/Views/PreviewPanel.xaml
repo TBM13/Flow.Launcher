@@ -86,7 +86,7 @@
                     Margin="5 0 0 0"
                     VerticalAlignment="Top"
                     Style="{StaticResource PreviewItemSubTitleStyle}"
-                    Text="{DynamicResource FileSize}"
+                    Text="File Size"
                     TextWrapping="Wrap"
                     Visibility="{Binding FileSizeVisibility, Mode=OneTime}" />
                 <TextBlock
@@ -106,7 +106,7 @@
                     Margin="5 0 8 0"
                     VerticalAlignment="Top"
                     Style="{StaticResource PreviewItemSubTitleStyle}"
-                    Text="{DynamicResource Created}"
+                    Text="Created"
                     TextWrapping="Wrap"
                     Visibility="{Binding CreatedAtVisibility, Mode=OneTime}" />
                 <TextBlock
@@ -126,7 +126,7 @@
                     Margin="5 0 8 0"
                     VerticalAlignment="Top"
                     Style="{StaticResource PreviewItemSubTitleStyle}"
-                    Text="{DynamicResource LastModified}"
+                    Text="Last Modified"
                     TextWrapping="Wrap"
                     Visibility="{Binding LastModifiedAtVisibility, Mode=OneTime}" />
                 <TextBlock

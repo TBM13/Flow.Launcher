@@ -6,7 +6,6 @@ using Flow.Launcher.Core;
 using Flow.Launcher.Core.Hotkeys;
 using Flow.Launcher.Core.Image;
 using Flow.Launcher.Core.Plugin;
-using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Core.Text;
 using Flow.Launcher.Helper;
@@ -138,10 +137,8 @@ public partial class App : Application
                 .ConfigureServices(services => services
                     // Core services
                     .AddTransient(typeof(PluginSDK.Logging.Logger<>))
-                    .AddSingleton<Plugin.IPublicAPI, PublicAPIInstance>()
-                    .AddSingleton<IPublicAPI>(provider => provider.GetRequiredService<Plugin.IPublicAPI>())
+                    .AddSingleton<IPublicAPI, PublicAPIInstance>()
                     .AddSingleton(_settings)
-                    .AddSingleton<Internationalization>()
                     .AddSingleton<HotkeyManager>()
                     .AddSingleton<ImageLoader>()
                     .AddSingleton<PluginManager>()
@@ -215,9 +212,6 @@ public partial class App : Application
             ColorScheme.Dark => AppMode.ForceDark,
             _ => throw new InvalidOperationException($"Unknown color scheme: {_settings.ColorScheme}")
         });
-
-        // Initialize language before portable clean up since it needs translations
-        await Ioc.Default.GetRequiredService<Internationalization>().InitializeLanguageAsync();
 
         _logger!.LogInfo($"Begin Flow Launcher startup ----------------------------------------------------");
         _logger.LogInfo($"Runtime info:{RuntimeInfo}");

@@ -14,7 +14,6 @@ using System.Windows.Media;
 using Flow.Launcher.Core;
 using Flow.Launcher.Core.Image;
 using Flow.Launcher.Core.Plugin;
-using Flow.Launcher.Core.Resource;
 using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Core.Storage;
 using Flow.Launcher.Core.Text;
@@ -34,13 +33,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Flow.Launcher
 {
-    public class PublicAPIInstance : Plugin.IPublicAPI
+    public class PublicAPIInstance : IPublicAPI
     {
         private readonly ILoggerFactory _loggerFactory;
         private readonly PluginSDK.Logging.Logger<PublicAPIInstance> _logger;
         private readonly ISettingsAPI _settings;
         private readonly MainViewModel _mainVM;
-        private readonly Internationalization _internationalization;
         private readonly ImageLoader _imageLoader;
         private readonly PluginManager _pluginManager;
         private readonly Notification _notification;
@@ -49,7 +47,7 @@ namespace Flow.Launcher
         private readonly object _saveSettingsLock = new();
 
         public PublicAPIInstance(ILoggerFactory loggerFactory,
-            MainViewModel mainVM, ISettingsAPI settings, Internationalization internationalization,
+            MainViewModel mainVM, ISettingsAPI settings,
             ImageLoader imageLoader, PluginManager pluginManager, Notification notification,
             StringMatcher stringMatcher)
         {
@@ -57,7 +55,6 @@ namespace Flow.Launcher
             _logger = new(loggerFactory);
             _mainVM = mainVM;
             _settings = settings;
-            _internationalization = internationalization;
             _imageLoader = imageLoader;
             _pluginManager = pluginManager;
             _notification = notification;
@@ -165,14 +162,14 @@ namespace Flow.Launcher
                     if (showDefaultNotification)
                     {
                         ShowMsg(
-                            $"{Localize.copy()} {(isFile ? Localize.fileTitle() : Localize.folderTitle())}",
-                            Localize.completedSuccessfully());
+                            $"Copy {(isFile ? "File" : "Folder")}",
+                            "Completed successfully");
                     }
                 }
                 else
                 {
                     _logger.LogError(exception, $"Failed to copy file/folder to clipboard");
-                    ShowMsgError(Localize.failedToCopy());
+                    ShowMsgError("Failed to copy");
                 }
             }
             else
@@ -190,14 +187,14 @@ namespace Flow.Launcher
                     if (showDefaultNotification)
                     {
                         ShowMsg(
-                            $"{Localize.copy()} {Localize.textTitle()}",
-                            Localize.completedSuccessfully());
+                            $"Copy Text",
+                            "Completed successfully");
                     }
                 }
                 else
                 {
                     _logger.LogError(exception, $"Failed to copy text to clipboard");
-                    ShowMsgError(Localize.failedToCopy());
+                    ShowMsgError("Failed to copy");
                 }
             }
         }
@@ -222,8 +219,6 @@ namespace Flow.Launcher
             }
             return null;
         }
-
-        public string GetTranslation(string key) => _internationalization.GetTranslation(key);
 
         public List<PluginMetadata> GetAllPlugins() => _pluginManager.GetAllLoadedPlugins();
 
@@ -331,16 +326,16 @@ namespace Flow.Launcher
             {
                 _logger.LogError(ex, $"File Manager not found");
                 ShowMsgError(
-                    Localize.fileManagerNotFoundTitle(),
-                    Localize.fileManagerNotFound()
+                    "File Manager Error",
+                    "The specified file manager could not be found. Please check the Custom File Manager setting under Settings > General."
                 );
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failed to open folder: {directoryPath}");
                 ShowMsgError(
-                    Localize.errorTitle(),
-                    Localize.folderOpenError()
+                    "Error",
+                    "An error occurred while opening the folder."
                 );
             }
         }
@@ -351,7 +346,7 @@ namespace Flow.Launcher
                 && !File.Exists(uri.LocalPath)
                 && !Directory.Exists(uri.LocalPath))
             {
-                ShowMsgError(Localize.errorTitle(), Localize.fileNotFoundError(uri.LocalPath));
+                ShowMsgError("Error", $"File or directory not found: {uri.LocalPath}");
                 return;
             }
 
@@ -369,8 +364,8 @@ namespace Flow.Launcher
                     var tabOrWindow = openInTab ? "tab" : "window";
                     _logger.LogError(e, $"Failed to open URL in browser {tabOrWindow}: {inPrivate}");
                     ShowMsgError(
-                        Localize.errorTitle(),
-                        Localize.browserOpenError()
+                        "Error",
+                        "An error occurred while opening the URL in the browser. Please check your Default Web Browser configuration in the General section of the settings window"
                     );
                 }
             }
@@ -383,7 +378,7 @@ namespace Flow.Launcher
                 catch (Exception e)
                 {
                     _logger.LogError(e, $"Failed to open: {uri.AbsoluteUri}");
-                    ShowMsgError(Localize.errorTitle(), e.Message);
+                    ShowMsgError("Error", e.Message);
                 }
             }
         }

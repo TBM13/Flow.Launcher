@@ -22,7 +22,7 @@
                 VerticalAlignment="center"
                 FontSize="11"
                 Foreground="{DynamicResource PluginInfoColor}"
-                Text="{DynamicResource author}" />
+                Text="by" />
             <TextBlock
                 Margin="5 0 0 0"
                 VerticalAlignment="center"
@@ -40,7 +40,7 @@
                 VerticalAlignment="Center"
                 FontSize="11"
                 Foreground="{DynamicResource PluginInfoColor}"
-                Text="{Binding Version}"/>
+                Text="{Binding Version}" />
         </StackPanel>
     </Border>
 </UserControl>

@@ -41,7 +41,7 @@ public partial class SettingsPaneGeneralViewModel(ISettingsAPI settings) : Obser
         EnumLocalization<LastQueryMode>.Items;
 
     public static string AlwaysPreviewToolTip
-        => Localize.AlwaysPreviewToolTip(DefaultHotkeys.TogglePreview.Hotkey.ToString());
+        => $"Always open preview panel when Flow activates. Press {DefaultHotkeys.TogglePreview.Hotkey} to toggle preview.";
 
     public bool AlwaysRunAsAdmin
     {
@@ -63,8 +63,8 @@ public partial class SettingsPaneGeneralViewModel(ISettingsAPI settings) : Obser
         if (AlwaysRunAsAdmin && !Environment.IsPrivilegedProcess)
         {
             if (IPublicAPI.Instance.ShowMsgBox(
-                IPublicAPI.Instance.GetTranslation("runAsAdministratorChangeAndRestart"),
-                IPublicAPI.Instance.GetTranslation("runAsAdministratorChange"),
+                "Do you want to restart as administrator to apply this change? Otherwise, you will need to run as administrator manually on the next start.",
+                "Administrator Mode Change",
                 MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 // Restart the app as administrator

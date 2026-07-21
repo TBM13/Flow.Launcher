@@ -20,7 +20,7 @@ public partial class HotkeyControlDialog : ContentDialog
 
     public HotkeyControlDialog(HotkeyInfo hotkey, string? windowTitle = null)
     {
-        WindowTitle = windowTitle ?? Localize.hotkeyRegTitle();
+        WindowTitle = windowTitle ?? "Binding Hotkey";
         Hotkey = hotkey;
         _newHotkey = hotkey.Hotkey;
 

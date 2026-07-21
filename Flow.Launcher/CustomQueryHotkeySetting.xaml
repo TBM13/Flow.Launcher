@@ -5,7 +5,7 @@
     xmlns:controls="clr-namespace:Flow.Launcher.Resources.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:flowlauncher="clr-namespace:Flow.Launcher"
-    Title="{DynamicResource customeQueryHotkeyTitle}"
+    Title="Custom Query Hotkey"
     Width="530"
     Background="{DynamicResource PopuBGColor}"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
@@ -31,22 +31,22 @@
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0">
             <controls:CustomWindowTitleBar
-                ShowIcon="False"
-                ShowTitle="False"
-                ShowMinimizeButton="False"
-                ShowMaximizeRestoreButton="False"
+                CloseButtonClick="BtnCancel_OnClick"
                 ShowCloseButton="True"
-                CloseButtonClick="BtnCancel_OnClick" />
+                ShowIcon="False"
+                ShowMaximizeRestoreButton="False"
+                ShowMinimizeButton="False"
+                ShowTitle="False" />
             <StackPanel Margin="26 0 26 0">
                 <TextBlock
                     Margin="0 0 0 12"
                     FontSize="20"
                     FontWeight="SemiBold"
-                    Text="{DynamicResource customeQueryHotkeyTitle}"
+                    Text="Custom Query Hotkey"
                     TextAlignment="Left" />
                 <TextBlock
                     FontSize="14"
-                    Text="{DynamicResource customeQueryHotkeyTips}"
+                    Text="Press a custom hotkey to open Flow Launcher and input the specified query automatically."
                     TextAlignment="Left"
                     TextWrapping="WrapWithOverflow" />
                 <Image
@@ -72,7 +72,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         FontSize="14"
-                        Text="{DynamicResource hotkey}" />
+                        Text="Hotkey" />
                     <flowlauncher:HotkeyControl
                         x:Name="HotkeyControl"
                         Grid.Row="0"
@@ -89,7 +89,7 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         FontSize="14"
-                        Text="{DynamicResource customQuery}" />
+                        Text="Query" />
                     <TextBox
                         x:Name="tbAction"
                         Grid.Row="1"
@@ -105,7 +105,7 @@
                         Margin="0 0 10 0"
                         Padding="10 5 10 5"
                         Click="BtnTestActionKeyword_OnClick"
-                        Content="{DynamicResource preview}" />
+                        Content="Preview" />
                 </Grid>
             </StackPanel>
         </StackPanel>
@@ -121,7 +121,7 @@
                     MinWidth="140"
                     Margin="10 0 5 0"
                     Click="BtnCancel_OnClick"
-                    Content="{DynamicResource cancel}" />
+                    Content="Cancel" />
                 <Button
                     x:Name="btnAdd"
                     MinWidth="140"
@@ -133,13 +133,13 @@
                             x:Name="tbAdd"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
-                            Text="{DynamicResource done}"
+                            Text="Done"
                             Visibility="Collapsed" />
                         <TextBlock
                             x:Name="tbUpdate"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
-                            Text="{DynamicResource update}"
+                            Text="Update"
                             Visibility="Collapsed" />
                     </Grid>
                 </Button>

@@ -39,15 +39,15 @@
                         VerticalAlignment="Center"
                         FontSize="13"
                         Foreground="{DynamicResource Color08B}"
-                        Text="{DynamicResource priority}"
-                        ToolTip="{DynamicResource priorityToolTip}" />
+                        Text="Priority"
+                        ToolTip="Change Plugin Results Priority" />
                     <ui:NumberBox
                         MinWidth="120"
                         Margin="0 0 8 0"
                         Maximum="999"
                         Minimum="-999"
                         SpinButtonPlacementMode="Inline"
-                        ToolTip="{DynamicResource priorityToolTip}"
+                        ToolTip="Change Plugin Results Priority"
                         ValueChanged="NumberBox_OnValueChanged"
                         Value="{Binding Priority, Mode=TwoWay}" />
                 </StackPanel>
@@ -59,17 +59,17 @@
                     HorizontalAlignment="Right"
                     IsEnabled="{Binding HomeEnabled}"
                     IsOn="{Binding PluginHomeState}"
-                    OffContent="{DynamicResource disable}"
-                    OnContent="{DynamicResource enable}"
-                    ToolTip="{DynamicResource homeToggleBoxToolTip}"
+                    OffContent="Off"
+                    OnContent="On"
+                    ToolTip="This can only be edited if plugin supports Home feature and Home Page is enabled."
                     Visibility="{Binding DataContext.IsHomeOnOffSelected, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
                 <ui:ToggleSwitch
                     x:Name="OnOffControl"
                     Margin="0 0 8 0"
                     IsOn="{Binding PluginState}"
-                    OffContent="{DynamicResource disable}"
-                    OnContent="{DynamicResource enable}"
+                    OffContent="Off"
+                    OnContent="On"
                     Visibility="{Binding DataContext.IsOnOffSelected, RelativeSource={RelativeSource AncestorType=ListBox}, Converter={StaticResource BooleanToVisibilityConverter}}" />
             </StackPanel>
         </ui:SettingsExpander.Content>

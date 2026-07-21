@@ -33,7 +33,7 @@
                 DockPanel.Dock="Left"
                 FontSize="30"
                 Style="{StaticResource PageTitle}"
-                Text="{DynamicResource plugins}"
+                Text="Plugins"
                 TextAlignment="Left" />
             <ikw:SimpleStackPanel
                 HorizontalAlignment="Right"
@@ -45,7 +45,7 @@
                     VerticalAlignment="Center"
                     FontSize="14"
                     Foreground="{DynamicResource Color15B}"
-                    Text="{DynamicResource FilterComboboxLabel}" />
+                    Text="Advanced Settings:" />
                 <ComboBox
                     x:Name="DisplayModeComboBox"
                     Width="Auto"
@@ -73,10 +73,10 @@
                     Height="34"
                     Margin="0 0 26 0"
                     VerticalContentAlignment="Center"
-                    ui:ControlHelper.PlaceholderText="{DynamicResource searchplugin}"
+                    ui:ControlHelper.PlaceholderText="Search Plugin"
                     FontSize="14"
                     Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"
-                    ToolTip="{DynamicResource searchpluginToolTip}"
+                    ToolTip="Ctrl+F to search plugins"
                     ToolTipService.InitialShowDelay="200"
                     ToolTipService.Placement="Top" />
             </ikw:SimpleStackPanel>
@@ -91,7 +91,7 @@
                 Padding="0 0 7 0"
                 Background="{DynamicResource Color01B}"
                 FontSize="14"
-                ItemContainerStyle="{DynamicResource PluginList}"
+                ItemContainerStyle="{StaticResource PluginList}"
                 ItemsSource="{Binding Source={StaticResource PluginCollectionView}}"
                 Loaded="PluginListBox_Loaded"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"

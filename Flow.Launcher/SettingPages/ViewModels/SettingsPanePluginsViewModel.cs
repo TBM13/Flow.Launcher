@@ -79,24 +79,24 @@ public partial class SettingsPanePluginsViewModel(ISettingsAPI settings) : Obser
                     },
                     new TextBlock
                     {
-                        Text = (string)Application.Current.Resources["priority_tips"],
+                        Text = "Greater the number, the higher the result will be ranked. Try setting it as 5. If you want the results to be lower than any other plugin's, provide a negative number",
                         TextWrapping = TextWrapping.Wrap
                     },
                     new TextBlock
                     {
-                        Text = (string)Application.Current.Resources["homeTitle"],
+                        Text = "Home Page",
                         FontSize = 18,
                         Margin = new Thickness(0, 24, 0, 10),
                         TextWrapping = TextWrapping.Wrap
                     },
                     new TextBlock
                     {
-                        Text = (string)Application.Current.Resources["homeTips"],
+                        Text = "Enable the plugin home page state if you like to show the plugin results when query is empty.",
                         TextWrapping = TextWrapping.Wrap
                     }
                 }
             },
-            PrimaryButtonText = (string)Application.Current.Resources["commonOK"],
+            PrimaryButtonText = "OK",
             CornerRadius = new CornerRadius(8),
         };
 

@@ -25,18 +25,18 @@
                 Margin="0 5 0 6"
                 FontSize="30"
                 Style="{StaticResource PageTitle}"
-                Text="{DynamicResource hotkeys}"
+                Text="Hotkeys"
                 TextAlignment="left" />
 
             <ui:SettingsExpander
                 Margin="0 8 0 0"
-                Description="{DynamicResource flowlauncherHotkeyToolTip}"
-                Header="{DynamicResource flowlauncherHotkey}">
+                Description="Enter shortcut to show/hide Flow Launcher."
+                Header="Open Flow Launcher">
                 <ui:SettingsExpander.HeaderIcon>
                     <ui:FontIcon Glyph="&#xeda7;" />
                 </ui:SettingsExpander.HeaderIcon>
 
-                <flowlauncher:HotkeyControl Id="ToggleFlowLauncher" WindowTitle="{DynamicResource flowlauncherHotkey}" />
+                <flowlauncher:HotkeyControl Id="ToggleFlowLauncher" WindowTitle="Open Flow Launcher" />
 
                 <ui:SettingsExpander.Items>
                     <ui:SettingsCard Description="Show Flow Launcher with a magic query depending on the computer's context (e.g. the explorer's path if a folder is opened and focused)." Header="Magic Query">
@@ -51,88 +51,88 @@
 
             <ui:SettingsCard
                 Margin="0 4 0 0"
-                Description="{DynamicResource previewHotkeyToolTip}"
-                Header="{DynamicResource previewHotkey}">
+                Description="Enter shortcut to show/hide preview in search window."
+                Header="Toggle Preview">
                 <ui:SettingsCard.HeaderIcon>
                     <ui:FontIcon Glyph="&#xe8a1;" />
                 </ui:SettingsCard.HeaderIcon>
 
-                <flowlauncher:HotkeyControl Id="TogglePreview" WindowTitle="{DynamicResource previewHotkey}" />
+                <flowlauncher:HotkeyControl Id="TogglePreview" WindowTitle="Toggle Preview" />
             </ui:SettingsCard>
 
             <ui:SettingsExpander
                 Margin="0 14 0 0"
-                Description="{DynamicResource hotkeyPresetsToolTip}"
-                Header="{DynamicResource hotkeyPresets}">
+                Description="List of currently registered hotkeys"
+                Header="Hotkey Presets">
                 <ui:SettingsExpander.HeaderIcon>
                     <ui:FontIcon Glyph="&#xf0e2;" />
                 </ui:SettingsExpander.HeaderIcon>
 
                 <ui:SettingsExpander.Items>
-                    <ui:SettingsCard Header="{DynamicResource OpenContainFolderHotkey}">
+                    <ui:SettingsCard Header="Open Containing Folder">
                         <ui:SettingsCard.HeaderIcon>
                             <ui:FontIcon Glyph="&#xe8b7;" />
                         </ui:SettingsCard.HeaderIcon>
 
                         <cc:HotkeyDisplay Keys="Ctrl+Enter" />
                     </ui:SettingsCard>
-                    <ui:SettingsCard Header="{DynamicResource RunAsAdminHotkey}">
+                    <ui:SettingsCard Header="Run As Admin">
                         <ui:SettingsCard.HeaderIcon>
                             <ui:FontIcon Glyph="&#xe7ef;" />
                         </ui:SettingsCard.HeaderIcon>
 
                         <cc:HotkeyDisplay Keys="Ctrl+Shift+Enter" />
                     </ui:SettingsCard>
-                    <ui:SettingsCard Header="{DynamicResource CopyFilePathHotkey}">
+                    <ui:SettingsCard Header="Copy File Path">
                         <ui:SettingsCard.HeaderIcon>
                             <ui:FontIcon Glyph="&#xe8c8;" />
                         </ui:SettingsCard.HeaderIcon>
 
                         <cc:HotkeyDisplay Keys="Ctrl+Shift+C" />
                     </ui:SettingsCard>
-                    <ui:SettingsCard Header="{DynamicResource OpenContextMenuHotkey}">
+                    <ui:SettingsCard Header="Open Context Menu">
                         <ui:SettingsCard.HeaderIcon>
                             <ui:FontIcon Glyph="&#xede3;" />
                         </ui:SettingsCard.HeaderIcon>
 
                         <cc:HotkeyDisplay Keys="Shift+Enter" />
                     </ui:SettingsCard>
-                    <ui:SettingsCard Header="{DynamicResource OpenNativeContextMenuHotkey}">
+                    <ui:SettingsCard Header="Open Native Context Menu">
                         <ui:SettingsCard.HeaderIcon>
                             <ui:FontIcon Glyph="&#xede3;" />
                         </ui:SettingsCard.HeaderIcon>
 
                         <cc:HotkeyDisplay Keys="Alt+Enter" />
                     </ui:SettingsCard>
-                    <ui:SettingsCard Header="{DynamicResource ToggleGameModeHotkey}">
+                    <ui:SettingsCard Header="Toggle Game Mode">
                         <ui:SettingsCard.HeaderIcon>
                             <ui:FontIcon Glyph="&#xe7fc;" />
                         </ui:SettingsCard.HeaderIcon>
 
                         <cc:HotkeyDisplay Keys="Ctrl+F12" />
                     </ui:SettingsCard>
-                    <ui:SettingsCard Header="{DynamicResource RequeryHotkey}">
+                    <ui:SettingsCard Header="Refresh Search Results">
                         <ui:SettingsCard.HeaderIcon>
                             <ui:FontIcon Glyph="&#xe72c;" />
                         </ui:SettingsCard.HeaderIcon>
 
                         <cc:HotkeyDisplay Keys="Ctrl+R" />
                     </ui:SettingsCard>
-                    <ui:SettingsCard Description="{DynamicResource ReloadPluginHotkeyToolTip}" Header="{DynamicResource ReloadPluginHotkey}">
+                    <ui:SettingsCard Description="Use when require plugins to reload and update their existing data." Header="Reload Plugins Data">
                         <ui:SettingsCard.HeaderIcon>
                             <ui:FontIcon Glyph="&#xe72c;" />
                         </ui:SettingsCard.HeaderIcon>
 
                         <cc:HotkeyDisplay Keys="F5" />
                     </ui:SettingsCard>
-                    <ui:SettingsCard Header="{DynamicResource SelectPrevPageHotkey}">
+                    <ui:SettingsCard Header="Previous Page">
                         <ui:SettingsCard.HeaderIcon>
                             <ui:FontIcon Glyph="&#xf0ad;" />
                         </ui:SettingsCard.HeaderIcon>
 
                         <flowlauncher:HotkeyControl Id="SelectPreviousPage" />
                     </ui:SettingsCard>
-                    <ui:SettingsCard Header="{DynamicResource SelectNextPageHotkey}">
+                    <ui:SettingsCard Header="Next Page">
                         <ui:SettingsCard.HeaderIcon>
                             <ui:FontIcon Glyph="&#xf0ae;" />
                         </ui:SettingsCard.HeaderIcon>
@@ -140,7 +140,7 @@
                         <flowlauncher:HotkeyControl Id="SelectNextPage" />
                     </ui:SettingsCard>
 
-                    <ui:SettingsCard Header="{DynamicResource QuickWidthHotkey}">
+                    <ui:SettingsCard Header="Quick Adjust Window Width">
                         <ui:SettingsCard.HeaderIcon>
                             <ui:FontIcon Glyph="&#xe7ea;" />
                         </ui:SettingsCard.HeaderIcon>
@@ -150,7 +150,7 @@
                             <cc:HotkeyDisplay Margin="4 0 0 0" Keys="Ctrl+]" />
                         </StackPanel>
                     </ui:SettingsCard>
-                    <ui:SettingsCard Header="{DynamicResource QuickHeightHotkey}">
+                    <ui:SettingsCard Header="Quick Adjust Window Height">
                         <ui:SettingsCard.HeaderIcon>
                             <ui:FontIcon Glyph="&#xe7eb;" />
                         </ui:SettingsCard.HeaderIcon>
@@ -165,8 +165,8 @@
 
             <ui:SettingsExpander
                 Margin="0 14 0 0"
-                Description="{DynamicResource autoCompleteHotkeyToolTip}"
-                Header="{DynamicResource autoCompleteHotkey}">
+                Description="Runs autocomplete for the selected items."
+                Header="Auto Complete">
                 <ui:SettingsExpander.HeaderIcon>
                     <ui:FontIcon Glyph="&#xe893;" />
                 </ui:SettingsExpander.HeaderIcon>
@@ -174,7 +174,7 @@
                 <flowlauncher:HotkeyControl Id="Autocomplete" />
             </ui:SettingsExpander>
 
-            <ui:SettingsExpander Margin="0 4 0 0" Header="{DynamicResource SelectPrevItemHotkey}">
+            <ui:SettingsExpander Margin="0 4 0 0" Header="Select Previous Item">
                 <ui:SettingsExpander.HeaderIcon>
                     <ui:FontIcon Glyph="&#xe74a;" />
                 </ui:SettingsExpander.HeaderIcon>
@@ -182,7 +182,7 @@
                 <flowlauncher:HotkeyControl Id="SelectPreviousResult" />
             </ui:SettingsExpander>
 
-            <ui:SettingsExpander Margin="0 4 0 0" Header="{DynamicResource SelectNextItemHotkey}">
+            <ui:SettingsExpander Margin="0 4 0 0" Header="Select Next Item">
                 <ui:SettingsExpander.HeaderIcon>
                     <ui:FontIcon Glyph="&#xe74b;" />
                 </ui:SettingsExpander.HeaderIcon>
@@ -190,7 +190,7 @@
                 <flowlauncher:HotkeyControl Id="SelectNextResult" />
             </ui:SettingsExpander>
 
-            <ui:SettingsExpander Margin="0 20 0 0" Header="{DynamicResource customQueryHotkey}">
+            <ui:SettingsExpander Margin="0 20 0 0" Header="Custom Query Hotkeys">
                 <ui:SettingsExpander.HeaderIcon>
                     <ui:FontIcon Glyph="&#xf26c;" />
                 </ui:SettingsExpander.HeaderIcon>
@@ -213,7 +213,7 @@
                                 SelectedItem="{Binding SelectedCustomPluginHotkey}">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Width="180" Header="{DynamicResource hotkey}">
+                                        <GridViewColumn Width="180" Header="Hotkey">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate DataType="userSettings:CustomPluginHotkey">
                                                     <TextBlock Text="{Binding Hotkey}" />
@@ -235,24 +235,24 @@
                                     MinWidth="100"
                                     Margin="10"
                                     Command="{Binding CustomHotkeyDeleteCommand}"
-                                    Content="{DynamicResource delete}" />
+                                    Content="Delete" />
                                 <Button
                                     MinWidth="100"
                                     Margin="10"
                                     Command="{Binding CustomHotkeyEditCommand}"
-                                    Content="{DynamicResource edit}" />
+                                    Content="Edit" />
                                 <Button
                                     MinWidth="100"
                                     Margin="10 10 0 10"
                                     Command="{Binding CustomHotkeyAddCommand}"
-                                    Content="{DynamicResource add}" />
+                                    Content="Add" />
                             </StackPanel>
                         </StackPanel>
                     </StackPanel>
                 </ui:SettingsExpander.ItemsHeader>
             </ui:SettingsExpander>
 
-            <ui:SettingsExpander Margin="0 4 0 0" Header="{DynamicResource customQueryShortcut}">
+            <ui:SettingsExpander Margin="0 4 0 0" Header="Custom Query Shortcuts">
                 <ui:SettingsExpander.HeaderIcon>
                     <ui:FontIcon Glyph="&#xf26b;" />
                 </ui:SettingsExpander.HeaderIcon>
@@ -275,14 +275,14 @@
                                 SelectedItem="{Binding SelectedCustomShortcut}">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Width="180" Header="{DynamicResource customShortcut}">
+                                        <GridViewColumn Width="180" Header="Shortcut">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate DataType="{x:Type userSettings:CustomShortcutModel}">
                                                     <TextBlock Text="{Binding Key}" />
                                                 </DataTemplate>
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
-                                        <GridViewColumn Width="430" Header="{DynamicResource customShortcutExpansion}">
+                                        <GridViewColumn Width="430" Header="Expansion">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate DataType="{x:Type userSettings:CustomShortcutModel}">
                                                     <TextBlock Text="{Binding Value}" />
@@ -301,24 +301,24 @@
                                     MinWidth="100"
                                     Margin="10"
                                     Command="{Binding CustomShortcutDeleteCommand}"
-                                    Content="{DynamicResource delete}" />
+                                    Content="Delete" />
                                 <Button
                                     MinWidth="100"
                                     Margin="10"
                                     Command="{Binding CustomShortcutEditCommand}"
-                                    Content="{DynamicResource edit}" />
+                                    Content="Edit" />
                                 <Button
                                     MinWidth="100"
                                     Margin="10 10 0 10"
                                     Command="{Binding CustomShortcutAddCommand}"
-                                    Content="{DynamicResource add}" />
+                                    Content="Add" />
                             </StackPanel>
                         </StackPanel>
                     </StackPanel>
                 </ui:SettingsExpander.ItemsHeader>
             </ui:SettingsExpander>
 
-            <ui:SettingsExpander Margin="0 4 0 14" Header="{DynamicResource builtinShortcuts}">
+            <ui:SettingsExpander Margin="0 4 0 14" Header="Built-in Shortcuts">
                 <ui:SettingsExpander.HeaderIcon>
                     <ui:FontIcon Glyph="&#xf158;" />
                 </ui:SettingsExpander.HeaderIcon>
@@ -340,14 +340,14 @@
                                 ItemsSource="{Binding Settings.BuiltinShortcuts}">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Width="180" Header="{DynamicResource customShortcut}">
+                                        <GridViewColumn Width="180" Header="Shortcut">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate DataType="{x:Type userSettings:BuiltinShortcutModel}">
                                                     <TextBlock Text="{Binding Key}" />
                                                 </DataTemplate>
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
-                                        <GridViewColumn Width="430" Header="{DynamicResource builtinShortcutDescription}">
+                                        <GridViewColumn Width="430" Header="Description">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate DataType="{x:Type userSettings:BuiltinShortcutModel}">
                                                     <TextBlock Text="{Binding Description}" />

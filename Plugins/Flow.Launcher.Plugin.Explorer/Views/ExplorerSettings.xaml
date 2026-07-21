@@ -33,7 +33,7 @@
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
                             Command="{Binding OpenShellPathCommand}"
-                            Content="{DynamicResource select}" />
+                            Content="Select" />
                     </StackPanel>
                 </ui:SettingsCard>
 

@@ -42,14 +42,14 @@ namespace Flow.Launcher
         {
             if (string.IsNullOrEmpty(Key) || string.IsNullOrEmpty(Value))
             {
-                IPublicAPI.Instance.ShowMsgBox(Localize.emptyShortcut());
+                IPublicAPI.Instance.ShowMsgBox("Shortcut and/or its expansion is empty.");
                 return;
             }
 
             // Check if key is modified or adding a new one
             if (((update && originalKey != Key) || !update) && _hotkeyVm.DoesShortcutExist(Key))
             {
-                IPublicAPI.Instance.ShowMsgBox(Localize.duplicateShortcut());
+                IPublicAPI.Instance.ShowMsgBox("Shortcut already exists, please enter a new Shortcut or edit the existing one.");
                 return;
             }
 

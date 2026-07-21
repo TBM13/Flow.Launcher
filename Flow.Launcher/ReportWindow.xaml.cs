@@ -4,7 +4,6 @@ using System.Text;
 using System.Windows;
 using System.Windows.Documents;
 using Flow.Launcher.Core;
-using Flow.Launcher.Helper;
 using Flow.Launcher.Interop.Programs;
 
 namespace Flow.Launcher
@@ -20,10 +19,10 @@ namespace Flow.Launcher
 
         private void SetException(Exception exception)
         {
-            var paragraph = Hyperlink(Localize.reportWindow_please_open_issue(), Constant.IssuesUrl);
-            paragraph.Inlines.Add(Localize.reportWindow_upload_log(string.Empty));
+            var paragraph = Hyperlink("Please open new issue in", Constant.IssuesUrl);
+            paragraph.Inlines.Add($"1. Upload log file: <TODO>");
             paragraph.Inlines.Add("\n");
-            paragraph.Inlines.Add(Localize.reportWindow_copy_below());
+            paragraph.Inlines.Add("2. Copy below exception message");
             ErrorTextbox.Document.Blocks.Add(paragraph);
 
             var content = new StringBuilder();

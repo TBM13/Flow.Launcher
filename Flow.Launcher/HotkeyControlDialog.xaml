@@ -34,7 +34,7 @@
                     FontWeight="SemiBold"
                     Text="{Binding WindowTitle}"
                     TextAlignment="Left" />
-                <TextBlock FontSize="14" Text="{DynamicResource hotkeyRegGuide}" />
+                <TextBlock FontSize="14" Text="Press the keys you want to use for this function." />
             </StackPanel>
             <Border
                 Grid.Row="1"
@@ -140,7 +140,7 @@
                     MinHeight="36"
                     Margin="0 0 4 0"
                     Click="Save"
-                    Content="{DynamicResource commonSave}"
+                    Content="Save"
                     Style="{StaticResource AccentButtonStyle}" />
                 <Button
                     x:Name="ResetBtn"
@@ -148,7 +148,7 @@
                     MinHeight="36"
                     Margin="4 0 4 0"
                     Click="Reset"
-                    Content="{DynamicResource commonReset}" />
+                    Content="Reset" />
                 <Button
                     x:Name="DeleteBtn"
                     MinWidth="100"
@@ -161,7 +161,7 @@
                     MinHeight="36"
                     Margin="4 0 0 0"
                     Click="Cancel"
-                    Content="{DynamicResource commonCancel}" />
+                    Content="Cancel" />
             </StackPanel>
         </Border>
     </Grid>

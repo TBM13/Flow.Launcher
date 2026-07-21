@@ -120,12 +120,12 @@ namespace Flow.Launcher.ViewModel
                 _logger.LogError(e, $"Failed to create setting panel for {metadata.Name}");
 
                 // Show error message in UI
-                var errorMsg = Localize.errorCreatingSettingPanel(metadata.Name, Environment.NewLine, e.Message);
+                string errorMsg = $"Error creating setting panel for plugin {metadata.Name}:\n{e.Message}";
                 return CreateErrorSettingPanel(errorMsg);
             }
         }
 
-        public string Version => Localize.plugin_query_version() + " " + PluginMetadata.Version;
+        public string Version => "Version " + PluginMetadata.Version;
         public string ActionKeywordsText => string.Join(Query.TermSeparator, PluginMetadata.ActionKeywords);
         public Core.UserSettings.Plugin? PluginSettingsObject { get; init; }
         public bool HomeEnabled => _settings.ShowHomePage && _pluginManager.IsHomePlugin(PluginMetadata.ID);

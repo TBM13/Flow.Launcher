@@ -21,7 +21,7 @@ public partial class SettingsPaneAboutViewModel : ObservableObject
         get
         {
             var size = GetCacheFiles().Sum(file => file.Length);
-            return $"{Localize.clearcachefolder()} ({BytesToReadableString(size)})";
+            return $"Clear Caches ({BytesToReadableString(size)})";
         }
     }
 
@@ -35,8 +35,8 @@ public partial class SettingsPaneAboutViewModel : ObservableObject
     private void AskClearCacheFolderConfirmation()
     {
         var confirmResult = IPublicAPI.Instance.ShowMsgBox(
-            Localize.clearcachefolderMessage(),
-            Localize.clearcachefolder(),
+            "Are you sure you want to delete all caches?",
+            "Clear Caches",
             MessageBoxButton.YesNo
         );
 
@@ -44,7 +44,7 @@ public partial class SettingsPaneAboutViewModel : ObservableObject
         {
             if (!ClearCacheFolder())
             {
-                IPublicAPI.Instance.ShowMsgBox(Localize.clearfolderfailMessage());
+                IPublicAPI.Instance.ShowMsgBox("Failed to clear part of folders and files. Please see log file for more information");
             }
         }
     }

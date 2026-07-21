@@ -31,15 +31,15 @@
             <RowDefinition />
             <RowDefinition MinHeight="68" />
         </Grid.RowDefinitions>
-        
+
         <controls:CustomWindowTitleBar
             Grid.Row="0"
-            ShowIcon="False"
-            ShowTitle="False"
-            ShowMinimizeButton="False"
-            ShowMaximizeRestoreButton="False"
+            CloseButtonClick="Button_Cancel"
             ShowCloseButton="True"
-            CloseButtonClick="Button_Cancel" />
+            ShowIcon="False"
+            ShowMaximizeRestoreButton="False"
+            ShowMinimizeButton="False"
+            ShowTitle="False" />
 
         <Grid Grid.Row="1" Margin="30 0 30 24">
             <Grid.RowDefinitions>
@@ -110,25 +110,25 @@
                     MinWidth="120"
                     Margin="5 0 5 0"
                     Click="Button_Click"
-                    Content="{DynamicResource commonOK}" />
+                    Content="OK" />
                 <Button
                     x:Name="btnYes"
                     MinWidth="120"
                     Margin="5 0 5 0"
                     Click="Button_Click"
-                    Content="{DynamicResource commonYes}" />
+                    Content="Yes" />
                 <Button
                     x:Name="btnNo"
                     MinWidth="120"
                     Margin="5 0 5 0"
                     Click="Button_Click"
-                    Content="{DynamicResource commonNo}" />
+                    Content="No" />
                 <Button
                     x:Name="btnCancel"
                     MinWidth="120"
                     Margin="5 0 5 0"
                     Click="Button_Click"
-                    Content="{DynamicResource commonCancel}" />
+                    Content="Cancel" />
             </WrapPanel>
         </Border>
     </Grid>

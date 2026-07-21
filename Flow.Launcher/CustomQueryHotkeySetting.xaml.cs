@@ -46,7 +46,7 @@ namespace Flow.Launcher
 
             if (string.IsNullOrEmpty(Hotkey) && string.IsNullOrEmpty(ActionKeyword))
             {
-                IPublicAPI.Instance.ShowMsgBox(Localize.emptyPluginHotkey());
+                IPublicAPI.Instance.ShowMsgBox("Hotkey and action keyword are empty");
                 return;
             }
 

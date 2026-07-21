@@ -198,8 +198,7 @@ namespace Flow.Launcher.ViewModel
             Hide();
 
             await _pluginManager.ReloadDataAsync().ConfigureAwait(false);
-            IPublicAPI.Instance.ShowMsg(Localize.success(),
-                Localize.completedSuccessfully());
+            IPublicAPI.Instance.ShowMsg("Success", "Completed successfully");
         }
 
         [RelayCommand]
@@ -1215,11 +1214,11 @@ namespace Flow.Launcher.ViewModel
             {
                 menu = new Result
                 {
-                    Title = Localize.cancelTopMostInThisQuery(),
+                    Title = "Cancel topmost in this query",
                     Action = _ =>
                     {
                         _topMostRecord.Remove(result);
-                        IPublicAPI.Instance.ShowMsg(Localize.success());
+                        IPublicAPI.Instance.ShowMsg("Success");
                         IPublicAPI.Instance.ReQuery();
                         return false;
                     },
@@ -1231,11 +1230,11 @@ namespace Flow.Launcher.ViewModel
             {
                 menu = new Result
                 {
-                    Title = Localize.setAsTopMostInThisQuery(),
+                    Title = "Set as topmost in this query",
                     Action = _ =>
                     {
                         _topMostRecord.AddOrUpdate(result);
-                        IPublicAPI.Instance.ShowMsg(Localize.success());
+                        IPublicAPI.Instance.ShowMsg("Success");
                         IPublicAPI.Instance.ReQuery();
                         return false;
                     },

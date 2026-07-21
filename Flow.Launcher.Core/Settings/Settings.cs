@@ -107,8 +107,8 @@ internal partial class Settings : ObservableObject, ISettingsAPI
     [JsonIgnore]
     public ObservableCollection<BaseBuiltinShortcutModel> BuiltinShortcuts { get; } =
     [
-        new AsyncBuiltinShortcutModel("{clipboard}", "shortcut_clipboard_description", () => ApplicationHelper.StartSTATaskAsync(Clipboard.GetText)),
-        new BuiltinShortcutModel("{active_explorer_path}", "shortcut_active_explorer_path", () => FileExplorerHelper.GetForegroundExplorerPath() ?? "<error>")
+        new AsyncBuiltinShortcutModel("{clipboard}", "Get text from clipboard.", () => ApplicationHelper.StartSTATaskAsync(Clipboard.GetText)),
+        new BuiltinShortcutModel("{active_explorer_path}", "Get path from active explorer.", () => FileExplorerHelper.GetForegroundExplorerPath() ?? "<error>")
     ];
 
 

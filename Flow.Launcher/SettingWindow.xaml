@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     xmlns:vm="clr-namespace:Flow.Launcher.ViewModel"
-    Title="{DynamicResource flowlauncher_settings}"
+    Title="Settings"
     Width="{Binding Settings.SettingWindowWidth, Mode=TwoWay}"
     Height="{Binding Settings.SettingWindowHeight, Mode=TwoWay}"
     MinWidth="940"
@@ -93,31 +93,31 @@
                     </ui:NavigationView.PaneCustomContent>
                     <ui:NavigationView.MenuItems>
 
-                        <ui:NavigationViewItem x:Name="General" Content="{DynamicResource general}">
+                        <ui:NavigationViewItem x:Name="General" Content="General">
                             <ui:NavigationViewItem.Icon>
                                 <ui:BitmapIcon ShowAsMonochrome="False" UriSource="/Images/settings.png" />
                             </ui:NavigationViewItem.Icon>
                         </ui:NavigationViewItem>
 
-                        <ui:NavigationViewItem x:Name="Plugins" Content="{DynamicResource plugins}">
+                        <ui:NavigationViewItem x:Name="Plugins" Content="Plugins">
                             <ui:NavigationViewItem.Icon>
                                 <ui:BitmapIcon ShowAsMonochrome="False" UriSource="/Images/plugins.png" />
                             </ui:NavigationViewItem.Icon>
                         </ui:NavigationViewItem>
 
-                        <ui:NavigationViewItem x:Name="Theme" Content="{DynamicResource appearance}">
+                        <ui:NavigationViewItem x:Name="Theme" Content="Appearance">
                             <ui:NavigationViewItem.Icon>
                                 <ui:BitmapIcon ShowAsMonochrome="False" UriSource="/Images/theme.png" />
                             </ui:NavigationViewItem.Icon>
                         </ui:NavigationViewItem>
 
-                        <ui:NavigationViewItem x:Name="Hotkey" Content="{DynamicResource hotkeys}">
+                        <ui:NavigationViewItem x:Name="Hotkey" Content="Hotkeys">
                             <ui:NavigationViewItem.Icon>
                                 <ui:BitmapIcon ShowAsMonochrome="False" UriSource="/Images/keyboard.png" />
                             </ui:NavigationViewItem.Icon>
                         </ui:NavigationViewItem>
 
-                        <ui:NavigationViewItem x:Name="About" Content="{DynamicResource about}">
+                        <ui:NavigationViewItem x:Name="About" Content="About">
                             <ui:NavigationViewItem.Icon>
                                 <ui:BitmapIcon ShowAsMonochrome="False" UriSource="/Images/info.png" />
                             </ui:NavigationViewItem.Icon>

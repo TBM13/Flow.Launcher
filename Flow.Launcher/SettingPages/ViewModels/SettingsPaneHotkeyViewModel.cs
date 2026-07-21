@@ -27,13 +27,13 @@ public partial class SettingsPaneHotkeyViewModel(ISettingsAPI settings) : Observ
         var item = SelectedCustomPluginHotkey;
         if (item is null)
         {
-            IPublicAPI.Instance.ShowMsgBox(Localize.pleaseSelectAnItem());
+            IPublicAPI.Instance.ShowMsgBox("Please select an item");
             return;
         }
 
         var result = IPublicAPI.Instance.ShowMsgBox(
-            Localize.deleteCustomHotkeyWarning(item.Hotkey),
-            Localize.delete(),
+            $"Are you sure you want to delete {item.Hotkey} plugin hotkey?",
+            "Delete",
             MessageBoxButton.YesNo
         );
 
@@ -50,7 +50,7 @@ public partial class SettingsPaneHotkeyViewModel(ISettingsAPI settings) : Observ
         var item = SelectedCustomPluginHotkey;
         if (item is null)
         {
-            IPublicAPI.Instance.ShowMsgBox(Localize.pleaseSelectAnItem());
+            IPublicAPI.Instance.ShowMsgBox("Please select an item");
             return;
         }
 
@@ -58,7 +58,7 @@ public partial class SettingsPaneHotkeyViewModel(ISettingsAPI settings) : Observ
             o.ActionKeyword == item.ActionKeyword && o.Hotkey == item.Hotkey);
         if (settingItem == null)
         {
-            IPublicAPI.Instance.ShowMsgBox(Localize.invalidPluginHotkey());
+            IPublicAPI.Instance.ShowMsgBox("Hotkey is invalid");
             return;
         }
 
@@ -93,13 +93,13 @@ public partial class SettingsPaneHotkeyViewModel(ISettingsAPI settings) : Observ
         var item = SelectedCustomShortcut;
         if (item is null)
         {
-            IPublicAPI.Instance.ShowMsgBox(Localize.pleaseSelectAnItem());
+            IPublicAPI.Instance.ShowMsgBox("Please select an item");
             return;
         }
 
         var result = IPublicAPI.Instance.ShowMsgBox(
-            Localize.deleteCustomShortcutWarning(item.Key, item.Value),
-            Localize.delete(),
+            $"Are you sure you want to delete shortcut: {item.Key} with expansion {item.Value}?",
+            "Delete",
             MessageBoxButton.YesNo
         );
 
@@ -115,7 +115,7 @@ public partial class SettingsPaneHotkeyViewModel(ISettingsAPI settings) : Observ
         var item = SelectedCustomShortcut;
         if (item is null)
         {
-            IPublicAPI.Instance.ShowMsgBox(Localize.pleaseSelectAnItem());
+            IPublicAPI.Instance.ShowMsgBox("Please select an item");
             return;
         }
 
@@ -123,7 +123,7 @@ public partial class SettingsPaneHotkeyViewModel(ISettingsAPI settings) : Observ
             o.Key == item.Key && o.Value == item.Value);
         if (settingItem == null)
         {
-            IPublicAPI.Instance.ShowMsgBox(Localize.invalidShortcut());
+            IPublicAPI.Instance.ShowMsgBox("Shortcut is invalid");
             return;
         }
 

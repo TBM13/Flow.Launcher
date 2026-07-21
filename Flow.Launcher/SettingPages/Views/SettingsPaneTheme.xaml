@@ -26,26 +26,26 @@
                 Margin="5 23 0 5"
                 FontSize="30"
                 Style="{StaticResource PageTitle}"
-                Text="{DynamicResource appearance}"
+                Text="Appearance"
                 TextAlignment="left" />
 
             <!--  Fixed size  -->
             <ui:SettingsExpander
                 Margin="0 20 0 0"
-                Description="{DynamicResource FixedWindowSizeToolTip}"
-                Header="{DynamicResource FixedWindowSize}">
+                Description="The window size is not adjustable by dragging."
+                Header="Fixed Window Size">
                 <ui:SettingsExpander.HeaderIcon>
                     <ui:FontIcon Glyph="&#xE744;" />
                 </ui:SettingsExpander.HeaderIcon>
                 <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
                     <ui:ToggleSwitch
                         IsOn="{Binding FixedWindowSize}"
-                        OffContent="{DynamicResource disable}"
-                        OnContent="{DynamicResource enable}" />
+                        OffContent="Off"
+                        OnContent="On" />
                 </StackPanel>
 
                 <ui:SettingsExpander.Items>
-                    <ui:SettingsCard Description="{DynamicResource maxShowResultsToolTip}" Header="{DynamicResource maxShowResults}">
+                    <ui:SettingsCard Description="You can also quickly adjust this by using CTRL+Plus and CTRL+Minus." Header="Maximum results shown">
                         <ComboBox
                             Width="100"
                             ItemsSource="{Binding MaxResultsRange}"
@@ -55,7 +55,7 @@
             </ui:SettingsExpander>
 
             <!--  Settings color scheme  -->
-            <ui:SettingsCard Margin="0 14 0 0" Header="{DynamicResource ColorScheme}">
+            <ui:SettingsCard Margin="0 14 0 0" Header="Color Scheme">
                 <ui:SettingsCard.HeaderIcon>
                     <ui:FontIcon Glyph="&#xe793;" />
                 </ui:SettingsCard.HeaderIcon>

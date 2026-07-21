@@ -28,66 +28,66 @@
                 Margin="0 5"
                 FontSize="30"
                 Style="{StaticResource PageTitle}"
-                Text="{DynamicResource general}"
+                Text="General"
                 TextAlignment="left" />
 
-            <ui:SettingsCard Description="{DynamicResource hideOnStartupToolTip}" Header="{DynamicResource hideOnStartup}">
+            <ui:SettingsCard Description="Flow Launcher search window is hidden in the tray after starting up." Header="Hide Flow Launcher on startup">
                 <ui:SettingsCard.HeaderIcon>
                     <ui:FontIcon Glyph="&#xed1a;" />
                 </ui:SettingsCard.HeaderIcon>
 
                 <ui:ToggleSwitch
                     IsOn="{Binding Settings.HideOnStartup}"
-                    OffContent="{DynamicResource disable}"
-                    OnContent="{DynamicResource enable}" />
+                    OffContent="Off"
+                    OnContent="On" />
             </ui:SettingsCard>
 
             <ui:SettingsCard
                 Margin="0 4 0 0"
-                Description="{DynamicResource alwaysRunAsAdministratorToolTip}"
-                Header="{DynamicResource alwaysRunAsAdministrator}">
+                Description="Run Flow Launcher as administrator on startup"
+                Header="Always run as administrator">
                 <ui:SettingsCard.HeaderIcon>
                     <ui:FontIcon Glyph="&#xE7EF;" />
                 </ui:SettingsCard.HeaderIcon>
 
                 <ui:ToggleSwitch
                     IsOn="{Binding AlwaysRunAsAdmin}"
-                    OffContent="{DynamicResource disable}"
-                    OnContent="{DynamicResource enable}" />
+                    OffContent="Off"
+                    OnContent="On" />
             </ui:SettingsCard>
 
-            <ui:SettingsCard Margin="0 12 0 0" Header="{DynamicResource hideFlowLauncherWhenLoseFocus}">
+            <ui:SettingsCard Margin="0 12 0 0" Header="Hide Flow Launcher when focus is lost">
                 <ui:ToggleSwitch
                     IsOn="{Binding Settings.HideOnLostFocus}"
-                    OffContent="{DynamicResource disable}"
-                    OnContent="{DynamicResource enable}" />
+                    OffContent="Off"
+                    OnContent="On" />
             </ui:SettingsCard>
 
             <ui:SettingsCard
                 Margin="0 4 0 0"
-                Description="{DynamicResource showTaskbarWhenOpenedToolTip}"
-                Header="{DynamicResource showTaskbarWhenOpened}">
+                Description="Temporarily show the taskbar when Flow Launcher is opened, useful for auto-hidden taskbars."
+                Header="Show taskbar when Flow Launcher is opened">
                 <ui:ToggleSwitch
                     IsOn="{Binding Settings.ShowTaskbarWhenOpened}"
-                    OffContent="{DynamicResource disable}"
-                    OnContent="{DynamicResource enable}" />
+                    OffContent="Off"
+                    OnContent="On" />
             </ui:SettingsCard>
 
             <ui:SettingsCard
                 Margin="0 14 0 0"
-                Description="{DynamicResource showAtTopmostToolTip}"
-                Header="{DynamicResource showAtTopmost}">
+                Description="Overrides other programs' 'Always on Top' setting and displays Flow in the foremost position."
+                Header="Show Search Window at Foremost">
                 <ui:SettingsCard.HeaderIcon>
                     <ui:FontIcon Glyph="&#xf5ed;" />
                 </ui:SettingsCard.HeaderIcon>
 
                 <ui:ToggleSwitch
                     IsOn="{Binding Settings.ShowAtTopmost}"
-                    OffContent="{DynamicResource disable}"
-                    OnContent="{DynamicResource enable}" />
+                    OffContent="Off"
+                    OnContent="On" />
             </ui:SettingsCard>
 
-            <ui:SettingsCard Margin="0 4 0 0" Header="{DynamicResource SearchWindowPosition}">
+            <ui:SettingsCard Margin="0 4 0 0" Header="Search Window Location">
                 <ui:SettingsCard.HeaderIcon>
                     <ui:FontIcon Glyph="&#xe7f4;" />
                 </ui:SettingsCard.HeaderIcon>
@@ -114,7 +114,7 @@
 
             <ui:SettingsCard
                 Margin="0 4 0 0"
-                Header="{DynamicResource DisplayPosition}"
+                Header="Search Window Position on Monitor"
                 Visibility="{ext:CollapsedWhen {Binding Settings.Display},
                                                IsEqualTo={x:Static settings:DisplayType.RememberLastDisplay}}">
                 <ui:SettingsCard.HeaderIcon>
@@ -156,37 +156,37 @@
 
             <ui:SettingsCard
                 Margin="0 14 0 0"
-                Description="{DynamicResource ignoreHotkeysOnFullscreenToolTip}"
-                Header="{DynamicResource ignoreHotkeysOnFullscreen}">
+                Description="Disable Flow Launcher activation when a full screen application is active (Recommended for games)."
+                Header="Ignore hotkeys in fullscreen mode">
                 <ui:SettingsCard.HeaderIcon>
                     <ui:FontIcon Glyph="&#xe7fc;" />
                 </ui:SettingsCard.HeaderIcon>
 
                 <ui:ToggleSwitch
                     IsOn="{Binding Settings.IgnoreHotkeysOnFullscreen}"
-                    OffContent="{DynamicResource disable}"
-                    OnContent="{DynamicResource enable}" />
+                    OffContent="Off"
+                    OnContent="On" />
             </ui:SettingsCard>
 
             <ui:SettingsCard
                 Margin="0 14 0 0"
-                Description="{Binding AlwaysPreviewToolTip}"
-                Header="{DynamicResource AlwaysPreview}">
+                Description="Always open preview panel when Flow activates. Press {0} to toggle preview."
+                Header="Always Preview">
                 <ui:SettingsCard.HeaderIcon>
                     <ui:FontIcon Glyph="&#xe8a1;" />
                 </ui:SettingsCard.HeaderIcon>
 
                 <ui:ToggleSwitch
                     IsOn="{Binding Settings.AlwaysPreview}"
-                    OffContent="{DynamicResource disable}"
-                    OnContent="{DynamicResource enable}"
+                    OffContent="Off"
+                    OnContent="On"
                     ToolTip="{Binding AlwaysPreviewToolTip}" />
             </ui:SettingsCard>
 
             <ui:SettingsCard
                 Margin="0 14 0 0"
-                Description="{DynamicResource querySearchPrecisionToolTip}"
-                Header="{DynamicResource querySearchPrecision}">
+                Description="Changes minimum match score required for results."
+                Header="Query Search Precision">
 
                 <ComboBox
                     MaxWidth="200"
@@ -198,8 +198,8 @@
 
             <ui:SettingsCard
                 Margin="0 4 0 0"
-                Description="{DynamicResource lastQueryModeToolTip}"
-                Header="{DynamicResource lastQueryMode}">
+                Description="Show/Hide previous results when Flow Launcher is reactivated."
+                Header="Last Query Style">
                 <ComboBox
                     MinWidth="210"
                     DisplayMemberPath="Description"
@@ -210,16 +210,16 @@
 
             <ui:SettingsCard
                 Margin="0 14 0 0"
-                Description="{DynamicResource homePageToolTip}"
-                Header="{DynamicResource homePage}">
+                Description="Show home page results when query text is empty."
+                Header="Home Page">
                 <ui:SettingsCard.HeaderIcon>
                     <ui:FontIcon Glyph="&#xE80F;" />
                 </ui:SettingsCard.HeaderIcon>
 
                 <ui:ToggleSwitch
                     IsOn="{Binding Settings.ShowHomePage}"
-                    OffContent="{DynamicResource disable}"
-                    OnContent="{DynamicResource enable}" />
+                    OffContent="Off"
+                    OnContent="On" />
             </ui:SettingsCard>
         </VirtualizingStackPanel>
     </ui:ScrollViewerEx>

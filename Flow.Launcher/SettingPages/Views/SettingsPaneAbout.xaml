@@ -21,17 +21,17 @@
             <TextBlock
                 Margin="0 5"
                 FontSize="30"
-                Style="{DynamicResource PageTitle}"
-                Text="{DynamicResource about}"
+                Style="{StaticResource PageTitle}"
+                Text="About"
                 TextAlignment="left" />
 
-            <ui:SettingsCard Description="{DynamicResource version}" Header="{Binding Version}">
+            <ui:SettingsCard Description="Version" Header="{Binding Version}">
                 <ui:SettingsCard.HeaderIcon>
                     <ui:FontIcon Glyph="&#xe946;" />
                 </ui:SettingsCard.HeaderIcon>
             </ui:SettingsCard>
 
-            <ui:SettingsCard Margin="0 4 0 0" Header="{DynamicResource icons}">
+            <ui:SettingsCard Margin="0 4 0 0" Header="Icons">
                 <ui:SettingsCard.HeaderIcon>
                     <ui:FontIcon Glyph="&#xE8FE;" />
                 </ui:SettingsCard.HeaderIcon>
@@ -39,7 +39,7 @@
                 <ui:HyperlinkButton Content="icons8.com" NavigateUri="https://icons8.com/" />
             </ui:SettingsCard>
 
-            <ui:SettingsCard Margin="0 14 0 0" Header="{DynamicResource devtool}">
+            <ui:SettingsCard Margin="0 14 0 0" Header="DevTools">
                 <ui:SettingsCard.HeaderIcon>
                     <ui:FontIcon Glyph="&#xf12b;" />
                 </ui:SettingsCard.HeaderIcon>
@@ -53,13 +53,13 @@
                         <ui:FontIcon FontSize="16" Glyph="&#xec7a;" />
                         <ui:FlyoutService.Flyout>
                             <ui:MenuFlyout>
-                                <MenuItem Command="{Binding OpenSettingsFolderCommand}" Header="{DynamicResource settingfolder}">
+                                <MenuItem Command="{Binding OpenSettingsFolderCommand}" Header="Setting Folder">
                                     <MenuItem.Icon>
                                         <ui:FontIcon Glyph="&#xe8b7;" />
                                     </MenuItem.Icon>
                                 </MenuItem>
 
-                                <MenuItem Command="{Binding OpenCacheFolderCommand}" Header="{DynamicResource cachefolder}">
+                                <MenuItem Command="{Binding OpenCacheFolderCommand}" Header="Cache Folder">
                                     <MenuItem.Icon>
                                         <ui:FontIcon Glyph="&#xe8b7;" />
                                     </MenuItem.Icon>

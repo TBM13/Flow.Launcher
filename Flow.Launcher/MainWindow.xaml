@@ -135,17 +135,17 @@
                         </TextBox.CommandBindings>
                         <TextBox.ContextMenu>
                             <ContextMenu MinWidth="160">
-                                <MenuItem Command="ApplicationCommands.Cut" Header="{DynamicResource cut}">
+                                <MenuItem Command="ApplicationCommands.Cut" Header="Cut">
                                     <MenuItem.Icon>
                                         <ui:FontIcon Glyph="&#xe8c6;" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Command="ApplicationCommands.Copy" Header="{DynamicResource copy}">
+                                <MenuItem Command="ApplicationCommands.Copy" Header="Copy">
                                     <MenuItem.Icon>
                                         <ui:FontIcon Glyph="&#xe8c8;" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Command="ApplicationCommands.Paste" Header="{DynamicResource paste}">
+                                <MenuItem Command="ApplicationCommands.Paste" Header="Paste">
                                     <MenuItem.Icon>
                                         <ui:FontIcon Glyph="&#xe77f;" />
                                     </MenuItem.Icon>
@@ -154,12 +154,12 @@
                                     Margin="0"
                                     Padding="0 4 0 4"
                                     Background="{DynamicResource ContextSeparator}" />
-                                <MenuItem Click="OnContextMenusForSettingsClick" Header="{DynamicResource flowlauncher_settings}">
+                                <MenuItem Click="OnContextMenusForSettingsClick" Header="Settings">
                                     <MenuItem.Icon>
                                         <ui:FontIcon Glyph="&#xe713;" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Command="{Binding EscCommand}" Header="{DynamicResource closeWindow}">
+                                <MenuItem Command="{Binding EscCommand}" Header="Close">
                                     <MenuItem.Icon>
                                         <ui:FontIcon Glyph="&#xe711;" />
                                     </MenuItem.Icon>

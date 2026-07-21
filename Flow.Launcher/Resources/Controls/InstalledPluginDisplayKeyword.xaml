@@ -31,7 +31,7 @@
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 DockPanel.Dock="Left"
-                Text="{DynamicResource actionKeywords}" />
+                Text="Action keyword" />
             <!--  Here Margin="0 -4.5 0 -4.5" is to remove redundant top bottom margin from Margin="{StaticResource SettingPanelMargin}"  -->
             <Button
                 Width="auto"
@@ -43,7 +43,7 @@
                 Cursor="Hand"
                 DockPanel.Dock="Right"
                 FontWeight="Bold"
-                ToolTip="{DynamicResource actionKeywordsTooltip}" />
+                ToolTip="Change Action Keywords" />
         </DockPanel>
     </Border>
 </UserControl>
