@@ -7,10 +7,6 @@
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     xmlns:userSettings="clr-namespace:Flow.Launcher.Core.UserSettings;assembly=Flow.Launcher.Core">
 
-    <Style TargetType="ui:FontIcon">
-        <Setter Property="FontFamily" Value="/Resources/#Segoe Fluent Icons" />
-    </Style>
-
     <Style x:Key="QueryBoxStyle" TargetType="{x:Type TextBox}">
         <Setter Property="Padding" Value="0 0 50 0" />
         <Setter Property="Foreground" Value="{DynamicResource Color05B}" />
@@ -25,38 +21,6 @@
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type TextBox}">
-                    <Border
-                        x:Name="border"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        SnapsToDevicePixels="True">
-                        <ui:ScrollViewerEx
-                            x:Name="PART_ContentHost"
-                            Background="{TemplateBinding Background}"
-                            Focusable="false"
-                            HorizontalScrollBarVisibility="Hidden"
-                            VerticalScrollBarVisibility="Hidden">
-                            <ui:ScrollViewerEx.ContentTemplate>
-                                <DataTemplate>
-                                    <Grid Background="{Binding Background, ElementName=PART_ContentHost}">
-                                        <ContentPresenter Content="{Binding Path=Content, ElementName=PART_ContentHost}" />
-                                    </Grid>
-                                </DataTemplate>
-                            </ui:ScrollViewerEx.ContentTemplate>
-                        </ui:ScrollViewerEx>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <!--  Further font customisations are dynamically loaded in Theme.cs  -->
-    <Style x:Key="QueryBoxBgStyle" TargetType="{x:Type Border}">
-        <Setter Property="Margin" Value="0 0 0 0" />
     </Style>
 
     <Style x:Key="WindowBorderStyle" TargetType="{x:Type Border}">
@@ -74,7 +38,6 @@
     </Style>
 
     <!--  Item Style  -->
-
     <Style x:Key="ItemTitleStyle" TargetType="{x:Type TextBlock}">
         <Setter Property="Foreground" Value="{DynamicResource Color05B}" />
         <Setter Property="FontSize" Value="16" />
@@ -102,89 +65,7 @@
         <Setter Property="FontSize" Value="25" />
     </Style>
 
-    <!--  ScrollViewer Style  -->
-    <!--  button style in the middle of the scrollbar  -->
-    <Style x:Key="ThumbStyle" TargetType="{x:Type Thumb}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
-        <Setter Property="OverridesDefaultStyle" Value="true" />
-        <Setter Property="IsTabStop" Value="false" />
-        <Setter Property="Focusable" Value="false" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Thumb}">
-                    <Border
-                        Background="{DynamicResource ThumbColor}"
-                        BorderBrush="Transparent"
-                        BorderThickness="0"
-                        CornerRadius="2"
-                        DockPanel.Dock="Right" />
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style x:Key="ScrollBarStyle" TargetType="{x:Type ScrollBar}">
-        <Setter Property="Stylus.IsPressAndHoldEnabled" Value="false" />
-        <Setter Property="Stylus.IsFlicksEnabled" Value="false" />
-        <Setter Property="Background" Value="Black" />
-        <!--  must set min width  -->
-        <Setter Property="MinWidth" Value="0" />
-        <Setter Property="Width" Value="5" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ScrollBar}">
-                    <DockPanel>
-                        <Track
-                            x:Name="PART_Track"
-                            DockPanel.Dock="Right"
-                            IsDirectionReversed="true">
-                            <Track.Thumb>
-                                <Thumb Style="{StaticResource ThumbStyle}" />
-                            </Track.Thumb>
-                        </Track>
-                    </DockPanel>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <ControlTemplate x:Key="ScrollViewerControlTemplate" TargetType="{x:Type ScrollViewer}">
-        <Grid x:Name="Grid" Background="{TemplateBinding Background}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-
-            <!--  content in the left of ScrollViewer, just default  -->
-            <ScrollContentPresenter
-                x:Name="PART_ScrollContentPresenter"
-                Grid.Row="0"
-                Grid.Column="0"
-                Margin="0"
-                CanContentScroll="{TemplateBinding CanContentScroll}"
-                CanHorizontallyScroll="False"
-                CanVerticallyScroll="False"
-                Content="{TemplateBinding Content}"
-                ContentTemplate="{TemplateBinding ContentTemplate}" />
-
-            <!--  Scrollbar in the right of ScrollViewer  -->
-            <ScrollBar
-                x:Name="PART_VerticalScrollBar"
-                Grid.Row="0"
-                Grid.Column="0"
-                Margin="0 0 0 0"
-                HorizontalAlignment="Right"
-                AutomationProperties.AutomationId="VerticalScrollBar"
-                Cursor="Arrow"
-                Maximum="{TemplateBinding ScrollableHeight}"
-                Minimum="0"
-                Style="{StaticResource ScrollBarStyle}"
-                ViewportSize="{TemplateBinding ViewportHeight}"
-                Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
-                Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
-        </Grid>
-    </ControlTemplate>
-
+    <!--  Result Listbox Style  -->
     <Style x:Key="ListboxStyle" TargetType="{x:Type ListBox}">
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="Background" Value="Transparent" />
@@ -196,10 +77,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ListBox">
-                    <ui:ScrollViewerEx
-                        x:Name="ListBoxScrollViewer"
-                        Focusable="False"
-                        Template="{StaticResource ScrollViewerControlTemplate}">
+                    <ui:ScrollViewerEx x:Name="ListBoxScrollViewer" Focusable="False">
                         <VirtualizingStackPanel IsItemsHost="True" />
                     </ui:ScrollViewerEx>
                 </ControlTemplate>

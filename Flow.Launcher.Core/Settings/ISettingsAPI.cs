@@ -174,7 +174,7 @@ public interface ISettingsAPI : INotifyPropertyChanged, INotifyPropertyChanging
 
     double SettingWindowWidth { get; set; }
     double SettingWindowHeight { get; set; }
-    WindowState SettingWindowState { get; set; }
+    bool SettingWindowMaximized { get; set; }
     #endregion
 
     #region Hotkeys

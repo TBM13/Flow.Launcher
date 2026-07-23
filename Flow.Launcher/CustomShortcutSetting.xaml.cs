@@ -1,26 +1,26 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using Flow.Launcher.PluginSDK.API;
-using Flow.Launcher.SettingPages.ViewModels;
+using Flow.Launcher.Settings.Pages;
 
 namespace Flow.Launcher
 {
     public partial class CustomShortcutSetting : Window
     {
-        private readonly SettingsPaneHotkeyViewModel _hotkeyVm;
+        private readonly SettingsHotkeyViewModel _hotkeyVm;
         public string Key { get; set; } = string.Empty;
         public string Value { get; set; } = string.Empty;
         private string originalKey { get; } = null;
         private string originalValue { get; } = null;
         private bool update { get; } = false;
 
-        public CustomShortcutSetting(SettingsPaneHotkeyViewModel vm)
+        public CustomShortcutSetting(SettingsHotkeyViewModel vm)
         {
             _hotkeyVm = vm;
             InitializeComponent();
         }
 
-        public CustomShortcutSetting(string key, string value, SettingsPaneHotkeyViewModel vm)
+        public CustomShortcutSetting(string key, string value, SettingsHotkeyViewModel vm)
         {
             Key = key;
             Value = value;

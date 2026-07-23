@@ -1,14 +1,16 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Flow.Launcher.Core.Settings;
+﻿using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Interop;
 using Flow.Launcher.PluginSDK.WPF;
 using iNKORE.UI.WPF.Modern;
 
-namespace Flow.Launcher.SettingPages.ViewModels;
+namespace Flow.Launcher.Settings.Pages;
 
-public partial class SettingsPaneThemeViewModel(ISettingsAPI settings) : ObservableObject
+public partial class SettingsThemeViewModel(ISettingsAPI settings) : BaseSettingsPageViewModel
 {
     public ISettingsAPI Settings { get; } = settings;
+
+    public override string Title => "Appearance";
+    public override string IconPath => "pack://application:,,,/Images/theme.png";
 
     public IReadOnlyList<LocalizedEnumItem<ColorScheme>> ColorSchemes { get; }
         = EnumLocalization<ColorScheme>.Items;

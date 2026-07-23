@@ -5,22 +5,21 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core.Settings;
 using Flow.Launcher.PluginSDK.API;
-using Flow.Launcher.PluginSDK.WPF;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern.Controls;
 
-namespace Flow.Launcher.SettingPages.ViewModels;
+namespace Flow.Launcher.Settings.Pages;
 
-public partial class SettingsPanePluginsViewModel(ISettingsAPI settings) : ObservableObject
+public partial class SettingsPluginsViewModel(ISettingsAPI settings) : BaseSettingsPageViewModel
 {
     private readonly ISettingsAPI _settings = settings;
 
-    public IReadOnlyList<LocalizedEnumItem<DisplayMode>> DisplayModes { get; } =
-        EnumLocalization<DisplayMode>.Items;
+    public override string Title => "Plugins";
+    public override string IconPath => "pack://application:,,,/Images/plugins.png";
 
     public DisplayMode SelectedDisplayMode
     {
-        get => field;
+        get;
         set
         {
             SetProperty(ref field, value);

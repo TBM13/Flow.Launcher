@@ -3,6 +3,8 @@ using System.Reflection;
 
 namespace Flow.Launcher.PluginSDK.WPF;
 
+[Obsolete("Use EnumBinding instead")]
+// TODO: Remove this
 public class LocalizedEnumItem<T> where T : Enum
 {
     public required T Value { get; set; }
@@ -10,6 +12,8 @@ public class LocalizedEnumItem<T> where T : Enum
 }
 
 // Use a static class per enum type to avoid repeated reflection
+// TODO: Remove this
+[Obsolete("Use EnumBinding instead")]
 public static class EnumLocalization<T> where T : struct, Enum
 {
     public static readonly List<LocalizedEnumItem<T>> Items = [..

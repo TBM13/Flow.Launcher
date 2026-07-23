@@ -91,7 +91,7 @@ internal partial class Settings : ObservableObject, ISettingsAPI
     [ObservableProperty]
     public partial double SettingWindowHeight { get; set; } = 700;
     [ObservableProperty]
-    public partial WindowState SettingWindowState { get; set; } = WindowState.Normal;
+    public partial bool SettingWindowMaximized { get; set; } = false;
     #endregion
 
     #region Hotkeys / Shortcuts

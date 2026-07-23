@@ -116,7 +116,7 @@
 
     <Border MouseDown="OnMouseDown" Style="{StaticResource WindowBorderStyle}">
         <StackPanel Orientation="Vertical">
-            <Border MinHeight="30" Style="{StaticResource QueryBoxBgStyle}">
+            <Border MinHeight="30">
                 <Grid>
                     <TextBox
                         x:Name="QueryTextBox"

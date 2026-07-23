@@ -1,0 +1,78 @@
+﻿<Window
+    x:Class="Flow.Launcher.Settings.SettingWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:pages="clr-namespace:Flow.Launcher.Settings.Pages"
+    xmlns:setting="clr-namespace:Flow.Launcher.Settings"
+    xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
+    Title="Settings"
+    Width="{Binding Settings.SettingWindowWidth, Mode=TwoWay}"
+    Height="{Binding Settings.SettingWindowHeight, Mode=TwoWay}"
+    MinWidth="940"
+    MinHeight="600"
+    d:DataContext="{d:DesignInstance setting:SettingViewModel}"
+    ui:WindowHelper.UseModernWindowStyle="True"
+    Background="{DynamicResource Color01B}"
+    Closed="OnClosed"
+    Icon="pack://application:,,,/Images/app.ico"
+    ResizeMode="CanResize"
+    SnapsToDevicePixels="True"
+    StateChanged="Window_StateChanged"
+    UseLayoutRounding="True"
+    mc:Ignorable="d">
+
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type pages:SettingsGeneralViewModel}">
+            <pages:SettingsGeneral />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type pages:SettingsPluginsViewModel}">
+            <pages:SettingsPlugins />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type pages:SettingsThemeViewModel}">
+            <pages:SettingsTheme />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type pages:SettingsHotkeyViewModel}">
+            <pages:SettingsHotkey />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type pages:SettingsAboutViewModel}">
+            <pages:SettingsAbout />
+        </DataTemplate>
+    </Window.Resources>
+
+    <ui:NavigationView
+        Content="{Binding CurrentPage}"
+        IsBackButtonVisible="Collapsed"
+        IsBackEnabled="False"
+        IsPaneToggleButtonVisible="False"
+        MenuItemsSource="{Binding Pages}"
+        OpenPaneLength="240"
+        PaneDisplayMode="Left"
+        SelectedItem="{Binding CurrentPage, Mode=TwoWay}">
+        <ui:NavigationView.PaneCustomContent>
+            <StackPanel Margin="0 35 0 25" HorizontalAlignment="Center">
+                <Image
+                    Width="50"
+                    Height="50"
+                    RenderOptions.BitmapScalingMode="HighQuality"
+                    Source="pack://application:,,,/Images/app.png" />
+                <TextBlock
+                    Margin="0 12 0 0"
+                    FontSize="14"
+                    Text="Flow Launcher"
+                    TextAlignment="Center" />
+            </StackPanel>
+        </ui:NavigationView.PaneCustomContent>
+
+        <ui:NavigationView.MenuItemTemplate>
+            <DataTemplate DataType="{x:Type pages:BaseSettingsPageViewModel}">
+                <ui:NavigationViewItem Content="{Binding Title}">
+                    <ui:NavigationViewItem.Icon>
+                        <ui:BitmapIcon ShowAsMonochrome="False" UriSource="{Binding IconPath}" />
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
+            </DataTemplate>
+        </ui:NavigationView.MenuItemTemplate>
+    </ui:NavigationView>
+</Window>

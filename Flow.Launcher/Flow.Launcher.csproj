@@ -49,6 +49,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Flow.Launcher.Core\Flow.Launcher.Core.csproj" />
+    <ProjectReference Include="..\Flow.Launcher.PluginSDK\Flow.Launcher.PluginSDK.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

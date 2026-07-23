@@ -1,18 +1,20 @@
 ﻿using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core.Hotkeys;
 using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Core.UserSettings;
 using Flow.Launcher.PluginSDK.API;
 
-namespace Flow.Launcher.SettingPages.ViewModels;
+namespace Flow.Launcher.Settings.Pages;
 
-public partial class SettingsPaneHotkeyViewModel(ISettingsAPI settings) : ObservableObject
+public partial class SettingsHotkeyViewModel(
+    ISettingsAPI settings, HotkeyManager hotkeyManager) : BaseSettingsPageViewModel
 {
-    // TODO: Check if there is any better alternative
-    private readonly HotkeyManager _hotkeyManager = Ioc.Default.GetRequiredService<HotkeyManager>();
+    private readonly HotkeyManager _hotkeyManager = hotkeyManager;
+
+    public override string Title => "Hotkeys";
+    public override string IconPath => "pack://application:,,,/Images/keyboard.png";
 
     public ISettingsAPI Settings { get; } = settings;
 

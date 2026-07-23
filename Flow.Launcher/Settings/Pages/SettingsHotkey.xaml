@@ -1,31 +1,24 @@
-﻿<ui:Page
-    x:Class="Flow.Launcher.SettingPages.Views.SettingsPaneHotkey"
+﻿<UserControl
+    x:Class="Flow.Launcher.Settings.Pages.SettingsHotkey"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:cc="clr-namespace:Flow.Launcher.Resources.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:flowlauncher="clr-namespace:Flow.Launcher"
-    xmlns:ikw="http://schemas.inkore.net/lib/ui/wpf"
+    xmlns:local="clr-namespace:Flow.Launcher.Settings.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     xmlns:userSettings="clr-namespace:Flow.Launcher.Core.UserSettings;assembly=Flow.Launcher.Core"
-    xmlns:viewModels="clr-namespace:Flow.Launcher.SettingPages.ViewModels"
-    Title="Hotkey"
-    d:DataContext="{d:DesignInstance viewModels:SettingsPaneHotkeyViewModel}"
+    d:DataContext="{d:DesignInstance local:SettingsHotkeyViewModel}"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <ui:ScrollViewerEx
-        Padding="0 0 6 0"
-        FontSize="14"
-        VirtualizingStackPanel.IsVirtualizing="True"
-        VirtualizingStackPanel.ScrollUnit="Pixel">
+    <ui:ScrollViewerEx CanContentScroll="False">
         <StackPanel Margin="5 18 18 10">
             <TextBlock
                 Margin="0 5 0 6"
                 FontSize="30"
-                Text="Hotkeys"
-                TextAlignment="left" />
+                Text="Hotkeys" />
 
             <ui:SettingsExpander
                 Margin="0 8 0 0"
@@ -162,32 +155,32 @@
                 </ui:SettingsExpander.Items>
             </ui:SettingsExpander>
 
-            <ui:SettingsExpander
+            <ui:SettingsCard
                 Margin="0 14 0 0"
                 Description="Runs autocomplete for the selected items."
                 Header="Auto Complete">
-                <ui:SettingsExpander.HeaderIcon>
+                <ui:SettingsCard.HeaderIcon>
                     <ui:FontIcon Glyph="&#xe893;" />
-                </ui:SettingsExpander.HeaderIcon>
+                </ui:SettingsCard.HeaderIcon>
 
                 <flowlauncher:HotkeyControl Id="Autocomplete" />
-            </ui:SettingsExpander>
+            </ui:SettingsCard>
 
-            <ui:SettingsExpander Margin="0 4 0 0" Header="Select Previous Item">
-                <ui:SettingsExpander.HeaderIcon>
+            <ui:SettingsCard Margin="0 4 0 0" Header="Select Previous Item">
+                <ui:SettingsCard.HeaderIcon>
                     <ui:FontIcon Glyph="&#xe74a;" />
-                </ui:SettingsExpander.HeaderIcon>
+                </ui:SettingsCard.HeaderIcon>
 
                 <flowlauncher:HotkeyControl Id="SelectPreviousResult" />
-            </ui:SettingsExpander>
+            </ui:SettingsCard>
 
-            <ui:SettingsExpander Margin="0 4 0 0" Header="Select Next Item">
-                <ui:SettingsExpander.HeaderIcon>
+            <ui:SettingsCard Margin="0 4 0 0" Header="Select Next Item">
+                <ui:SettingsCard.HeaderIcon>
                     <ui:FontIcon Glyph="&#xe74b;" />
-                </ui:SettingsExpander.HeaderIcon>
+                </ui:SettingsCard.HeaderIcon>
 
                 <flowlauncher:HotkeyControl Id="SelectNextResult" />
-            </ui:SettingsExpander>
+            </ui:SettingsCard>
 
             <ui:SettingsExpander Margin="0 20 0 0" Header="Custom Query Hotkeys">
                 <ui:SettingsExpander.HeaderIcon>
@@ -347,4 +340,4 @@
             </ui:SettingsExpander>
         </StackPanel>
     </ui:ScrollViewerEx>
-</ui:Page>
+</UserControl>

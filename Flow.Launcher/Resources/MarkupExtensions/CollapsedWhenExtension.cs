@@ -5,6 +5,7 @@ using System.Windows.Markup;
 
 namespace Flow.Launcher.Resources.MarkupExtensions;
 
+// TODO: Move all these to PluginSDK
 public class CollapsedWhenExtension : MarkupExtension
 {
     private Binding? When { get; set; }

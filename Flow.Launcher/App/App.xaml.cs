@@ -11,7 +11,8 @@ using Flow.Launcher.Core.Text;
 using Flow.Launcher.Helper;
 using Flow.Launcher.Interop;
 using Flow.Launcher.PluginSDK.API;
-using Flow.Launcher.SettingPages.ViewModels;
+using Flow.Launcher.Settings;
+using Flow.Launcher.Settings.Pages;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern.Common;
 using Microsoft.Extensions.DependencyInjection;
@@ -145,15 +146,18 @@ public partial class App : Application
                     .AddSingleton<Notification>()
                     .AddSingleton<StringMatcher>()
 
-                    // UI
+                    // Main Window
                     .AddSingleton<MainWindow>()
                     .AddSingleton<MainViewModel>()
-                    .AddSingleton<SettingWindowViewModel>()
-                    .AddTransient<SettingsPaneAboutViewModel>()
-                    .AddTransient<SettingsPaneGeneralViewModel>()
-                    .AddTransient<SettingsPaneHotkeyViewModel>()
-                    .AddTransient<SettingsPanePluginsViewModel>()
-                    .AddTransient<SettingsPaneThemeViewModel>()
+
+                    // Settings
+                    .AddTransient<SettingWindow>()
+                    .AddTransient<SettingViewModel>()
+                    .AddTransient<SettingsGeneralViewModel>()
+                    .AddTransient<SettingsThemeViewModel>()
+                    .AddTransient<SettingsPluginsViewModel>()
+                    .AddTransient<SettingsHotkeyViewModel>()
+                    .AddTransient<SettingsAboutViewModel>()
                 ).Build();
 
             Ioc.Default.ConfigureServices(_host.Services);
@@ -220,6 +224,7 @@ public partial class App : Application
         _mainWindow = Ioc.Default.GetRequiredService<MainWindow>();
         Ioc.Default.GetRequiredService<HotkeyManager>();
 
+        // Ensure we support reading files with old encodings such as Windows-1252
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
         IPublicAPI.Instance.SaveAppAllSettings();

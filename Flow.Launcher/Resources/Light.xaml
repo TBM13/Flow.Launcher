@@ -7,7 +7,6 @@
     <SolidColorBrush x:Key="SystemThemeBorder" Color="#aaaaaa" />
     <SolidColorBrush x:Key="SubTitleForeground" Color="#818181" />
     <SolidColorBrush x:Key="SeparatorForeground" Color="#20000000" />
-    <SolidColorBrush x:Key="ThumbColor" Color="#1F000000" />
     <Color x:Key="ItemSelectedBackgroundColorBrush">#7EFFFFFF</Color>
 
     <SolidColorBrush x:Key="Color00B" Color="#FAFAFA" />

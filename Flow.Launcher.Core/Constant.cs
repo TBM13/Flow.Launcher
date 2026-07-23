@@ -13,7 +13,6 @@ public static class Constant
 
     public const string IssuesUrl = "https://github.com/TBM13/Flow.Launcher/issues";
     public static readonly string Version = FileVersionInfo.GetVersionInfo(Assembly.Location).ProductVersion ?? "<Unknown>";
-    public static readonly string Dev = "Dev";
 
     private static readonly string ImagesDirectory = Path.Combine(ProgramDirectory, "Images");
     public static readonly string DefaultIcon = Path.Combine(ImagesDirectory, "app.png");
