@@ -89,7 +89,7 @@ namespace Flow.Launcher
                         btnNo.Focus();
                         _result = MessageBoxResult.No;
                     }
-                    else
+                    else if (defaultResult == MessageBoxResult.Yes)
                     {
                         btnYes.Focus();
                         _result = MessageBoxResult.Yes;
