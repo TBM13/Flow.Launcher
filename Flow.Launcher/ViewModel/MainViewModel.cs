@@ -387,12 +387,6 @@ namespace Flow.Launcher.ViewModel
         }
 
         [RelayCommand]
-        public void ToggleGameMode()
-        {
-            GameModeStatus = !GameModeStatus;
-        }
-
-        [RelayCommand]
         public void CopyAlternative()
         {
             var result = _results.SelectedItem?.Result?.CopyText;
@@ -407,9 +401,6 @@ namespace Flow.Launcher.ViewModel
 
         #region ViewModel Properties
         public ISettingsAPI Settings { get; }
-
-        [ObservableProperty]
-        public partial bool GameModeStatus { get; set; } = false;
 
         private string _queryText;
         public string QueryText

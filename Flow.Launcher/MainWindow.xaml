@@ -98,10 +98,6 @@
             Command="{Binding OpenResultCommand}"
             Modifiers="Shift+Alt" />
         <KeyBinding
-            Key="F12"
-            Command="{Binding ToggleGameModeCommand}"
-            Modifiers="Ctrl" />
-        <KeyBinding
             Key="C"
             Command="{Binding CopyAlternativeCommand}"
             Modifiers="Ctrl+Shift" />

@@ -404,21 +404,6 @@ namespace Flow.Launcher
             OpenUri(appUri);
         }
 
-        public void ToggleGameMode()
-        {
-            _mainVM.ToggleGameMode();
-        }
-
-        public void SetGameMode(bool value)
-        {
-            _mainVM.GameModeStatus = value;
-        }
-
-        public bool IsGameModeOn()
-        {
-            return _mainVM.GameModeStatus;
-        }
-
         public void ReQuery(bool reselect = true) => _mainVM.ReQuery(reselect);
 
         public void BackToQueryResults() => _mainVM.BackToQueryResults();

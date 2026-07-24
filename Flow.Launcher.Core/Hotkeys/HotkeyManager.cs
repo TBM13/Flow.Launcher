@@ -5,11 +5,11 @@ using System.Windows.Threading;
 using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Core.UserSettings;
 using Flow.Launcher.Interop;
+using Flow.Launcher.Interop.Input;
+using Flow.Launcher.PluginSDK.API;
+using Flow.Launcher.PluginSDK.Hotkeys;
 using Flow.Launcher.PluginSDK.Logging;
 using Flow.Launcher.PluginSDK.Plugins;
-using Flow.Launcher.PluginSDK.Hotkeys;
-using Flow.Launcher.PluginSDK.API;
-using Flow.Launcher.Interop.Input;
 
 namespace Flow.Launcher.Core.Hotkeys;
 
@@ -72,8 +72,8 @@ public class HotkeyManager : IDisposable
 
     private bool ShouldIgnoreHotkeys()
     {
-        return (_settings.IgnoreHotkeysOnFullscreen && WindowHelper.IsWindowFullscreen(WindowHelper.GetForegroundWindow()))
-            || IPublicAPI.Instance.IsGameModeOn();
+        return _settings.IgnoreHotkeysOnFullscreen
+            && WindowHelper.IsWindowFullscreen(WindowHelper.GetForegroundWindow());
     }
 
     private bool OnGlobalHotkeyTriggered(Hotkey hotkey)

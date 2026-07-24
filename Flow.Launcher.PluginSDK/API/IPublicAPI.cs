@@ -245,23 +245,6 @@ public interface IPublicAPI
     public void OpenAppUri(Uri appUri);
 
     /// <summary>
-    /// Toggles Game Mode. off -> on and backwards
-    /// </summary>
-    public void ToggleGameMode();
-
-    /// <summary>
-    /// Switches Game Mode to given value
-    /// </summary>
-    /// <param name="value">New Game Mode status</param>
-    public void SetGameMode(bool value);
-
-    /// <summary>
-    /// Representing Game Mode status
-    /// </summary>
-    /// <returns></returns>
-    public bool IsGameModeOn();
-
-    /// <summary>
     /// Reloads the query.
     /// When current results are from context menu or history, it will go back to query results before re-querying.
     /// </summary>
