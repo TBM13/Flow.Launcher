@@ -2,10 +2,9 @@
     x:Class="Flow.Launcher.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:Flow.Launcher.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:flowlauncher="clr-namespace:Flow.Launcher"
     xmlns:hotkeys="clr-namespace:Flow.Launcher.Core.Hotkeys;assembly=Flow.Launcher.Core"
-    xmlns:infsUi="clr-namespace:Flow.Launcher.PluginSDK.WPF;assembly=Flow.Launcher.PluginSDK"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:pluginsdk="http://schemas.flowlauncher.com/pluginsdk"
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
@@ -101,12 +100,12 @@
             Key="C"
             Command="{Binding CopyAlternativeCommand}"
             Modifiers="Ctrl+Shift" />
-        <infsUi:KeyBinding Command="{Binding TogglePreviewCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static hotkeys:DefaultHotkeys.TogglePreview}}" />
-        <infsUi:KeyBinding Command="{Binding AutocompleteQueryCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static hotkeys:DefaultHotkeys.Autocomplete}}" />
-        <infsUi:KeyBinding Command="{Binding SelectNextItemCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static hotkeys:DefaultHotkeys.SelectNextResult}}" />
-        <infsUi:KeyBinding Command="{Binding SelectPrevItemCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static hotkeys:DefaultHotkeys.SelectPreviousResult}}" />
-        <infsUi:KeyBinding Command="{Binding SelectNextPageCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static hotkeys:DefaultHotkeys.SelectNextPage}}" />
-        <infsUi:KeyBinding Command="{Binding SelectPrevPageCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static hotkeys:DefaultHotkeys.SelectPreviousPage}}" />
+        <pluginsdk:KeyBinding Command="{Binding TogglePreviewCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static hotkeys:DefaultHotkeys.TogglePreview}}" />
+        <pluginsdk:KeyBinding Command="{Binding AutocompleteQueryCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static hotkeys:DefaultHotkeys.Autocomplete}}" />
+        <pluginsdk:KeyBinding Command="{Binding SelectNextItemCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static hotkeys:DefaultHotkeys.SelectNextResult}}" />
+        <pluginsdk:KeyBinding Command="{Binding SelectPrevItemCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static hotkeys:DefaultHotkeys.SelectPreviousResult}}" />
+        <pluginsdk:KeyBinding Command="{Binding SelectNextPageCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static hotkeys:DefaultHotkeys.SelectNextPage}}" />
+        <pluginsdk:KeyBinding Command="{Binding SelectPrevPageCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static hotkeys:DefaultHotkeys.SelectPreviousPage}}" />
     </Window.InputBindings>
 
     <Border MouseDown="OnMouseDown" Style="{StaticResource WindowBorderStyle}">
@@ -194,7 +193,7 @@
                         Style="{StaticResource SeparatorStyle}"
                         Visibility="{Binding MiddleSeparatorVisibility}" />
 
-                    <flowlauncher:ResultListBox
+                    <controls:ResultListBox
                         x:Name="ResultListBox"
                         Grid.Column="0"
                         Grid.ColumnSpan="{Binding DataContext.ResultAreaColumn, ElementName=FlowMainWindow}"

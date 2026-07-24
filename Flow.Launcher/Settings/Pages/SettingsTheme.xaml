@@ -5,63 +5,47 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Flow.Launcher.Settings.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:pluginsdk="http://schemas.flowlauncher.com/pluginsdk"
+    xmlns:settings="clr-namespace:Flow.Launcher.Core.Settings;assembly=Flow.Launcher.Core"
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     d:DataContext="{d:DesignInstance local:SettingsThemeViewModel}"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <ui:ScrollViewerEx
-        Padding="6 0 24 0"
-        FontSize="14"
-        VirtualizingStackPanel.IsVirtualizing="True"
-        VirtualizingStackPanel.ScrollUnit="Pixel">
-        <StackPanel>
-            <!--  Page title  -->
-            <TextBlock
-                Margin="5 23 0 5"
-                FontSize="30"
-                Text="Appearance"
-                TextAlignment="left" />
+    <StackPanel>
+        <TextBlock
+            Margin="5 23 0 15"
+            FontSize="30"
+            Text="Appearance" />
 
-            <!--  Fixed size  -->
-            <ui:SettingsExpander
-                Margin="0 20 0 0"
-                Description="The window size is not adjustable by dragging."
-                Header="Fixed Window Size">
-                <ui:SettingsExpander.HeaderIcon>
-                    <ui:FontIcon Glyph="&#xE744;" />
-                </ui:SettingsExpander.HeaderIcon>
-                <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-                    <ui:ToggleSwitch
-                        IsOn="{Binding FixedWindowSize}"
-                        OffContent="Off"
-                        OnContent="On" />
-                </StackPanel>
+        <ui:SettingsExpander Description="The window size is not adjustable by dragging." Header="Fixed Window Size">
+            <ui:SettingsExpander.HeaderIcon>
+                <ui:FontIcon Glyph="&#xE744;" />
+            </ui:SettingsExpander.HeaderIcon>
+            <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                <ui:ToggleSwitch IsOn="{Binding Settings.FixedWindowSize}" />
+            </StackPanel>
 
-                <ui:SettingsExpander.Items>
-                    <ui:SettingsCard Description="You can also quickly adjust this by using CTRL+Plus and CTRL+Minus." Header="Maximum results shown">
-                        <ComboBox
-                            Width="100"
-                            ItemsSource="{Binding MaxResultsRange}"
-                            SelectedItem="{Binding Settings.MaxResultsToShow}" />
-                    </ui:SettingsCard>
-                </ui:SettingsExpander.Items>
-            </ui:SettingsExpander>
+            <ui:SettingsExpander.Items>
+                <ui:SettingsCard Description="You can also quickly adjust this by using CTRL+Plus and CTRL+Minus." Header="Maximum results shown">
+                    <ComboBox
+                        Width="100"
+                        ItemsSource="{Binding MaxResultsRange}"
+                        SelectedItem="{Binding Settings.MaxResultsToShow}" />
+                </ui:SettingsCard>
+            </ui:SettingsExpander.Items>
+        </ui:SettingsExpander>
 
-            <!--  Settings color scheme  -->
-            <ui:SettingsCard Margin="0 14 0 0" Header="Color Scheme">
-                <ui:SettingsCard.HeaderIcon>
-                    <ui:FontIcon Glyph="&#xe793;" />
-                </ui:SettingsCard.HeaderIcon>
+        <ui:SettingsCard Margin="0 14 0 0" Header="Color Scheme">
+            <ui:SettingsCard.HeaderIcon>
+                <ui:FontIcon Glyph="&#xe793;" />
+            </ui:SettingsCard.HeaderIcon>
 
-                <ComboBox
-                    MinWidth="180"
-                    DisplayMemberPath="Description"
-                    FontSize="14"
-                    ItemsSource="{Binding ColorSchemes}"
-                    SelectedValue="{Binding ColorScheme, Mode=TwoWay}"
-                    SelectedValuePath="Value" />
-            </ui:SettingsCard>
-        </StackPanel>
-    </ui:ScrollViewerEx>
+            <ComboBox
+                MinWidth="180"
+                pluginsdk:EnumBinding.EnumType="{x:Type settings:ColorScheme}"
+                SelectedValue="{Binding Settings.ColorScheme}"
+                SelectionChanged="Theme_SelectionChanged" />
+        </ui:SettingsCard>
+    </StackPanel>
 </UserControl>

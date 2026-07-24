@@ -7,6 +7,7 @@ using System.Windows.Interop;
 using System.Windows.Shell;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using Flow.Launcher.Controls;
 using Flow.Launcher.Core.Hotkeys;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Settings;

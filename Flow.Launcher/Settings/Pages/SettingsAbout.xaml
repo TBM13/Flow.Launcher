@@ -10,58 +10,56 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <ui:ScrollViewerEx CanContentScroll="False">
-        <StackPanel Margin="5 14 25 30">
-            <TextBlock
-                Margin="0 5"
-                FontSize="30"
-                Text="About" />
+    <StackPanel>
+        <TextBlock
+            Margin="5 23 0 15"
+            FontSize="30"
+            Text="About" />
 
-            <ui:SettingsCard Description="Version" Header="{Binding Version}">
-                <ui:SettingsCard.HeaderIcon>
-                    <ui:FontIcon Glyph="&#xe946;" />
-                </ui:SettingsCard.HeaderIcon>
-            </ui:SettingsCard>
+        <ui:SettingsCard Description="Version" Header="{Binding Version}">
+            <ui:SettingsCard.HeaderIcon>
+                <ui:FontIcon Glyph="&#xe946;" />
+            </ui:SettingsCard.HeaderIcon>
+        </ui:SettingsCard>
 
-            <ui:SettingsCard Margin="0 4 0 0" Header="Icons">
-                <ui:SettingsCard.HeaderIcon>
-                    <ui:FontIcon Glyph="&#xE8FE;" />
-                </ui:SettingsCard.HeaderIcon>
+        <ui:SettingsCard Margin="0 4 0 0" Header="Icons">
+            <ui:SettingsCard.HeaderIcon>
+                <ui:FontIcon Glyph="&#xE8FE;" />
+            </ui:SettingsCard.HeaderIcon>
 
-                <ui:HyperlinkButton Content="icons8.com" NavigateUri="https://icons8.com/" />
-            </ui:SettingsCard>
+            <ui:HyperlinkButton Content="icons8.com" NavigateUri="https://icons8.com/" />
+        </ui:SettingsCard>
 
-            <ui:SettingsCard Margin="0 14 0 0" Header="DevTools">
-                <ui:SettingsCard.HeaderIcon>
-                    <ui:FontIcon Glyph="&#xf12b;" />
-                </ui:SettingsCard.HeaderIcon>
+        <ui:SettingsCard Margin="0 14 0 0" Header="DevTools">
+            <ui:SettingsCard.HeaderIcon>
+                <ui:FontIcon Glyph="&#xf12b;" />
+            </ui:SettingsCard.HeaderIcon>
 
-                <StackPanel Orientation="Horizontal">
-                    <Button
-                        x:Name="ClearCacheButton"
-                        Margin="0 0 12 0"
-                        Command="{Binding AskClearCacheFolderConfirmationCommand}"
-                        Content="{Binding CacheFolderSize}" />
-                    <Button Height="{Binding ElementName=ClearCacheButton, Path=ActualHeight}">
-                        <ui:FontIcon Glyph="&#xec7a;" />
-                        <ui:FlyoutService.Flyout>
-                            <ui:MenuFlyout>
-                                <MenuItem Command="{Binding OpenSettingsFolderCommand}" Header="Setting Folder">
-                                    <MenuItem.Icon>
-                                        <ui:FontIcon Glyph="&#xe8b7;" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
+            <StackPanel Orientation="Horizontal">
+                <Button
+                    x:Name="ClearCacheButton"
+                    Margin="0 0 12 0"
+                    Command="{Binding AskClearCacheFolderConfirmationCommand}"
+                    Content="{Binding CacheFolderSize}" />
+                <Button Height="{Binding ElementName=ClearCacheButton, Path=ActualHeight}">
+                    <ui:FontIcon Glyph="&#xec7a;" />
+                    <ui:FlyoutService.Flyout>
+                        <ui:MenuFlyout>
+                            <MenuItem Command="{Binding OpenSettingsFolderCommand}" Header="Setting Folder">
+                                <MenuItem.Icon>
+                                    <ui:FontIcon Glyph="&#xe8b7;" />
+                                </MenuItem.Icon>
+                            </MenuItem>
 
-                                <MenuItem Command="{Binding OpenCacheFolderCommand}" Header="Cache Folder">
-                                    <MenuItem.Icon>
-                                        <ui:FontIcon Glyph="&#xe8b7;" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                            </ui:MenuFlyout>
-                        </ui:FlyoutService.Flyout>
-                    </Button>
-                </StackPanel>
-            </ui:SettingsCard>
-        </StackPanel>
-    </ui:ScrollViewerEx>
+                            <MenuItem Command="{Binding OpenCacheFolderCommand}" Header="Cache Folder">
+                                <MenuItem.Icon>
+                                    <ui:FontIcon Glyph="&#xe8b7;" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </ui:MenuFlyout>
+                    </ui:FlyoutService.Flyout>
+                </Button>
+            </StackPanel>
+        </ui:SettingsCard>
+    </StackPanel>
 </UserControl>

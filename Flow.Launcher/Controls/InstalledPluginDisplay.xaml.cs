@@ -1,6 +1,6 @@
 ﻿using iNKORE.UI.WPF.Modern.Controls;
 
-namespace Flow.Launcher.Resources.Controls;
+namespace Flow.Launcher.Controls;
 
 public partial class InstalledPluginDisplay
 {

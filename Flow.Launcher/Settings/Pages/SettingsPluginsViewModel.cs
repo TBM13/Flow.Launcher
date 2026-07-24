@@ -10,6 +10,17 @@ using iNKORE.UI.WPF.Modern.Controls;
 
 namespace Flow.Launcher.Settings.Pages;
 
+public enum PluginDisplayMode
+{
+    [Description("Enabled")]
+    OnOff,
+    [Description("Priority")]
+    Priority,
+    [Description("Home Page")]
+    HomeOnOff
+}
+
+
 public partial class SettingsPluginsViewModel(ISettingsAPI settings) : BaseSettingsPageViewModel
 {
     private readonly ISettingsAPI _settings = settings;
@@ -17,7 +28,7 @@ public partial class SettingsPluginsViewModel(ISettingsAPI settings) : BaseSetti
     public override string Title => "Plugins";
     public override string IconPath => "pack://application:,,,/Images/plugins.png";
 
-    public DisplayMode SelectedDisplayMode
+    public PluginDisplayMode SelectedDisplayMode
     {
         get;
         set
@@ -106,12 +117,12 @@ public partial class SettingsPluginsViewModel(ISettingsAPI settings) : BaseSetti
     {
         switch (SelectedDisplayMode)
         {
-            case DisplayMode.Priority:
+            case PluginDisplayMode.Priority:
                 IsOnOffSelected = false;
                 IsPrioritySelected = true;
                 IsHomeOnOffSelected = false;
                 break;
-            case DisplayMode.HomeOnOff:
+            case PluginDisplayMode.HomeOnOff:
                 IsOnOffSelected = false;
                 IsPrioritySelected = false;
                 IsHomeOnOffSelected = true;
@@ -123,14 +134,4 @@ public partial class SettingsPluginsViewModel(ISettingsAPI settings) : BaseSetti
                 break;
         }
     }
-}
-
-public enum DisplayMode
-{
-    [Description("Enabled")]
-    OnOff,
-    [Description("Priority")]
-    Priority,
-    [Description("Home Page")]
-    HomeOnOff
 }

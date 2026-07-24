@@ -2,8 +2,6 @@
     x:Class="Flow.Launcher.CustomShortcutSetting"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="clr-namespace:Flow.Launcher.Resources.Controls"
-    xmlns:flowlauncher="clr-namespace:Flow.Launcher"
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     Title="Custom Query Shortcut"
     Width="530"

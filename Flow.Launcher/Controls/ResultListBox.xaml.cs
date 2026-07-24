@@ -5,7 +5,7 @@ using System.Windows.Input;
 using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.ViewModel;
 
-namespace Flow.Launcher;
+namespace Flow.Launcher.Controls;
 
 public partial class ResultListBox
 {

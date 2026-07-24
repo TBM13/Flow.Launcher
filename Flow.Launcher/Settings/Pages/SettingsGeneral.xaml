@@ -12,157 +12,155 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <ui:ScrollViewerEx CanContentScroll="False">
-        <StackPanel Margin="5 18 25 30">
-            <TextBlock
-                Margin="0 5"
-                FontSize="30"
-                Text="General" />
+    <StackPanel>
+        <TextBlock
+            Margin="5 23 0 15"
+            FontSize="30"
+            Text="General" />
 
-            <ui:SettingsCard Description="Flow Launcher search window is hidden in the tray after starting up." Header="Hide Flow Launcher on startup">
-                <ui:SettingsCard.HeaderIcon>
-                    <ui:FontIcon Glyph="&#xed1a;" />
-                </ui:SettingsCard.HeaderIcon>
+        <ui:SettingsCard Description="Flow Launcher search window is hidden in the tray after starting up." Header="Hide Flow Launcher on startup">
+            <ui:SettingsCard.HeaderIcon>
+                <ui:FontIcon Glyph="&#xed1a;" />
+            </ui:SettingsCard.HeaderIcon>
 
-                <ui:ToggleSwitch IsOn="{Binding Settings.HideOnStartup}" />
-            </ui:SettingsCard>
+            <ui:ToggleSwitch IsOn="{Binding Settings.HideOnStartup}" />
+        </ui:SettingsCard>
 
-            <ui:SettingsCard
-                Margin="0 4 0 0"
-                Description="Run Flow Launcher as administrator on startup"
-                Header="Always run as administrator">
-                <ui:SettingsCard.HeaderIcon>
-                    <ui:FontIcon Glyph="&#xE7EF;" />
-                </ui:SettingsCard.HeaderIcon>
+        <ui:SettingsCard
+            Margin="0 4 0 0"
+            Description="Run Flow Launcher as administrator on startup"
+            Header="Always run as administrator">
+            <ui:SettingsCard.HeaderIcon>
+                <ui:FontIcon Glyph="&#xE7EF;" />
+            </ui:SettingsCard.HeaderIcon>
 
-                <ui:ToggleSwitch IsOn="{Binding Settings.AlwaysRunAsAdmin}" Toggled="RunAsAdmin_Toggled" />
-            </ui:SettingsCard>
+            <ui:ToggleSwitch IsOn="{Binding Settings.AlwaysRunAsAdmin}" Toggled="RunAsAdmin_Toggled" />
+        </ui:SettingsCard>
 
-            <ui:SettingsCard Margin="0 12 0 0" Header="Hide Flow Launcher when focus is lost">
-                <ui:ToggleSwitch IsOn="{Binding Settings.HideOnLostFocus}" />
-            </ui:SettingsCard>
+        <ui:SettingsCard Margin="0 12 0 0" Header="Hide Flow Launcher when focus is lost">
+            <ui:ToggleSwitch IsOn="{Binding Settings.HideOnLostFocus}" />
+        </ui:SettingsCard>
 
-            <ui:SettingsCard
-                Margin="0 4 0 0"
-                Description="Temporarily show the taskbar when Flow Launcher is opened, useful for auto-hidden taskbars."
-                Header="Show taskbar when Flow Launcher is opened">
-                <ui:ToggleSwitch IsOn="{Binding Settings.ShowTaskbarWhenOpened}" />
-            </ui:SettingsCard>
+        <ui:SettingsCard
+            Margin="0 4 0 0"
+            Description="Temporarily show the taskbar when Flow Launcher is opened, useful for auto-hidden taskbars."
+            Header="Show taskbar when Flow Launcher is opened">
+            <ui:ToggleSwitch IsOn="{Binding Settings.ShowTaskbarWhenOpened}" />
+        </ui:SettingsCard>
 
-            <ui:SettingsCard
-                Margin="0 14 0 0"
-                Description="Overrides other programs' 'Always on Top' setting and displays Flow in the foremost position."
-                Header="Show Search Window at Foremost">
-                <ui:SettingsCard.HeaderIcon>
-                    <ui:FontIcon Glyph="&#xf5ed;" />
-                </ui:SettingsCard.HeaderIcon>
+        <ui:SettingsCard
+            Margin="0 14 0 0"
+            Description="Overrides other programs' 'Always on Top' setting and displays Flow in the foremost position."
+            Header="Show Search Window at Foremost">
+            <ui:SettingsCard.HeaderIcon>
+                <ui:FontIcon Glyph="&#xf5ed;" />
+            </ui:SettingsCard.HeaderIcon>
 
-                <ui:ToggleSwitch IsOn="{Binding Settings.ShowAtTopmost}" />
-            </ui:SettingsCard>
+            <ui:ToggleSwitch IsOn="{Binding Settings.ShowAtTopmost}" />
+        </ui:SettingsCard>
 
-            <ui:SettingsCard Margin="0 4 0 0" Header="Search Window Location">
-                <ui:SettingsCard.HeaderIcon>
-                    <ui:FontIcon Glyph="&#xe7f4;" />
-                </ui:SettingsCard.HeaderIcon>
-                <StackPanel Orientation="Horizontal">
-                    <ComboBox
-                        MinWidth="220"
-                        pluginsdk:EnumBinding.EnumType="{x:Type settings:DisplayType}"
-                        SelectedValue="{Binding Settings.Display}" />
-                    <ComboBox
-                        MinWidth="100"
-                        Margin="18 0 0 0"
-                        ItemsSource="{Binding ScreenNumbers}"
-                        SelectedValue="{Binding Settings.DisplayNumber}"
-                        Visibility="{pluginsdk:VisibleWhen {Binding Settings.Display},
-                                                           IsEqualTo={x:Static settings:DisplayType.Custom}}" />
-                </StackPanel>
-            </ui:SettingsCard>
-
-            <ui:SettingsCard
-                Margin="0 4 0 0"
-                Header="Search Window Position on Monitor"
-                Visibility="{pluginsdk:CollapsedWhen {Binding Settings.Display},
-                                                     IsEqualTo={x:Static settings:DisplayType.RememberLastDisplay}}">
-                <ui:SettingsCard.HeaderIcon>
-                    <ui:FontIcon Glyph="&#xe7f4;" />
-                </ui:SettingsCard.HeaderIcon>
-
-                <StackPanel Orientation="Horizontal">
-                    <ComboBox
-                        MinWidth="160"
-                        pluginsdk:EnumBinding.EnumType="{x:Type settings:DisplayPosition}"
-                        SelectedValue="{Binding Settings.DisplayPosition}" />
-
-                    <StackPanel
-                        Margin="18 0 0 0"
-                        Orientation="Horizontal"
-                        Visibility="{pluginsdk:VisibleWhen {Binding Settings.DisplayPosition},
-                                                           IsEqualTo={x:Static settings:DisplayPosition.Custom}}">
-
-                        <TextBox MinWidth="80" Text="{Binding Settings.CustomDisplayPositionLeft}" />
-                        <TextBlock Margin="10 0 10 0" Text="x" />
-                        <TextBox
-                            MinWidth="80"
-                            Text="{Binding Settings.CustomDisplayPositionTop}"
-                            TextWrapping="NoWrap" />
-                    </StackPanel>
-                </StackPanel>
-            </ui:SettingsCard>
-
-            <ui:SettingsCard
-                Margin="0 14 0 0"
-                Description="Disable Flow Launcher activation when a full screen application is active (Recommended for games)."
-                Header="Ignore hotkeys in fullscreen mode">
-                <ui:SettingsCard.HeaderIcon>
-                    <ui:FontIcon Glyph="&#xe7fc;" />
-                </ui:SettingsCard.HeaderIcon>
-
-                <ui:ToggleSwitch IsOn="{Binding Settings.IgnoreHotkeysOnFullscreen}" />
-            </ui:SettingsCard>
-
-            <ui:SettingsCard
-                Margin="0 14 0 0"
-                Description="Always open preview panel when Flow activates. Press {0} to toggle preview."
-                Header="Always Preview">
-                <ui:SettingsCard.HeaderIcon>
-                    <ui:FontIcon Glyph="&#xe8a1;" />
-                </ui:SettingsCard.HeaderIcon>
-
-                <ui:ToggleSwitch IsOn="{Binding Settings.AlwaysPreview}" ToolTip="{Binding AlwaysPreviewToolTip}" />
-            </ui:SettingsCard>
-
-            <ui:SettingsCard
-                Margin="0 14 0 0"
-                Description="Changes minimum match score required for results."
-                Header="Query Search Precision">
-
+        <ui:SettingsCard Margin="0 4 0 0" Header="Search Window Location">
+            <ui:SettingsCard.HeaderIcon>
+                <ui:FontIcon Glyph="&#xe7f4;" />
+            </ui:SettingsCard.HeaderIcon>
+            <StackPanel Orientation="Horizontal">
                 <ComboBox
-                    MaxWidth="200"
-                    pluginsdk:EnumBinding.EnumType="{x:Type pluginsdk:SearchPrecision}"
-                    SelectedValue="{Binding Settings.QuerySearchPrecision}" />
-            </ui:SettingsCard>
-
-            <ui:SettingsCard
-                Margin="0 4 0 0"
-                Description="Show/Hide previous results when Flow Launcher is reactivated."
-                Header="Last Query Style">
+                    MinWidth="220"
+                    pluginsdk:EnumBinding.EnumType="{x:Type settings:DisplayType}"
+                    SelectedValue="{Binding Settings.Display}" />
                 <ComboBox
-                    MinWidth="210"
-                    pluginsdk:EnumBinding.EnumType="{x:Type settings:LastQueryMode}"
-                    SelectedValue="{Binding Settings.LastQueryMode}" />
-            </ui:SettingsCard>
+                    MinWidth="100"
+                    Margin="18 0 0 0"
+                    ItemsSource="{Binding ScreenNumbers}"
+                    SelectedValue="{Binding Settings.DisplayNumber}"
+                    Visibility="{pluginsdk:VisibleWhen {Binding Settings.Display},
+                                                       IsEqualTo={x:Static settings:DisplayType.Custom}}" />
+            </StackPanel>
+        </ui:SettingsCard>
 
-            <ui:SettingsCard
-                Margin="0 14 0 0"
-                Description="Show home page results when query text is empty."
-                Header="Home Page">
-                <ui:SettingsCard.HeaderIcon>
-                    <ui:FontIcon Glyph="&#xE80F;" />
-                </ui:SettingsCard.HeaderIcon>
+        <ui:SettingsCard
+            Margin="0 4 0 0"
+            Header="Search Window Position on Monitor"
+            Visibility="{pluginsdk:CollapsedWhen {Binding Settings.Display},
+                                                 IsEqualTo={x:Static settings:DisplayType.RememberLastDisplay}}">
+            <ui:SettingsCard.HeaderIcon>
+                <ui:FontIcon Glyph="&#xe7f4;" />
+            </ui:SettingsCard.HeaderIcon>
 
-                <ui:ToggleSwitch IsOn="{Binding Settings.ShowHomePage}" />
-            </ui:SettingsCard>
-        </StackPanel>
-    </ui:ScrollViewerEx>
+            <StackPanel Orientation="Horizontal">
+                <ComboBox
+                    MinWidth="160"
+                    pluginsdk:EnumBinding.EnumType="{x:Type settings:DisplayPosition}"
+                    SelectedValue="{Binding Settings.DisplayPosition}" />
+
+                <StackPanel
+                    Margin="18 0 0 0"
+                    Orientation="Horizontal"
+                    Visibility="{pluginsdk:VisibleWhen {Binding Settings.DisplayPosition},
+                                                       IsEqualTo={x:Static settings:DisplayPosition.Custom}}">
+
+                    <TextBox MinWidth="80" Text="{Binding Settings.CustomDisplayPositionLeft}" />
+                    <TextBlock Margin="10 0 10 0" Text="x" />
+                    <TextBox
+                        MinWidth="80"
+                        Text="{Binding Settings.CustomDisplayPositionTop}"
+                        TextWrapping="NoWrap" />
+                </StackPanel>
+            </StackPanel>
+        </ui:SettingsCard>
+
+        <ui:SettingsCard
+            Margin="0 14 0 0"
+            Description="Disable Flow Launcher activation when a full screen application is active (Recommended for games)."
+            Header="Ignore hotkeys in fullscreen mode">
+            <ui:SettingsCard.HeaderIcon>
+                <ui:FontIcon Glyph="&#xe7fc;" />
+            </ui:SettingsCard.HeaderIcon>
+
+            <ui:ToggleSwitch IsOn="{Binding Settings.IgnoreHotkeysOnFullscreen}" />
+        </ui:SettingsCard>
+
+        <ui:SettingsCard
+            Margin="0 14 0 0"
+            Description="Always open preview panel when Flow activates. Press {0} to toggle preview."
+            Header="Always Preview">
+            <ui:SettingsCard.HeaderIcon>
+                <ui:FontIcon Glyph="&#xe8a1;" />
+            </ui:SettingsCard.HeaderIcon>
+
+            <ui:ToggleSwitch IsOn="{Binding Settings.AlwaysPreview}" ToolTip="{Binding AlwaysPreviewToolTip}" />
+        </ui:SettingsCard>
+
+        <ui:SettingsCard
+            Margin="0 14 0 0"
+            Description="Changes minimum match score required for results."
+            Header="Query Search Precision">
+
+            <ComboBox
+                MaxWidth="200"
+                pluginsdk:EnumBinding.EnumType="{x:Type pluginsdk:SearchPrecision}"
+                SelectedValue="{Binding Settings.QuerySearchPrecision}" />
+        </ui:SettingsCard>
+
+        <ui:SettingsCard
+            Margin="0 4 0 0"
+            Description="Show/Hide previous results when Flow Launcher is reactivated."
+            Header="Last Query Style">
+            <ComboBox
+                MinWidth="210"
+                pluginsdk:EnumBinding.EnumType="{x:Type settings:LastQueryMode}"
+                SelectedValue="{Binding Settings.LastQueryMode}" />
+        </ui:SettingsCard>
+
+        <ui:SettingsCard
+            Margin="0 14 0 0"
+            Description="Show home page results when query text is empty."
+            Header="Home Page">
+            <ui:SettingsCard.HeaderIcon>
+                <ui:FontIcon Glyph="&#xE80F;" />
+            </ui:SettingsCard.HeaderIcon>
+
+            <ui:ToggleSwitch IsOn="{Binding Settings.ShowHomePage}" />
+        </ui:SettingsCard>
+    </StackPanel>
 </UserControl>

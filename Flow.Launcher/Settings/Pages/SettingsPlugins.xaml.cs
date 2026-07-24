@@ -1,6 +1,4 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
+﻿using System.Windows.Data;
 using System.Windows.Input;
 using Flow.Launcher.ViewModel;
 
@@ -17,10 +15,8 @@ public partial class SettingsPlugins
 
     private void SettingsPanePlugins_OnKeyDown(object sender, KeyEventArgs e)
     {
-        if (Keyboard.Modifiers is not ModifierKeys.Control || e.Key is not Key.F)
-            return;
-
-        PluginFilterTextbox.Focus();
+        if (Keyboard.Modifiers is ModifierKeys.Control && e.Key is not Key.F)
+            PluginFilterTextbox.Focus();
     }
 
     private void PluginCollectionView_OnFilter(object sender, FilterEventArgs e)

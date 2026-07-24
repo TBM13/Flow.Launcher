@@ -42,14 +42,14 @@
     </Window.Resources>
 
     <ui:NavigationView
-        Content="{Binding CurrentPage}"
         IsBackButtonVisible="Collapsed"
         IsBackEnabled="False"
         IsPaneToggleButtonVisible="False"
         MenuItemsSource="{Binding Pages}"
         OpenPaneLength="240"
         PaneDisplayMode="Left"
-        SelectedItem="{Binding CurrentPage, Mode=TwoWay}">
+        SelectedItem="{Binding CurrentPage, Mode=TwoWay}"
+        SelectionChanged="NavigationView_SelectionChanged">
         <ui:NavigationView.PaneCustomContent>
             <StackPanel Margin="0 35 0 25" HorizontalAlignment="Center">
                 <Image
@@ -74,5 +74,11 @@
                 </ui:NavigationViewItem>
             </DataTemplate>
         </ui:NavigationView.MenuItemTemplate>
+
+        <ui:ScrollViewerEx
+            x:Name="PageScrollViewer"
+            Padding="6 0 24 0"
+            CanContentScroll="False"
+            Content="{Binding CurrentPage}" />
     </ui:NavigationView>
 </Window>
