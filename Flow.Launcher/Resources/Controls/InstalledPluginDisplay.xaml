@@ -3,9 +3,9 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:cc="clr-namespace:Flow.Launcher.Resources.Controls"
-    xmlns:converters="clr-namespace:Flow.Launcher.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:pluginsdk="http://schemas.flowlauncher.com/pluginsdk"
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     xmlns:viewModel="clr-namespace:Flow.Launcher.ViewModel"
     d:DataContext="{d:DesignInstance viewModel:PluginViewModel}"
@@ -13,7 +13,7 @@
     d:DesignWidth="300"
     mc:Ignorable="d">
     <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <pluginsdk:BoolToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
     <ui:SettingsExpander
         ClipToBounds="True"

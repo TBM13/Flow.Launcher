@@ -1,11 +1,10 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace Flow.Launcher.Resources.MarkupExtensions;
+namespace Flow.Launcher.PluginSDK.WPF.Converters;
 
-public class HideableVisibilityConverter : IMultiValueConverter, IValueConverter
+internal class HideableVisibilityConverter : IMultiValueConverter, IValueConverter
 {
     public Visibility DefaultVisibility { get; init; } = Visibility.Visible;
     public Visibility InvertedVisibility { get; init; } = Visibility.Collapsed;

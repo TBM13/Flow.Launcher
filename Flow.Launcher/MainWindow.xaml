@@ -2,12 +2,12 @@
     x:Class="Flow.Launcher.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:converters="clr-namespace:Flow.Launcher.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:flowlauncher="clr-namespace:Flow.Launcher"
     xmlns:hotkeys="clr-namespace:Flow.Launcher.Core.Hotkeys;assembly=Flow.Launcher.Core"
     xmlns:infsUi="clr-namespace:Flow.Launcher.PluginSDK.WPF;assembly=Flow.Launcher.PluginSDK"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:pluginsdk="http://schemas.flowlauncher.com/pluginsdk"
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     xmlns:vm="clr-namespace:Flow.Launcher.ViewModel"
     Name="FlowMainWindow"
@@ -42,8 +42,7 @@
         <WindowChrome CaptionHeight="9" GlassFrameThickness="0" />
     </WindowChrome.WindowChrome>
     <Window.Resources>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-        <converters:SplitterConverter x:Key="SplitterConverter" />
+        <pluginsdk:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </Window.Resources>
     <Window.InputBindings>
         <KeyBinding Key="Escape" Command="{Binding EscCommand}" />

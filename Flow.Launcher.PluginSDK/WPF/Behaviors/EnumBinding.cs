@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 
-namespace Flow.Launcher.PluginSDK.WPF;
+namespace Flow.Launcher.PluginSDK.WPF.Behaviors;
 
 public static class EnumBinding
 {
