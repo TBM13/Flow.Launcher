@@ -66,7 +66,10 @@ public partial class App : Application
         if (settings.AlwaysRunAsAdmin && !Environment.IsPrivilegedProcess)
         {
             // Only restart when we are not debugging on Visual Studio
-            if (!Debugger.IsAttached)
+            bool isDebugging = Debugger.IsAttached
+                // Set when using Visual Studio's performance profiler
+                || !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DIAGHUB_SESSION_ID"));
+            if (!isDebugging)
             {
                 RestartApp(true);
                 return;
