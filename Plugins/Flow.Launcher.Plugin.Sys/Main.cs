@@ -316,6 +316,16 @@ namespace Flow.Launcher.Plugin.Sys
 
                         return true;
                     }
+                },
+                new Result {
+                    Title = "Garbage Collection",
+                    Glyph = new GlyphInfo ("\xE74D"),
+                    Action = c => {
+                        GC.Collect();
+                        GC.WaitForPendingFinalizers();
+                        GC.Collect();
+                        return true;
+                    }
                 }
             ]);
 
