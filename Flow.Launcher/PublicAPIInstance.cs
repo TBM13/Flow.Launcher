@@ -24,6 +24,7 @@ using Flow.Launcher.PluginSDK.Plugins.Interfaces;
 using Flow.Launcher.Settings;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Flow.Launcher
@@ -127,8 +128,18 @@ namespace Flow.Launcher
             {
                 if (_settingWindow is null)
                 {
-                    _settingWindow = Ioc.Default.GetRequiredService<SettingWindow>();
-                    _settingWindow.Closed += (s, e) => _settingWindow = null;
+                    IServiceScope scope = Ioc.Default.CreateScope();
+                    _settingWindow = scope.ServiceProvider.GetRequiredService<SettingWindow>();
+
+                    EventHandler closedHandler = null!;
+                    closedHandler = (s, e) =>
+                    {
+                        _settingWindow.Closed -= closedHandler;
+                        _settingWindow = null;
+                        scope.Dispose();
+                    };
+
+                    _settingWindow.Closed += closedHandler;
                     _settingWindow.Show();
                     return;
                 }

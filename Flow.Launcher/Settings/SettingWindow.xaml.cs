@@ -12,8 +12,9 @@ public partial class SettingWindow : Window
         InitializeComponent();
     }
 
-    private void OnClosed(object sender, EventArgs e)
+    protected override void OnClosed(EventArgs e)
     {
+        base.OnClosed(e);
         _vm.SaveAllSettings();
     }
 
