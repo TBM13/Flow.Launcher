@@ -10,7 +10,7 @@
     d:DesignWidth="500"
     mc:Ignorable="d">
 
-    <StackPanel Margin="{StaticResource SettingPanelMargin}">
+    <StackPanel>
         <CheckBox
             Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
             Content="Show window titles when possible"

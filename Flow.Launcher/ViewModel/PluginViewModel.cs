@@ -1,53 +1,26 @@
-﻿using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core.Image;
-using Flow.Launcher.Core.Plugin;
-using Flow.Launcher.Core.Settings;
 using Flow.Launcher.PluginSDK;
-using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Logging;
 using Flow.Launcher.PluginSDK.Plugins;
 using Flow.Launcher.PluginSDK.Plugins.Interfaces;
+using PluginSettingsObj = Flow.Launcher.Core.UserSettings.Plugin;
 
 namespace Flow.Launcher.ViewModel
 {
     public partial class PluginViewModel : ObservableObject
     {
-        // TODO: Check if there is any better alternative
-        private static readonly Logger<PluginViewModel> _logger = Ioc.Default.GetRequiredService<Logger<PluginViewModel>>();
-        private static readonly ImageLoader _imageLoader = Ioc.Default.GetRequiredService<ImageLoader>();
-        private static readonly PluginManager _pluginManager = Ioc.Default.GetRequiredService<PluginManager>();
-        private static readonly ISettingsAPI _settings = Ioc.Default.GetRequiredService<ISettingsAPI>();
-        private static readonly Thickness _settingPanelMargin = (Thickness)Application.Current.FindResource("SettingPanelMargin");
-        private static readonly Thickness _settingPanelItemTopBottomMargin = (Thickness)Application.Current.FindResource("SettingPanelItemTopBottomMargin");
+        private readonly Logger<PluginViewModel> _logger;
+        private readonly ImageLoader _imageLoader;
+        private readonly PluginSettingsObj _pluginSettingsObj;
 
-        public required PluginMetadata PluginMetadata { get; init; }
+        public PluginMetadata PluginMetadata { get; }
 
-        private async Task LoadIconAsync()
-        {
-            Image = await IPublicAPI.Instance.LoadImageAsync(PluginMetadata.IcoPath);
-            OnPropertyChanged(nameof(Image));
-        }
-
-        private bool _imageLoaded = false;
-        public ImageSource Image
-        {
-            get
-            {
-                if (!_imageLoaded)
-                {
-                    _imageLoaded = true;
-                    _ = LoadIconAsync();
-                }
-
-                return _image;
-            }
-            set => SetProperty(ref _image, value);
-        }
+        [ObservableProperty]
+        public partial ImageSource Image { get; set; }
 
         public bool PluginState
         {
@@ -55,7 +28,7 @@ namespace Flow.Launcher.ViewModel
             set
             {
                 PluginMetadata.Disabled = !value;
-                PluginSettingsObject.Disabled = !value;
+                _pluginSettingsObj.Disabled = !value;
                 OnPropertyChanged();
             }
         }
@@ -66,14 +39,10 @@ namespace Flow.Launcher.ViewModel
             set
             {
                 PluginMetadata.HomeDisabled = !value;
-                PluginSettingsObject.HomeDisabled = !value;
+                _pluginSettingsObj.HomeDisabled = !value;
                 OnPropertyChanged();
             }
         }
-
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(SettingControl))]
-        public partial bool IsExpanded { get; set; }
 
         public int Priority
         {
@@ -81,49 +50,46 @@ namespace Flow.Launcher.ViewModel
             set
             {
                 PluginMetadata.Priority = value;
-                PluginSettingsObject.Priority = value;
+                _pluginSettingsObj.Priority = value;
                 OnPropertyChanged();
-            }
-        }
-
-        private Control? _settingControl;
-
-        public bool HasSettingControl =>
-            // Here we do not check if the plugin is initialized successfully
-            // So we can let users change settings for initializing or initialization failed plugins
-            PluginMetadata.Plugin is ISettingProvider;
-
-        public Control? SettingControl
-            => IsExpanded
-                ? _settingControl
-                    ??= HasSettingControl
-                        ? TryCreateSettingPanel(PluginMetadata)
-                        : null
-                : null;
-        private ImageSource _image = _imageLoader.GenericProgramIcon;
-
-        private static Control TryCreateSettingPanel(PluginMetadata metadata)
-        {
-            try
-            {
-                // We can safely cast here as we already check this in HasSettingControl
-                return ((ISettingProvider)metadata.Plugin).CreateSettingPanel();
-            }
-            catch (Exception e)
-            {
-                // Log exception
-                _logger.LogError(e, $"Failed to create setting panel for {metadata.Name}");
-
-                // Show error message in UI
-                string errorMsg = $"Error creating setting panel for plugin {metadata.Name}:\n{e.Message}";
-                return CreateErrorSettingPanel(errorMsg);
             }
         }
 
         public string Version => "Version " + PluginMetadata.Version;
         public string ActionKeywordsText => string.Join(Query.TermSeparator, PluginMetadata.ActionKeywords);
-        public Core.UserSettings.Plugin? PluginSettingsObject { get; init; }
-        public bool HomeEnabled => _settings.ShowHomePage && _pluginManager.IsHomePlugin(PluginMetadata.ID);
+
+        public PluginViewModel(
+            Logger<PluginViewModel> logger, ImageLoader imageLoader, PluginMetadata plugin, PluginSettingsObj settingsObj)
+        {
+            _logger = logger;
+            _imageLoader = imageLoader;
+            PluginMetadata = plugin;
+            _pluginSettingsObj = settingsObj;
+
+            Image = _imageLoader.GenericProgramIcon;
+            _ = LoadIconAsync();
+        }
+
+        private async Task LoadIconAsync()
+        {
+            Image = await _imageLoader.LoadAsync(PluginMetadata.IcoPath);
+        }
+
+        public Control? TryCreateSettingPanel()
+        {
+            if (PluginMetadata.Plugin is not ISettingProvider settingProvider)
+                return null;
+
+            try
+            {
+                return settingProvider.CreateSettingPanel();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Failed to create settings panel for {PluginMetadata.Name}");
+                return null;
+            }
+        }
 
         public void OnActionKeywordsTextChanged()
         {
@@ -133,31 +99,8 @@ namespace Flow.Launcher.ViewModel
         [RelayCommand]
         private void SetActionKeywords()
         {
-            var changeKeywordsWindow = new ActionKeywords(this);
+            ActionKeywords changeKeywordsWindow = new(this);
             changeKeywordsWindow.ShowDialog();
-        }
-
-        private static UserControl CreateErrorSettingPanel(string text)
-        {
-            var grid = new Grid()
-            {
-                Margin = _settingPanelMargin
-            };
-            var textBox = new TextBox
-            {
-                Text = text,
-                IsReadOnly = true,
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                VerticalAlignment = VerticalAlignment.Top,
-                TextWrapping = TextWrapping.Wrap,
-                Margin = _settingPanelItemTopBottomMargin
-            };
-            textBox.SetResourceReference(TextBox.ForegroundProperty, "Color04B");
-            grid.Children.Add(textBox);
-            return new UserControl
-            {
-                Content = grid
-            };
         }
     }
 }

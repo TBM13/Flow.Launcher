@@ -16,7 +16,6 @@
     <SolidColorBrush x:Key="Color05B" Color="#1b1b1b" />
     <SolidColorBrush x:Key="Color12B" Color="#fefefe" />
     <SolidColorBrush x:Key="Color15B" Color="#5d5d5d" />
-    <SolidColorBrush x:Key="PluginInfoColor" Color="#8f8f8f" />
 
     <!--  Typo  -->
     <SolidColorBrush x:Key="PopuBGColor" Color="#ffffff" />

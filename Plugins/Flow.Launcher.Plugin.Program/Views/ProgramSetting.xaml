@@ -17,7 +17,7 @@
             <Setter Property="Background" Value="{DynamicResource Color03B}" />
         </Style>
     </UserControl.Resources>
-    <Grid Margin="{StaticResource SettingPanelMargin}">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -32,7 +32,6 @@
                 Text="{x:Static root:Localize.Settings_IndexSources}" />
             <WrapPanel
                 Width="Auto"
-                Margin="{StaticResource SettingPanelItemTopBottomMargin}"
                 HorizontalAlignment="Right"
                 DockPanel.Dock="Right">
                 <CheckBox
@@ -138,7 +137,6 @@
                         Minimum="0" />
                     <TextBlock
                         Height="20"
-                        Margin="{StaticResource SettingPanelItemTopBottomMargin}"
                         HorizontalAlignment="Center"
                         Text="{x:Static root:Localize.Settings_Indexing}" />
                 </StackPanel>
@@ -147,7 +145,6 @@
         <ListView
             x:Name="programSourceView"
             Grid.Row="2"
-            Margin="{StaticResource SettingPanelItemTopBottomMargin}"
             AllowDrop="True"
             BorderBrush="DarkGray"
             BorderThickness="1"
@@ -201,7 +198,6 @@
                 <Button
                     x:Name="btnProgramSourceStatus"
                     MinWidth="100"
-                    Margin="{StaticResource SettingPanelItemTopBottomMargin}"
                     Click="btnProgramSourceStatus_OnClick"
                     Content="{x:Static root:Localize.Settings_ProgramDisable}" />
                 <Button

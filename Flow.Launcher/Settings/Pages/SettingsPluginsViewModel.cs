@@ -3,10 +3,12 @@ using System.Windows;
 using System.Windows.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Flow.Launcher.Core.Image;
+using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Settings;
-using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern.Controls;
+using Microsoft.Extensions.Logging;
 
 namespace Flow.Launcher.Settings.Pages;
 
@@ -21,59 +23,30 @@ public enum PluginDisplayMode
 }
 
 
-public partial class SettingsPluginsViewModel(ISettingsAPI settings) : BaseSettingsPageViewModel
+public partial class SettingsPluginsViewModel(
+    ILoggerFactory loggerFactory, ISettingsAPI settings, ImageLoader imageLoader,
+    PluginManager pluginManager) : BaseSettingsPageViewModel
 {
+    private readonly ILoggerFactory _loggerFactory = loggerFactory;
     private readonly ISettingsAPI _settings = settings;
+    private readonly ImageLoader _imageLoader = imageLoader;
+    private readonly PluginManager _pluginManager = pluginManager;
 
     public override string Title => "Plugins";
     public override string IconPath => "pack://application:,,,/Images/plugins.png";
 
-    public PluginDisplayMode SelectedDisplayMode
-    {
-        get;
-        set
-        {
-            SetProperty(ref field, value);
-            UpdateDisplayModeFromSelection();
-        }
-    }
+    public IEnumerable<PluginViewModel> Plugins => _pluginManager.GetAllLoadedPlugins()
+        .OrderBy(p => p.Name)
+        .Select(plugin => new PluginViewModel(
+            new(_loggerFactory), _imageLoader, plugin, _settings.PluginSettings.GetPluginSettings(plugin.ID)));
 
     [ObservableProperty]
-    public partial bool IsOnOffSelected { get; set; } = true;
-
-    [ObservableProperty]
-    public partial bool IsPrioritySelected { get; set; }
-    [ObservableProperty]
-    public partial bool IsHomeOnOffSelected { get; set; }
-
-    [ObservableProperty]
-    public partial string FilterText { get; set; }
-
-    private List<PluginViewModel>? _pluginViewModels;
-    // Get all plugins: Initializing & Initialized & Init failed plugins
-    // Include init failed ones so that we can uninstall them
-    // Include initializing ones so that we can change related settings like action keywords, etc.
-    public List<PluginViewModel> PluginViewModels => _pluginViewModels ??= IPublicAPI.Instance.GetAllPlugins()
-        .OrderBy(plugin => plugin.Name)
-        .Select(plugin => new PluginViewModel
-        {
-            PluginMetadata = plugin,
-            PluginSettingsObject = _settings.PluginSettings.GetPluginSettings(plugin.ID)
-        })
-        .Where(plugin => plugin.PluginSettingsObject != null)
-        .ToList();
-
-    public bool SatisfiesFilter(PluginViewModel plugin)
-    {
-        return string.IsNullOrEmpty(FilterText) ||
-            IPublicAPI.Instance.FuzzySearch(FilterText, plugin.PluginMetadata.Name).IsSearchPrecisionScoreMet ||
-            IPublicAPI.Instance.FuzzySearch(FilterText, plugin.PluginMetadata.Description).IsSearchPrecisionScoreMet;
-    }
+    public partial PluginDisplayMode SelectedDisplayMode { get; set; }
 
     [RelayCommand]
     private async Task OpenHelperAsync(Button button)
     {
-        var helpDialog = new ContentDialog()
+        ContentDialog helpDialog = new()
         {
             Owner = Window.GetWindow(button),
             Content = new StackPanel
@@ -111,27 +84,5 @@ public partial class SettingsPluginsViewModel(ISettingsAPI settings) : BaseSetti
         };
 
         await helpDialog.ShowAsync();
-    }
-
-    private void UpdateDisplayModeFromSelection()
-    {
-        switch (SelectedDisplayMode)
-        {
-            case PluginDisplayMode.Priority:
-                IsOnOffSelected = false;
-                IsPrioritySelected = true;
-                IsHomeOnOffSelected = false;
-                break;
-            case PluginDisplayMode.HomeOnOff:
-                IsOnOffSelected = false;
-                IsPrioritySelected = false;
-                IsHomeOnOffSelected = true;
-                break;
-            default:
-                IsOnOffSelected = true;
-                IsPrioritySelected = false;
-                IsHomeOnOffSelected = false;
-                break;
-        }
     }
 }
