@@ -9,6 +9,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Flow.Launcher.Controls;
 using Flow.Launcher.Core;
 using Flow.Launcher.Core.Hotkeys;
 using Flow.Launcher.Core.Plugin;
@@ -616,7 +617,7 @@ namespace Flow.Launcher.ViewModel
         private const int RESULTAREA_COLUMN_PREVIEWSHOWN = 1;
         private const int RESULTAREA_COLUMN_PREVIEWHIDDEN = 3;
 
-        private readonly DefaultPreview _defaultPreview = new();
+        private DefaultPreview? _defaultPreview;
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(PreviewContent))]
         [NotifyPropertyChangedFor(nameof(PreviewVisibility))]
@@ -646,6 +647,7 @@ namespace Flow.Launcher.ViewModel
                 if (PreviewSelectedItem.Result.PreviewPanel != null)
                     return PreviewSelectedItem.Result.PreviewPanel.Value;
 
+                _defaultPreview ??= new();
                 _defaultPreview.DataContext = PreviewSelectedItem;
                 return _defaultPreview;
             }
