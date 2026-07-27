@@ -6,19 +6,11 @@ namespace Flow.Launcher.Controls;
 
 public partial class HotkeyDisplay : UserControl
 {
-    public enum DisplayType
-    {
-        Default,
-        Small
-    }
+    private readonly ObservableCollection<string> _values = [];
 
-    public HotkeyDisplay()
-    {
-        InitializeComponent();
-        //List<string> stringList =e.NewValue.Split('+').ToList();
-        Values = [];
-        KeysControl.ItemsSource = Values;
-    }
+    public static readonly DependencyProperty KeysProperty =
+        DependencyProperty.Register(nameof(Keys), typeof(string), typeof(HotkeyDisplay),
+            new PropertyMetadata(string.Empty, keyChanged));
 
     public string Keys
     {
@@ -26,34 +18,22 @@ public partial class HotkeyDisplay : UserControl
         set { SetValue(KeysProperty, value); }
     }
 
-    public static readonly DependencyProperty KeysProperty =
-        DependencyProperty.Register(nameof(Keys), typeof(string), typeof(HotkeyDisplay),
-            new PropertyMetadata(string.Empty, keyChanged));
-
-    public DisplayType Type
+    public HotkeyDisplay()
     {
-        get { return (DisplayType)GetValue(TypeProperty); }
-        set { SetValue(TypeProperty, value); }
+        InitializeComponent();
+        KeysList.ItemsSource = _values;
     }
-
-    public static readonly DependencyProperty TypeProperty =
-        DependencyProperty.Register(nameof(Type), typeof(DisplayType), typeof(HotkeyDisplay),
-            new PropertyMetadata(DisplayType.Default));
 
     private static void keyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        if (d is not UserControl) return; // This should not be possible
+        if (e.NewValue is not string newValue)
+            return;
 
-        if (e.NewValue is not string newValue) return;
+        if (d is not HotkeyDisplay hotkeyDisplay)
+            return;
 
-        if (d is not HotkeyDisplay hotkeyDisplay) return;
-
-        hotkeyDisplay.Values.Clear();
-        foreach (var key in newValue.Split('+'))
-        {
-            hotkeyDisplay.Values.Add(key);
-        }
+        hotkeyDisplay._values.Clear();
+        foreach (string key in newValue.Split('+'))
+            hotkeyDisplay._values.Add(key);
     }
-
-    public ObservableCollection<string> Values { get; set; }
 }

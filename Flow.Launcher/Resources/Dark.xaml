@@ -11,16 +11,9 @@
 
     <SolidColorBrush x:Key="Color00B" Color="#2b2b2b" />
     <SolidColorBrush x:Key="Color01B" Color="#202020" />
-    <SolidColorBrush x:Key="Color02B" Color="#2b2b2b" />
     <SolidColorBrush x:Key="Color03B" Color="#1d1d1d" />
     <SolidColorBrush x:Key="Color04B" Color="#cfcfcf" />
     <SolidColorBrush x:Key="Color05B" Color="#ffffff" />
-    <SolidColorBrush x:Key="Color06B" Color="#2d2d2d" />
-    <SolidColorBrush x:Key="Color07B" Color="#363636" />
-    <SolidColorBrush x:Key="Color08B" Color="#878787" />
-    <SolidColorBrush x:Key="Color09B" Color="#292929" />
-    <SolidColorBrush x:Key="Color10B" Color="#c42b1c" />
-    <SolidColorBrush x:Key="Color11B" Color="#c83c31" />
     <SolidColorBrush x:Key="Color12B" Color="#373737" />
     <SolidColorBrush x:Key="Color15B" Color="#5d5d5d" />
     <SolidColorBrush x:Key="PluginInfoColor" Color="#878787" />
@@ -38,14 +31,4 @@
     <SolidColorBrush x:Key="InfoBarBD" Color="#19000000" />
     <SolidColorBrush x:Key="InfoBarWarningIcon" Color="#fce100" />
     <SolidColorBrush x:Key="InfoBarWarningBG" Color="#433519" />
-
-    <!--  Resource for TitleBar  -->
-    <SolidColorBrush x:Key="MouseOverWindowCloseButtonForegroundBrush" Color="#ffffff" />
-
-    <SolidColorBrush x:Key="ButtonInsideBorder" Color="#3f3f3f" />
-    <SolidColorBrush x:Key="ButtonBackgroundColor" Color="#373737" />
-    <SolidColorBrush x:Key="ButtonMouseOver" Color="#3c3c3c" />
-    <SolidColorBrush x:Key="ButtonMousePressed" Color="#272727" />
-    <SolidColorBrush x:Key="ButtonMousePressedInsideBorder" Color="#2a2a2a" />
-
 </ResourceDictionary>

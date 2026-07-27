@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:Flow.Launcher.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:hotkeys="clr-namespace:Flow.Launcher.Core.Hotkeys;assembly=Flow.Launcher.Core"
     xmlns:local="clr-namespace:Flow.Launcher.Settings.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
@@ -23,7 +24,7 @@
                 <ui:FontIcon Glyph="&#xeda7;" />
             </ui:SettingsExpander.HeaderIcon>
 
-            <controls:HotkeyControl Id="ToggleFlowLauncher" WindowTitle="Open Flow Launcher" />
+            <controls:HotkeyControl HotkeyInfo="{x:Static hotkeys:DefaultHotkeys.ToggleFlowLauncher}" />
 
             <ui:SettingsExpander.Items>
                 <ui:SettingsCard Description="Show Flow Launcher with a magic query depending on the computer's context (e.g. the explorer's path if a folder is opened and focused)." Header="Magic Query">
@@ -31,7 +32,7 @@
                         <ui:FontIcon Glyph="&#xeda7;" />
                     </ui:SettingsCard.HeaderIcon>
 
-                    <controls:HotkeyControl Id="MagicQuery" WindowTitle="Magic Query" />
+                    <controls:HotkeyControl HotkeyInfo="{x:Static hotkeys:DefaultHotkeys.MagicQuery}" />
                 </ui:SettingsCard>
             </ui:SettingsExpander.Items>
         </ui:SettingsExpander>
@@ -44,7 +45,7 @@
                 <ui:FontIcon Glyph="&#xe8a1;" />
             </ui:SettingsCard.HeaderIcon>
 
-            <controls:HotkeyControl Id="TogglePreview" WindowTitle="Toggle Preview" />
+            <controls:HotkeyControl HotkeyInfo="{x:Static hotkeys:DefaultHotkeys.TogglePreview}" />
         </ui:SettingsCard>
 
         <ui:SettingsExpander
@@ -117,14 +118,14 @@
                         <ui:FontIcon Glyph="&#xf0ad;" />
                     </ui:SettingsCard.HeaderIcon>
 
-                    <controls:HotkeyControl Id="SelectPreviousPage" />
+                    <controls:HotkeyControl HotkeyInfo="{x:Static hotkeys:DefaultHotkeys.SelectPreviousPage}" />
                 </ui:SettingsCard>
                 <ui:SettingsCard Header="Next Page">
                     <ui:SettingsCard.HeaderIcon>
                         <ui:FontIcon Glyph="&#xf0ae;" />
                     </ui:SettingsCard.HeaderIcon>
 
-                    <controls:HotkeyControl Id="SelectNextPage" />
+                    <controls:HotkeyControl HotkeyInfo="{x:Static hotkeys:DefaultHotkeys.SelectNextPage}" />
                 </ui:SettingsCard>
 
                 <ui:SettingsCard Header="Quick Adjust Window Width">
@@ -158,7 +159,7 @@
                 <ui:FontIcon Glyph="&#xe893;" />
             </ui:SettingsCard.HeaderIcon>
 
-            <controls:HotkeyControl Id="Autocomplete" />
+            <controls:HotkeyControl HotkeyInfo="{x:Static hotkeys:DefaultHotkeys.Autocomplete}" />
         </ui:SettingsCard>
 
         <ui:SettingsCard Margin="0 4 0 0" Header="Select Previous Item">
@@ -166,7 +167,7 @@
                 <ui:FontIcon Glyph="&#xe74a;" />
             </ui:SettingsCard.HeaderIcon>
 
-            <controls:HotkeyControl Id="SelectPreviousResult" />
+            <controls:HotkeyControl HotkeyInfo="{x:Static hotkeys:DefaultHotkeys.SelectPreviousResult}" />
         </ui:SettingsCard>
 
         <ui:SettingsCard Margin="0 4 0 0" Header="Select Next Item">
@@ -174,7 +175,7 @@
                 <ui:FontIcon Glyph="&#xe74b;" />
             </ui:SettingsCard.HeaderIcon>
 
-            <controls:HotkeyControl Id="SelectNextResult" />
+            <controls:HotkeyControl HotkeyInfo="{x:Static hotkeys:DefaultHotkeys.SelectNextResult}" />
         </ui:SettingsCard>
 
         <ui:SettingsExpander Margin="0 20 0 0" Header="Custom Query Hotkeys">
@@ -182,13 +183,12 @@
                 <ui:FontIcon Glyph="&#xf26c;" />
             </ui:SettingsExpander.HeaderIcon>
 
-            <ui:SettingsExpander.ItemsHeader>
-                <StackPanel Background="{DynamicResource SettingsCardBackground}">
+            <ui:SettingsExpander.Items>
+                <ui:SettingsCard Padding="0" ContentAlignment="Vertical">
                     <StackPanel Margin="18 18 18 0">
                         <ListView
                             MinHeight="160"
                             Margin="0"
-                            Background="{DynamicResource Color02B}"
                             BorderBrush="DarkGray"
                             BorderThickness="1"
                             ItemsSource="{Binding Settings.CustomPluginHotkeys}"
@@ -202,7 +202,7 @@
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
-                                    <GridViewColumn Width="430" Header="{DynamicResource customQuery}">
+                                    <GridViewColumn Width="430" Header="Query">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate DataType="userSettings:CustomPluginHotkey">
                                                 <TextBlock Text="{Binding ActionKeyword}" />
@@ -230,8 +230,8 @@
                                 Content="Add" />
                         </StackPanel>
                     </StackPanel>
-                </StackPanel>
-            </ui:SettingsExpander.ItemsHeader>
+                </ui:SettingsCard>
+            </ui:SettingsExpander.Items>
         </ui:SettingsExpander>
 
         <ui:SettingsExpander Margin="0 4 0 0" Header="Custom Query Shortcuts">
@@ -239,13 +239,12 @@
                 <ui:FontIcon Glyph="&#xf26b;" />
             </ui:SettingsExpander.HeaderIcon>
 
-            <ui:SettingsExpander.ItemsHeader>
-                <StackPanel Background="{DynamicResource SettingsCardBackground}">
+            <ui:SettingsExpander.Items>
+                <ui:SettingsCard Padding="0" ContentAlignment="Vertical">
                     <StackPanel Margin="18 12 18 0">
                         <ListView
                             MinHeight="160"
                             Margin="0 6 0 0"
-                            Background="{DynamicResource Color02B}"
                             BorderBrush="DarkGray"
                             BorderThickness="1"
                             ItemsSource="{Binding Settings.CustomShortcuts}"
@@ -291,8 +290,8 @@
                                 Content="Add" />
                         </StackPanel>
                     </StackPanel>
-                </StackPanel>
-            </ui:SettingsExpander.ItemsHeader>
+                </ui:SettingsCard>
+            </ui:SettingsExpander.Items>
         </ui:SettingsExpander>
 
         <ui:SettingsExpander Margin="0 4 0 14" Header="Built-in Shortcuts">
@@ -300,38 +299,35 @@
                 <ui:FontIcon Glyph="&#xf158;" />
             </ui:SettingsExpander.HeaderIcon>
 
-            <ui:SettingsExpander.ItemsHeader>
-                <StackPanel Background="{DynamicResource SettingsCardBackground}">
-                    <StackPanel Margin="16 8 16 0">
-                        <ListView
-                            MinHeight="160"
-                            Margin="0 6 0 16"
-                            Background="{DynamicResource Color02B}"
-                            BorderBrush="DarkGray"
-                            BorderThickness="1"
-                            ItemsSource="{Binding Settings.BuiltinShortcuts}">
-                            <ListView.View>
-                                <GridView>
-                                    <GridViewColumn Width="180" Header="Shortcut">
-                                        <GridViewColumn.CellTemplate>
-                                            <DataTemplate DataType="{x:Type userSettings:BuiltinShortcutModel}">
-                                                <TextBlock Text="{Binding Key}" />
-                                            </DataTemplate>
-                                        </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
-                                    <GridViewColumn Width="430" Header="Description">
-                                        <GridViewColumn.CellTemplate>
-                                            <DataTemplate DataType="{x:Type userSettings:BuiltinShortcutModel}">
-                                                <TextBlock Text="{Binding Description}" />
-                                            </DataTemplate>
-                                        </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
-                                </GridView>
-                            </ListView.View>
-                        </ListView>
-                    </StackPanel>
-                </StackPanel>
-            </ui:SettingsExpander.ItemsHeader>
+            <ui:SettingsExpander.Items>
+                <ui:SettingsCard Padding="0" ContentAlignment="Vertical">
+                    <ListView
+                        MinHeight="160"
+                        Margin="16 14 16 16"
+                        BorderBrush="DarkGray"
+                        BorderThickness="1"
+                        ItemsSource="{Binding Settings.BuiltinShortcuts}">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Width="180" Header="Shortcut">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate DataType="{x:Type userSettings:BuiltinShortcutModel}">
+                                            <TextBlock Text="{Binding Key}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Width="430" Header="Description">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate DataType="{x:Type userSettings:BuiltinShortcutModel}">
+                                            <TextBlock Text="{Binding Description}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </ui:SettingsCard>
+            </ui:SettingsExpander.Items>
         </ui:SettingsExpander>
     </StackPanel>
 </UserControl>

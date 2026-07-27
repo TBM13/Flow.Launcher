@@ -1,59 +1,36 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
-using CommunityToolkit.Mvvm.DependencyInjection;
-using Flow.Launcher.Core.Hotkeys;
 using Flow.Launcher.PluginSDK.Hotkeys;
 
 namespace Flow.Launcher.Controls;
 
 public partial class HotkeyControl
 {
-    public string WindowTitle
-    {
-        get { return (string)GetValue(WindowTitleProperty); }
-        set { SetValue(WindowTitleProperty, value); }
-    }
-
-    public static readonly DependencyProperty WindowTitleProperty = DependencyProperty.Register(
-        nameof(WindowTitle),
-        typeof(string),
+    public static readonly DependencyProperty HotkeyInfoProperty = DependencyProperty.Register(
+        nameof(HotkeyInfo),
+        typeof(HotkeyInfo),
         typeof(HotkeyControl),
-        new PropertyMetadata(string.Empty)
+        new PropertyMetadata(null, OnHotkeyInfoChanged)
     );
 
-    public static readonly DependencyProperty IdProperty = DependencyProperty.Register(
-        nameof(IdProperty),
-        typeof(string),
-        typeof(HotkeyControl),
-        new PropertyMetadata(null, OnIdChanged)
-    );
-
-    public string? Id
+    public HotkeyInfo? HotkeyInfo
     {
-        get { return (string?)GetValue(IdProperty); }
-        set { SetValue(IdProperty, value); }
+        get => (HotkeyInfo?)GetValue(HotkeyInfoProperty);
+        set => SetValue(HotkeyInfoProperty, value);
     }
 
-    public HotkeyInfo? HotkeyInformation;
-    public ObservableCollection<string> KeysToDisplay { get; set; } = [];
+    private readonly ObservableCollection<string> _keysToDisplay = [];
 
     public HotkeyControl()
     {
         InitializeComponent();
-
-        HotkeyList.ItemsSource = KeysToDisplay;
+        KeysList.ItemsSource = _keysToDisplay;
     }
 
-    private static void OnIdChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    private static void OnHotkeyInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        if (d is HotkeyControl control && e.NewValue is string id)
-        {
-            control.HotkeyInformation = string.IsNullOrEmpty(id)
-                // TODO: Check if there is any better alternative
-                ? null : Ioc.Default.GetRequiredService<HotkeyManager>().GetHotkeyInformation(id);
-
+        if (d is HotkeyControl control)
             control.UpdateUI();
-        }
     }
 
     public void GetNewHotkey(object sender, RoutedEventArgs e)
@@ -63,10 +40,10 @@ public partial class HotkeyControl
 
     private async Task OpenHotkeyDialogAsync()
     {
-        if (HotkeyInformation is null)
+        if (HotkeyInfo is null)
             return;
 
-        var dialog = new HotkeyControlDialog(HotkeyInformation, WindowTitle)
+        HotkeyControlDialog dialog = new(HotkeyInfo)
         {
             Owner = Window.GetWindow(this)
         };
@@ -77,17 +54,14 @@ public partial class HotkeyControl
 
     private void UpdateUI()
     {
-        KeysToDisplay.Clear();
-
-        if (HotkeyInformation is null || !HotkeyInformation.Hotkey.IsValid)
+        _keysToDisplay.Clear();
+        if (HotkeyInfo is null || !HotkeyInfo.Hotkey.IsValid)
         {
-            KeysToDisplay.Add("None");
+            _keysToDisplay.Add("None");
             return;
         }
 
-        foreach (var key in HotkeyInformation.Hotkey.ToString(includeLongPress: false).Split('+'))
-        {
-            KeysToDisplay.Add(key);
-        }
+        foreach (string key in HotkeyInfo.Hotkey.ToString(includeLongPress: false).Split('+'))
+            _keysToDisplay.Add(key);
     }
 }

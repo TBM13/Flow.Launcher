@@ -18,9 +18,9 @@ public partial class HotkeyControlDialog : ContentDialog
     public HotkeyInfo Hotkey { get; init; }
     public ObservableCollection<string> KeysToDisplay { get; } = [];
 
-    public HotkeyControlDialog(HotkeyInfo hotkey, string? windowTitle = null)
+    public HotkeyControlDialog(HotkeyInfo hotkey)
     {
-        WindowTitle = windowTitle ?? "Binding Hotkey";
+        WindowTitle = hotkey.Name;
         Hotkey = hotkey;
         _newHotkey = hotkey.Hotkey;
 

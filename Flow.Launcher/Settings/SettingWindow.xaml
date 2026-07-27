@@ -14,7 +14,6 @@
     MinHeight="600"
     d:DataContext="{d:DesignInstance setting:SettingViewModel}"
     ui:WindowHelper.UseModernWindowStyle="True"
-    Background="{DynamicResource Color01B}"
     Icon="pack://application:,,,/Images/app.ico"
     ResizeMode="CanResize"
     SnapsToDevicePixels="True"
