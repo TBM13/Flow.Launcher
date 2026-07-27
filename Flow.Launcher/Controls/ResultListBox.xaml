@@ -36,7 +36,10 @@
     <!--  IsSynchronizedWithCurrentItem: http://stackoverflow.com/a/7833798/2833083  -->
     <ListBox.Template>
         <ControlTemplate TargetType="ListBox">
-            <ui:ScrollViewerEx x:Name="ListBoxScrollViewer" Focusable="False">
+            <ui:ScrollViewerEx
+                x:Name="ListBoxScrollViewer"
+                Focusable="False"
+                HorizontalScrollBarVisibility="Disabled">
                 <VirtualizingStackPanel IsItemsHost="True" />
             </ui:ScrollViewerEx>
         </ControlTemplate>
