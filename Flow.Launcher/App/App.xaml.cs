@@ -208,9 +208,6 @@ public partial class App : Application
         // So set to OnExplicitShutdown to prevent the application from shutting down before main window is created
         Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
-        // Initialize notification system before any notification api is called
-        Ioc.Default.GetRequiredService<Notification>().Install();
-
         // Enable Win32 dark mode if the system is in dark mode before creating all windows
         ApplicationHelper.SetAppMode(_settings.ColorScheme switch
         {

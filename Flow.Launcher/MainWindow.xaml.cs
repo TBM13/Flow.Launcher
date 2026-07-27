@@ -208,7 +208,6 @@ public partial class MainWindow : Window
             IPublicAPI.Instance.SaveAppAllSettings();
             e.Cancel = true;
             await _pluginManager.DisposePluginsAsync();
-            Ioc.Default.GetRequiredService<Notification>().Uninstall();
             // After plugins are all disposed, we shutdown application to close app
             // We use this instead of Close() to avoid InvalidOperationException when calling Close() in OnClosing event
             Application.Current.Shutdown();
