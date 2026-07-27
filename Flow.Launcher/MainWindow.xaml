@@ -108,127 +108,132 @@
         <pluginsdk:KeyBinding Command="{Binding SelectPrevPageCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static hotkeys:DefaultHotkeys.SelectPreviousPage}}" />
     </Window.InputBindings>
 
-    <Border MouseDown="OnMouseDown" Style="{StaticResource WindowBorderStyle}">
-        <StackPanel Orientation="Vertical">
-            <Border MinHeight="30">
-                <Grid>
-                    <TextBox
-                        x:Name="QueryTextBox"
-                        Height="42"
-                        AllowDrop="True"
-                        AutomationProperties.Name="{Binding SelectedResults.SelectedItem.Result.Title}"
-                        FontSize="16"
-                        PreviewDragOver="QueryTextBox_OnPreviewDragOver"
-                        PreviewKeyUp="QueryTextBox_KeyUp"
-                        Style="{StaticResource QueryBoxStyle}"
-                        TextChanged="QueryTextBox_TextChanged1"
-                        Visibility="Visible"
-                        WindowChrome.IsHitTestVisibleInChrome="True">
-                        <TextBox.CommandBindings>
-                            <CommandBinding Command="ApplicationCommands.Copy" Executed="QueryTextBox_OnCopy" />
-                        </TextBox.CommandBindings>
-                        <TextBox.ContextMenu>
-                            <ContextMenu MinWidth="160">
-                                <MenuItem Command="ApplicationCommands.Cut" Header="Cut">
-                                    <MenuItem.Icon>
-                                        <ui:FontIcon Glyph="&#xe8c6;" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                                <MenuItem Command="ApplicationCommands.Copy" Header="Copy">
-                                    <MenuItem.Icon>
-                                        <ui:FontIcon Glyph="&#xe8c8;" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                                <MenuItem Command="ApplicationCommands.Paste" Header="Paste">
-                                    <MenuItem.Icon>
-                                        <ui:FontIcon Glyph="&#xe77f;" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                                <Separator
-                                    Margin="0"
-                                    Padding="0 4 0 4"
-                                    Background="{DynamicResource ContextSeparator}" />
-                                <MenuItem Click="OnContextMenusForSettingsClick" Header="Settings">
-                                    <MenuItem.Icon>
-                                        <ui:FontIcon Glyph="&#xe713;" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                                <MenuItem Command="{Binding EscCommand}" Header="Close">
-                                    <MenuItem.Icon>
-                                        <ui:FontIcon Glyph="&#xe711;" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                            </ContextMenu>
-                        </TextBox.ContextMenu>
-                    </TextBox>
+    <Border
+        Background="{DynamicResource Color01B}"
+        BorderBrush="{DynamicResource SystemThemeBorder}"
+        BorderThickness="1"
+        CornerRadius="5"
+        SnapsToDevicePixels="True"
+        UseLayoutRounding="True">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
-                    <Image
-                        x:Name="PluginActivationIcon"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Center"
-                        Panel.ZIndex="2"
-                        RenderOptions.BitmapScalingMode="LowQuality"
-                        Source="{Binding PluginIconSource}"
-                        Stretch="Uniform"
-                        Style="{StaticResource PluginActivationIcon}"
-                        WindowChrome.IsHitTestVisibleInChrome="True" />
-                </Grid>
-            </Border>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MinWidth="80" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="0.85*" MinWidth="244" />
+            </Grid.ColumnDefinitions>
 
-            <Border x:Name="ResultPreviewAreaBoarder" Style="{StaticResource WindowRadius}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" MinWidth="80" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="0.85*" MinWidth="244" />
-                    </Grid.ColumnDefinitions>
+            <TextBox
+                x:Name="QueryTextBox"
+                Grid.ColumnSpan="3"
+                Height="42"
+                Margin="16 7 0 7"
+                Padding="0 0 50 0"
+                VerticalAlignment="Center"
+                VerticalContentAlignment="Center"
+                ui:TextBoxHelper.IsDeleteButtonVisible="False"
+                AllowDrop="True"
+                BorderThickness="0"
+                CaretBrush="{DynamicResource Color05B}"
+                FontSize="16"
+                Foreground="{DynamicResource Color05B}"
+                PreviewDragOver="QueryTextBox_OnPreviewDragOver"
+                SelectionBrush="{DynamicResource SystemAccentColorLight1Brush}"
+                TextChanged="QueryTextBox_TextChanged1"
+                WindowChrome.IsHitTestVisibleInChrome="True">
+                <TextBox.CommandBindings>
+                    <CommandBinding Command="ApplicationCommands.Copy" Executed="QueryTextBox_OnCopy" />
+                </TextBox.CommandBindings>
+                <TextBox.ContextMenu>
+                    <ContextMenu MinWidth="160">
+                        <MenuItem Command="ApplicationCommands.Cut" Header="Cut">
+                            <MenuItem.Icon>
+                                <ui:FontIcon Glyph="&#xe8c6;" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Command="ApplicationCommands.Copy" Header="Copy">
+                            <MenuItem.Icon>
+                                <ui:FontIcon Glyph="&#xe8c8;" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Command="ApplicationCommands.Paste" Header="Paste">
+                            <MenuItem.Icon>
+                                <ui:FontIcon Glyph="&#xe77f;" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator Padding="0 4 0 4" Background="{DynamicResource ContextSeparator}" />
+                        <MenuItem Click="OnContextMenusForSettingsClick" Header="Settings">
+                            <MenuItem.Icon>
+                                <ui:FontIcon Glyph="&#xe713;" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Command="{Binding EscCommand}" Header="Close">
+                            <MenuItem.Icon>
+                                <ui:FontIcon Glyph="&#xe711;" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu>
+                </TextBox.ContextMenu>
+            </TextBox>
 
-                    <Rectangle
-                        Name="MiddleSeparator"
-                        Grid.Column="0"
-                        Grid.ColumnSpan="3"
-                        Width="Auto"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Top"
-                        Style="{StaticResource SeparatorStyle}"
-                        Visibility="{Binding MiddleSeparatorVisibility}" />
+            <Image
+                Grid.ColumnSpan="3"
+                Width="32"
+                Height="32"
+                Margin="0 0 18 0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Panel.ZIndex="2"
+                RenderOptions.BitmapScalingMode="LowQuality"
+                Source="{Binding PluginIconSource}"
+                Stretch="Uniform"
+                WindowChrome.IsHitTestVisibleInChrome="True" />
 
-                    <controls:ResultListBox
-                        x:Name="ResultListBox"
-                        Grid.Column="0"
-                        Grid.ColumnSpan="{Binding DataContext.ResultAreaColumn, ElementName=FlowMainWindow}"
-                        VerticalAlignment="Top"
-                        DataContext="{Binding LateSelectedResults}"
-                        LeftClickResultCommand="{Binding LeftClickResultCommand}"
-                        RightClickResultCommand="{Binding RightClickResultCommand}" />
+            <Rectangle
+                Grid.Row="1"
+                Grid.ColumnSpan="3"
+                VerticalAlignment="Top"
+                Style="{StaticResource SeparatorStyle}"
+                Visibility="{Binding MiddleSeparatorVisibility}" />
 
-                    <GridSplitter
-                        x:Name="PreviewMiddleSeparator"
-                        Grid.Column="1"
-                        Margin="0"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Stretch"
-                        Background="Transparent"
-                        ShowsPreview="True"
-                        Visibility="{Binding InternalPreviewVisible, Converter={StaticResource BoolToVisibilityConverter}}">
-                        <GridSplitter.Template>
-                            <ControlTemplate TargetType="{x:Type GridSplitter}">
-                                <Border Style="{StaticResource PreviewBorderStyle}" />
-                            </ControlTemplate>
-                        </GridSplitter.Template>
-                    </GridSplitter>
+            <controls:ResultListBox
+                x:Name="ResultListBox"
+                Grid.Row="1"
+                Grid.ColumnSpan="{Binding DataContext.ResultAreaColumn, ElementName=FlowMainWindow}"
+                VerticalAlignment="Top"
+                DataContext="{Binding LateSelectedResults}"
+                LeftClickResultCommand="{Binding LeftClickResultCommand}"
+                RightClickResultCommand="{Binding RightClickResultCommand}" />
 
-                    <ContentPresenter
-                        x:Name="Preview"
-                        Grid.Column="2"
-                        MinHeight="{Binding PreviewMinHeight}"
-                        MaxHeight="{Binding ElementName=ResultListBox, Path=ActualHeight}"
-                        Margin="0 0 10 5"
-                        VerticalAlignment="Stretch"
-                        Content="{Binding PreviewContent}"
-                        Visibility="{Binding PreviewVisibility}" />
-                </Grid>
-            </Border>
-        </StackPanel>
+            <GridSplitter
+                Grid.Row="1"
+                Grid.Column="1"
+                HorizontalAlignment="Center"
+                ShowsPreview="True"
+                Visibility="{Binding InternalPreviewVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                <GridSplitter.Template>
+                    <ControlTemplate TargetType="{x:Type GridSplitter}">
+                        <Border
+                            Width="5"
+                            Margin="5 0 10 0"
+                            BorderBrush="{DynamicResource SeparatorForeground}"
+                            BorderThickness="1 0 0 0" />
+                    </ControlTemplate>
+                </GridSplitter.Template>
+            </GridSplitter>
+
+            <ContentPresenter
+                Grid.Row="1"
+                Grid.Column="2"
+                MinHeight="{Binding PreviewMinHeight}"
+                MaxHeight="{Binding ElementName=ResultListBox, Path=ActualHeight}"
+                Margin="0 0 10 5"
+                Content="{Binding PreviewContent}"
+                Visibility="{Binding PreviewVisibility}" />
+        </Grid>
     </Border>
 </Window>

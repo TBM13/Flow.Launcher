@@ -6,56 +6,10 @@
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     xmlns:userSettings="clr-namespace:Flow.Launcher.Core.UserSettings;assembly=Flow.Launcher.Core">
 
-    <Style x:Key="QueryBoxStyle" TargetType="{x:Type TextBox}">
-        <Setter Property="Padding" Value="0 0 50 0" />
-        <Setter Property="Foreground" Value="{DynamicResource Color05B}" />
-        <Setter Property="CaretBrush" Value="{DynamicResource Color05B}" />
-        <Setter Property="SelectionBrush" Value="{DynamicResource SystemAccentColorLight1Brush}" />
-        <Setter Property="FontSize" Value="16" />
-        <Setter Property="Height" Value="42" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Margin" Value="16 7 0 7" />
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="HorizontalAlignment" Value="Stretch" />
-        <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
-    </Style>
-
-    <Style x:Key="WindowBorderStyle" TargetType="{x:Type Border}">
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="BorderBrush" Value="{DynamicResource SystemThemeBorder}" />
-        <Setter Property="Background" Value="{DynamicResource Color01B}" />
-        <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="Padding" Value="0 0 0 0" />
-        <Setter Property="CornerRadius" Value="5" />
-        <Setter Property="SnapsToDevicePixels" Value="True" />
-    </Style>
-
-    <Style x:Key="WindowRadius" TargetType="{x:Type Border}">
-        <Setter Property="CornerRadius" Value="5" />
-    </Style>
-
     <Style x:Key="SeparatorStyle" TargetType="Rectangle">
         <Setter Property="Fill" Value="{DynamicResource SeparatorForeground}" />
         <Setter Property="Height" Value="1" />
         <Setter Property="Margin" Value="0 0 0 0" />
-    </Style>
-
-    <Style x:Key="PreviewBorderStyle" TargetType="{x:Type Border}">
-        <Setter Property="BorderThickness" Value="1 0 0 0" />
-        <Setter Property="Width" Value="5" />
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderBrush" Value="{DynamicResource SeparatorForeground}" />
-        <Setter Property="Margin" Value="5 0 10 0" />
-        <Setter Property="Background" Value="Transparent" />
-    </Style>
-
-    <Style x:Key="PluginActivationIcon" TargetType="{x:Type Image}">
-        <Setter Property="Width" Value="32" />
-        <Setter Property="Height" Value="32" />
-        <Setter Property="Margin" Value="0 0 18 0" />
-        <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
 

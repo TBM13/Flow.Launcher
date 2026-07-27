@@ -12,9 +12,16 @@ public partial class ResultListBox
     private Point _lastpos, _dragStart;
     private string? _path;
 
+    public ScrollViewer ScrollViewer { get; private set; } = null!;
+
     public ResultListBox()
     {
         InitializeComponent();
+    }
+
+    public override void OnApplyTemplate()
+    {
+        ScrollViewer = (ScrollViewer)GetTemplateChild("ListBoxScrollViewer");
     }
 
     public static readonly DependencyProperty RightClickResultCommandProperty =
