@@ -4,9 +4,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:pluginsdk="http://schemas.flowlauncher.com/pluginsdk"
     xmlns:root="clr-namespace:Flow.Launcher"
+    xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     xmlns:vm="clr-namespace:Flow.Launcher.ViewModel"
     MaxHeight="{Binding MaxHeight}"
+    Margin="0 10 0 10"
     HorizontalContentAlignment="Stretch"
     d:DataContext="{d:DesignInstance vm:ResultsViewModel}"
     d:DesignHeight="100"
@@ -23,71 +26,66 @@
     SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
     SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
     SelectionChanged="OnSelectionChanged"
-    Style="{StaticResource ListboxStyle}"
     VirtualizingPanel.CacheLength="1,1"
     VirtualizingPanel.CacheLengthUnit="Page"
+    VirtualizingPanel.IsVirtualizing="True"
     VirtualizingPanel.ScrollUnit="Pixel"
-    VirtualizingStackPanel.IsVirtualizing="True"
-    VirtualizingStackPanel.VirtualizationMode="Recycling"
+    VirtualizingPanel.VirtualizationMode="Recycling"
     Visibility="{Binding Visibility}"
     mc:Ignorable="d">
     <!--  IsSynchronizedWithCurrentItem: http://stackoverflow.com/a/7833798/2833083  -->
+    <ListBox.Template>
+        <ControlTemplate TargetType="ListBox">
+            <ui:ScrollViewerEx x:Name="ListBoxScrollViewer" Focusable="False">
+                <VirtualizingStackPanel IsItemsHost="True" />
+            </ui:ScrollViewerEx>
+        </ControlTemplate>
+    </ListBox.Template>
 
     <ListBox.ItemTemplate>
         <DataTemplate>
-            <DockPanel
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                UseLayoutRounding="False">
-
+            <DockPanel>
+                <!--  Icon / glyph  -->
                 <Image
-                    x:Name="ImageIcon"
                     Width="60"
+                    Height="32"
                     Margin="5 0 0 0"
                     VerticalAlignment="Center"
-                    DockPanel.Dock="Left"
                     IsHitTestVisible="False"
-                    RenderOptions.BitmapScalingMode="Linear"
-                    Source="{Binding Image, TargetNullValue={x:Null}}"
+                    Source="{Binding Image}"
                     Stretch="Uniform"
                     StretchDirection="DownOnly"
-                    Style="{StaticResource ImageIconStyle}"
                     Visibility="{Binding ShowIcon}" />
                 <TextBlock
-                    x:Name="GlyphIcon"
                     Width="60"
+                    Height="25"
                     Margin="5 0 0 0"
                     VerticalAlignment="Center"
-                    DockPanel.Dock="Left"
                     FontFamily="{Binding Glyph.FontFamily}"
-                    Style="{StaticResource GlyphStyle}"
+                    FontSize="25"
+                    Foreground="{DynamicResource Color05B}"
                     Text="{Binding Glyph.Glyph}"
                     TextAlignment="Center"
                     Visibility="{Binding ShowGlyph}" />
 
-                <StackPanel
-                    Margin="6 0 10 0"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Center">
+                <StackPanel Margin="6 0 10 0" VerticalAlignment="Center">
+                    <!--  Title  -->
                     <TextBlock
-                        x:Name="Title"
-                        DockPanel.Dock="Left"
                         FontSize="16"
-                        IsEnabled="False"
-                        Style="{StaticResource ItemTitleStyle}"
+                        Foreground="{DynamicResource Color05B}"
                         Text="{Binding Result.Title}"
                         TextTrimming="CharacterEllipsis"
-                        ToolTip="{Binding ShowTitleToolTip}"
-                        ToolTipService.ShowOnDisabled="True" />
+                        ToolTip="{Binding ShowTitleToolTip}" />
+                    <!--  Subtitle  -->
                     <TextBlock
-                        x:Name="SubTitle"
+                        Margin="0 2 0 0"
                         FontSize="13"
-                        IsEnabled="False"
-                        Style="{StaticResource ItemSubTitleStyle}"
+                        Foreground="{DynamicResource SubTitleForeground}"
                         Text="{Binding Result.SubTitle}"
                         TextTrimming="CharacterEllipsis"
                         ToolTip="{Binding ShowSubTitleToolTip}"
-                        ToolTipService.ShowOnDisabled="True" />
+                        Visibility="{pluginsdk:CollapsedWhen {Binding Result.SubTitle},
+                                                             IsEqualTo=''}" />
                 </StackPanel>
             </DockPanel>
         </DataTemplate>
@@ -96,20 +94,18 @@
         <Style TargetType="{x:Type ListBoxItem}">
             <Setter Property="Height" Value="{x:Static root:Const.ItemHeightSize}" />
             <EventSetter Event="Loaded" Handler="OnItemLoaded" />
+            <EventSetter Event="Unloaded" Handler="OnItemUnloaded" />
             <EventSetter Event="MouseEnter" Handler="OnMouseEnter" />
             <EventSetter Event="MouseMove" Handler="OnMouseMove" />
-            <Setter Property="Margin" Value="0" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ListBoxItem}">
                         <Border
                             x:Name="Bd"
-                            Margin="{StaticResource ItemMargin}"
+                            Margin="10 0 10 0"
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
-                            CornerRadius="{StaticResource ItemRadius}"
+                            CornerRadius="5"
                             SnapsToDevicePixels="True">
                             <ContentPresenter
                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"

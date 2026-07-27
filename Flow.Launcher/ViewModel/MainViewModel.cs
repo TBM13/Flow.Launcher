@@ -8,7 +8,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core;
 using Flow.Launcher.Core.Hotkeys;
@@ -81,13 +80,13 @@ namespace Flow.Launcher.ViewModel
             _userSelectedRecord = _userSelectedRecordStorage.TryLoad();
 
             PluginSDK.Logging.Logger<ResultsViewModel> resultsLogger = new(loggerFactory);
-            _contextMenu = new ResultsViewModel(resultsLogger, this, Settings, _pluginManager)
+            _contextMenu = new ResultsViewModel(resultsLogger, this, Settings)
             {
                 LeftClickResultCommand = OpenResultCommand,
                 RightClickResultCommand = LoadContextMenuCommand,
                 IsPreviewOn = Settings.AlwaysPreview
             };
-            _results = new ResultsViewModel(resultsLogger, this, Settings, _pluginManager)
+            _results = new ResultsViewModel(resultsLogger, this, Settings)
             {
                 LeftClickResultCommand = OpenResultCommand,
                 RightClickResultCommand = LoadContextMenuCommand,

@@ -36,54 +36,6 @@
         <Setter Property="CornerRadius" Value="5" />
     </Style>
 
-    <!--  Item Style  -->
-    <Style x:Key="ItemTitleStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="Foreground" Value="{DynamicResource Color05B}" />
-        <Setter Property="FontSize" Value="16" />
-        <Setter Property="Margin" Value="0 0 0 1" />
-        <Setter Property="VerticalAlignment" Value="Bottom" />
-    </Style>
-    <Style x:Key="ItemSubTitleStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="Foreground" Value="{DynamicResource SubTitleForeground}" />
-        <Setter Property="Margin" Value="0 1 0 0" />
-        <Setter Property="VerticalAlignment" Value="Top" />
-        <Setter Property="FontSize" Value="13" />
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding ElementName=SubTitle, UpdateSourceTrigger=PropertyChanged, Path=Text.Length}" Value="0">
-                <Setter Property="Height" Value="0" />
-            </DataTrigger>
-        </Style.Triggers>
-    </Style>
-    <Style x:Key="GlyphStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="Foreground" Value="{DynamicResource Color05B}" />
-        <Setter Property="Margin" Value="-2 0 0 0" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="HorizontalAlignment" Value="Center" />
-        <Setter Property="Width" Value="25" />
-        <Setter Property="Height" Value="25" />
-        <Setter Property="FontSize" Value="25" />
-    </Style>
-
-    <!--  Result Listbox Style  -->
-    <Style x:Key="ListboxStyle" TargetType="{x:Type ListBox}">
-        <Setter Property="BorderBrush" Value="Transparent" />
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
-        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
-        <Setter Property="Margin" Value="0 10 0 10" />
-        <Setter Property="Padding" Value="0 0 0 0" />
-
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="ListBox">
-                    <ui:ScrollViewerEx x:Name="ListBoxScrollViewer" Focusable="False">
-                        <VirtualizingStackPanel IsItemsHost="True" />
-                    </ui:ScrollViewerEx>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
     <Style x:Key="SeparatorStyle" TargetType="Rectangle">
         <Setter Property="Fill" Value="{DynamicResource SeparatorForeground}" />
         <Setter Property="Height" Value="1" />
@@ -137,16 +89,7 @@
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
 
-    <Style x:Key="ImageIconStyle" TargetType="{x:Type Image}">
-        <Setter Property="Height" Value="32" />
-        <Setter Property="Width" Value="32" />
-        <Setter Property="Margin" Value="-2 0 0 0" />
-    </Style>
-
     <SolidColorBrush x:Key="ItemSelectedBackgroundColor" Color="{m:DynamicColor ItemSelectedBackgroundColorBrush}" />
-
-    <CornerRadius x:Key="ItemRadius">5</CornerRadius>
-    <Thickness x:Key="ItemMargin">10 0 10 0</Thickness>
 
     <!--  Settings  -->
     <Thickness x:Key="SettingPanelItemLeftMargin">9,0,0,0</Thickness>

@@ -18,7 +18,7 @@ public partial class ResultListBox
     }
 
     public static readonly DependencyProperty RightClickResultCommandProperty =
-        DependencyProperty.Register("RightClickResultCommand", typeof(ICommand), typeof(ResultListBox), new UIPropertyMetadata(null));
+        DependencyProperty.Register(nameof(RightClickResultCommand), typeof(ICommand), typeof(ResultListBox), new UIPropertyMetadata(null));
 
     public ICommand RightClickResultCommand
     {
@@ -27,7 +27,7 @@ public partial class ResultListBox
     }
 
     public static readonly DependencyProperty LeftClickResultCommandProperty =
-        DependencyProperty.Register("LeftClickResultCommand", typeof(ICommand), typeof(ResultListBox), new UIPropertyMetadata(null));
+        DependencyProperty.Register(nameof(LeftClickResultCommand), typeof(ICommand), typeof(ResultListBox), new UIPropertyMetadata(null));
 
     public ICommand LeftClickResultCommand
     {
@@ -43,8 +43,7 @@ public partial class ResultListBox
 
     private void OnMouseEnter(object sender, MouseEventArgs e)
     {
-        Point p = e.GetPosition(null);
-        _lastpos = p;
+        _lastpos = e.GetPosition(null);
     }
 
     private void OnMouseMove(object sender, MouseEventArgs e)
@@ -68,6 +67,17 @@ public partial class ResultListBox
         element.DataContextChanged -= OnItemDataContextChanged;
         element.DataContextChanged += OnItemDataContextChanged;
         SetupScreenPositionDelegate(element);
+    }
+
+    private void OnItemUnloaded(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement element)
+        {
+            element.DataContextChanged -= OnItemDataContextChanged;
+
+            if (element.DataContext is ResultViewModel viewModel)
+                viewModel.GetScreenCenterPoint = null;
+        }
     }
 
     private void OnItemDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -107,14 +117,7 @@ public partial class ResultListBox
     {
         if (Mouse.DirectlyOver is not FrameworkElement
             {
-                DataContext: ResultViewModel
-                {
-                    Result:
-                    {
-                        CopyText: { } copyText,
-                        OriginQuery.TrimmedQuery: { } trimmedQuery
-                    }
-                }
+                DataContext: ResultViewModel { Result.CopyText: { } copyText }
             })
             return;
 
@@ -156,17 +159,13 @@ public partial class ResultListBox
 
     private void ResultListBox_OnPreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
     {
-        if (Mouse.DirectlyOver is not FrameworkElement { DataContext: ResultViewModel result })
-            return;
-
-        RightClickResultCommand?.Execute(result.Result);
+        if (Mouse.DirectlyOver is FrameworkElement { DataContext: ResultViewModel result })
+            RightClickResultCommand?.Execute(result.Result);
     }
 
     private void ResultListBox_OnPreviewMouseUp(object sender, MouseButtonEventArgs e)
     {
-        if (Mouse.DirectlyOver is not FrameworkElement { DataContext: ResultViewModel })
-            return;
-
-        LeftClickResultCommand?.Execute(null);
+        if (Mouse.DirectlyOver is FrameworkElement { DataContext: ResultViewModel })
+            LeftClickResultCommand?.Execute(null);
     }
 }
