@@ -19,7 +19,7 @@
                 MaxHeight="320"
                 Margin="0 16 0 0"
                 HorizontalAlignment="Center"
-                FontFamily="{Binding Glyph.FontFamily}"
+                FontFamily="/Resources/SegoeFluentIcons.ttf#Segoe Fluent Icons"
                 FontSize="90"
                 Foreground="{DynamicResource Color05B}"
                 Text="{Binding Glyph.Glyph}"

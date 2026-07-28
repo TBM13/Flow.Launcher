@@ -64,7 +64,7 @@
                     Height="25"
                     Margin="5 0 0 0"
                     VerticalAlignment="Center"
-                    FontFamily="{Binding Glyph.FontFamily}"
+                    FontFamily="/Resources/SegoeFluentIcons.ttf#Segoe Fluent Icons"
                     FontSize="25"
                     Foreground="{DynamicResource Color05B}"
                     Text="{Binding Glyph.Glyph}"
