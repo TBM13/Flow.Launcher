@@ -121,7 +121,7 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = Localize.Cmd_Shutdown,
                     SubTitle = Localize.Cmd_Shutdown_Description,
-                    Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe7e8"),
+                    Glyph = new GlyphInfo (Glyph:"\xe7e8"),
                     Action = c =>
                     {
                         var result = Context.API.ShowMsgBox(
@@ -147,7 +147,7 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = Localize.Cmd_Restart,
                     SubTitle = Localize.Cmd_Restart_Description,
-                    Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe777"),
+                    Glyph = new GlyphInfo (Glyph:"\xe777"),
                     Action = c =>
                     {
                         var result = Context.API.ShowMsgBox(
@@ -173,7 +173,7 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = Localize.Cmd_RestartAdvanced,
                     SubTitle = Localize.Cmd_RestartAdvanced_Description,
-                    Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xecc5"),
+                    Glyph = new GlyphInfo (Glyph:"\xecc5"),
                     Action = c =>
                     {
                         var result = Context.API.ShowMsgBox(
@@ -199,7 +199,7 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = Localize.Cmd_LogOff,
                     SubTitle = Localize.Cmd_LogOff_Description,
-                    Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe77b"),
+                    Glyph = new GlyphInfo (Glyph:"\xe77b"),
                     Action = c =>
                     {
                         var result = Context.API.ShowMsgBox(
@@ -214,7 +214,7 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = Localize.Cmd_Lock,
                     SubTitle = Localize.Cmd_Lock_Description,
-                    Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe72e"),
+                    Glyph = new GlyphInfo (Glyph:"\xe72e"),
                     Action = c =>
                     {
                         PInvoke.LockWorkStation();
@@ -225,7 +225,7 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = Localize.Cmd_Sleep,
                     SubTitle = Localize.Cmd_Sleep_Description,
-                    Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xec46"),
+                    Glyph = new GlyphInfo (Glyph:"\xec46"),
                     Action = c =>
                     {
                         PInvoke.SetSuspendState(false, false, false);
@@ -236,7 +236,7 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = Localize.Cmd_Hibernate,
                     SubTitle = Localize.Cmd_Hibernate_Description,
-                    Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe8be"),
+                    Glyph = new GlyphInfo (Glyph:"\xe8be"),
                     Action= c =>
                     {
                         PInvoke.SetSuspendState(true, false, false);
@@ -246,7 +246,7 @@ namespace Flow.Launcher.Plugin.Sys
                 new Result
                 {
                     Title = Localize.Cmd_OpenRecycleBin,
-                    Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe74d"),
+                    Glyph = new GlyphInfo (Glyph:"\xe74d"),
                     CopyText = recycleBinFolder,
                     Action = c =>
                     {
@@ -260,7 +260,7 @@ namespace Flow.Launcher.Plugin.Sys
                     Title = Localize.Cmd_Exit,
                     SubTitle = Localize.Cmd_Exit_Description,
                     IcoPath = "Images\\app.png",
-                    Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe89f"),
+                    Glyph = new GlyphInfo (Glyph:"\xe89f"),
                     Action = c =>
                     {
                         Context.API.HideMainWindow();
@@ -272,7 +272,7 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = Localize.Cmd_Settings,
                     SubTitle = Localize.Cmd_Settings_Description,
-                    Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xf210"),
+                    Glyph = new GlyphInfo (Glyph:"\xf210"),
                     IcoPath = "Images\\app.png",
                     Action = c =>
                     {
@@ -283,7 +283,7 @@ namespace Flow.Launcher.Plugin.Sys
                 new Result
                 {
                     Title = Localize.Cmd_ToggleDarkMode,
-                    Glyph = new GlyphInfo (FontFamily:"/Resources/#Segoe Fluent Icons", Glyph:"\xe7a1"),
+                    Glyph = new GlyphInfo (Glyph:"\xe7a1"),
                     IcoPath = "Images\\app.png",
                     Action = c =>
                     {

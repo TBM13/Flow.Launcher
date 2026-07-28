@@ -17,43 +17,13 @@ public partial class ResultViewModel : ObservableObject
     // TODO: Check if there is any better alternative
     private static readonly Logger<ResultViewModel> _logger = Ioc.Default.GetRequiredService<Logger<ResultViewModel>>();
     private static readonly ImageLoader _imageLoader = Ioc.Default.GetRequiredService<ImageLoader>();
-    private static readonly PrivateFontCollection _fontCollection = new();
-    private static readonly Dictionary<string, string> _fonts = [];
 
     public ResultViewModel(Result result, ISettingsAPI settings)
     {
         Settings = settings;
         Result = result;
 
-        if (Result.Glyph is { FontFamily: not null } glyph)
-        {
-            // Checks if it's a system installed font, which does not require path to be provided.
-            if (glyph.FontFamily.EndsWith(".ttf") || glyph.FontFamily.EndsWith(".otf"))
-            {
-                var fontFamilyPath = glyph.FontFamily;
-
-                if (_fonts.TryGetValue(fontFamilyPath, out var value))
-                {
-                    Glyph = glyph with
-                    {
-                        FontFamily = value
-                    };
-                }
-                else
-                {
-                    _fontCollection.AddFontFile(fontFamilyPath);
-                    _fonts[fontFamilyPath] = $"{Path.GetDirectoryName(fontFamilyPath)}/#{_fontCollection.Families[^1].Name}";
-                    Glyph = glyph with
-                    {
-                        FontFamily = _fonts[fontFamilyPath]
-                    };
-                }
-            }
-            else
-            {
-                Glyph = glyph;
-            }
-        }
+        Glyph = Result.Glyph;
     }
 
     public ISettingsAPI Settings { get; }

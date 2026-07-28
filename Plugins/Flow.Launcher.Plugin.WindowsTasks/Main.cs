@@ -28,7 +28,6 @@ public class Main : IPlugin, IContextMenu
 {
     public static readonly string PLUGIN_ICON = PluginMetadataDefinition.Metadata.IcoPath;
     public const string TASK_DISABLED_ICON = "Images\\Plugin.WindowsTasks.TaskDisabled.png";
-    public const string GLYPH_FONT = "/Resources/#Segoe Fluent Icons";
 
     internal static PluginInitContext Context { get; private set; } = null!;
 
@@ -108,7 +107,7 @@ public class Main : IPlugin, IContextMenu
                 res.Add(new()
                 {
                     Title = Localize.TaskAction_Disable,
-                    Glyph = new GlyphInfo(FontFamily: GLYPH_FONT, Glyph: "\xEB4A"),
+                    Glyph = new GlyphInfo(Glyph: "\xEB4A"),
                     Action = c =>
                     {
                         task.Enabled = false;
@@ -121,7 +120,7 @@ public class Main : IPlugin, IContextMenu
                 res.Add(new()
                 {
                     Title = Localize.TaskAction_Enable,
-                    Glyph = new GlyphInfo(FontFamily: GLYPH_FONT, Glyph: "\xEB49"),
+                    Glyph = new GlyphInfo(Glyph: "\xEB49"),
                     Action = c =>
                     {
                         task.Enabled = true;
@@ -142,7 +141,7 @@ public class Main : IPlugin, IContextMenu
         {
             Title = folder.Name,
             AutoCompleteText = navigateQuery,
-            Glyph = new GlyphInfo(FontFamily: GLYPH_FONT, Glyph: "\uF12B"),
+            Glyph = new GlyphInfo(Glyph: "\uF12B"),
             IcoPath = PLUGIN_ICON,
             ContextData = folder,
             CopyText = folder.Path,

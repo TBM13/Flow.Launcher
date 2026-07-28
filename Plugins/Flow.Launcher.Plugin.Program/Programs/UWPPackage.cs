@@ -467,7 +467,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
 
                         return true;
                     },
-                    Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xe838"),
+                    Glyph = new GlyphInfo(Glyph: "\xe838"),
                 }
             };
 
@@ -481,7 +481,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                         Launch(true);
                         return true;
                     },
-                    Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xe7ef")
+                    Glyph = new GlyphInfo(Glyph: "\xe7ef")
                 });
             }
 

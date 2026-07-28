@@ -472,7 +472,7 @@ namespace Flow.Launcher.Plugin.Program
                         });
                         return false;
                     },
-                    Glyph = new GlyphInfo(FontFamily: "/Resources/#Segoe Fluent Icons", Glyph: "\xece4"),
+                    Glyph = new GlyphInfo(Glyph: "\xece4"),
                 }
             );
 
