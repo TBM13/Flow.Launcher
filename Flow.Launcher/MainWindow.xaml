@@ -137,6 +137,7 @@
                 VerticalContentAlignment="Center"
                 ui:TextBoxHelper.IsDeleteButtonVisible="False"
                 AllowDrop="True"
+                Background="Transparent"
                 BorderThickness="0"
                 CaretBrush="{DynamicResource Color05B}"
                 FontSize="16"
