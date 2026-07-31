@@ -43,9 +43,9 @@ public ref struct Tokenizer(ReadOnlySpan<char> input)
                     ')' => new Token(TokenType.Operator, OperatorType.CloseParentheses, default),
                     '!' => new Token(TokenType.Operator, OperatorType.UnaryFactorial, default),
                     '%' when
-                            // 4% is unary percentage but 4 % 2 is binary remainder
+                            // "4%" is unary percentage but "4 % 2" is binary remainder
                             _index > 0 && !IsWhitespace(_input[_index - 1]) &&
-                            // 4%2 is binary remainder
+                            // "4%2" and "4%(2)" are binary remainder
                             (_index + 1 == _input.Length || _input[_index + 1] is not (>= '0' and <= '9' or '('))
                         => new Token(TokenType.Operator, OperatorType.UnaryPercentage, default),
 
@@ -57,6 +57,8 @@ public ref struct Tokenizer(ReadOnlySpan<char> input)
                         new Token(TokenType.Operator, OperatorType.FloorDivide, default),
                     '/' => new Token(TokenType.Operator, OperatorType.Divide, default),
                     '%' => new Token(TokenType.Operator, OperatorType.Remainder, default),
+                    '^' when _index + 1 == _input.Length || _input[_index + 1] != '^' // "4^2" is power but "4^^2" is binary xor
+                        => new Token(TokenType.Operator, OperatorType.Power, default),
 
                     // Bitwise operations
                     '&' => new Token(TokenType.Operator, OperatorType.BitwiseAnd, default),
@@ -104,6 +106,7 @@ public ref struct Tokenizer(ReadOnlySpan<char> input)
                 OperatorType.FloorDivide => 2,
 
                 // Multi-char bitwise operations
+                OperatorType.BitwiseXor => 2,
                 OperatorType.LogicalRightShift => 3,
                 OperatorType.ArithmeticRightShift or OperatorType.LeftShift => 2,
 

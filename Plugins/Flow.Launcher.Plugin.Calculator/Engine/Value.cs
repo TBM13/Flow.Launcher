@@ -79,4 +79,63 @@ public readonly struct Value
 
         return new Value(result);
     }
+
+    /// <exception cref="ArgumentException"></exception>
+    public Value Pow(Value exponent)
+    {
+        Int128 e;
+        try
+        {
+            e = exponent.AsInt128();
+        }
+        catch (InvalidOperationException)
+        {
+            throw new ArgumentException($"Exponent cannot be a decimal: {exponent}");
+        }
+
+        checked
+        {
+            if (!IsDecimal && e >= 0)
+            {
+                Int128 b = AsInt128();
+
+                Int128 result = 1;
+                while (e > 0)
+                {
+                    if ((e & 1) == 1) result *= b;
+                    if (e > 1) b *= b;
+                    e >>= 1;
+                }
+
+                return new(result);
+            }
+            else
+            {
+                decimal b = AsDecimal();
+                UInt128 absExp;
+                unchecked
+                {
+                    // Use UInt128 to avoid overflow when e is Int128.MinValue
+                    // We need to do this inside an unchecked context or else this is
+                    // considered an overflow when e < 0
+                    absExp = e < 0 ? (0 - (UInt128)e) : (UInt128)e;
+                }
+
+                decimal result = 1;
+                while (absExp > 0)
+                {
+                    if ((absExp & 1) == 1) result *= b;
+                    if (absExp > 1) b *= b;
+                    absExp >>= 1;
+                }
+
+                if (e < 0)
+                    // Inverting the base before the while loop would prevent overflow exceptions
+                    // on large negative numbers, but would also make the result less accurate
+                    result = 1m / result;
+
+                return new(result);
+            }
+        }
+    }
 }

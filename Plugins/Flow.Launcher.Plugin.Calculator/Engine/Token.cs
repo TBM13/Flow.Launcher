@@ -34,6 +34,7 @@ public enum OperatorType : byte
     Divide,
     Remainder,
     FloorDivide,
+    Power,
     // Bitwise binary operators
     BitwiseAnd,
     BitwiseOr,

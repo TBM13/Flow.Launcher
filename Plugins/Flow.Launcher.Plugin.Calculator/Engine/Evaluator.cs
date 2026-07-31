@@ -24,12 +24,15 @@ public static class Evaluator
             OperatorType.Multiply or OperatorType.Divide
                 or OperatorType.FloorDivide or OperatorType.Remainder => 6,
 
-            // Unary Operators (highest precedence)
-            // Prefix
+            // Unary prefix (+x, -x, ~x)
             OperatorType.UnaryPlus or OperatorType.UnaryMinus
                 or OperatorType.UnaryBitwiseNot => 7,
-            // Postfix
-            OperatorType.UnaryFactorial or OperatorType.UnaryPercentage => 8,
+
+            // Exponentiation (to make "-3^2" evaluate as "-(3^2)" instead of "(-3)^2")
+            OperatorType.Power => 8,
+
+            // Unary Postfix (x!, x%) (highest precedence)
+            OperatorType.UnaryFactorial or OperatorType.UnaryPercentage => 9,
 
             _ => throw new InvalidOperationException($"Operator {op} does not have a precedence defined")
         };
@@ -227,6 +230,7 @@ public static class Evaluator
                 OperatorType.Remainder => useDecimalMath
                     ? new Value(left.AsDecimal() % right.AsDecimal())
                     : new Value(left.AsInt128() % right.AsInt128()),
+                OperatorType.Power => left.Pow(right),
 
                 // Bitwise operations
                 OperatorType.BitwiseAnd => !useDecimalMath
