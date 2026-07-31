@@ -66,18 +66,17 @@ public readonly struct Value
     /// <exception cref="ArgumentException"></exception>
     public Value Factorial()
     {
-        // Factorial is only mathematically valid for non-negative integers
         Int128 n = AsInt128();
         if (n < 0)
-            throw new ArgumentException("Factorial is not defined for negative numbers");
+            throw new ArgumentException($"Factorial is not defined for negative numbers: {n}");
+        if (n > 33)
+            throw new ArgumentException($"Factorial is too large to compute: {n}");
 
-        checked
-        {
-            Int128 result = 1;
-            for (Int128 i = 2; i <= n; i++)
-                result *= i;
+        // No need to check for overflow since we already limited n to 33
+        Int128 result = 1;
+        for (int i = 2; i <= n; i++)
+            result *= i;
 
-            return new Value(result);
-        }
+        return new Value(result);
     }
 }
