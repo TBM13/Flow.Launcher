@@ -1,15 +1,9 @@
 ﻿using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Windows;
+using Flow.Launcher.Interop;
 using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.Plugins;
 using Flow.Launcher.PluginSDK.Plugins.Interfaces;
-using Microsoft.Win32;
-using Windows.Win32;
-using Windows.Win32.Foundation;
-using Windows.Win32.Security;
-using Windows.Win32.System.Shutdown;
-using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Flow.Launcher.Plugin.Sys
 {
@@ -31,12 +25,6 @@ namespace Flow.Launcher.Plugin.Sys
 
     public class Main : IPlugin
     {
-        // SHTDN_REASON_MAJOR_OTHER indicates a generic shutdown reason that isn't categorized under hardware failure,
-        // software updates, or other predefined reasons.
-        // SHTDN_REASON_FLAG_PLANNED marks the shutdown as planned rather than an unexpected shutdown or failure
-        private const SHUTDOWN_REASON REASON = SHUTDOWN_REASON.SHTDN_REASON_MAJOR_OTHER |
-            SHUTDOWN_REASON.SHTDN_REASON_FLAG_PLANNED;
-
         internal static PluginInitContext Context { get; private set; } = null!;
 
         public List<Result> Query(Query query)
@@ -73,44 +61,6 @@ namespace Flow.Launcher.Plugin.Sys
             Context = context;
         }
 
-        private static unsafe bool EnableShutdownPrivilege()
-        {
-            try
-            {
-                if (!PInvoke.OpenProcessToken(Process.GetCurrentProcess().SafeHandle, TOKEN_ACCESS_MASK.TOKEN_ADJUST_PRIVILEGES | TOKEN_ACCESS_MASK.TOKEN_QUERY, out var tokenHandle))
-                {
-                    return false;
-                }
-
-                if (!PInvoke.LookupPrivilegeValue(null, PInvoke.SE_SHUTDOWN_NAME, out var luid))
-                {
-                    return false;
-                }
-
-                var privileges = new TOKEN_PRIVILEGES
-                {
-                    PrivilegeCount = 1,
-                    Privileges = new() { e0 = new LUID_AND_ATTRIBUTES { Luid = luid, Attributes = TOKEN_PRIVILEGES_ATTRIBUTES.SE_PRIVILEGE_ENABLED } }
-                };
-
-                if (!PInvoke.AdjustTokenPrivileges(tokenHandle, false, &privileges, null, out var _))
-                {
-                    return false;
-                }
-
-                if (Marshal.GetLastWin32Error() != (int)WIN32_ERROR.NO_ERROR)
-                {
-                    return false;
-                }
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
         private static List<Result> Commands(Query query)
         {
             var results = new List<Result>();
@@ -131,13 +81,10 @@ namespace Flow.Launcher.Plugin.Sys
                         if (result == MessageBoxResult.Yes)
                         {
                             // Save settings before shutdown to avoid data loss
+                            // TODO: Shouldn't flow be able to detect shutdowns and automatically save settings?
                             Context.API.SaveAppAllSettings();
 
-                            if (EnableShutdownPrivilege())
-                                PInvoke.ExitWindowsEx(EXIT_WINDOWS_FLAGS.EWX_SHUTDOWN | EXIT_WINDOWS_FLAGS.EWX_POWEROFF, REASON);
-                            else
-                                // No need to de-elevate since we already have message box asking for confirmation
-                                Process.Start("shutdown", "/s /t 0");
+                            OSHelper.Shutdown();
                         }
 
                         return true;
@@ -157,13 +104,10 @@ namespace Flow.Launcher.Plugin.Sys
                         if (result == MessageBoxResult.Yes)
                         {
                             // Save settings before restart to avoid data loss
+                            // TODO: Shouldn't flow be able to detect shutdowns and automatically save settings?
                             Context.API.SaveAppAllSettings();
 
-                            if (EnableShutdownPrivilege())
-                                PInvoke.ExitWindowsEx(EXIT_WINDOWS_FLAGS.EWX_REBOOT, REASON);
-                            else
-                                // No need to de-elevate since we already have message box asking for confirmation
-                                Process.Start("shutdown", "/r /t 0");
+                            OSHelper.Restart();
                         }
 
                         return true;
@@ -183,13 +127,10 @@ namespace Flow.Launcher.Plugin.Sys
                         if (result == MessageBoxResult.Yes)
                         {
                             // Save settings before advanced restart to avoid data loss
+                            // TODO: Shouldn't flow be able to detect shutdowns and automatically save settings?
                             Context.API.SaveAppAllSettings();
 
-                            if (EnableShutdownPrivilege())
-                                PInvoke.ExitWindowsEx(EXIT_WINDOWS_FLAGS.EWX_REBOOT | EXIT_WINDOWS_FLAGS.EWX_BOOTOPTIONS, REASON);
-                            else
-                                // No need to de-elevate since we already have message box asking for confirmation
-                                Process.Start("shutdown", "/r /o /t 0");
+                            OSHelper.Restart(advancedBootOptions: true);
                         }
 
                         return true;
@@ -205,8 +146,10 @@ namespace Flow.Launcher.Plugin.Sys
                         var result = Context.API.ShowMsgBox(
                             Localize.Dialog_ConfirmLogOff, Localize.Cmd_LogOff_Description,
                             MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
                         if (result == MessageBoxResult.Yes)
-                            PInvoke.ExitWindowsEx(EXIT_WINDOWS_FLAGS.EWX_LOGOFF, REASON);
+                            OSHelper.LogOff();
+
                         return true;
                     }
                 },
@@ -217,7 +160,7 @@ namespace Flow.Launcher.Plugin.Sys
                     Glyph = new GlyphInfo (Glyph:"\xe72e"),
                     Action = c =>
                     {
-                        PInvoke.LockWorkStation();
+                        OSHelper.Lock();
                         return true;
                     }
                 },
@@ -228,7 +171,7 @@ namespace Flow.Launcher.Plugin.Sys
                     Glyph = new GlyphInfo (Glyph:"\xec46"),
                     Action = c =>
                     {
-                        PInvoke.SetSuspendState(false, false, false);
+                        OSHelper.Suspend();
                         return true;
                     }
                 },
@@ -239,7 +182,7 @@ namespace Flow.Launcher.Plugin.Sys
                     Glyph = new GlyphInfo (Glyph:"\xe8be"),
                     Action= c =>
                     {
-                        PInvoke.SetSuspendState(true, false, false);
+                        OSHelper.Suspend(hibernate: true);
                         return true;
                     }
                 },
@@ -280,7 +223,7 @@ namespace Flow.Launcher.Plugin.Sys
                         return true;
                     }
                 },
-                new Result
+                /*new Result
                 {
                     Title = Localize.Cmd_ToggleDarkMode,
                     Glyph = new GlyphInfo (Glyph:"\xe7a1"),
@@ -316,7 +259,7 @@ namespace Flow.Launcher.Plugin.Sys
 
                         return true;
                     }
-                },
+                },*/
                 new Result {
                     Title = "Garbage Collection",
                     Glyph = new GlyphInfo ("\xE74D"),

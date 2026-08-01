@@ -102,3 +102,11 @@ FILE_FLAGS_AND_ATTRIBUTES
 SHGFI_FLAGS
 SHGetFileInfo
 PrivateExtractIcons
+LookupPrivilegeValue
+SE_SHUTDOWN_NAME
+TOKEN_PRIVILEGES
+AdjustTokenPrivileges
+ExitWindowsEx
+GetCurrentProcess
+LockWorkStation
+SetSuspendState

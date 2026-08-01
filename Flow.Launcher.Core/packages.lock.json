@@ -266,6 +266,7 @@
       "flow.launcher.plugin.sys": {
         "type": "Project",
         "dependencies": {
+          "Flow.Launcher.Interop": "[1.0.0, )",
           "Flow.Launcher.PluginSDK": "[1.0.0, )"
         }
       },

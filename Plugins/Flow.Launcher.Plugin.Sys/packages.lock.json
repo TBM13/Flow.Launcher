@@ -2,17 +2,6 @@
   "version": 1,
   "dependencies": {
     "net10.0-windows7.0": {
-      "Microsoft.Windows.CsWin32": {
-        "type": "Direct",
-        "requested": "[0.3.296, )",
-        "resolved": "0.3.296",
-        "contentHash": "//7UtrKaAMEnUEuoKJyE5CMlswUa9qwoE6Hevn7ZST1gN7H0h2xQgUE2lhYkA5v6Va65lTzQasKoYBaRSo2UgA==",
-        "dependencies": {
-          "Microsoft.Windows.SDK.Win32Docs": "0.1.42-alpha",
-          "Microsoft.Windows.SDK.Win32Metadata": "70.0.11-preview",
-          "Microsoft.Windows.WDK.Win32Metadata": "0.13.25-experimental"
-        }
-      },
       "CommunityToolkit.Mvvm": {
         "type": "Transitive",
         "resolved": "8.4.2",
@@ -82,24 +71,6 @@
         "resolved": "8.0.0",
         "contentHash": "bXJEZrW9ny8vjMF1JV253WeLhpEVzFo1lyaZu1vQ4ZxWUlVvknZ/+ftFgVheLubb4eZPSwwxBeqS1JkCOjxd8g=="
       },
-      "Microsoft.Windows.SDK.Win32Docs": {
-        "type": "Transitive",
-        "resolved": "0.1.42-alpha",
-        "contentHash": "Z/9po23gUA9aoukirh2ItMU2ZS9++Js9Gdds9fu5yuMojDrmArvY2y+tq9985tR3cxFxpZO1O35Wjfo0khj5HA=="
-      },
-      "Microsoft.Windows.SDK.Win32Metadata": {
-        "type": "Transitive",
-        "resolved": "70.0.11-preview",
-        "contentHash": "i8Dv2KCKzH8MQAsgLeUa5zFGyQOoz+TlvnbkFUkjsUtqhj4oguVj9rDpVACs5fLayZbwItOSllf+bhwr+z2yeg=="
-      },
-      "Microsoft.Windows.WDK.Win32Metadata": {
-        "type": "Transitive",
-        "resolved": "0.13.25-experimental",
-        "contentHash": "IM50tb/+UIwBr9FMr6ZKcZjCMW+Axo6NjGqKxgjUfyCY8dRnYUfrJEXxAaXoWtYP4X8EmASmC1Jtwh4XucseZg==",
-        "dependencies": {
-          "Microsoft.Windows.SDK.Win32Metadata": "63.0.31-preview"
-        }
-      },
       "System.IO.Hashing": {
         "type": "Transitive",
         "resolved": "8.0.0",
@@ -118,6 +89,12 @@
           "Microsoft.Extensions.Logging": "8.0.0",
           "System.IO.Hashing": "8.0.0",
           "Utf8StringInterpolation": "1.3.1"
+        }
+      },
+      "flow.launcher.interop": {
+        "type": "Project",
+        "dependencies": {
+          "Flow.Launcher.PluginSDK": "[1.0.0, )"
         }
       },
       "flow.launcher.pluginsdk": {
