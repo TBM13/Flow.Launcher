@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Flow.Launcher.Interop.Files;
 using Flow.Launcher.Interop.Programs;
+using Flow.Launcher.Interop.Shell;
 using Flow.Launcher.Plugin.Program.Views.Models;
 using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.API;
@@ -365,7 +366,14 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     }
                 }
 
-                program.LocalizedName = ShellLocalization.GetLocalizedName(path);
+                try
+                {
+                    program.LocalizedName = ShellHelper.GetDisplayName(path);
+                }
+                catch
+                {
+
+                }
 
                 return program;
             }

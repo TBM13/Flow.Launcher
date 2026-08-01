@@ -1,5 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.Shell;
 
 namespace Flow.Launcher.Interop.Shell;
 
@@ -24,5 +26,31 @@ public static class ShellHelper
         PInvoke.SHLoadIndirectString(indirectString, buffer).ThrowOnFailure();
 
         return buffer[..buffer.IndexOf('\0')].ToString();
+    }
+
+    /// <summary>
+    /// Returns the friendly, localized display name of a shell item (e.g. "File Explorer" for explorer.exe).
+    /// </summary>
+    /// <exception cref="COMException"/>
+    public static unsafe string GetDisplayName(string path)
+    {
+        IShellItem? shellItem = null;
+        PWSTR displayName = default;
+        try
+        {
+            PInvoke.SHCreateItemFromParsingName<IShellItem>(path, null, out shellItem)
+                .ThrowOnFailure();
+
+            shellItem.GetDisplayName(SIGDN.SIGDN_NORMALDISPLAY, out displayName);
+            return displayName.ToString();
+        }
+        finally
+        {
+            if (displayName.Value is not null)
+                PInvoke.CoTaskMemFree(displayName);
+
+            if (shellItem is not null && Marshal.IsComObject(shellItem))
+                Marshal.ReleaseComObject(shellItem);
+        }
     }
 }
