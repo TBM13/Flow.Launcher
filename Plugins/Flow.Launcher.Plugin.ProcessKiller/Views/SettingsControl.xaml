@@ -11,17 +11,8 @@
     mc:Ignorable="d">
 
     <StackPanel>
-        <CheckBox
-            Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
-            Content="Show window titles when possible"
-            IsChecked="{Binding Settings.ShowWindowTitle}" />
-        <CheckBox
-            Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
-            Content="Put processes with visible windows on top of the list"
-            IsChecked="{Binding Settings.PutVisibleWindowProcessesTop}" />
-        <CheckBox
-            Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
-            Content="Filter service processes (svchost)"
-            IsChecked="{Binding Settings.FilterSvchostProcesses}" />
+        <CheckBox Content="Show window titles when possible" IsChecked="{Binding Settings.ShowWindowTitle}" />
+        <CheckBox Content="Put processes with visible windows on top of the list" IsChecked="{Binding Settings.PutVisibleWindowProcessesTop}" />
+        <CheckBox Content="Filter service processes (svchost)" IsChecked="{Binding Settings.FilterSvchostProcesses}" />
     </StackPanel>
 </UserControl>

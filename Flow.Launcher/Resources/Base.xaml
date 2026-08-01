@@ -30,10 +30,4 @@
     </Style>
 
     <SolidColorBrush x:Key="ItemSelectedBackgroundColor" Color="{m:DynamicColor ItemSelectedBackgroundColorBrush}" />
-
-    <!--  Settings  -->
-    <Thickness x:Key="SettingPanelItemLeftMargin">9,0,0,0</Thickness>
-    <Thickness x:Key="SettingPanelItemRightMargin">0,0,9,0</Thickness>
-    <Thickness x:Key="SettingPanelItemLeftTopBottomMargin">9,4.5,0,4.5</Thickness>
-    <Thickness x:Key="SettingPanelItemRightTopBottomMargin">0,4.5,9,4.5</Thickness>
 </ResourceDictionary>

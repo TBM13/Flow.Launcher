@@ -34,21 +34,6 @@ public static class Localize
     public const string FileResult_OpenWith = "Open With";
     public const string FileResult_OpenWith_Subtitle = "Select a program to open with";
 
-    // Settings
-    public const string Settings_General = "General Settings";
-    public const string Settings_General_ShellPath = "Shell Path";
-    public const string Settings_General_UseLocationAsWorkingDir = "Use search result's location as the working directory of the executable";
-    public const string Settings_General_ExcludedFileTypes = "Excluded File Types (comma seperated)";
-    public const string Settings_General_ExcludedFileTypes_Tooltip = "Example: exe,jpg,png";
-    public const string Settings_General_MaxResults = "Maximum number of results";
-    public const string Settings_Preview = "Preview Panel";
-    public const string Settings_Preview_Size = "Size";
-    public const string Settings_Preview_DateCreated = "Date Created";
-    public const string Settings_Preview_DateModified = "Date Modified";
-    public const string Settings_Preview_FileAge = "File Age";
-    public const string Settings_Preview_DisplayFileInfo = "Display File Info";
-    public const string Settings_Preview_DateAndTimeFormat = "Date and time format";
-
     // Preview
     public const string Preview_UnknownValue = "Unknown";
     public const string Preview_Today = "Today";

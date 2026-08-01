@@ -65,12 +65,12 @@
                     <!--  Action keyword setting  -->
                     <DockPanel Margin="70 13.5 18 13.5">
                         <ui:FontIcon
-                            Margin="{StaticResource SettingPanelItemRightMargin}"
+                            Margin="0 0 9 0"
                             VerticalAlignment="Center"
                             DockPanel.Dock="Left"
                             Glyph="&#xe819;" />
                         <TextBlock
-                            Margin="{StaticResource SettingPanelItemRightMargin}"
+                            Margin="0 0 9 0"
                             VerticalAlignment="Center"
                             DockPanel.Dock="Left"
                             Text="Action keyword" />

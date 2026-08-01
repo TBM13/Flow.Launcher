@@ -4,7 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:root="clr-namespace:Flow.Launcher.Plugin.Explorer"
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     xmlns:viewModels="clr-namespace:Flow.Launcher.Plugin.Explorer.ViewModels"
     d:DataContext="{d:DesignInstance viewModels:SettingsViewModel}"
@@ -12,15 +11,15 @@
     d:DesignWidth="800"
     mc:Ignorable="d">
 
-    <StackPanel x:Name="ExpanderContainer">
+    <StackPanel>
         <!--  General Settings Expander  -->
-        <ui:SettingsExpander Header="{x:Static root:Localize.Settings_General}" IsExpanded="False">
+        <ui:SettingsExpander Header="General Settings" IsExpanded="False">
             <ui:SettingsExpander.Items>
-                <ui:SettingsCard Header="{x:Static root:Localize.Settings_General_UseLocationAsWorkingDir}">
+                <ui:SettingsCard Header="Use search result's location as the working directory of the executable">
                     <CheckBox IsChecked="{Binding Settings.UseLocationAsWorkingDir, Mode=TwoWay}" />
                 </ui:SettingsCard>
 
-                <ui:SettingsCard Header="{x:Static root:Localize.Settings_General_ShellPath}">
+                <ui:SettingsCard Header="Shell Path">
                     <StackPanel Orientation="Horizontal">
                         <TextBox
                             Width="240"
@@ -29,7 +28,7 @@
                             Text="{Binding Settings.ShellPath, UpdateSourceTrigger=PropertyChanged}"
                             TextWrapping="NoWrap" />
                         <Button
-                            Margin="{StaticResource SettingPanelItemLeftMargin}"
+                            Margin="5 0 0 0"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
                             Command="{Binding OpenShellPathCommand}"
@@ -37,14 +36,14 @@
                     </StackPanel>
                 </ui:SettingsCard>
 
-                <ui:SettingsCard Header="{x:Static root:Localize.Settings_General_ExcludedFileTypes}">
+                <ui:SettingsCard Header="Excluded File Types (comma separated)">
                     <TextBox
                         MinWidth="180"
                         Text="{Binding Settings.ExcludedFileTypes, UpdateSourceTrigger=PropertyChanged}"
-                        ToolTip="{x:Static root:Localize.Settings_General_ExcludedFileTypes_Tooltip}" />
+                        ToolTip="Example: exe,jpg,png" />
                 </ui:SettingsCard>
 
-                <ui:SettingsCard Header="{x:Static root:Localize.Settings_General_MaxResults}">
+                <ui:SettingsCard Header="Maximum number of results">
                     <TextBox
                         MinWidth="180"
                         MaxLength="6"
@@ -55,57 +54,27 @@
         </ui:SettingsExpander>
 
         <!--  Preview Panel Settings Expander  -->
-        <ui:SettingsExpander Header="{x:Static root:Localize.Settings_Preview}" IsExpanded="False">
+        <ui:SettingsExpander Header="Preview Panel" IsExpanded="False">
             <ui:SettingsExpander.Items>
-                <ui:SettingsCard Header="{x:Static root:Localize.Settings_Preview_DisplayFileInfo}">
-                    <WrapPanel Width="Auto" HorizontalAlignment="Right">
-                        <CheckBox
-                            Margin="{StaticResource SettingPanelItemLeftTopBottomMargin}"
-                            Content="{x:Static root:Localize.Settings_Preview_Size}"
-                            IsChecked="{Binding Settings.ShowFileSizeInPreviewPanel, Mode=TwoWay}" />
-                        <CheckBox
-                            Margin="{StaticResource SettingPanelItemLeftTopBottomMargin}"
-                            Content="{x:Static root:Localize.Settings_Preview_DateCreated}"
-                            IsChecked="{Binding Settings.ShowCreatedDateInPreviewPanel, Mode=TwoWay}" />
-                        <CheckBox
-                            Margin="{StaticResource SettingPanelItemLeftTopBottomMargin}"
-                            Content="{x:Static root:Localize.Settings_Preview_DateModified}"
-                            IsChecked="{Binding Settings.ShowModifiedDateInPreviewPanel, Mode=TwoWay}" />
-                        <CheckBox
-                            Margin="{StaticResource SettingPanelItemLeftTopBottomMargin}"
-                            Content="{x:Static root:Localize.Settings_Preview_FileAge}"
-                            IsChecked="{Binding Settings.ShowFileAgeInPreviewPanel, Mode=TwoWay}" />
-                    </WrapPanel>
+                <ui:SettingsCard Header="Display File Info">
+                    <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                        <CheckBox Content="Size" IsChecked="{Binding Settings.ShowFileSizeInPreviewPanel, Mode=TwoWay}" />
+                        <CheckBox Content="Date Created" IsChecked="{Binding Settings.ShowCreatedDateInPreviewPanel, Mode=TwoWay}" />
+                        <CheckBox Content="Date Modified" IsChecked="{Binding Settings.ShowModifiedDateInPreviewPanel, Mode=TwoWay}" />
+                        <CheckBox Content="File Age" IsChecked="{Binding Settings.ShowFileAgeInPreviewPanel, Mode=TwoWay}" />
+                    </StackPanel>
                 </ui:SettingsCard>
 
                 <ui:SettingsCard
-                    Header="{x:Static root:Localize.Settings_Preview_DateAndTimeFormat}"
+                    Header="Date and time format"
                     IsEnabled="{Binding ShowPreviewPanelDateTimeChoices}"
                     Visibility="{Binding PreviewPanelDateTimeChoicesVisibility}">
-                    <WrapPanel Width="Auto" HorizontalAlignment="Right">
-                        <StackPanel Orientation="Horizontal">
-                            <ComboBox
-                                Margin="{StaticResource SettingPanelItemLeftMargin}"
-                                ItemsSource="{Binding DateFormatList}"
-                                SelectedItem="{Binding Settings.PreviewPanelDateFormat}" />
-                            <TextBlock
-                                Margin="{StaticResource SettingPanelItemLeftMargin}"
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource Color05B}"
-                                Text="{Binding PreviewPanelDateFormatDemo}" />
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <ComboBox
-                                Margin="{StaticResource SettingPanelItemLeftMargin}"
-                                ItemsSource="{Binding TimeFormatList}"
-                                SelectedItem="{Binding Settings.PreviewPanelTimeFormat}" />
-                            <TextBlock
-                                Margin="{StaticResource SettingPanelItemLeftMargin}"
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource Color05B}"
-                                Text="{Binding PreviewPanelTimeFormatDemo}" />
-                        </StackPanel>
-                    </WrapPanel>
+                    <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                        <ComboBox ItemsSource="{Binding DateFormatList}" SelectedItem="{Binding Settings.PreviewPanelDateFormat}" />
+                        <TextBlock VerticalAlignment="Center" Text="{Binding PreviewPanelDateFormatDemo}" />
+                        <ComboBox ItemsSource="{Binding TimeFormatList}" SelectedItem="{Binding Settings.PreviewPanelTimeFormat}" />
+                        <TextBlock VerticalAlignment="Center" Text="{Binding PreviewPanelTimeFormatDemo}" />
+                    </StackPanel>
                 </ui:SettingsCard>
             </ui:SettingsExpander.Items>
         </ui:SettingsExpander>

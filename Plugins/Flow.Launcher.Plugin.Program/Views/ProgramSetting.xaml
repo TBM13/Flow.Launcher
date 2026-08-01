@@ -14,7 +14,6 @@
             <Setter Property="Margin" Value="-70 13.5 -18 13.5" />
             <Setter Property="Height" Value="1" />
             <Setter Property="VerticalAlignment" Value="Top" />
-            <Setter Property="Background" Value="{DynamicResource Color03B}" />
         </Style>
     </UserControl.Resources>
     <Grid>
@@ -27,7 +26,6 @@
         <DockPanel HorizontalAlignment="Stretch" LastChildFill="True">
             <TextBlock
                 MinWidth="120"
-                Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
                 VerticalAlignment="Center"
                 Text="{x:Static root:Localize.Settings_IndexSources}" />
             <WrapPanel
@@ -36,20 +34,17 @@
                 DockPanel.Dock="Right">
                 <CheckBox
                     Name="UWPEnabled"
-                    Margin="{StaticResource SettingPanelItemRightMargin}"
                     Content="{x:Static root:Localize.Settings_IndexUwp}"
                     IsChecked="{Binding EnableUWP}"
                     ToolTip="{x:Static root:Localize.Settings_IndexUwp_Tooltip}"
                     Visibility="{Binding ShowUWPCheckbox, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 <CheckBox
                     Name="StartMenuEnabled"
-                    Margin="{StaticResource SettingPanelItemRightMargin}"
                     Content="{x:Static root:Localize.Settings_IndexStart}"
                     IsChecked="{Binding EnableStartMenuSource}"
                     ToolTip="{x:Static root:Localize.Settings_IndexStart_Tooltip}" />
                 <CheckBox
                     Name="RegistryEnabled"
-                    Margin="{StaticResource SettingPanelItemRightMargin}"
                     Content="{x:Static root:Localize.Settings_IndexRegistry}"
                     IsChecked="{Binding EnableRegistrySource}"
                     ToolTip="{x:Static root:Localize.Settings_IndexRegistry_Tooltip}" />
@@ -68,7 +63,6 @@
             <DockPanel HorizontalAlignment="Stretch" LastChildFill="True">
                 <TextBlock
                     MinWidth="120"
-                    Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
                     VerticalAlignment="Center"
                     Text="{x:Static root:Localize.Settings_IndexOptions}" />
                 <WrapPanel
@@ -76,17 +70,14 @@
                     HorizontalAlignment="Right"
                     DockPanel.Dock="Right">
                     <CheckBox
-                        Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
                         Content="{x:Static root:Localize.Settings_EnableHideLnkPath}"
                         IsChecked="{Binding HideAppsPath}"
                         ToolTip="{x:Static root:Localize.Settings_EnableHideLnkPath_Tooltip}" />
                     <CheckBox
-                        Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
                         Content="{x:Static root:Localize.Settings_EnableHideUninstallers}"
                         IsChecked="{Binding HideUninstallers}"
                         ToolTip="{x:Static root:Localize.Settings_EnableHideUninstallers_Tooltip}" />
                     <CheckBox
-                        Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
                         Content="{x:Static root:Localize.Settings_EnableDescription}"
                         IsChecked="{Binding EnableDescription}"
                         ToolTip="{x:Static root:Localize.Settings_EnableDescription_Tooltip}" />
@@ -104,21 +95,18 @@
                 <Button
                     x:Name="btnLoadAllProgramSource"
                     MinWidth="120"
-                    Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
                     HorizontalAlignment="Right"
                     Click="btnLoadAllProgramSource_OnClick"
                     Content="{x:Static root:Localize.Settings_AllPrograms}" />
                 <Button
                     x:Name="btnProgramSuffixes"
                     MinWidth="120"
-                    Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
                     HorizontalAlignment="Right"
                     Click="BtnProgramSuffixes_OnClick"
                     Content="{x:Static root:Localize.Settings_ProgramSuffixes}" />
                 <Button
                     x:Name="btnReindex"
                     MinWidth="120"
-                    Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
                     HorizontalAlignment="Right"
                     Click="btnReindex_Click"
                     Content="{x:Static root:Localize.Settings_Reindex}" />
@@ -131,7 +119,6 @@
                         x:Name="progressBarIndexing"
                         Width="80"
                         Height="20"
-                        Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
                         IsIndeterminate="True"
                         Maximum="100"
                         Minimum="0" />
@@ -203,19 +190,16 @@
                 <Button
                     x:Name="btnEditProgramSource"
                     MinWidth="100"
-                    Margin="{StaticResource SettingPanelItemLeftTopBottomMargin}"
                     Click="btnEditProgramSource_OnClick"
                     Content="{x:Static root:Localize.Settings_Edit}" />
                 <Button
                     x:Name="btnDeleteProgramSource"
                     MinWidth="100"
-                    Margin="{StaticResource SettingPanelItemLeftTopBottomMargin}"
                     Click="btnDeleteProgramSource_OnClick"
                     Content="{x:Static root:Localize.Settings_Delete}" />
                 <Button
                     x:Name="btnAddProgramSource"
                     MinWidth="100"
-                    Margin="{StaticResource SettingPanelItemLeftTopBottomMargin}"
                     Click="btnAddProgramSource_OnClick"
                     Content="{x:Static root:Localize.Settings_Add}" />
             </StackPanel>
