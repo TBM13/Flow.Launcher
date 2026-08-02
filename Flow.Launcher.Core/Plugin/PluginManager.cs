@@ -423,8 +423,6 @@ namespace Flow.Launcher.Core.Plugin
 
         #endregion
 
-        #region Check Initializing & Init Failed
-
         #region Plugin Action Keyword
 
         public bool ActionKeywordRegistered(string actionKeyword)
