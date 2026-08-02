@@ -61,7 +61,7 @@ public partial class HotkeyControl
             return;
         }
 
-        foreach (string key in HotkeyInfo.Hotkey.ToString(includeLongPress: false).Split('+'))
+        foreach (string key in HotkeyInfo.Hotkey.ToString().Split('+'))
             _keysToDisplay.Add(key);
     }
 }

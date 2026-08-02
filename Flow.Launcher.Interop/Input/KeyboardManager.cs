@@ -36,7 +36,6 @@ public class KeyboardManager : IDisposable
 
     private PressedKeys _pressedKeys, _lastHotkeyKeys;
     private bool _modifierPressedAfterKey;
-    private long _lastKeyDownTick = 0;
     private readonly Lock _pressedKeysLock = new();
     private bool _initialized, _isDisposed;
 
@@ -190,7 +189,6 @@ public class KeyboardManager : IDisposable
                     return PInvoke.CallNextHookEx(default, nCode, wParam, lParam);
 
                 _pressedKeys = _pressedKeys.PressKey(vkCode);
-                _lastKeyDownTick = Environment.TickCount64;
                 if (key.IsModifierKey() && _pressedKeys.PressedModifiersCount < _pressedKeys.PressedCount)
                     _modifierPressedAfterKey = true;
 
@@ -238,12 +236,6 @@ public class KeyboardManager : IDisposable
 
                 _lastHotkeyKeys = _pressedKeys;
             }
-
-            long elapsedMs = Environment.TickCount64 - _lastKeyDownTick;
-            hotkey = hotkey with
-            {
-                LongPress = elapsedMs >= 600
-            };
 
             bool block = OnHotkeyTriggered?.Invoke(hotkey) ?? false;
             if (block)

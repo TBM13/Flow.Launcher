@@ -5,8 +5,6 @@ namespace Flow.Launcher.PluginSDK.Hotkeys;
 
 public readonly record struct Hotkey
 {
-    private const string LongPressPrefix = "[LongPress]";
-
     /// <summary>
     /// The modifier(s) that need to be held down for the hotkey to be triggered.
     /// </summary>
@@ -20,15 +18,6 @@ public readonly record struct Hotkey
     /// When set to <see cref="Key.None"/>, pressing the modifier(s) is enough to trigger the hotkey.
     /// </remarks>
     public Key MainKey { get; init; }
-
-    /// <summary>
-    /// When true, the hotkey will only trigger when all the keys are held down
-    /// for a small amount of time before being released.
-    /// <para/>
-    /// This allows two different hotkeys to be registered with the same key(s).
-    /// </summary>
-    /// <remarks>This only has an effect on global hotkeys.</remarks>
-    public bool LongPress { get; init; }
 
     /// <summary>
     /// Whether this hotkey is valid.
@@ -48,11 +37,10 @@ public readonly record struct Hotkey
         }
     }
 
-    public Hotkey(Key mainKey = Key.None, ModifierKeys modifiers = ModifierKeys.None, bool longPress = false)
+    public Hotkey(Key mainKey = Key.None, ModifierKeys modifiers = ModifierKeys.None)
     {
         MainKey = mainKey;
         Modifiers = modifiers;
-        LongPress = longPress;
     }
 
     /// <summary>
@@ -62,11 +50,6 @@ public readonly record struct Hotkey
     public static bool TryParse(ReadOnlySpan<char> str, out Hotkey hotkey)
     {
         str = str.Trim();
-
-        bool longPress = str.StartsWith(LongPressPrefix, StringComparison.OrdinalIgnoreCase);
-        if (longPress)
-            str = str[LongPressPrefix.Length..];
-
         ModifierKeys modifiers = ModifierKeys.None;
         Key mainKey = Key.None;
 
@@ -105,7 +88,6 @@ public readonly record struct Hotkey
         {
             Modifiers = modifiers,
             MainKey = mainKey,
-            LongPress = longPress
         };
 
         return hotkey.IsValid;
@@ -151,19 +133,16 @@ public readonly record struct Hotkey
         return ModifierKeys.None;
     }
 
-    /// <inheritdoc cref="ToString(bool)"/>
-    public override string ToString() => ToString(includeLongPress: true);
     /// <summary>
     /// Converts the hotkey to a string representation.
     /// </summary>
-    /// <param name="includeLongPress">Whether to include a LongPress prefix when <see cref="LongPress"/> is true.</param>
     /// <returns>An empty string if the hotkey is not valid.</returns>
-    public string ToString(bool includeLongPress)
+    public override string ToString()
     {
         if (!IsValid)
             return string.Empty;
 
-        string res = LongPress && includeLongPress ? LongPressPrefix : string.Empty;
+        string res = string.Empty;
         if (Modifiers != ModifierKeys.None)
             res += Modifiers.ToString().Replace(", ", "+");
 

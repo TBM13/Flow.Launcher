@@ -28,7 +28,7 @@ public static class DefaultHotkeys
         {
             Id = "MagicQuery",
             Name = "Magic Query",
-            DefaultHotkey = new(modifiers: ModifierKeys.Windows, longPress: true),
+            DefaultHotkey = new(modifiers: ModifierKeys.Windows | ModifierKeys.Shift),
             OnHotkeyTriggered = () =>
             {
                 // Generate magic query before showing the main window since

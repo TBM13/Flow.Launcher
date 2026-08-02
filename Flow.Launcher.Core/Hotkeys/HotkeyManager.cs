@@ -134,7 +134,6 @@ public class HotkeyManager : IDisposable
         // Check for conflicting global hotkey
         HotkeyInfo? existing = _enabledGlobalHotkeys.GetValueOrDefault(hotkey);
         // Check for conflicting app or result hotkey
-        hotkey = hotkey with { LongPress = false };
         existing ??= _enabledAppHotkeys.GetValueOrDefault(hotkey);
         existing ??= _enabledResultHotkeys.Values
             .Select(resultHotkeys => resultHotkeys.GetValueOrDefault(hotkey))
@@ -156,7 +155,7 @@ public class HotkeyManager : IDisposable
     /// <param name="reason">The reason why the hotkey is not available.</param>
     public bool IsAppHotkeyAvailable(Hotkey hotkey, [NotNullWhen(false)] out string? reason)
     {
-        if (!hotkey.IsValid || hotkey.LongPress)
+        if (!hotkey.IsValid)
         {
             reason = "Invalid hotkey";
             return false;
@@ -168,9 +167,7 @@ public class HotkeyManager : IDisposable
             .Select(resultHotkeys => resultHotkeys.GetValueOrDefault(hotkey))
             .FirstOrDefault(info => info is not null);
 
-        // Check for conflicting global hotkey, with long press set or not
-        existing ??= _enabledGlobalHotkeys.GetValueOrDefault(hotkey);
-        hotkey = hotkey with { LongPress = true };
+        // Check for conflicting global hotkey
         existing ??= _enabledGlobalHotkeys.GetValueOrDefault(hotkey);
 
         if (existing is not null)
@@ -189,7 +186,7 @@ public class HotkeyManager : IDisposable
     /// <param name="reason">The reason why the hotkey is not available.</param>
     public bool IsResultHotkeyAvailable(string pluginId, Hotkey hotkey, [NotNullWhen(false)] out string? reason)
     {
-        if (!hotkey.IsValid || hotkey.LongPress)
+        if (!hotkey.IsValid)
         {
             reason = "Invalid hotkey";
             return false;
@@ -201,9 +198,7 @@ public class HotkeyManager : IDisposable
         if (_enabledResultHotkeys.TryGetValue(pluginId, out var pluginResultHotkeys))
             existing ??= pluginResultHotkeys.GetValueOrDefault(hotkey);
 
-        // Check for conflicting global hotkey, with long press set or not
-        existing ??= _enabledGlobalHotkeys.GetValueOrDefault(hotkey);
-        hotkey = hotkey with { LongPress = true };
+        // Check for conflicting global hotkey
         existing ??= _enabledGlobalHotkeys.GetValueOrDefault(hotkey);
 
         if (existing is not null)

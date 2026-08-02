@@ -39,10 +39,7 @@ public partial class HotkeyControlDialog : ContentDialog
             // Also we should probably make LastGlobalHotkey an observable property and subscribe to its changes
             if (_hotkeyManager.LastGlobalHotkey.HasValue)
             {
-                _newHotkey = _hotkeyManager.LastGlobalHotkey.Value with
-                {
-                    LongPress = LongPressCheckbox.IsChecked!.Value
-                };
+                _newHotkey = _hotkeyManager.LastGlobalHotkey.Value;
                 UpdateUI();
 
                 e.Handled = true;
@@ -80,10 +77,6 @@ public partial class HotkeyControlDialog : ContentDialog
         ResetBtn.IsEnabled = _newHotkey != Hotkey.DefaultHotkey;
         DeleteBtn.IsEnabled = Hotkey.CanBeDisabled && _newHotkey.IsValid;
 
-        LongPressCheckbox.Visibility =
-            (Hotkey is GlobalHotkeyInfo && _newHotkey != default) ? Visibility.Visible : Visibility.Collapsed;
-        LongPressCheckbox.IsChecked = _newHotkey.LongPress;
-
         KeysToDisplay.Clear();
         if (!_newHotkey.IsValid)
         {
@@ -93,7 +86,7 @@ public partial class HotkeyControlDialog : ContentDialog
             return;
         }
 
-        foreach (var key in _newHotkey.ToString(includeLongPress: false).Split('+'))
+        foreach (var key in _newHotkey.ToString().Split('+'))
             KeysToDisplay.Add(key);
 
         bool hotkeyChanged = _newHotkey != Hotkey.Hotkey;
@@ -118,23 +111,5 @@ public partial class HotkeyControlDialog : ContentDialog
             SaveBtn.IsEnabled = true;
             Alert.Visibility = Visibility.Collapsed;
         }
-    }
-
-    private void LongPressCheckbox_Checked(object sender, RoutedEventArgs e)
-    {
-        _newHotkey = _newHotkey with
-        {
-            LongPress = true,
-        };
-        UpdateUI();
-    }
-
-    private void LongPressCheckbox_Unchecked(object sender, RoutedEventArgs e)
-    {
-        _newHotkey = _newHotkey with
-        {
-            LongPress = false,
-        };
-        UpdateUI();
     }
 }
