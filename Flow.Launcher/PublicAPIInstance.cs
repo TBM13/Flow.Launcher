@@ -2,10 +2,8 @@
 using System.Collections.Specialized;
 using System.IO;
 using System.Windows;
-using System.Windows.Media;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Core;
-using Flow.Launcher.Core.Image;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Core.Storage;
@@ -284,11 +282,6 @@ public class PublicAPIInstance : IPublicAPI
     public void ReQuery(bool reselect = true) => _mainVM.ReQuery(reselect);
 
     public void BackToQueryResults() => _mainVM.BackToQueryResults();
-
-    public MessageBoxResult ShowMsgBox(string messageBoxText, string caption = "",
-        MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage icon = MessageBoxImage.None,
-        MessageBoxResult defaultResult = MessageBoxResult.OK) =>
-        MessageBoxEx.Show(ImageLoader, messageBoxText, caption, button, icon, defaultResult);
 
     private readonly ConcurrentDictionary<(string, string, Type), ISavable> _pluginBinaryStorages = new();
 

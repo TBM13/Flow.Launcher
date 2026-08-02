@@ -29,11 +29,11 @@ public partial class SettingsHotkeyViewModel(
         var item = SelectedCustomPluginHotkey;
         if (item is null)
         {
-            IPublicAPI.Instance.ShowMsgBox("Please select an item");
+            MessageBox.Show("Please select an item");
             return;
         }
 
-        var result = IPublicAPI.Instance.ShowMsgBox(
+        var result = MessageBox.Show(
             $"Are you sure you want to delete {item.Hotkey} plugin hotkey?",
             "Delete",
             MessageBoxButton.YesNo
@@ -52,7 +52,7 @@ public partial class SettingsHotkeyViewModel(
         var item = SelectedCustomPluginHotkey;
         if (item is null)
         {
-            IPublicAPI.Instance.ShowMsgBox("Please select an item");
+            MessageBox.Show("Please select an item");
             return;
         }
 
@@ -60,7 +60,7 @@ public partial class SettingsHotkeyViewModel(
             o.ActionKeyword == item.ActionKeyword && o.Hotkey == item.Hotkey);
         if (settingItem == null)
         {
-            IPublicAPI.Instance.ShowMsgBox("Hotkey is invalid");
+            MessageBox.Show("Hotkey is invalid");
             return;
         }
 
@@ -95,11 +95,11 @@ public partial class SettingsHotkeyViewModel(
         var item = SelectedCustomShortcut;
         if (item is null)
         {
-            IPublicAPI.Instance.ShowMsgBox("Please select an item");
+            MessageBox.Show("Please select an item");
             return;
         }
 
-        var result = IPublicAPI.Instance.ShowMsgBox(
+        var result = MessageBox.Show(
             $"Are you sure you want to delete shortcut: {item.Key} with expansion {item.Value}?",
             "Delete",
             MessageBoxButton.YesNo
@@ -117,7 +117,7 @@ public partial class SettingsHotkeyViewModel(
         var item = SelectedCustomShortcut;
         if (item is null)
         {
-            IPublicAPI.Instance.ShowMsgBox("Please select an item");
+            MessageBox.Show("Please select an item");
             return;
         }
 
@@ -125,7 +125,7 @@ public partial class SettingsHotkeyViewModel(
             o.Key == item.Key && o.Value == item.Value);
         if (settingItem == null)
         {
-            IPublicAPI.Instance.ShowMsgBox("Shortcut is invalid");
+            MessageBox.Show("Shortcut is invalid");
             return;
         }
 

@@ -32,7 +32,7 @@ public partial class SettingsAboutViewModel(Logger<SettingsAboutViewModel> logge
     [RelayCommand]
     private void AskClearCacheFolderConfirmation()
     {
-        MessageBoxResult res = IPublicAPI.Instance.ShowMsgBox(
+        MessageBoxResult res = MessageBox.Show(
             "Are you sure you want to delete all caches?",
             "Clear Caches",
             MessageBoxButton.YesNo
@@ -41,7 +41,7 @@ public partial class SettingsAboutViewModel(Logger<SettingsAboutViewModel> logge
         if (res == MessageBoxResult.Yes)
         {
             if (!ClearCacheFolder())
-                IPublicAPI.Instance.ShowMsgBox(
+                MessageBox.Show(
                     "Failed to clear one or more files/folders. Check the log for more info");
         }
     }

@@ -108,7 +108,7 @@ public static class ResultManager
                 catch (Exception ex)
                 {
                     Main.Context.Logger.LogError(ex, $"Failed to open dir {path}");
-                    Main.Context.API.ShowMsgBox(ex.Message, Localize.Error_OpenDir);
+                    MessageBox.Show(ex.Message, Localize.Error_OpenDir);
                     return false;
                 }
             },

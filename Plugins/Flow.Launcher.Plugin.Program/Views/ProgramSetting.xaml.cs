@@ -193,7 +193,7 @@ namespace Flow.Launcher.Plugin.Program.Views
             if (selectedProgramSource == null)
             {
                 string msg = Localize.ProgramSource_PleaseSelect;
-                context.API.ShowMsgBox(msg);
+                MessageBox.Show(msg);
             }
             else
             {
@@ -299,7 +299,7 @@ namespace Flow.Launcher.Plugin.Program.Views
 
             if (selectedItems.Count == 0)
             {
-                context.API.ShowMsgBox(Localize.ProgramSource_PleaseSelect);
+                MessageBox.Show(Localize.ProgramSource_PleaseSelect);
                 return;
             }
 
@@ -414,17 +414,17 @@ namespace Flow.Launcher.Plugin.Program.Views
 
             if (selectedItems.Count == 0)
             {
-                context.API.ShowMsgBox(Localize.ProgramSource_PleaseSelect);
+                MessageBox.Show(Localize.ProgramSource_PleaseSelect);
                 return;
             }
 
             if (!IsAllItemsUserAdded(selectedItems))
             {
-                context.API.ShowMsgBox(Localize.ProgramSource_DeleteSelectUserAdded);
+                MessageBox.Show(Localize.ProgramSource_DeleteSelectUserAdded);
                 return;
             }
 
-            if (context.API.ShowMsgBox(Localize.ProgramSource_DeleteConfirm,
+            if (MessageBox.Show(Localize.ProgramSource_DeleteConfirm,
                 string.Empty, MessageBoxButton.YesNo) == MessageBoxResult.No)
             {
                 return;

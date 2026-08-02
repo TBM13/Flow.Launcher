@@ -40,14 +40,14 @@ namespace Flow.Launcher.Plugin.Program
             if (suffixes.Length == 0 && UseCustomSuffixes)
             {
                 string warning = Localize.Settings_SuffixesCannotEmpty;
-                context.API.ShowMsgBox(warning);
+                MessageBox.Show(warning);
                 return;
             }
 
             if (protocols.Length == 0 && UseCustomProtocols)
             {
                 string warning = Localize.Settings_ProtocolsCannotEmpty;
-                context.API.ShowMsgBox(warning);
+                MessageBox.Show(warning);
                 return;
             }
 

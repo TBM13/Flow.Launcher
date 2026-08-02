@@ -32,7 +32,7 @@ namespace Flow.Launcher.Plugin.Program
             var (modified, msg) = ViewModel.AddOrUpdate();
             if (modified == false && msg != null)
             {
-                ViewModel.API.ShowMsgBox(msg);  // Invalid
+                MessageBox.Show(msg);  // Invalid
                 return;
             }
             DialogResult = modified;

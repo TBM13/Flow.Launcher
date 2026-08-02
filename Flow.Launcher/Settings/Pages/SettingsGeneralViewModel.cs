@@ -44,7 +44,7 @@ public partial class SettingsGeneralViewModel(
     {
         if (Settings.AlwaysRunAsAdmin && !Environment.IsPrivilegedProcess)
         {
-            if (IPublicAPI.Instance.ShowMsgBox(
+            if (MessageBox.Show(
                 "Do you want to restart as administrator to apply this change? Otherwise, you will need to run as administrator manually on the next start.",
                 "Administrator Mode Change",
                 MessageBoxButton.YesNo) == MessageBoxResult.Yes)

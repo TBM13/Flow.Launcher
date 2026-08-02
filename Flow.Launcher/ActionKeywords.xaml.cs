@@ -50,7 +50,7 @@ namespace Flow.Launcher
 
             if (addedActionKeywords.Any(IPublicAPI.Instance.ActionKeywordAssigned))
             {
-                IPublicAPI.Instance.ShowMsgBox("This new Action Keyword is already assigned to another plugin, please choose a different one");
+                MessageBox.Show("This new Action Keyword is already assigned to another plugin, please choose a different one");
                 return;
             }
 
@@ -66,7 +66,7 @@ namespace Flow.Launcher
             if (sortedOldActionKeywords.SequenceEqual(sortedNewActionKeywords))
             {
                 // User just changes the sequence of action keywords
-                IPublicAPI.Instance.ShowMsgBox("This new Action Keyword is the same as old, please choose a different one");
+                MessageBox.Show("This new Action Keyword is the same as old, please choose a different one");
             }
             else
             {

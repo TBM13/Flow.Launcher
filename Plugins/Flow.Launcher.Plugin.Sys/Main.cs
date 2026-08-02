@@ -74,7 +74,7 @@ namespace Flow.Launcher.Plugin.Sys
                     Glyph = new GlyphInfo (Glyph:"\xe7e8"),
                     Action = c =>
                     {
-                        var result = Context.API.ShowMsgBox(
+                        var result = MessageBox.Show(
                             Localize.Dialog_ConfirmShutdown, Localize.Cmd_Shutdown_Description,
                             MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
@@ -97,7 +97,7 @@ namespace Flow.Launcher.Plugin.Sys
                     Glyph = new GlyphInfo (Glyph:"\xe777"),
                     Action = c =>
                     {
-                        var result = Context.API.ShowMsgBox(
+                        var result = MessageBox.Show(
                             Localize.Dialog_ConfirmRestart, Localize.Cmd_Restart_Description,
                             MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
@@ -120,7 +120,7 @@ namespace Flow.Launcher.Plugin.Sys
                     Glyph = new GlyphInfo (Glyph:"\xecc5"),
                     Action = c =>
                     {
-                        var result = Context.API.ShowMsgBox(
+                        var result = MessageBox.Show(
                             Localize.Dialog_ConfirmRestartAdvanced, Localize.Cmd_RestartAdvanced_Description,
                             MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
@@ -143,7 +143,7 @@ namespace Flow.Launcher.Plugin.Sys
                     Glyph = new GlyphInfo (Glyph:"\xe77b"),
                     Action = c =>
                     {
-                        var result = Context.API.ShowMsgBox(
+                        var result = MessageBox.Show(
                             Localize.Dialog_ConfirmLogOff, Localize.Cmd_LogOff_Description,
                             MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
