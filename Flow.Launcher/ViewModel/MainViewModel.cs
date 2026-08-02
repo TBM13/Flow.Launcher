@@ -38,7 +38,6 @@ namespace Flow.Launcher.ViewModel
         private string? _ignoredQueryText; // Used to ignore query text change when switching between context menu and query results
 
         private readonly JsonStorage<UserSelectedRecord> _userSelectedRecordStorage;
-        private readonly FlowLauncherJsonStorageTopMostRecord _topMostRecord;
         private readonly UserSelectedRecord _userSelectedRecord;
 
         private CancellationTokenSource? _updateSource; // Used to cancel old query flows
@@ -77,7 +76,6 @@ namespace Flow.Launcher.ViewModel
 
             _userSelectedRecordStorage = new JsonStorage<UserSelectedRecord>(
                 loggerFactory, Path.Combine(DataLocation.SettingsDirectory, "UserSelectedRecord.json"));
-            _topMostRecord = new FlowLauncherJsonStorageTopMostRecord(loggerFactory);
             _userSelectedRecord = _userSelectedRecordStorage.TryLoad();
 
             PluginSDK.Logging.Logger<ResultsViewModel> resultsLogger = new(loggerFactory);
@@ -856,15 +854,11 @@ namespace Flow.Launcher.ViewModel
                 List<Result> results;
                 if (selected.PluginID == null) // SelectedItem from history in home page.
                 {
-                    results =
-                    [
-                        ContextMenuTopMost(selected)
-                    ];
+                    results = [];
                 }
                 else
                 {
                     results = _pluginManager.GetContextMenusForPlugin(selected) ?? [];
-                    results.Add(ContextMenuTopMost(selected));
                 }
 
                 if (!string.IsNullOrEmpty(query))
@@ -1183,45 +1177,6 @@ namespace Flow.Launcher.ViewModel
             return false;
         }
 
-        private Result ContextMenuTopMost(Result result)
-        {
-            Result menu;
-            if (_topMostRecord.IsTopMost(result))
-            {
-                menu = new Result
-                {
-                    Title = "Cancel topmost in this query",
-                    Action = _ =>
-                    {
-                        _topMostRecord.Remove(result);
-                        IPublicAPI.Instance.ShowMsg("Success");
-                        IPublicAPI.Instance.ReQuery();
-                        return false;
-                    },
-                    Glyph = new GlyphInfo(Glyph: "\uE74B"),
-                    OriginQuery = result.OriginQuery
-                };
-            }
-            else
-            {
-                menu = new Result
-                {
-                    Title = "Set as topmost in this query",
-                    Action = _ =>
-                    {
-                        _topMostRecord.AddOrUpdate(result);
-                        IPublicAPI.Instance.ShowMsg("Success");
-                        IPublicAPI.Instance.ReQuery();
-                        return false;
-                    },
-                    Glyph = new GlyphInfo(Glyph: "\uE74A"),
-                    OriginQuery = result.OriginQuery
-                };
-            }
-
-            return menu;
-        }
-
         internal bool QueryResultsSelected()
         {
             var selected = SelectedResults == _results;
@@ -1331,11 +1286,11 @@ namespace Flow.Launcher.ViewModel
 #pragma warning restore VSTHRD100 // Avoid async void methods
 
         /// <summary>
-        /// Save user selected records and top most records
+        /// Save user selected records
         /// </summary>
         public bool TrySave()
         {
-            return _userSelectedRecordStorage.TrySave() && _topMostRecord.TrySave();
+            return _userSelectedRecordStorage.TrySave();
         }
 
         /// <summary>
@@ -1369,37 +1324,27 @@ namespace Flow.Launcher.ViewModel
             {
                 foreach (var result in metaResults.Results)
                 {
-                    var deviationIndex = _topMostRecord.GetTopMostIndex(result);
-                    if (deviationIndex != -1)
+                    var priorityScore = metaResults.Metadata.Priority * 150;
+                    if (result.AddSelectedCount)
                     {
-                        // Adjust the score based on the result's position in the top-most list.
-                        // A lower deviationIndex (closer to the top) results in a higher score.
-                        result.Score = Result.MaxScore - deviationIndex;
-                    }
-                    else
-                    {
-                        var priorityScore = metaResults.Metadata.Priority * 150;
-                        if (result.AddSelectedCount)
+                        if ((long)result.Score + _userSelectedRecord.GetSelectedCount(result) + priorityScore > Result.MaxScore)
                         {
-                            if ((long)result.Score + _userSelectedRecord.GetSelectedCount(result) + priorityScore > Result.MaxScore)
-                            {
-                                result.Score = Result.MaxScore;
-                            }
-                            else
-                            {
-                                result.Score += _userSelectedRecord.GetSelectedCount(result) + priorityScore;
-                            }
+                            result.Score = Result.MaxScore;
                         }
                         else
                         {
-                            if ((long)result.Score + priorityScore > Result.MaxScore)
-                            {
-                                result.Score = Result.MaxScore;
-                            }
-                            else
-                            {
-                                result.Score += priorityScore;
-                            }
+                            result.Score += _userSelectedRecord.GetSelectedCount(result) + priorityScore;
+                        }
+                    }
+                    else
+                    {
+                        if ((long)result.Score + priorityScore > Result.MaxScore)
+                        {
+                            result.Score = Result.MaxScore;
+                        }
+                        else
+                        {
+                            result.Score += priorityScore;
                         }
                     }
                 }
