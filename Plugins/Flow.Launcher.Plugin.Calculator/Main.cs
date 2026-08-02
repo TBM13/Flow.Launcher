@@ -30,7 +30,7 @@ public class Main : IPlugin
 
     public List<Result>? Query(Query query)
     {
-        if (query.Search.Length < 2)
+        if (query.IsHomeQuery || query.Search.Length < 2)
             return null;
 
         Value? value;

@@ -1,23 +1,11 @@
-﻿using Flow.Launcher.PluginSDK;
-using Flow.Launcher.PluginSDK.Plugins;
+﻿namespace Flow.Launcher.PluginSDK.Plugins.Interfaces;
 
-namespace Flow.Launcher.PluginSDK.Plugins.Interfaces;
-
-/// <summary>
-/// Asynchronous Plugin Model for Flow Launcher
-/// </summary>
 public interface IAsyncPlugin
 {
     /// <summary>
-    /// Asynchronous Querying
+    /// Called when a query or home query is performed.
     /// </summary>
-    /// <para>
-    /// If the Querying or Init method requires high IO transmission
-    /// or performing CPU intense jobs (performing better with cancellation), please use this IAsyncPlugin interface
-    /// </para>
-    /// <param name="query">Query to search</param>
-    /// <param name="token">Cancel when querying job is obsolete</param>
-    /// <returns></returns>
+    /// <returns>The list of results that should be displayed for this query.</returns>
     Task<List<Result>?> QueryAsync(Query query, CancellationToken token);
 
     /// <summary>

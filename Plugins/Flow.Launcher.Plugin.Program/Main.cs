@@ -88,8 +88,11 @@ namespace Flow.Launcher.Plugin.Program
 
         private static readonly string WindowsAppPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "WindowsApps");
 
-        public async Task<List<Result>> QueryAsync(Query query, CancellationToken token)
+        public async Task<List<Result>?> QueryAsync(Query query, CancellationToken token)
         {
+            if (query.IsHomeQuery)
+                return null;
+
             try
             {
                 var result = await cache.GetOrCreateAsync(query.Search, async entry =>

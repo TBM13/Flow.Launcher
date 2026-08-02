@@ -32,6 +32,9 @@ public class Main : IPlugin, IContextMenu
 
     public List<Result>? Query(Query query)
     {
+        if (query.IsHomeQuery)
+            return null;
+
         return [.. ServiceHelper.Search(query.Search)];
     }
 

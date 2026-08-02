@@ -27,8 +27,11 @@ namespace Flow.Launcher.Plugin.Sys
     {
         internal static PluginInitContext Context { get; private set; } = null!;
 
-        public List<Result> Query(Query query)
+        public List<Result>? Query(Query query)
         {
+            if (query.IsHomeQuery)
+                return null;
+
             var commands = Commands(query);
             var results = new List<Result>();
             var isEmptyQuery = string.IsNullOrWhiteSpace(query.Search);

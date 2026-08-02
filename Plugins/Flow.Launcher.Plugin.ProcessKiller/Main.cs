@@ -40,6 +40,9 @@ public class Main : IPlugin, IContextMenu, ISettingProvider
 
     public List<Result>? Query(Query query)
     {
+        if (query.IsHomeQuery)
+            return null;
+
         List<ProcessInfo>? killableProcesses = ProcessUtils.GetKillableProcesses(_settings);
         if (killableProcesses is null)
             return null;

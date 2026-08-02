@@ -20,7 +20,7 @@ public static class PluginMetadataDefinition
     };
 }
 
-public class Main : IPlugin, IHomeQuery
+public class Main : IPlugin
 {
     private PluginInitContext _context = null!;
 
@@ -30,16 +30,6 @@ public class Main : IPlugin, IHomeQuery
     }
 
     public List<Result>? Query(Query query)
-    {
-        return QueryResults(query);
-    }
-
-    public List<Result>? HomeQuery()
-    {
-        return QueryResults();
-    }
-
-    private List<Result> QueryResults(Query? query = null)
     {
         List<Result> results = [];
 
@@ -56,11 +46,11 @@ public class Main : IPlugin, IHomeQuery
 
                 // If not a home query, filter results with search term
                 MatchResult searchResult;
-                if (query?.Search is string querySearch && !string.IsNullOrWhiteSpace(querySearch))
+                if (!query.IsHomeQuery && !string.IsNullOrEmpty(query.Search))
                 {
-                    searchResult = _context.API.FuzzySearch(querySearch, keyword);
+                    searchResult = _context.API.FuzzySearch(query.Search, keyword);
                     if (!searchResult.IsSearchPrecisionScoreMet)
-                        searchResult = _context.API.FuzzySearch(querySearch, plugin.Name);
+                        searchResult = _context.API.FuzzySearch(query.Search, plugin.Name);
 
                     if (!searchResult.IsSearchPrecisionScoreMet)
                         continue;

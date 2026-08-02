@@ -828,7 +828,7 @@ namespace Flow.Launcher.ViewModel
                 {
                     if (Settings.ShowHomePage)
                     {
-                        plugins = _pluginManager.ValidPluginsForHomeQuery();
+                        plugins = _pluginManager.GetAllInitializedPlugins(includeFailed: false);
                     }
 
                     PluginIconPath = null;

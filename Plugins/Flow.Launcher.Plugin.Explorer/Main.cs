@@ -59,6 +59,9 @@ public class Main : ISettingProvider, IAsyncPlugin, IContextMenu, IMagicQueryPro
 
     public async Task<List<Result>?> QueryAsync(Query query, CancellationToken token)
     {
+        if (query.IsHomeQuery)
+            return null;
+
         return await _searchManager.SearchAsync(query, token);
     }
 

@@ -38,7 +38,6 @@ namespace Flow.Launcher.Core.Plugin
         private PluginsSettings _settings;
 
         private readonly ConcurrentBag<PluginMetadata> _contextMenuPlugins = [];
-        private readonly ConcurrentBag<PluginMetadata> _homePlugins = [];
 
         #region Dispose
         public async ValueTask DisposePluginsAsync()
@@ -192,10 +191,6 @@ namespace Flow.Launcher.Core.Plugin
             {
                 _contextMenuPlugins.Add(metadata);
             }
-            if (metadata.Plugin is IAsyncHomeQuery)
-            {
-                _homePlugins.Add(metadata);
-            }
             _allInitializedPlugins.TryAdd(metadata.ID, metadata);
         }
 
@@ -205,20 +200,12 @@ namespace Flow.Launcher.Core.Plugin
 
         public ICollection<PluginMetadata> ValidPluginsForQuery(Query query)
         {
-            if (query is null)
-                return Array.Empty<PluginMetadata>();
-
             if (!_nonGlobalPlugins.TryGetValue(query.ActionKeyword, out var plugin))
             {
                 return [.. GetGlobalPlugins()];
             }
 
             return [plugin];
-        }
-
-        public ICollection<PluginMetadata> ValidPluginsForHomeQuery()
-        {
-            return [.. _homePlugins];
         }
 
         public async Task<List<Result>?> QueryForPluginAsync(PluginMetadata metadata, Query query, CancellationToken token)
@@ -299,7 +286,7 @@ namespace Flow.Launcher.Core.Plugin
 
             try
             {
-                List<Result>? results = await ((IAsyncHomeQuery)metadata.Plugin).HomeQueryAsync(token).ConfigureAwait(false);
+                List<Result>? results = await metadata.Plugin.QueryAsync(query, token).ConfigureAwait(false);
 
                 token.ThrowIfCancellationRequested();
                 if (results is null)
@@ -432,15 +419,6 @@ namespace Flow.Launcher.Core.Plugin
             }
 
             return null;
-        }
-
-        #endregion
-
-        #region Check Home Plugin
-
-        public bool IsHomePlugin(string id)
-        {
-            return _homePlugins.Any(p => p.ID == id);
         }
 
         #endregion

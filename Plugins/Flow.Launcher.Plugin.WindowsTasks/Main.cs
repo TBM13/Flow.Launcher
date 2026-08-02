@@ -36,8 +36,11 @@ public class Main : IPlugin, IContextMenu
         Context = context;
     }
 
-    public List<Result> Query(Query query)
+    public List<Result>? Query(Query query)
     {
+        if (query.IsHomeQuery)
+            return null;
+
         query = query with { Search = query.Search.Replace('/', '\\') };
 
         // TODO: Support global searches

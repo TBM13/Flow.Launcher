@@ -36,8 +36,11 @@ namespace Flow.Launcher.Plugin.WindowsSettings
             TranslationHelper.TranslateAllSettings(_settingsList);
         }
 
-        public List<Result> Query(Query query)
+        public List<Result>? Query(Query query)
         {
+            if (query.IsHomeQuery)
+                return null;
+
             var newList = ResultHelper.GetResultList(Context.API, _settingsList!, query);
             return newList;
         }

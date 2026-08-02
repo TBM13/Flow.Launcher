@@ -1,26 +1,11 @@
-﻿using Flow.Launcher.PluginSDK;
-using Flow.Launcher.PluginSDK.Plugins;
+﻿namespace Flow.Launcher.PluginSDK.Plugins.Interfaces;
 
-namespace Flow.Launcher.PluginSDK.Plugins.Interfaces;
-
-/// <summary>
-/// Synchronous Plugin Model for Flow Launcher
-/// <para>
-/// If the Querying or Init method requires high IO transmission
-/// or performaing CPU intense jobs (performing better with cancellation), please try the IAsyncPlugin interface
-/// </para>
-/// </summary>
 public interface IPlugin : IAsyncPlugin
 {
     /// <summary>
-    /// Querying when user's search changes
-    /// <para>
-    /// This method will be called within a Task.Run,
-    /// so please avoid synchrously wait for long.
-    /// </para>
+    /// Called when a query or home query is performed.
     /// </summary>
-    /// <param name="query">Query to search</param>
-    /// <returns></returns>
+    /// <returns>The list of results that should be displayed for this query.</returns>
     List<Result>? Query(Query query);
 
     /// <summary>
