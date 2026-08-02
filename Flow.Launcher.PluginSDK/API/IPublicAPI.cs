@@ -60,14 +60,6 @@ public interface IPublicAPI
     void SavePluginSettings();
 
     /// <summary>
-    /// Reloads any Plugins that have the
-    /// IReloadable implemented. It refeshes
-    /// Plugin's in memory data with new content
-    /// added by user.
-    /// </summary>
-    Task ReloadAllPluginData();
-
-    /// <summary>
     /// Show the error message using Flow's standard error icon.
     /// </summary>
     /// <param name="title">Message title</param>

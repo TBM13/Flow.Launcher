@@ -42,7 +42,7 @@ namespace Flow.Launcher.Core.Plugin
         private readonly ConcurrentBag<PluginMetadata> _homePlugins = [];
         private readonly ConcurrentBag<PluginMetadata> _externalPreviewPlugins = [];
 
-        #region Save & Dispose & Reload Plugin
+        #region Save & Dispose
         /// <summary>
         /// Save json and ISavable
         /// </summary>
@@ -92,16 +92,6 @@ namespace Flow.Launcher.Core.Plugin
             {
                 _logger.LogError(e, $"Failed to dispose plugin {metadata.Name}");
             }
-        }
-
-        public async Task ReloadDataAsync()
-        {
-            await Task.WhenAll([.. GetAllInitializedPlugins(includeFailed: false).Select(plugin => plugin.Plugin switch
-            {
-                IReloadable p => Task.Run(p.ReloadData),
-                IAsyncReloadable p => p.ReloadDataAsync(),
-                _ => Task.CompletedTask,
-            })]);
         }
 
         #endregion

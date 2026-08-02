@@ -96,7 +96,6 @@ public static class DefaultHotkeys
 
     // TODO: Add more hotkeys
     /*      new ("Escape", "HotkeyESCDesc"),
-            new ("F5", "ReloadPluginHotkey"),
             new ("Alt+Home", "HotkeySelectFirstResult"),
             new ("Alt+End", "HotkeySelectLastResult"),
             new ("Ctrl+R", "HotkeyRequery"),

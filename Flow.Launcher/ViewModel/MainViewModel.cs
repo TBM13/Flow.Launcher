@@ -179,15 +179,6 @@ namespace Flow.Launcher.ViewModel
         }
 
         [RelayCommand]
-        private async Task ReloadPluginDataAsync()
-        {
-            Hide();
-
-            await _pluginManager.ReloadDataAsync().ConfigureAwait(false);
-            IPublicAPI.Instance.ShowMsg("Success", "Completed successfully");
-        }
-
-        [RelayCommand]
         public void ReQuery()
         {
             if (QueryResultsSelected())

@@ -27,7 +27,7 @@ namespace Flow.Launcher.Plugin.Program
         };
     }
 
-    public class Main : ISettingProvider, IAsyncPlugin, IContextMenu, IAsyncReloadable, IDisposable
+    public class Main : ISettingProvider, IAsyncPlugin, IContextMenu, IDisposable
     {
         private const string Win32CacheName = "Win32";
         private const string UwpCacheName = "UWP";
@@ -521,11 +521,6 @@ namespace Flow.Launcher.Plugin.Program
             }
 
             return false;
-        }
-
-        public async Task ReloadDataAsync()
-        {
-            await IndexProgramsAsync();
         }
 
         public void Dispose()

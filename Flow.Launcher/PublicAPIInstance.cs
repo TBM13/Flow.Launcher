@@ -81,8 +81,6 @@ public class PublicAPIInstance : IPublicAPI
         }
     }
 
-    public Task ReloadAllPluginData() => _pluginManager.ReloadDataAsync();
-
     public void ShowMsgError(string title, string subTitle = "") =>
         ShowMsg(title, subTitle, Constant.ErrorIcon, true);
 
