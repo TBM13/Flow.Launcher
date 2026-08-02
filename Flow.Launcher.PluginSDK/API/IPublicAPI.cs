@@ -297,10 +297,4 @@ public interface IPublicAPI
     /// </param>
     /// <returns></returns>
     ValueTask<ImageSource> LoadImageAsync(string path, bool loadFullImage = false);
-
-    /// <summary>
-    /// Get the user data directory of Flow Launcher.
-    /// </summary>
-    /// <returns></returns>
-    string GetDataDirectory();
 }
