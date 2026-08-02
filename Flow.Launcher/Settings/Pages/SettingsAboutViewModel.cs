@@ -3,6 +3,7 @@ using System.Windows;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core;
 using Flow.Launcher.Core.UserSettings;
+using Flow.Launcher.Interop.Shell;
 using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Logging;
 
@@ -48,13 +49,13 @@ public partial class SettingsAboutViewModel(Logger<SettingsAboutViewModel> logge
     [RelayCommand]
     private static void OpenSettingsFolder()
     {
-        IPublicAPI.Instance.OpenDirectory(DataLocation.SettingsDirectory);
+        FileExplorerHelper.OpenFolder(DataLocation.SettingsDirectory);
     }
 
     [RelayCommand]
     private static void OpenCacheFolder()
     {
-        IPublicAPI.Instance.OpenDirectory(DataLocation.CacheDirectory);
+        FileExplorerHelper.OpenFolder(DataLocation.CacheDirectory);
     }
 
     private bool ClearCacheFolder()

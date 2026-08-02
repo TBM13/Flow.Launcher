@@ -1,6 +1,8 @@
-﻿using System.IO;
+﻿using System.ComponentModel;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
+using Flow.Launcher.Interop.Files;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.Com;
@@ -114,6 +116,31 @@ public static class FileExplorerHelper
         }
 
         return HWND.Null;
+    }
+
+    /// <summary>
+    /// Opens the given folder path in explorer.exe.
+    /// </summary>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="IOException"></exception>
+    /// <exception cref="Win32Exception"></exception>
+    public static void OpenFolder(string folderPath)
+    {
+        // Ensure we are launching a directory and not something weird like an executable
+        if (!FileHelper.TryGetAttributes(folderPath, out FileAttribs attribs))
+            throw new IOException($"Failed to get the attributes of {folderPath}");
+        if (!attribs.HasFlag(FileAttribs.Directory))
+            throw new ArgumentException($"{folderPath} is not a directory", nameof(folderPath));
+
+        using FreeLibrarySafeHandle handle = PInvoke.ShellExecute(
+            HWND.Null, "open", folderPath, null, null, SHOW_WINDOW_CMD.SW_SHOWNORMAL);
+
+        // The returned value is not an actual handle so lets ensure it never gets freed
+        nint rawValue = handle.DangerousGetHandle();
+        handle.SetHandleAsInvalid();
+        // If returned value is <= 32 then it is an error
+        if ((long)rawValue <= 32)
+            throw new Win32Exception((int)rawValue);
     }
 
     /// <summary>

@@ -1,9 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.DependencyInjection;
@@ -16,7 +13,6 @@ using Flow.Launcher.Core.Text;
 using Flow.Launcher.Core.UserSettings;
 using Flow.Launcher.Interop;
 using Flow.Launcher.Interop.Programs;
-using Flow.Launcher.Interop.Shell;
 using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Plugins;
@@ -58,8 +54,6 @@ namespace Flow.Launcher
 
             IPublicAPI.Instance = this;
         }
-
-        #region Public API
 
         public void ChangeQuery(string query, bool requery = false)
         {
@@ -296,67 +290,6 @@ namespace Flow.Launcher
             value.TrySave();
         }
 
-        public void OpenDirectory(string directoryPath, string? fileNameOrFilePath = null)
-        {
-            try
-            {
-                var targetPath = fileNameOrFilePath is null
-                    ? directoryPath
-                    : Path.IsPathRooted(fileNameOrFilePath)
-                        ? fileNameOrFilePath
-                        : Path.Combine(directoryPath, fileNameOrFilePath);
-
-                // Windows File Manager
-                if (fileNameOrFilePath is null)
-                {
-                    // Only Open the directory
-                    using var explorer = new Process();
-                    explorer.StartInfo = new ProcessStartInfo
-                    {
-                        FileName = directoryPath,
-                        UseShellExecute = true
-                    };
-                    explorer.Start();
-                }
-                else
-                {
-                    // Open the directory and select the file
-                    FileExplorerHelper.OpenFolderAndSelectFile(targetPath);
-                }
-            }
-            catch (COMException ex) when (ex.ErrorCode == unchecked((int)0x80004004))
-            {
-                /*
-                 * The COMException with HResult 0x80004004 is E_ABORT (operation aborted).
-                 * Shell APIs often return this when the operation is canceled or the shell cannot complete it cleanly.
-                 * It most likely comes from FileExplorerHelper.OpenFolderAndSelectFile(targetPath).
-                 * Typical triggers:
-                 * The target file/folder was deleted/moved between computing targetPath and the shell call.
-                 * The folder is on an offline network/removable drive.
-                 * Explorer is restarting/busy and aborts the request.
-                 * A selection request to a new/closing Explorer window is canceled.
-                 * Because it is commonly user- or environment-driven and not actionable,
-                 * we should treat it as expected noise and ignore it to avoid bothering users.
-                 */
-            }
-            catch (Win32Exception ex) when (ex.NativeErrorCode == 2)
-            {
-                _logger.LogError(ex, $"File Manager not found");
-                ShowMsgError(
-                    "File Manager Error",
-                    "The specified file manager could not be found. Please check the Custom File Manager setting under Settings > General."
-                );
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Failed to open folder: {directoryPath}");
-                ShowMsgError(
-                    "Error",
-                    "An error occurred while opening the folder."
-                );
-            }
-        }
-
         private void OpenUri(Uri uri, bool inPrivate = false, bool forceBrowser = false, bool openInTab = true)
         {
             if (uri.IsFile
@@ -475,6 +408,5 @@ namespace Flow.Launcher
         }
 
         public string GetDataDirectory() => DataLocation.DataDirectory;
-        #endregion
     }
 }

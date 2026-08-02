@@ -9,6 +9,7 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Xml;
 using Flow.Launcher.Interop.Programs;
+using Flow.Launcher.Interop.Shell;
 using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.API;
 using MemoryPack;
@@ -432,7 +433,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     bool openFolder = e.PressedKeys.OnlyModifiersPressed(ModifierKeys.Control);
                     if (openFolder)
                     {
-                        Main.Context.API.OpenDirectory(Location);
+                        FileExplorerHelper.OpenFolderAndSelectFile(Location);
                         return true;
                     }
 
@@ -463,7 +464,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     Title = Localize.Action_OpenContainingFolder,
                     Action = _ =>
                     {
-                        Main.Context.API.OpenDirectory(Location);
+                        FileExplorerHelper.OpenFolderAndSelectFile(Location);
 
                         return true;
                     },

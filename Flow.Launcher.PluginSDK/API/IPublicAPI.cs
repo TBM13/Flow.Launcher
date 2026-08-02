@@ -222,13 +222,6 @@ public interface IPublicAPI
     void SaveSettingJsonStorage<T>() where T : class, new();
 
     /// <summary>
-    /// Open directory in an explorer configured by user via Flow's Settings. The default is Windows Explorer
-    /// </summary>
-    /// <param name="DirectoryPath">Directory Path to open</param>
-    /// <param name="FileNameOrFilePath">Extra FileName Info</param>
-    public void OpenDirectory(string DirectoryPath, string? FileNameOrFilePath = null);
-
-    /// <summary>
     /// Opens the URL using the browser with the given Uri object, even if the URL is a local file.
     /// </summary>
     public void OpenWebUrl(Uri url, bool inPrivate = false, bool inTab = true);

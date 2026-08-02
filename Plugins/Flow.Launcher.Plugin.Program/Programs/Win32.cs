@@ -188,7 +188,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     bool openFolder = c.PressedKeys.OnlyModifiersPressed(ModifierKeys.Control);
                     if (openFolder)
                     {
-                        Main.Context.API.OpenDirectory(ParentDirectory, FullPath);
+                        FileExplorerHelper.OpenFolderAndSelectFile(FullPath);
                         return true;
                     }
 
@@ -266,7 +266,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     Title = Localize.Action_OpenContainingFolder,
                     Action = _ =>
                     {
-                        Main.Context.API.OpenDirectory(ParentDirectory, FullPath);
+                        FileExplorerHelper.OpenFolderAndSelectFile(FullPath);
 
                         return true;
                     },
@@ -287,7 +287,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 Title = Localize.Action_OpenTargetFolder,
                 Action = _ =>
                 {
-                    api.OpenDirectory(Path.GetDirectoryName(ExecutablePath), ExecutablePath);
+                    FileExplorerHelper.OpenFolderAndSelectFile(ExecutablePath);
                     return true;
                 },
                 Glyph = new GlyphInfo(Glyph: "\xe8de"),

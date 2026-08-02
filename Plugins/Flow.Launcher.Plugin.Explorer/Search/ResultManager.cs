@@ -93,43 +93,11 @@ public static class ResultManager
                     ShowNativeContextMenu(path, ResultType.Folder, c.ResultPosition);
                     return false;
                 }
-                // open folder
-                if (keys.OnlyModifiersPressed(ModifierKeys.Control | ModifierKeys.Shift))
-                {
-                    try
-                    {
-                        OpenFolder(path);
-                        return true;
-                    }
-                    catch (Exception ex)
-                    {
-                        Main.Context.Logger.LogError(ex, $"Failed to open dir {path}");
-                        Main.Context.API.ShowMsgBox(ex.Message, Localize.Error_OpenDir);
-                        return false;
-                    }
-                }
                 // Open containing folder
-                else if (keys.OnlyModifiersPressed(ModifierKeys.Control))
+                else if (keys.IsModifierPressed(ModifierKeys.Control))
                 {
-                    string? dirPath = Path.GetDirectoryName(path);
-                    if (!Directory.Exists(dirPath))
-                    {
-                        string msg = Localize.Error_DirNotFound(dirPath ?? path);
-                        Main.Context.API.ShowMsgBox(msg, Localize.Error_OpenDir);
-                        return false;
-                    }
-
-                    try
-                    {
-                        Main.Context.API.OpenDirectory(dirPath, path);
-                        return true;
-                    }
-                    catch (Exception ex)
-                    {
-                        Main.Context.Logger.LogError(ex, $"Failed to open containing dir {dirPath} of file {path}");
-                        Main.Context.API.ShowMsgBox(ex.Message, Localize.Error_OpenDir);
-                        return false;
-                    }
+                    OpenFolderAndSelectFile(path);
+                    return true;
                 }
 
                 try
@@ -237,6 +205,13 @@ public static class ResultManager
                     ShowNativeContextMenu(folderPath, ResultType.Folder, c.ResultPosition);
                     return false;
                 }
+                // Open containing folder
+                else if (c.PressedKeys.IsModifierPressed(ModifierKeys.Control))
+                {
+                    OpenFolderAndSelectFile(folderPath);
+                    return true;
+                }
+
                 OpenFolder(folderPath);
                 return true;
             },
@@ -270,13 +245,13 @@ public static class ResultManager
                     ShowNativeContextMenu(filePath, ResultType.File, c.ResultPosition);
                     return false;
                 }
-                if (keys.OnlyModifiersPressed(ModifierKeys.Control | ModifierKeys.Shift))
+                if (keys.OnlyModifiersPressed(ModifierKeys.Shift))
                 {
                     OpenFile(filePath, Main.Settings.UseLocationAsWorkingDir ? directory : string.Empty, true);
                 }
-                else if (keys.OnlyModifiersPressed(ModifierKeys.Control))
+                else if (keys.IsModifierPressed(ModifierKeys.Control))
                 {
-                    OpenFolder(filePath, filePath);
+                    OpenFolderAndSelectFile(filePath);
                 }
                 else
                 {
@@ -309,8 +284,30 @@ public static class ResultManager
         }
     }
 
-    private static void OpenFolder(string folderPath, string? fileNameOrFilePath = null)
+    private static void OpenFolder(string folderPath)
     {
-        Main.Context.API.OpenDirectory(folderPath, fileNameOrFilePath);
+        try
+        {
+            FileExplorerHelper.OpenFolder(folderPath);
+
+        }
+        catch (Exception e)
+        {
+            Main.Context.Logger.LogError(e, $"Failed to open folder {folderPath}");
+            Main.Context.API.ShowMsgError(Localize.Error_OpenDir);
+        }
+    }
+
+    private static void OpenFolderAndSelectFile(string filePath)
+    {
+        try
+        {
+            FileExplorerHelper.OpenFolderAndSelectFile(filePath);
+        }
+        catch (Exception e)
+        {
+            Main.Context.Logger.LogError(e, $"Failed to open folder and select file {filePath}");
+            Main.Context.API.ShowMsgError(Localize.Error_OpenDir);
+        }
     }
 }
