@@ -40,7 +40,6 @@ namespace Flow.Launcher.Core.Plugin
 
         private readonly ConcurrentBag<PluginMetadata> _contextMenuPlugins = [];
         private readonly ConcurrentBag<PluginMetadata> _homePlugins = [];
-        private readonly ConcurrentBag<PluginMetadata> _externalPreviewPlugins = [];
 
         #region Save & Dispose
         /// <summary>
@@ -92,57 +91,6 @@ namespace Flow.Launcher.Core.Plugin
             {
                 _logger.LogError(e, $"Failed to dispose plugin {metadata.Name}");
             }
-        }
-
-        #endregion
-
-        #region External Preview
-
-        public async Task OpenExternalPreviewAsync(string path, bool sendFailToast = true)
-        {
-            await Task.WhenAll([.. GetAllInitializedPlugins(includeFailed: false).Select(plugin => plugin.Plugin switch
-            {
-                IAsyncExternalPreview p => p.OpenPreviewAsync(path, sendFailToast),
-                _ => Task.CompletedTask,
-            })]);
-        }
-
-        public async Task CloseExternalPreviewAsync()
-        {
-            await Task.WhenAll([.. GetAllInitializedPlugins(includeFailed: false).Select(plugin => plugin.Plugin switch
-            {
-                IAsyncExternalPreview p => p.ClosePreviewAsync(),
-                _ => Task.CompletedTask,
-            })]);
-        }
-
-        public async Task SwitchExternalPreviewAsync(string path, bool sendFailToast = true)
-        {
-            await Task.WhenAll([.. GetAllInitializedPlugins(includeFailed: false).Select(plugin => plugin.Plugin switch
-            {
-                IAsyncExternalPreview p => p.SwitchPreviewAsync(path, sendFailToast),
-                _ => Task.CompletedTask,
-            })]);
-        }
-
-        public bool UseExternalPreview()
-        {
-            return GetExternalPreviewPlugins().Any(x => !x.Disabled);
-        }
-
-        public bool AllowAlwaysPreview()
-        {
-            var plugin = GetExternalPreviewPlugins().FirstOrDefault(x => !x.Disabled);
-
-            if (plugin is null)
-                return false;
-
-            return ((IAsyncExternalPreview)plugin.Plugin).AllowAlwaysPreview();
-        }
-
-        private IList<PluginMetadata> GetExternalPreviewPlugins()
-        {
-            return [.. _externalPreviewPlugins];
         }
 
         #endregion
@@ -270,10 +218,6 @@ namespace Flow.Launcher.Core.Plugin
             if (metadata.Plugin is IAsyncHomeQuery)
             {
                 _homePlugins.Add(metadata);
-            }
-            if (metadata.Plugin is IAsyncExternalPreview)
-            {
-                _externalPreviewPlugins.Add(metadata);
             }
             _allInitializedPlugins.TryAdd(metadata.ID, metadata);
         }

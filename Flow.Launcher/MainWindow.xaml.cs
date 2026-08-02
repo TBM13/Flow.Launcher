@@ -237,7 +237,7 @@ public partial class MainWindow : Window
         // which causes the toggling to occasional hide instead of show.
         if (_vm.MainWindowVisibilityStatus)
         {
-            if (_settings.HideOnLostFocus && !_vm.ExternalPreviewVisible)
+            if (_settings.HideOnLostFocus)
             {
                 _vm.Hide();
             }

@@ -640,46 +640,13 @@ namespace Flow.Launcher.ViewModel
         [NotifyPropertyChangedFor(nameof(PreviewMinHeight))]
         public partial int ResultAreaColumn { get; set; } = RESULTAREA_COLUMN_PREVIEWHIDDEN;
 
-        // This is not a reliable indicator of whether external preview is visible due to the
-        // ability of manually closing/exiting the external preview program which, does not inform flow that
-        // preview is no longer available.
-        [ObservableProperty]
-        public partial bool ExternalPreviewVisible { get; private set; }
-
         private async Task ShowPreviewAsync()
         {
-            var useExternalPreview = _pluginManager.UseExternalPreview();
-
-            switch (useExternalPreview)
-            {
-                case true
-                    when CanExternalPreviewSelectedResult(out var path):
-                    // Internal preview may still be on when user switches to external
-                    if (InternalPreviewVisible)
-                        HideInternalPreview();
-
-                    _ = OpenExternalPreviewAsync(path);
-                    break;
-
-                case true
-                    when !CanExternalPreviewSelectedResult(out var _):
-                    if (ExternalPreviewVisible)
-                        await CloseExternalPreviewAsync();
-
-                    ShowInternalPreview();
-                    break;
-
-                case false:
-                    ShowInternalPreview();
-                    break;
-            }
+            ShowInternalPreview();
         }
 
         private void HidePreview()
         {
-            if (_pluginManager.UseExternalPreview())
-                _ = CloseExternalPreviewAsync();
-
             if (InternalPreviewVisible)
                 HideInternalPreview();
         }
@@ -687,7 +654,7 @@ namespace Flow.Launcher.ViewModel
         [RelayCommand]
         private void TogglePreview()
         {
-            if (InternalPreviewVisible || ExternalPreviewVisible)
+            if (InternalPreviewVisible)
             {
                 HidePreview();
             }
@@ -695,23 +662,6 @@ namespace Flow.Launcher.ViewModel
             {
                 _ = ShowPreviewAsync();
             }
-        }
-
-        private async Task OpenExternalPreviewAsync(string path, bool sendFailToast = true)
-        {
-            await _pluginManager.OpenExternalPreviewAsync(path, sendFailToast).ConfigureAwait(false);
-            ExternalPreviewVisible = true;
-        }
-
-        private async Task CloseExternalPreviewAsync()
-        {
-            await _pluginManager.CloseExternalPreviewAsync().ConfigureAwait(false);
-            ExternalPreviewVisible = false;
-        }
-
-        private async Task SwitchExternalPreviewAsync(string path, bool sendFailToast = true)
-        {
-            await _pluginManager.SwitchExternalPreviewAsync(path, sendFailToast).ConfigureAwait(false);
         }
 
         private void ShowInternalPreview()
@@ -729,10 +679,6 @@ namespace Flow.Launcher.ViewModel
         {
             switch (Settings.AlwaysPreview)
             {
-                case true
-                    when _pluginManager.AllowAlwaysPreview() && CanExternalPreviewSelectedResult(out var path):
-                    _ = OpenExternalPreviewAsync(path);
-                    break;
                 case true:
                     ShowInternalPreview();
                     break;
@@ -744,39 +690,8 @@ namespace Flow.Launcher.ViewModel
 
         private async Task UpdatePreviewAsync()
         {
-            switch (_pluginManager.UseExternalPreview())
-            {
-                case true
-                    when CanExternalPreviewSelectedResult(out var path):
-                    if (ExternalPreviewVisible)
-                    {
-                        _ = SwitchExternalPreviewAsync(path, false);
-                    }
-                    else if (InternalPreviewVisible)
-                    {
-                        HideInternalPreview();
-                        _ = OpenExternalPreviewAsync(path);
-                    }
-                    break;
-                case true
-                    when !CanExternalPreviewSelectedResult(out var _):
-                    if (ExternalPreviewVisible)
-                    {
-                        await CloseExternalPreviewAsync();
-                        ShowInternalPreview();
-                    }
-                    break;
-                case false
-                    when InternalPreviewVisible:
-                    PreviewSelectedItem?.LoadPreviewImage();
-                    break;
-            }
-        }
-
-        private bool CanExternalPreviewSelectedResult([NotNullWhen(true)] out string? path)
-        {
-            path = QueryResultsPreviewed() ? _results.SelectedItem?.Result.Preview.FilePath : string.Empty;
-            return !string.IsNullOrEmpty(path);
+            if (InternalPreviewVisible)
+                PreviewSelectedItem?.LoadPreviewImage();
         }
 
         private bool QueryResultsPreviewed()
@@ -1222,11 +1137,6 @@ namespace Flow.Launcher.ViewModel
 
         public async void Hide()
         {
-            if (ExternalPreviewVisible)
-            {
-                await CloseExternalPreviewAsync();
-            }
-
             BackToQueryResults();
 
             switch (Settings.LastQueryMode)
