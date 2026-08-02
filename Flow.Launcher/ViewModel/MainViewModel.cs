@@ -25,7 +25,6 @@ using Flow.Launcher.PluginSDK.Plugins.Interfaces;
 using Flow.Launcher.Storage;
 using iNKORE.UI.WPF.Modern;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.Threading;
 
 namespace Flow.Launcher.ViewModel
 {
@@ -919,86 +918,85 @@ namespace Flow.Launcher.ViewModel
             var currentCancellationToken = _updateSource.Token;
 
             // Switch to ThreadPool thread
-            await TaskScheduler.Default;
-
-            if (currentCancellationToken.IsCancellationRequested) return;
-
-            ICollection<PluginMetadata> plugins = Array.Empty<PluginMetadata>();
-            if (currentIsHomeQuery)
+            await Task.Run(async () =>
             {
-                if (Settings.ShowHomePage)
-                {
-                    plugins = _pluginManager.ValidPluginsForHomeQuery();
-                }
+                if (currentCancellationToken.IsCancellationRequested) return;
 
-                PluginIconPath = null;
-                PluginIconSource = null;
-            }
-            else
-            {
-                plugins = _pluginManager.ValidPluginsForQuery(query);
+                ICollection<PluginMetadata> plugins = Array.Empty<PluginMetadata>();
+                if (currentIsHomeQuery)
+                {
+                    if (Settings.ShowHomePage)
+                    {
+                        plugins = _pluginManager.ValidPluginsForHomeQuery();
+                    }
 
-                if (plugins.Count == 1)
-                {
-                    PluginIconPath = plugins.Single().IcoPath;
-                    PluginIconSource = await IPublicAPI.Instance.LoadImageAsync(PluginIconPath);
-                }
-                else
-                {
                     PluginIconPath = null;
                     PluginIconSource = null;
                 }
-            }
-
-            _logger.LogDebug($"Valid <{plugins.Count}> plugins: {string.Join(" ", plugins.Select(x => $"<{x.Name}>"))}");
-
-            // Do not wait for performance improvement
-            /*if (string.IsNullOrEmpty(query.ActionKeyword))
-            {
-                // Wait 15 millisecond for query change in global query
-                // if query changes, return so that it won't be calculated
-                await Task.Delay(15, currentCancellationToken);
-                if (currentCancellationToken.IsCancellationRequested) return;
-            }*/
-
-            // plugins are ICollection, meaning LINQ will get the Count and preallocate Array
-
-            Task[] tasks;
-            if (currentIsHomeQuery)
-            {
-                if (ShouldClearExistingResultsForNonQuery(plugins))
+                else
                 {
-                    // there are no update tasks and so we can directly return
-                    ClearResults();
-                    return;
+                    plugins = _pluginManager.ValidPluginsForQuery(query);
+
+                    if (plugins.Count == 1)
+                    {
+                        PluginIconPath = plugins.Single().IcoPath;
+                        PluginIconSource = await IPublicAPI.Instance.LoadImageAsync(PluginIconPath);
+                    }
+                    else
+                    {
+                        PluginIconPath = null;
+                        PluginIconSource = null;
+                    }
                 }
 
-                tasks = [.. plugins.Select(plugin => plugin.HomeDisabled switch
+                _logger.LogDebug($"Valid <{plugins.Count}> plugins: {string.Join(" ", plugins.Select(x => $"<{x.Name}>"))}");
+
+                // Do not wait for performance improvement
+                /*if (string.IsNullOrEmpty(query.ActionKeyword))
+                {
+                    // Wait 15 millisecond for query change in global query
+                    // if query changes, return so that it won't be calculated
+                    await Task.Delay(15, currentCancellationToken);
+                    if (currentCancellationToken.IsCancellationRequested) return;
+                }*/
+
+                // plugins are ICollection, meaning LINQ will get the Count and preallocate Array
+
+                Task[] tasks;
+                if (currentIsHomeQuery)
+                {
+                    if (ShouldClearExistingResultsForNonQuery(plugins))
+                    {
+                        // there are no update tasks and so we can directly return
+                        ClearResults();
+                        return;
+                    }
+
+                    tasks = [.. plugins.Select(plugin => plugin.HomeDisabled switch
                 {
                     false => QueryTaskAsync(plugin, currentCancellationToken),
                     true => Task.CompletedTask
                 })];
-            }
-            else
-            {
-                tasks = [.. plugins.Select(plugin => plugin.Disabled switch
+                }
+                else
+                {
+                    tasks = [.. plugins.Select(plugin => plugin.Disabled switch
                 {
                     false => QueryTaskAsync(plugin, currentCancellationToken),
                     true => Task.CompletedTask
                 })];
-            }
+                }
 
-            try
-            {
-                // Check the code, WhenAll will translate all type of IEnumerable or Collection to Array, so make an array at first
-                await Task.WhenAll(tasks);
-            }
-            catch (OperationCanceledException)
-            {
-                // nothing to do here
-            }
-
-            if (currentCancellationToken.IsCancellationRequested) return;
+                try
+                {
+                    // Check the code, WhenAll will translate all type of IEnumerable or Collection to Array, so make an array at first
+                    await Task.WhenAll(tasks);
+                }
+                catch (OperationCanceledException)
+                {
+                    // nothing to do here
+                }
+            }, currentCancellationToken);
 
             // Local function
             void ClearResults()
