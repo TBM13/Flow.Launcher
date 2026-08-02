@@ -29,26 +29,27 @@ public class PublicAPIInstance : IPublicAPI
     private readonly PluginSDK.Logging.Logger<PublicAPIInstance> _logger;
     private readonly ISettingsAPI _settings;
     private readonly MainViewModel _mainVM;
-    private readonly ImageLoader _imageLoader;
     private readonly PluginManager _pluginManager;
     private readonly Notification _notification;
     private readonly StringMatcher _stringMatcher;
     private Window? _settingWindow;
     private readonly Lock _saveSettingsLock = new();
 
+    public IImageLoader ImageLoader { get; }
+
     public PublicAPIInstance(ILoggerFactory loggerFactory,
         MainViewModel mainVM, ISettingsAPI settings,
-        ImageLoader imageLoader, PluginManager pluginManager, Notification notification,
+        IImageLoader imageLoader, PluginManager pluginManager, Notification notification,
         StringMatcher stringMatcher)
     {
         _loggerFactory = loggerFactory;
         _logger = new(loggerFactory);
         _mainVM = mainVM;
         _settings = settings;
-        _imageLoader = imageLoader;
         _pluginManager = pluginManager;
         _notification = notification;
         _stringMatcher = stringMatcher;
+        ImageLoader = imageLoader;
 
         IPublicAPI.Instance = this;
     }
@@ -287,7 +288,7 @@ public class PublicAPIInstance : IPublicAPI
     public MessageBoxResult ShowMsgBox(string messageBoxText, string caption = "",
         MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage icon = MessageBoxImage.None,
         MessageBoxResult defaultResult = MessageBoxResult.OK) =>
-        MessageBoxEx.Show(_imageLoader, messageBoxText, caption, button, icon, defaultResult);
+        MessageBoxEx.Show(ImageLoader, messageBoxText, caption, button, icon, defaultResult);
 
     private readonly ConcurrentDictionary<(string, string, Type), ISavable> _pluginBinaryStorages = new();
 
@@ -324,7 +325,4 @@ public class PublicAPIInstance : IPublicAPI
 
         value.TrySave();
     }
-
-    public ValueTask<ImageSource> LoadImageAsync(string path, bool loadFullImage = false) =>
-        _imageLoader.LoadAsync(path, loadFullImage);
 }

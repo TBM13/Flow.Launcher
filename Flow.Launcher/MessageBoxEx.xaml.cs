@@ -3,17 +3,18 @@ using System.Windows;
 using System.Windows.Input;
 using Flow.Launcher.Core;
 using Flow.Launcher.Core.Image;
+using Flow.Launcher.PluginSDK.API;
 
 namespace Flow.Launcher
 {
     public partial class MessageBoxEx : Window
     {
-        private readonly ImageLoader _imageLoader;
+        private readonly IImageLoader _imageLoader;
 
         private MessageBoxResult _result = MessageBoxResult.None;
         private readonly MessageBoxButton _button;
 
-        private MessageBoxEx(ImageLoader imageLoader, MessageBoxButton button)
+        private MessageBoxEx(IImageLoader imageLoader, MessageBoxButton button)
         {
             _imageLoader = imageLoader;
             _button = button;
@@ -22,7 +23,7 @@ namespace Flow.Launcher
         }
 
         public static MessageBoxResult Show(
-            ImageLoader imageLoader,
+            IImageLoader imageLoader,
             string messageBoxText,
             string caption = "",
             MessageBoxButton button = MessageBoxButton.OK,

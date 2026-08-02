@@ -1,14 +1,14 @@
 ﻿using System.Collections.Concurrent;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Flow.Launcher.Core;
 using Flow.Launcher.Interop.Files;
 using Flow.Launcher.Interop.Shell;
+using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Logging;
 
 namespace Flow.Launcher.Core.Image;
 
-public class ImageLoader
+public class ImageLoader : IImageLoader
 {
     private readonly Logger<ImageLoader> _logger;
 
@@ -47,12 +47,7 @@ public class ImageLoader
         return path;
     }
 
-    /// <summary>
-    /// Loads the image from disk, or returns the cached image if available.
-    /// </summary>
-    /// <param name="path">The image's path. Can be relative and can contain environment variables.</param>
-    /// <param name="loadFullImage">Whether to load the image with its full resolution (may increase memory usage).</param>
-    /// <returns>The requested image or a generic error image when something goes wrong.</returns>
+    /// <inheritdoc/>
     public ValueTask<ImageSource> LoadAsync(
         string path, bool loadFullImage = false)
     {

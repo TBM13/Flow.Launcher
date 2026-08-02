@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core.Image;
 using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Logging;
 using Flow.Launcher.PluginSDK.Plugins;
 using Flow.Launcher.PluginSDK.Plugins.Interfaces;
@@ -14,7 +15,7 @@ namespace Flow.Launcher.ViewModel
     public partial class PluginViewModel : ObservableObject
     {
         private readonly Logger<PluginViewModel> _logger;
-        private readonly ImageLoader _imageLoader;
+        private readonly IImageLoader _imageLoader;
         private readonly PluginSettingsObj _pluginSettingsObj;
 
         public PluginMetadata PluginMetadata { get; }
@@ -59,7 +60,7 @@ namespace Flow.Launcher.ViewModel
         public string ActionKeywordsText => string.Join(Query.TermSeparator, PluginMetadata.ActionKeywords);
 
         public PluginViewModel(
-            Logger<PluginViewModel> logger, ImageLoader imageLoader, PluginMetadata plugin, PluginSettingsObj settingsObj)
+            Logger<PluginViewModel> logger, IImageLoader imageLoader, PluginMetadata plugin, PluginSettingsObj settingsObj)
         {
             _logger = logger;
             _imageLoader = imageLoader;

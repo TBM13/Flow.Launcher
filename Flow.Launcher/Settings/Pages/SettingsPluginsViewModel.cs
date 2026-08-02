@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core.Image;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Settings;
+using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern.Controls;
 using Microsoft.Extensions.Logging;
@@ -24,12 +25,12 @@ public enum PluginDisplayMode
 
 
 public partial class SettingsPluginsViewModel(
-    ILoggerFactory loggerFactory, ISettingsAPI settings, ImageLoader imageLoader,
+    ILoggerFactory loggerFactory, ISettingsAPI settings, IImageLoader imageLoader,
     PluginManager pluginManager) : BaseSettingsPageViewModel
 {
     private readonly ILoggerFactory _loggerFactory = loggerFactory;
     private readonly ISettingsAPI _settings = settings;
-    private readonly ImageLoader _imageLoader = imageLoader;
+    private readonly IImageLoader _imageLoader = imageLoader;
     private readonly PluginManager _pluginManager = pluginManager;
 
     public override string Title => "Plugins";

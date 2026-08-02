@@ -1,10 +1,7 @@
-﻿using System.Drawing.Text;
-using System.IO;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
-using Flow.Launcher.Core.Image;
 using Flow.Launcher.Core.Settings;
 using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.API;
@@ -16,7 +13,7 @@ public partial class ResultViewModel : ObservableObject
 {
     // TODO: Check if there is any better alternative
     private static readonly Logger<ResultViewModel> _logger = Ioc.Default.GetRequiredService<Logger<ResultViewModel>>();
-    private static readonly ImageLoader _imageLoader = Ioc.Default.GetRequiredService<ImageLoader>();
+    private static readonly IImageLoader _imageLoader = Ioc.Default.GetRequiredService<IImageLoader>();
 
     public ResultViewModel(Result result, ISettingsAPI settings)
     {
@@ -138,7 +135,7 @@ public partial class ResultViewModel : ObservableObject
         }
 
         imagePath ??= string.Empty;
-        return await IPublicAPI.Instance.LoadImageAsync(imagePath, loadFullImage).ConfigureAwait(false);
+        return await _imageLoader.LoadAsync(imagePath, loadFullImage).ConfigureAwait(false);
     }
 
     private async Task LoadImageAsync()

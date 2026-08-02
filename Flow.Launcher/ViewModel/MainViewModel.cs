@@ -4,7 +4,6 @@ using System.Text;
 using System.Threading.Channels;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -23,7 +22,6 @@ using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Plugins;
 using Flow.Launcher.PluginSDK.Plugins.Interfaces;
 using Flow.Launcher.Storage;
-using iNKORE.UI.WPF.Modern;
 using Microsoft.Extensions.Logging;
 
 namespace Flow.Launcher.ViewModel
@@ -33,6 +31,7 @@ namespace Flow.Launcher.ViewModel
         private readonly PluginSDK.Logging.Logger<MainViewModel> _logger;
         private readonly PluginManager _pluginManager;
         private readonly HotkeyManager _hotkeyManager;
+        private readonly IImageLoader _imageLoader;
 
         private Query? _lastQuery;
         private bool _previousIsHomeQuery;
@@ -53,11 +52,13 @@ namespace Flow.Launcher.ViewModel
         private bool _taskbarShownByFlow = false;
 
         public MainViewModel(ILoggerFactory loggerFactory,
-            ISettingsAPI settings, PluginManager pluginManager, HotkeyManager hotkeyManager)
+            ISettingsAPI settings, PluginManager pluginManager, HotkeyManager hotkeyManager,
+            IImageLoader imageLoader)
         {
             _logger = new(loggerFactory);
             _pluginManager = pluginManager;
             _hotkeyManager = hotkeyManager;
+            _imageLoader = imageLoader;
 
             _queryText = "";
             _lastQuery = null;
@@ -940,7 +941,7 @@ namespace Flow.Launcher.ViewModel
                     if (plugins.Count == 1)
                     {
                         PluginIconPath = plugins.Single().IcoPath;
-                        PluginIconSource = await IPublicAPI.Instance.LoadImageAsync(PluginIconPath);
+                        PluginIconSource = await _imageLoader.LoadAsync(PluginIconPath);
                     }
                     else
                     {

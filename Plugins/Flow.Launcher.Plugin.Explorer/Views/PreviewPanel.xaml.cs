@@ -90,7 +90,7 @@ public partial class PreviewPanel : UserControl
 
     private async Task LoadImageAsync()
     {
-        PreviewImage = await Main.Context.API.LoadImageAsync(FilePath, true).ConfigureAwait(false);
+        PreviewImage = await Main.Context.API.ImageLoader.LoadAsync(FilePath, true).ConfigureAwait(false);
     }
 
     public string GetFileSize(string filePath)

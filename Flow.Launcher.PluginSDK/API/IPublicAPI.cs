@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using System.Windows.Media;
 using Flow.Launcher.PluginSDK.Plugins;
 
 namespace Flow.Launcher.PluginSDK.API;
@@ -13,6 +12,8 @@ public interface IPublicAPI
     // TODO: Check if we can remove this
     public static IPublicAPI Instance { get; internal set; }
 #pragma warning restore CS8618
+
+    public IImageLoader ImageLoader { get; }
 
     /// <summary>
     /// Change Flow.Launcher query.
@@ -268,17 +269,4 @@ public interface IPublicAPI
     /// BinaryStorage utilizes MemoryPack, which means the object must be MemoryPackSerializable <see href="https://github.com/Cysharp/MemoryPack"/>
     /// </remarks>
     void SaveCacheBinaryStorage<T>(string cacheName, string cacheDirectory) where T : class, new();
-
-    /// <summary>
-    /// Load image from path.
-    /// Support local, remote and data:image url.
-    /// Support png, jpg, jpeg, gif, bmp, tiff, ico, image files.
-    /// If image path is missing, it will return a missing icon.
-    /// </summary>
-    /// <param name="path">The path of the image.</param>
-    /// <param name="loadFullImage">
-    /// Load full image or not.
-    /// </param>
-    /// <returns></returns>
-    ValueTask<ImageSource> LoadImageAsync(string path, bool loadFullImage = false);
 }

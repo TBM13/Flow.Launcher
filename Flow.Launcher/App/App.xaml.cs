@@ -143,7 +143,7 @@ public partial class App : Application
                     .AddSingleton<IPublicAPI, PublicAPIInstance>()
                     .AddSingleton(_settings)
                     .AddSingleton<HotkeyManager>()
-                    .AddSingleton<ImageLoader>()
+                    .AddSingleton<IImageLoader, ImageLoader>()
                     .AddSingleton<PluginManager>()
                     .AddSingleton<Notification>()
                     .AddSingleton<StringMatcher>()
