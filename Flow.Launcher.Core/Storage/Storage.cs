@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using Flow.Launcher.PluginSDK.Plugins.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace Flow.Launcher.Core.Storage;

@@ -26,7 +26,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Flow.Launcher.ViewModel
 {
-    public partial class MainViewModel : ObservableObject, ISavable, IDisposable
+    public partial class MainViewModel : ObservableObject, IDisposable
     {
         private readonly PluginSDK.Logging.Logger<MainViewModel> _logger;
         private readonly PluginManager _pluginManager;

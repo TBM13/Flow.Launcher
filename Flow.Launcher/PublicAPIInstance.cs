@@ -13,7 +13,6 @@ using Flow.Launcher.Interop;
 using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Plugins;
-using Flow.Launcher.PluginSDK.Plugins.Interfaces;
 using Flow.Launcher.Settings;
 using Flow.Launcher.ViewModel;
 using Microsoft.Extensions.DependencyInjection;
@@ -76,7 +75,8 @@ public class PublicAPIInstance : IPublicAPI
         lock (_saveSettingsLock)
         {
             _settings.Save();
-            _pluginManager.Save();
+            SavePluginSettings();
+            SavePluginCaches();
             _mainVM.TrySave();
         }
     }

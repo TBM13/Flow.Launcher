@@ -6,7 +6,6 @@ using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Plugins;
 using Flow.Launcher.PluginSDK.Plugins.Interfaces;
 using Microsoft.Extensions.Logging;
-using ISavable = Flow.Launcher.PluginSDK.Plugins.Interfaces.ISavable;
 
 namespace Flow.Launcher.Core.Plugin
 {
@@ -41,29 +40,7 @@ namespace Flow.Launcher.Core.Plugin
         private readonly ConcurrentBag<PluginMetadata> _contextMenuPlugins = [];
         private readonly ConcurrentBag<PluginMetadata> _homePlugins = [];
 
-        #region Save & Dispose
-        /// <summary>
-        /// Save json and ISavable
-        /// </summary>
-        public void Save()
-        {
-            foreach (var metadata in GetAllInitializedPlugins(includeFailed: false))
-            {
-                var savable = metadata.Plugin as ISavable;
-                try
-                {
-                    savable?.TrySave();
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, $"Failed to save plugin {metadata.Name}");
-                }
-            }
-
-            IPublicAPI.Instance.SavePluginSettings();
-            IPublicAPI.Instance.SavePluginCaches();
-        }
-
+        #region Dispose
         public async ValueTask DisposePluginsAsync()
         {
             // Still call dispose for all plugins even if initialization failed, so that we can clean up resources
