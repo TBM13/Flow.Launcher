@@ -50,10 +50,6 @@
     <ProjectReference Include="..\Flow.Launcher.PluginSDK\Flow.Launcher.PluginSDK.csproj" />
   </ItemGroup>
 
-  <PropertyGroup>
-    <FLLUseDependencyInjection>true</FLLUseDependencyInjection>
-  </PropertyGroup>
-
   <!-- Build flow.launcher.command on dotnet publish -->
   <Target Name="PublishFlowCommand" AfterTargets="Publish">
     <Exec Command="dotnet publish ..\Flow.Launcher.Command -c $(Configuration) -r $(RuntimeIdentifier)" />
