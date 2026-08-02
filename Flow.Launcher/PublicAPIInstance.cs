@@ -70,17 +70,9 @@ namespace Flow.Launcher
 
         public void ShowMainWindow() => _mainVM.Show();
 
-        public void FocusQueryTextBox() => _mainVM.FocusQueryTextBox();
-
         public void HideMainWindow() => _mainVM.Hide();
 
         public bool IsMainWindowVisible() => _mainVM.MainWindowVisibilityStatus;
-
-        public event VisibilityChangedEventHandler VisibilityChanged
-        {
-            add => _mainVM.VisibilityChanged += value;
-            remove => _mainVM.VisibilityChanged -= value;
-        }
 
         public void SaveAppAllSettings()
         {
@@ -395,17 +387,6 @@ namespace Flow.Launcher
 
         public ValueTask<ImageSource> LoadImageAsync(string path, bool loadFullImage = false) =>
             _imageLoader.LoadAsync(path, loadFullImage);
-
-        public bool IsApplicationDarkTheme()
-        {
-            return ThemeManager.Current.ActualApplicationTheme == ApplicationTheme.Dark;
-        }
-
-        public event ActualApplicationThemeChangedEventHandler ActualApplicationThemeChanged
-        {
-            add => _mainVM.ActualApplicationThemeChanged += value;
-            remove => _mainVM.ActualApplicationThemeChanged -= value;
-        }
 
         public string GetDataDirectory() => DataLocation.DataDirectory;
     }

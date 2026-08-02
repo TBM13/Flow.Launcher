@@ -88,11 +88,6 @@ public interface IPublicAPI
     void ShowMainWindow();
 
     /// <summary>
-    /// Focus the query text box in the main window
-    /// </summary>
-    void FocusQueryTextBox();
-
-    /// <summary>
     /// Hide MainWindow
     /// </summary>
     void HideMainWindow();
@@ -102,11 +97,6 @@ public interface IPublicAPI
     /// </summary>
     /// <returns></returns>
     bool IsMainWindowVisible();
-
-    /// <summary>
-    /// Invoked when the visibility of the main window has changed. Currently, the plugin will continue to be subscribed even if it is turned off.
-    /// </summary>
-    event VisibilityChangedEventHandler VisibilityChanged;
 
     /// <summary>
     /// Show message box
@@ -307,17 +297,6 @@ public interface IPublicAPI
     /// </param>
     /// <returns></returns>
     ValueTask<ImageSource> LoadImageAsync(string path, bool loadFullImage = false);
-
-    /// <summary>
-    /// Representing whether the application is using a dark theme
-    /// </summary>
-    /// <returns></returns>
-    bool IsApplicationDarkTheme();
-
-    /// <summary>
-    /// Invoked when the actual theme of the application has changed. Currently, the plugin will continue to be subscribed even if it is turned off.
-    /// </summary>
-    event ActualApplicationThemeChangedEventHandler ActualApplicationThemeChanged;
 
     /// <summary>
     /// Get the user data directory of Flow Launcher.

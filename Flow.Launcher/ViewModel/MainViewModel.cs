@@ -117,18 +117,6 @@ namespace Flow.Launcher.ViewModel
             };
 
             RegisterViewUpdate();
-
-            ThemeManager.Current.ActualApplicationThemeChanged += ThemeManager_ActualApplicationThemeChanged;
-        }
-
-        private void ThemeManager_ActualApplicationThemeChanged(ThemeManager sender, object args)
-        {
-            ActualApplicationThemeChanged?.Invoke(
-                Application.Current,
-                new ActualApplicationThemeChangedEventArgs()
-                {
-                    IsDark = sender.ActualApplicationTheme == ApplicationTheme.Dark
-                });
         }
 
         private void RegisterViewUpdate()
@@ -587,9 +575,6 @@ namespace Flow.Launcher.ViewModel
         // because it is more accurate and reliable representation than using Visibility as a condition check
         [ObservableProperty]
         public partial bool MainWindowVisibilityStatus { get; set; } = true;
-
-        public event VisibilityChangedEventHandler? VisibilityChanged;
-        public event ActualApplicationThemeChangedEventHandler? ActualApplicationThemeChanged;
 
         public double MainWindowWidth
         {
@@ -1281,7 +1266,6 @@ namespace Flow.Launcher.ViewModel
             // Update WPF properties
             MainWindowVisibility = Visibility.Visible;
             MainWindowVisibilityStatus = true;
-            VisibilityChanged?.Invoke(this, new VisibilityChangedEventArgs { IsVisible = true });
 
             // Show the taskbar if the setting is enabled
             if (Settings.ShowTaskbarWhenOpened && !_taskbarShownByFlow)
@@ -1343,7 +1327,6 @@ namespace Flow.Launcher.ViewModel
             // Update WPF properties
             MainWindowVisibilityStatus = false;
             MainWindowVisibility = Visibility.Collapsed;
-            VisibilityChanged?.Invoke(this, new VisibilityChangedEventArgs { IsVisible = false });
         }
 
 #pragma warning restore VSTHRD100 // Avoid async void methods
@@ -1429,21 +1412,6 @@ namespace Flow.Launcher.ViewModel
             _results.AddResults(resultsForUpdates, token, reSelect);
         }
 
-        [SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>")]
-        public void FocusQueryTextBox()
-        {
-            // When application is exiting, the Application.Current will be null
-            Application.Current?.Dispatcher.Invoke(() =>
-            {
-                // When application is exiting, the Application.Current will be null
-                if (Application.Current?.MainWindow is MainWindow window)
-                {
-                    window.QueryTextBox.Focus();
-                    Keyboard.Focus(window.QueryTextBox);
-                }
-            });
-        }
-
         #endregion
 
         #region IDisposable
@@ -1462,7 +1430,6 @@ namespace Flow.Launcher.ViewModel
                     {
                         _resultsViewUpdateTask.Dispose();
                     }
-                    ThemeManager.Current.ActualApplicationThemeChanged -= ThemeManager_ActualApplicationThemeChanged;
                     _disposed = true;
                 }
             }
