@@ -425,61 +425,6 @@ namespace Flow.Launcher.Core.Plugin
 
         #region Check Initializing & Init Failed
 
-        public bool IsInitializingOrInitFailed(string id)
-        {
-            // Id does not exist in loaded plugins
-            if (!_allLoadedPlugins.ContainsKey(id)) return false;
-
-            // Plugin initialized already
-            if (_allInitializedPlugins.ContainsKey(id))
-            {
-                // Check if the plugin initialization failed
-                return _initFailedPlugins.ContainsKey(id);
-            }
-            // Plugin is still initializing
-            else
-            {
-                return true;
-            }
-        }
-
-        public bool IsInitializing(string id)
-        {
-            // Id does not exist in loaded plugins
-            if (!_allLoadedPlugins.ContainsKey(id)) return false;
-
-            // Plugin initialized already
-            if (_allInitializedPlugins.ContainsKey(id))
-            {
-                return false;
-            }
-            // Plugin is still initializing
-            else
-            {
-                return true;
-            }
-        }
-
-        public bool IsInitializationFailed(string id)
-        {
-            // Id does not exist in loaded plugins
-            if (!_allLoadedPlugins.ContainsKey(id)) return false;
-
-            // Plugin initialized already
-            if (_allInitializedPlugins.ContainsKey(id))
-            {
-                // Check if the plugin initialization failed
-                return _initFailedPlugins.ContainsKey(id);
-            }
-            // Plugin is still initializing
-            else
-            {
-                return false;
-            }
-        }
-
-        #endregion
-
         #region Plugin Action Keyword
 
         public bool ActionKeywordRegistered(string actionKeyword)
