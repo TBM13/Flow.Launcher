@@ -212,22 +212,6 @@ public interface IPublicAPI
     void SaveSettingJsonStorage<T>() where T : class, new();
 
     /// <summary>
-    /// Opens the URL using the browser with the given Uri object, even if the URL is a local file.
-    /// </summary>
-    public void OpenWebUrl(Uri url, bool inPrivate = false, bool inTab = true);
-
-    /// <summary>
-    /// Opens the URL with the given Uri object in browser if scheme is Http or Https.
-    /// If the URL is a local file, it will instead be opened with the default application for that file type.
-    /// </summary>
-    public void OpenUrl(Uri url, bool inPrivate = false, bool inTab = true);
-
-    /// <summary>
-    /// Opens the application URI with the given Uri object, e.g. obsidian://search-query-example
-    /// </summary>
-    public void OpenAppUri(Uri appUri);
-
-    /// <summary>
     /// Reloads the query.
     /// When current results are from context menu or history, it will go back to query results before re-querying.
     /// </summary>

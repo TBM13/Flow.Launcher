@@ -12,7 +12,6 @@ using Flow.Launcher.Core.Storage;
 using Flow.Launcher.Core.Text;
 using Flow.Launcher.Core.UserSettings;
 using Flow.Launcher.Interop;
-using Flow.Launcher.Interop.Programs;
 using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Plugins;
@@ -279,64 +278,6 @@ public class PublicAPIInstance : IPublicAPI
         }
 
         value.TrySave();
-    }
-
-    private void OpenUri(Uri uri, bool inPrivate = false, bool forceBrowser = false, bool openInTab = true)
-    {
-        if (uri.IsFile
-            && !File.Exists(uri.LocalPath)
-            && !Directory.Exists(uri.LocalPath))
-        {
-            ShowMsgError("Error", $"File or directory not found: {uri.LocalPath}");
-            return;
-        }
-
-        if (forceBrowser || uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)
-        {
-            try
-            {
-                if (openInTab)
-                    BrowserHelper.OpenInNewTab(uri);
-                else
-                    BrowserHelper.OpenInNewWindow(uri);
-            }
-            catch (Exception e)
-            {
-                var tabOrWindow = openInTab ? "tab" : "window";
-                _logger.LogError(e, $"Failed to open URL in browser {tabOrWindow}: {inPrivate}");
-                ShowMsgError(
-                    "Error",
-                    "An error occurred while opening the URL in the browser. Please check your Default Web Browser configuration in the General section of the settings window"
-                );
-            }
-        }
-        else
-        {
-            try
-            {
-                ProcessHelper.StartProcess(uri.AbsoluteUri, useShellExecute: true);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, $"Failed to open: {uri.AbsoluteUri}");
-                ShowMsgError("Error", e.Message);
-            }
-        }
-    }
-
-    public void OpenWebUrl(Uri url, bool inPrivate = false, bool inTab = true)
-    {
-        OpenUri(url, inPrivate, forceBrowser: true, openInTab: inTab);
-    }
-
-    public void OpenUrl(Uri url, bool inPrivate = false, bool inTab = true)
-    {
-        OpenUri(url, inPrivate, openInTab: inTab);
-    }
-
-    public void OpenAppUri(Uri appUri)
-    {
-        OpenUri(appUri);
     }
 
     public void ReQuery(bool reselect = true) => _mainVM.ReQuery(reselect);
