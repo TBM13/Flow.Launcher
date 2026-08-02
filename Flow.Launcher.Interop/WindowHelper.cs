@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
@@ -54,19 +55,40 @@ public static class WindowHelper
     /// Returns a list with all window handles.
     /// </summary>
     /// <exception cref="Win32Exception"></exception>
-    public static List<nint> GetAllWindows()
+    public static unsafe List<nint> GetAllWindows()
     {
         List<nint> windows = new(256);
-        bool res = PInvoke.EnumWindows((hWnd, _) =>
+        GCHandle handle = GCHandle.Alloc(windows);
+        try
         {
-            windows.Add(hWnd);
-            return true;
-        }, default);
+            bool res = PInvoke.EnumWindows(&EnumCallback, default);
 
-        if (!res)
-            throw new Win32Exception(Marshal.GetLastPInvokeError());
+            if (!res)
+                throw new Win32Exception(Marshal.GetLastPInvokeError());
+        }
+        finally
+        {
+            handle.Free();
+        }
 
         return windows;
+
+        [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
+        static BOOL EnumCallback(HWND hWnd, LPARAM data)
+        {
+            try
+            {
+                GCHandle handle = GCHandle.FromIntPtr((nint)data);
+                if (handle.Target is List<nint> list)
+                    list.Add(hWnd);
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 
     /// <summary>

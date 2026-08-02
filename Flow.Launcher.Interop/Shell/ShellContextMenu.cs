@@ -1,7 +1,5 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Windows.Input;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -19,6 +17,7 @@ namespace Flow.Launcher.Interop.Shell;
 /// </remarks>
 // Based on code from https://www.codeproject.com/Articles/22012/Explorer-Shell-Context-Menu
 // TODO: Handle IContextMenu2 and IContextMenu3
+// TODO: Review code
 public sealed class ShellContextMenu : IDisposable
 {
     // CMIC_MASK constants - these don't seem to be exposed by CsWin32
@@ -101,12 +100,11 @@ public sealed class ShellContextMenu : IDisposable
             return;
         }
 
-        IntPtr contextMenuPtr = IntPtr.Zero;
         HMENU menu = default;
 
         try
         {
-            if (!TryGetContextMenu(_parentFolder, _pidls, out contextMenuPtr))
+            if (!TryGetContextMenu(_parentFolder, _pidls))
                 return;
 
             menu = PInvoke.CreatePopupMenu();
@@ -139,17 +137,12 @@ public sealed class ShellContextMenu : IDisposable
             if (menu != HMENU.Null)
                 PInvoke.DestroyMenu(menu);
 
-            if (contextMenuPtr != IntPtr.Zero)
-                Marshal.Release(contextMenuPtr);
-
             ReleaseAll();
         }
     }
 
-    private unsafe bool TryGetContextMenu(IShellFolder parentFolder, IntPtr[] pidls, out IntPtr contextMenuPtr)
+    private unsafe bool TryGetContextMenu(IShellFolder parentFolder, IntPtr[] pidls)
     {
-        contextMenuPtr = IntPtr.Zero;
-
         try
         {
             fixed (IntPtr* pPIDLs = pidls)
@@ -166,13 +159,8 @@ public sealed class ShellContextMenu : IDisposable
                 if (result is IContextMenu contextMenu)
                 {
                     _contextMenu = contextMenu;
-                    contextMenuPtr = Marshal.GetIUnknownForObject(result);
                     return true;
                 }
-
-                // If result is not IContextMenu but is a COM object, release it
-                if (result is not null)
-                    Marshal.ReleaseComObject(result);
             }
         }
         catch
@@ -300,7 +288,6 @@ public sealed class ShellContextMenu : IDisposable
 
         fixed (char* pPath = folderPath)
         {
-            Guid iid = typeof(IShellFolder).GUID;
             ITEMIDLIST* pidl = null;
             uint attrs = 0;
 
@@ -331,25 +318,17 @@ public sealed class ShellContextMenu : IDisposable
                 {
                     // Free STRRET if it contains a CoTaskMemAlloc'd string
                     if (strRet.uType == (uint)STRRET_TYPE.STRRET_WSTR)
-                        Marshal.FreeCoTaskMem((IntPtr)strRet.Anonymous.pOleStr.Value);
+                        PInvoke.CoTaskMemFree(strRet.Anonymous.pOleStr.Value);
                 }
 
                 // Get IShellFolder for the parent
-                desktop.BindToObject(pidl, null, &iid, out object result);
-                if (result is IShellFolder shellFolder)
-                {
-                    _parentFolder = shellFolder;
-                    return true;
-                }
-
-                // Unexpected result type - release it
-                if (result is not null)
-                    Marshal.ReleaseComObject(result);
-                return false;
+                desktop.BindToObject(*pidl, null, out IShellFolder shellFolder);
+                _parentFolder = shellFolder;
+                return true;
             }
             finally
             {
-                Marshal.FreeCoTaskMem((IntPtr)pidl);
+                PInvoke.CoTaskMemFree(pidl);
             }
         }
     }
@@ -368,17 +347,14 @@ public sealed class ShellContextMenu : IDisposable
     {
         if (_contextMenu is not null)
         {
-            Marshal.ReleaseComObject(_contextMenu);
             _contextMenu = null;
         }
         if (_desktopFolder is not null)
         {
-            Marshal.ReleaseComObject(_desktopFolder);
             _desktopFolder = null;
         }
         if (_parentFolder is not null)
         {
-            Marshal.ReleaseComObject(_parentFolder);
             _parentFolder = null;
         }
         if (_pidls is not null)
@@ -389,13 +365,13 @@ public sealed class ShellContextMenu : IDisposable
         _parentFolderPath = null;
     }
 
-    private static void FreePIDLs(IntPtr[] pidls, int count)
+    private static unsafe void FreePIDLs(IntPtr[] pidls, int count)
     {
         for (int i = 0; i < count; i++)
         {
             if (pidls[i] != IntPtr.Zero)
             {
-                Marshal.FreeCoTaskMem(pidls[i]);
+                PInvoke.CoTaskMemFree(pidls[i].ToPointer());
                 pidls[i] = IntPtr.Zero;
             }
         }

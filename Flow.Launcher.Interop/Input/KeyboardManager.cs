@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows.Input;
 using Flow.Launcher.PluginSDK.Hotkeys;
@@ -12,6 +13,7 @@ namespace Flow.Launcher.Interop.Input;
 /// <summary>
 /// Manages global keyboard hooks to detect hotkeys, pressed keys, etc.
 /// </summary>
+/// <remarks>Only one instance of this class can be active at a time.</remarks>
 public class KeyboardManager : IDisposable
 {
     /// <summary>
@@ -25,8 +27,8 @@ public class KeyboardManager : IDisposable
     /// </remarks>
     public event Func<Hotkey, bool>? OnHotkeyTriggered;
 
+    private static KeyboardManager? _activeInstance;
     private UnhookWindowsHookExSafeHandle? _hookID;
-    private readonly HOOKPROC _proc;
     private volatile uint _hookThreadId;
     private readonly ManualResetEventSlim _threadInitSignal = new();
     private Exception? _threadInitException;
@@ -40,8 +42,11 @@ public class KeyboardManager : IDisposable
 
     public KeyboardManager()
     {
-        // Keep a reference to the delegate as a field to prevent it from being gc'd
-        _proc = HookCallback;
+        if (_activeInstance is not null)
+            throw new InvalidOperationException(
+                $"Only one instance of {nameof(KeyboardManager)} can be active at a time");
+
+        _activeInstance = this;
     }
 
     /// <summary>
@@ -77,7 +82,7 @@ public class KeyboardManager : IDisposable
             throw _threadInitException;
     }
 
-    private void HookThreadProc()
+    private unsafe void HookThreadProc()
     {
         try
         {
@@ -86,7 +91,7 @@ public class KeyboardManager : IDisposable
             // Low-level hooks such as WH_KEYBOARD_LL are guaranteed
             // to execute sequentially on the current thread
             _hookID = PInvoke.SetWindowsHookEx(
-                WINDOWS_HOOK_ID.WH_KEYBOARD_LL, _proc, PInvoke.GetModuleHandle(null), 0);
+                WINDOWS_HOOK_ID.WH_KEYBOARD_LL, &StaticHookCallback, PInvoke.GetModuleHandle(null), 0);
 
             if (_hookID.IsInvalid)
             {
@@ -115,12 +120,18 @@ public class KeyboardManager : IDisposable
         }
     }
 
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvStdcall) })]
+    private static LRESULT StaticHookCallback(int nCode, WPARAM wParam, LPARAM lParam)
+    {
+        if (nCode >= 0 && _activeInstance is not null)
+            return _activeInstance.HookCallback(nCode, wParam, lParam);
+
+        // Let the next hook in the chain receive the key event (OS, some other app, etc.)
+        return PInvoke.CallNextHookEx(default, nCode, wParam, lParam);
+    }
+
     private LRESULT HookCallback(int nCode, WPARAM wParam, LPARAM lParam)
     {
-        if (nCode < 0)
-            // Let the next hook in the chain receive the key event (OS, some other app, etc.)
-            return PInvoke.CallNextHookEx(default, nCode, wParam, lParam);
-
         uint vkCode;
         bool isSimulatedKeyEvent;
         unsafe
@@ -284,6 +295,8 @@ public class KeyboardManager : IDisposable
     {
         if (_isDisposed) return;
         _isDisposed = true;
+
+        _activeInstance = null;
 
         // Unhook
         _hookID?.Dispose();

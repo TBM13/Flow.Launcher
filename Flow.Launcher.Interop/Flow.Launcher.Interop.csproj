@@ -6,7 +6,14 @@
 
     <GenerateDependencyFile>false</GenerateDependencyFile>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+
+    <!-- Required by cswin32 when useComSourceGenerators is true -->
+    <CsWin32RunAsBuildTask>true</CsWin32RunAsBuildTask>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="NativeMethods.json" />
+  </ItemGroup>
 
   <ItemGroup>
     <AdditionalFiles Include="NativeMethods.txt" />

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows;
 using Windows.Win32;
@@ -13,8 +14,8 @@ namespace Flow.Launcher.Interop.Hardware;
 public class MonitorInfo
 {
     /// <exception cref="InvalidOperationException"></exception>
-    internal unsafe MonitorInfo(HMONITOR monitor, HMONITOR primaryMonitor, RECT* rect)
-        : this(monitor, primaryMonitor, new Rect(new Point(rect->left, rect->top), new Point(rect->right, rect->bottom)))
+    internal MonitorInfo(HMONITOR monitor, HMONITOR primaryMonitor, RECT rect)
+        : this(monitor, primaryMonitor, new Rect(new Point(rect.left, rect.top), new Point(rect.right, rect.bottom)))
     { }
 
     /// <exception cref="InvalidOperationException"></exception>
@@ -87,17 +88,40 @@ public static class MonitorHelper
         HMONITOR primaryMonitor = GetPrimaryMonitorHandle();
         List<MonitorInfo> list = [];
 
-        MONITORENUMPROC callback = new((monitor, deviceContext, rect, data) =>
+        var context = (list, primaryMonitor);
+        GCHandle handle = GCHandle.Alloc(context);
+        try
         {
-            list.Add(new MonitorInfo(monitor, primaryMonitor, rect));
+            LPARAM lParam = (LPARAM)GCHandle.ToIntPtr(handle);
+
+            bool ok = PInvoke.EnumDisplayMonitors(default, null, &EnumCallback, lParam);
+            if (!ok)
+                throw new InvalidOperationException("Failed to enum display monitors");
+            return list;
+        }
+        finally
+        {
+            handle.Free();
+        }
+
+        [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
+        static BOOL EnumCallback(HMONITOR monitor, HDC deviceContext, RECT* rect, LPARAM data)
+        {
+            try
+            {
+                GCHandle handle = GCHandle.FromIntPtr((nint)data);
+                if (handle.Target is (List<MonitorInfo> list, HMONITOR primaryMonitor))
+                {
+                    list.Add(new MonitorInfo(monitor, primaryMonitor, *rect));
+                }
+            }
+            catch
+            {
+                return false;
+            }
+
             return true;
-        });
-
-        bool ok = PInvoke.EnumDisplayMonitors(default, null, callback, default);
-        if (!ok)
-            throw new InvalidOperationException("Failed to enum display monitors");
-
-        return list;
+        }
     }
 
     /// <summary>

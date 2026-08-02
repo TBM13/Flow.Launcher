@@ -93,44 +93,36 @@ public static class ShellImageHelper
     /// <exception cref="InvalidOperationException"></exception>
     private static unsafe HBITMAP GetHBitmap(string path, int width, int height, ShellItemImageFlags options)
     {
-        IShellItemImageFactory? imageFactory = null;
-        try
+        // Object managed by GC
+        PInvoke.SHCreateItemFromParsingName(
+            path, null, out IShellItemImageFactory imageFactory).ThrowOnFailure();
+
+        SIZE size = new SIZE
         {
-            PInvoke.SHCreateItemFromParsingName<IShellItemImageFactory>(
-                path, null, out imageFactory).ThrowOnFailure();
+            cx = width,
+            cy = height
+        };
 
-            SIZE size = new SIZE
+        HBITMAP hBitmap = default;
+        int remainingAttempts = 3;
+        while (true)
+        {
+            try
             {
-                cx = width,
-                cy = height
-            };
-
-            HBITMAP hBitmap = default;
-            int remainingAttempts = 3;
-            while (true)
-            {
-                try
-                {
-                    imageFactory.GetImage(size, (SIIGBF)options, &hBitmap);
-                    break;
-                }
-                catch (COMException ex) when (
-                    ex.HResult == (int)HRESULT.E_PENDING && remainingAttempts > 0)
-                {
-                    // This is a normal exception when the app was recently opened.
-                    // Wait a few miliseconds and retry
-                    Thread.Sleep(15);
-                    remainingAttempts--;
-                }
+                imageFactory.GetImage(size, (SIIGBF)options, &hBitmap);
+                break;
             }
+            catch (COMException ex) when (
+                ex.HResult == (int)HRESULT.E_PENDING && remainingAttempts > 0)
+            {
+                // This is a normal exception when the app was recently opened.
+                // Wait a few miliseconds and retry
+                Thread.Sleep(15);
+                remainingAttempts--;
+            }
+        }
 
-            return hBitmap;
-        }
-        finally
-        {
-            if (imageFactory is not null && Marshal.IsComObject(imageFactory))
-                Marshal.ReleaseComObject(imageFactory);
-        }
+        return hBitmap;
     }
 
     /// <summary>

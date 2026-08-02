@@ -1,7 +1,9 @@
 ﻿using System.IO;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 using Windows.Win32;
 using Windows.Win32.Foundation;
+using Windows.Win32.System.Com;
 using Windows.Win32.UI.Shell;
 using Windows.Win32.UI.Shell.Common;
 using Windows.Win32.UI.WindowsAndMessaging;
@@ -46,66 +48,55 @@ public static class FileExplorerHelper
     /// <returns>Null if no explorer window is focused or it is minimized.</returns>
     private static string? GetForegroundExplorerLocationUrl()
     {
-        ShellWindows shellWindows = new();
-        try
+        // Object managed by GC
+        IShellWindows windows = ShellWindows.CreateInstance<IShellWindows>();
+
+        HWND foregroundWindow = PInvoke.GetForegroundWindow();
+        HWND targetWindow = foregroundWindow;
+        HWND shellDesktopWindow = PInvoke.GetShellWindow();
+
+        // If our application is the foreground window, look for the
+        // explorer window immediately behind it in Z-order
+        PInvoke.GetWindowThreadProcessId(foregroundWindow, out uint foregroundPid);
+        if (foregroundPid == (uint)Environment.ProcessId)
         {
-            IShellWindows windows = (IShellWindows)shellWindows;
-            HWND foregroundWindow = PInvoke.GetForegroundWindow();
-            HWND targetWindow = foregroundWindow;
-            HWND shellDesktopWindow = PInvoke.GetShellWindow();
-
-            // If our application is the foreground window, look for the
-            // explorer window immediately behind it in Z-order
-            PInvoke.GetWindowThreadProcessId(foregroundWindow, out uint foregroundPid);
-            if (foregroundPid == (uint)Environment.ProcessId)
-            {
-                targetWindow = GetNextVisibleWindow(foregroundWindow);
-                if (targetWindow.IsNull || targetWindow == shellDesktopWindow)
-                    return DesktopLocationUrl;
-            }
-
-            // If the desktop itself is the foreground window, return its location
-            if (targetWindow == shellDesktopWindow)
+            targetWindow = GetNextVisibleWindow(foregroundWindow);
+            if (targetWindow.IsNull || targetWindow == shellDesktopWindow)
                 return DesktopLocationUrl;
+        }
 
-            int count = windows.Count;
-            for (int i = 0; i < count; i++)
+        // If the desktop itself is the foreground window, return its location
+        if (targetWindow == shellDesktopWindow)
+            return DesktopLocationUrl;
+
+        int count = windows.get_Count();
+        for (int i = 0; i < count; i++)
+        {
+            using ComVariant index = ComVariant.Create(i);
+            try
             {
-                object? item = null;
-                try
+                IDispatch item = windows.Item(index);
+                if (item is IWebBrowser2 browser)
                 {
-                    item = windows.Item(i);
-                    if (item is IWebBrowser2 browser)
-                    {
-                        // Make sure that the window is indeed a file explorer
-                        // we don't want Internet Explorer or the classic control panel
-                        BSTR fullName = browser.FullName;
-                        if (!Path.GetFileName(fullName).Equals("explorer.exe", StringComparison.OrdinalIgnoreCase))
-                            continue;
+                    // Make sure that the window is indeed a file explorer
+                    // we don't want Internet Explorer or the classic control panel
+                    BSTR fullName = browser.get_FullName();
+                    if (!Path.GetFileName(fullName).Equals("explorer.exe", StringComparison.OrdinalIgnoreCase))
+                        continue;
 
-                        HWND hwnd = new(browser.HWND);
-                        if (hwnd == targetWindow && !PInvoke.IsIconic(hwnd))
-                            return browser.LocationURL.ToString();
-                    }
-                }
-                catch (COMException)
-                {
-                    // The window may have been closed or become unresponsive
-                    continue;
-                }
-                finally
-                {
-                    if (item is not null)
-                        Marshal.ReleaseComObject(item);
+                    HWND hwnd = new(browser.get_HWND());
+                    if (hwnd == targetWindow && !PInvoke.IsIconic(hwnd))
+                        return browser.get_LocationURL().ToString();
                 }
             }
+            catch (COMException)
+            {
+                // The window may have been closed or become unresponsive
+                continue;
+            }
+        }
 
-            return null;
-        }
-        finally
-        {
-            Marshal.ReleaseComObject(shellWindows);
-        }
+        return null;
     }
 
     /// <summary>

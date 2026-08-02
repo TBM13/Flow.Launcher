@@ -34,13 +34,13 @@ public static class ShellHelper
     /// <exception cref="COMException"/>
     public static unsafe string GetDisplayName(string path)
     {
-        IShellItem? shellItem = null;
+        // Object handled by GC
+        PInvoke.SHCreateItemFromParsingName(
+            path, null, out IShellItem shellItem).ThrowOnFailure();
+
         PWSTR displayName = default;
         try
         {
-            PInvoke.SHCreateItemFromParsingName<IShellItem>(path, null, out shellItem)
-                .ThrowOnFailure();
-
             shellItem.GetDisplayName(SIGDN.SIGDN_NORMALDISPLAY, out displayName);
             return displayName.ToString();
         }
@@ -48,9 +48,6 @@ public static class ShellHelper
         {
             if (displayName.Value is not null)
                 PInvoke.CoTaskMemFree(displayName);
-
-            if (shellItem is not null && Marshal.IsComObject(shellItem))
-                Marshal.ReleaseComObject(shellItem);
         }
     }
 }

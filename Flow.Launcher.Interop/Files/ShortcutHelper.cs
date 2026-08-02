@@ -20,54 +20,34 @@ public static class ShortcutHelper
     /// <summary>
     /// Creates a ShellLink COM object, loads the .lnk file, and returns the <see cref="IShellLinkW"/> interface.
     /// </summary>
-    /// <remarks>
-    /// Caller must release the returned object via <see cref="Marshal.ReleaseComObject"/> when done.
-    /// </remarks>
     /// <exception cref="COMException"></exception>
     private static IShellLinkW LoadShellLink(string path)
     {
-        ShellLink link = new();
-        try
-        {
-            ((IPersistFile)link).Load(path, STGM.STGM_READ);
-            return (IShellLinkW)link;
-        }
-        catch
-        {
-            if (Marshal.IsComObject(link))
-                Marshal.ReleaseComObject(link);
-
-            throw;
-        }
+        // Object managed by GC
+        IShellLinkW link = ShellLink.CreateInstance<IShellLinkW>();
+        ((IPersistFile)link).Load(path, STGM.STGM_READ);
+        return link;
     }
 
     /// <exception cref="PathTooLongException"></exception>
     /// <exception cref="COMException"></exception>
     public static unsafe string RetrieveTargetPath(string path)
     {
-        var link = LoadShellLink(path);
-        try
-        {
-            // SLR_NO_UI: don't show any UI during resolution (e.g. "Problem with Shortcut" dialogs)
-            // SLR_NOTRACK & SLR_NOSEARCH: don't search for the target if it's missing. This can be
-            //   super slow, specially for network paths.
-            // https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ishelllinka-resolve
-            link.Resolve(HWND.Null, (uint)(SLR_FLAGS.SLR_NO_UI | SLR_FLAGS.SLR_NOTRACK | SLR_FLAGS.SLR_NOSEARCH));
+        IShellLinkW link = LoadShellLink(path);
+        // SLR_NO_UI: don't show any UI during resolution (e.g. "Problem with Shortcut" dialogs)
+        // SLR_NOTRACK & SLR_NOSEARCH: don't search for the target if it's missing. This can be
+        //   super slow, specially for network paths.
+        // https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ishelllinka-resolve
+        link.Resolve(HWND.Null, (uint)(SLR_FLAGS.SLR_NO_UI | SLR_FLAGS.SLR_NOTRACK | SLR_FLAGS.SLR_NOSEARCH));
 
-            char* buffer = stackalloc char[(int)PInvoke.MAX_PATH];
-            link.GetPath(buffer, (int)PInvoke.MAX_PATH, null, 0);
+        char* buffer = stackalloc char[(int)PInvoke.MAX_PATH];
+        link.GetPath(buffer, (int)PInvoke.MAX_PATH, null, 0);
 
-            string targetPath = new string(buffer);
-            if (targetPath.Length >= PInvoke.MAX_PATH - 1)
-                throw new PathTooLongException("Target path is too long");
+        string targetPath = new string(buffer);
+        if (targetPath.Length >= PInvoke.MAX_PATH - 1)
+            throw new PathTooLongException("Target path is too long");
 
-            return targetPath;
-        }
-        finally
-        {
-            if (Marshal.IsComObject(link))
-                Marshal.ReleaseComObject(link);
-        }
+        return targetPath;
     }
 
     /// <summary>
@@ -77,38 +57,31 @@ public static class ShortcutHelper
     /// <exception cref="COMException"></exception>
     public static unsafe (string description, string args) RetrieveDescriptionAndArgs(string path)
     {
-        var link = LoadShellLink(path);
+        IShellLinkW link = LoadShellLink(path);
+
+        char* descriptionBuffer = stackalloc char[(int)PInvoke.INFOTIPSIZE];
+        link.GetDescription(descriptionBuffer, (int)PInvoke.INFOTIPSIZE);
+        string description = new(descriptionBuffer);
+
+        string args;
+        PROPERTYKEY pKey = PInvoke.PKEY_Link_Arguments;
+        PROPVARIANT propVar = default;
         try
         {
-            char* descriptionBuffer = stackalloc char[(int)PInvoke.INFOTIPSIZE];
-            link.GetDescription(descriptionBuffer, (int)PInvoke.INFOTIPSIZE);
-            string description = new(descriptionBuffer);
-
-            string args;
-            PROPERTYKEY pKey = PInvoke.PKEY_Link_Arguments;
-            PROPVARIANT propVar = default;
-            try
+            ((IPropertyStore)link).GetValue(in pKey, out propVar);
+            args = propVar.Anonymous.Anonymous.vt switch
             {
-                ((IPropertyStore)link).GetValue(in pKey, out propVar);
-                args = propVar.Anonymous.Anonymous.vt switch
-                {
-                    VARENUM.VT_EMPTY => string.Empty,
-                    VARENUM.VT_LPWSTR => propVar.Anonymous.Anonymous.Anonymous.pwszVal.ToString(),
-                    _ => throw new InvalidOperationException(
-                        $"Unexpected variant type for ShellLink args: {propVar.Anonymous.Anonymous.vt}")
-                };
-            }
-            finally
-            {
-                PInvoke.PropVariantClear(ref propVar);
-            }
-
-            return (description, args);
+                VARENUM.VT_EMPTY => string.Empty,
+                VARENUM.VT_LPWSTR => propVar.Anonymous.Anonymous.Anonymous.pwszVal.ToString(),
+                _ => throw new InvalidOperationException(
+                    $"Unexpected variant type for ShellLink args: {propVar.Anonymous.Anonymous.vt}")
+            };
         }
         finally
         {
-            if (Marshal.IsComObject(link))
-                Marshal.ReleaseComObject(link);
+            PInvoke.PropVariantClear(ref propVar);
         }
+
+        return (description, args);
     }
 }
