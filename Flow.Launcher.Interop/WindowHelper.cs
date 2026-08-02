@@ -61,7 +61,7 @@ public static class WindowHelper
         GCHandle handle = GCHandle.Alloc(windows);
         try
         {
-            bool res = PInvoke.EnumWindows(&EnumCallback, default);
+            bool res = PInvoke.EnumWindows(&EnumCallback, (LPARAM)GCHandle.ToIntPtr(handle));
 
             if (!res)
                 throw new Win32Exception(Marshal.GetLastPInvokeError());
