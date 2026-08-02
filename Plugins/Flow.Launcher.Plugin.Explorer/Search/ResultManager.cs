@@ -103,6 +103,7 @@ public static class ResultManager
                     }
                     catch (Exception ex)
                     {
+                        Main.Context.Logger.LogError(ex, $"Failed to open dir {path}");
                         Main.Context.API.ShowMsgBox(ex.Message, Localize.Error_OpenDir);
                         return false;
                     }
@@ -125,6 +126,7 @@ public static class ResultManager
                     }
                     catch (Exception ex)
                     {
+                        Main.Context.Logger.LogError(ex, $"Failed to open containing dir {dirPath} of file {path}");
                         Main.Context.API.ShowMsgBox(ex.Message, Localize.Error_OpenDir);
                         return false;
                     }
@@ -137,6 +139,7 @@ public static class ResultManager
                 }
                 catch (Exception ex)
                 {
+                    Main.Context.Logger.LogError(ex, $"Failed to open dir {path}");
                     Main.Context.API.ShowMsgBox(ex.Message, Localize.Error_OpenDir);
                     return false;
                 }
@@ -267,24 +270,17 @@ public static class ResultManager
                     ShowNativeContextMenu(filePath, ResultType.File, c.ResultPosition);
                     return false;
                 }
-                try
+                if (keys.OnlyModifiersPressed(ModifierKeys.Control | ModifierKeys.Shift))
                 {
-                    if (keys.OnlyModifiersPressed(ModifierKeys.Control | ModifierKeys.Shift))
-                    {
-                        OpenFile(filePath, Main.Settings.UseLocationAsWorkingDir ? directory : string.Empty, true);
-                    }
-                    else if (keys.OnlyModifiersPressed(ModifierKeys.Control))
-                    {
-                        OpenFolder(filePath, filePath);
-                    }
-                    else
-                    {
-                        OpenFile(filePath, Main.Settings.UseLocationAsWorkingDir ? directory : string.Empty);
-                    }
+                    OpenFile(filePath, Main.Settings.UseLocationAsWorkingDir ? directory : string.Empty, true);
                 }
-                catch (Exception ex)
+                else if (keys.OnlyModifiersPressed(ModifierKeys.Control))
                 {
-                    Main.Context.API.ShowMsgBox(ex.Message, Localize.Error_OpenFile);
+                    OpenFolder(filePath, filePath);
+                }
+                else
+                {
+                    OpenFile(filePath, Main.Settings.UseLocationAsWorkingDir ? directory : string.Empty);
                 }
 
                 return true;
@@ -302,10 +298,13 @@ public static class ResultManager
         string verb = asAdmin ? "runas" : string.Empty;
         try
         {
-            ProcessHelper.StartProcess(filePath, workingDirectory: workingDir, verb: verb);
+            // useShellExecute is needed to open all types of files (e.g. .sln)
+            ProcessHelper.StartProcess(
+                filePath, workingDirectory: workingDir, useShellExecute: true, verb: verb);
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            Main.Context.Logger.LogError(e, $"Failed to open file {filePath}");
             Main.Context.API.ShowMsgError(Localize.Error_OpenFile);
         }
     }
