@@ -74,7 +74,7 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = Localize.Cmd_Shutdown,
                     SubTitle = Localize.Cmd_Shutdown_Description,
-                    Glyph = new GlyphInfo (Glyph:"\xe7e8"),
+                    Glyph = "\xe7e8",
                     Action = c =>
                     {
                         var result = MessageBox.Show(
@@ -97,7 +97,7 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = Localize.Cmd_Restart,
                     SubTitle = Localize.Cmd_Restart_Description,
-                    Glyph = new GlyphInfo (Glyph:"\xe777"),
+                    Glyph = "\xe777",
                     Action = c =>
                     {
                         var result = MessageBox.Show(
@@ -120,7 +120,7 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = Localize.Cmd_RestartAdvanced,
                     SubTitle = Localize.Cmd_RestartAdvanced_Description,
-                    Glyph = new GlyphInfo (Glyph:"\xecc5"),
+                    Glyph = "\xecc5",
                     Action = c =>
                     {
                         var result = MessageBox.Show(
@@ -143,7 +143,7 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = Localize.Cmd_LogOff,
                     SubTitle = Localize.Cmd_LogOff_Description,
-                    Glyph = new GlyphInfo (Glyph:"\xe77b"),
+                    Glyph = "\xe77b",
                     Action = c =>
                     {
                         var result = MessageBox.Show(
@@ -160,7 +160,7 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = Localize.Cmd_Lock,
                     SubTitle = Localize.Cmd_Lock_Description,
-                    Glyph = new GlyphInfo (Glyph:"\xe72e"),
+                    Glyph = "\xe72e",
                     Action = c =>
                     {
                         OSHelper.Lock();
@@ -171,7 +171,7 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = Localize.Cmd_Sleep,
                     SubTitle = Localize.Cmd_Sleep_Description,
-                    Glyph = new GlyphInfo (Glyph:"\xec46"),
+                    Glyph = "\xec46",
                     Action = c =>
                     {
                         OSHelper.Suspend();
@@ -182,7 +182,7 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = Localize.Cmd_Hibernate,
                     SubTitle = Localize.Cmd_Hibernate_Description,
-                    Glyph = new GlyphInfo (Glyph:"\xe8be"),
+                    Glyph = "\xe8be",
                     Action= c =>
                     {
                         OSHelper.Suspend(hibernate: true);
@@ -192,7 +192,7 @@ namespace Flow.Launcher.Plugin.Sys
                 new Result
                 {
                     Title = Localize.Cmd_OpenRecycleBin,
-                    Glyph = new GlyphInfo (Glyph:"\xe74d"),
+                    Glyph = "\xe74d",
                     CopyText = recycleBinFolder,
                     Action = c =>
                     {
@@ -206,7 +206,7 @@ namespace Flow.Launcher.Plugin.Sys
                     Title = Localize.Cmd_Exit,
                     SubTitle = Localize.Cmd_Exit_Description,
                     IcoPath = "Images\\app.png",
-                    Glyph = new GlyphInfo (Glyph:"\xe89f"),
+                    Glyph = "\xe89f",
                     Action = c =>
                     {
                         Context.API.HideMainWindow();
@@ -218,7 +218,7 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = Localize.Cmd_Settings,
                     SubTitle = Localize.Cmd_Settings_Description,
-                    Glyph = new GlyphInfo (Glyph:"\xf210"),
+                    Glyph = "\xf210",
                     IcoPath = "Images\\app.png",
                     Action = c =>
                     {
@@ -229,7 +229,7 @@ namespace Flow.Launcher.Plugin.Sys
                 /*new Result
                 {
                     Title = Localize.Cmd_ToggleDarkMode,
-                    Glyph = new GlyphInfo (Glyph:"\xe7a1"),
+                    Glyph = "\xe7a1",
                     IcoPath = "Images\\app.png",
                     Action = c =>
                     {
@@ -265,7 +265,7 @@ namespace Flow.Launcher.Plugin.Sys
                 },*/
                 new Result {
                     Title = "Garbage Collection",
-                    Glyph = new GlyphInfo ("\xE74D"),
+                    Glyph = "\xE74D",
                     Action = c => {
                         GC.Collect();
                         GC.WaitForPendingFinalizers();

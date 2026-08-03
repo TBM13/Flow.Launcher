@@ -109,7 +109,7 @@ public class Main : IPlugin, IContextMenu
                 results.Add(new Result()
                 {
                     Title = Localize.Action_RestartService,
-                    Glyph = new(Glyph: "\xe777"),
+                    Glyph = "\xe777",
                     Action = c =>
                     {
                         try
@@ -131,7 +131,7 @@ public class Main : IPlugin, IContextMenu
             results.Add(new Result()
             {
                 Title = Localize.Action_StopService,
-                Glyph = new(Glyph: "\xe769"),
+                Glyph = "\xe769",
                 Action = c =>
                 {
                     try
@@ -154,7 +154,7 @@ public class Main : IPlugin, IContextMenu
             results.Add(new Result()
             {
                 Title = Localize.Action_StartService,
-                Glyph = new(Glyph: "\xe768"),
+                Glyph = "\xe768",
                 Action = c =>
                 {
                     try
@@ -181,7 +181,7 @@ public class Main : IPlugin, IContextMenu
                 SubTitle = service.IsRunning ?
                     Localize.Action_EnableManual_Description :
                     Localize.Action_EnableManualAndStart_Description,
-                Glyph = new(Glyph: "\xEB49"),
+                Glyph = "\xEB49",
                 Action = c => EnableService(service, Action.EnableManual)
             });
 
@@ -191,7 +191,7 @@ public class Main : IPlugin, IContextMenu
                 SubTitle = service.IsRunning ?
                     Localize.Action_EnableAutomatic_Description :
                     Localize.Action_EnableAutomaticAndStart_Description,
-                Glyph = new(Glyph: "\xEB49"),
+                Glyph = "\xEB49",
                 Action = c => EnableService(service, Action.EnableAutomatic)
             });
 
@@ -201,7 +201,7 @@ public class Main : IPlugin, IContextMenu
                 SubTitle = service.IsRunning ?
                     Localize.Action_EnableAutomaticDelayed_Description :
                     Localize.Action_EnableAutomaticDelayedAndStart_Description,
-                Glyph = new(Glyph: "\xEB49"),
+                Glyph = "\xEB49",
                 Action = c => EnableService(service, Action.EnableAutomaticDelayed)
             });
         }
@@ -213,7 +213,7 @@ public class Main : IPlugin, IContextMenu
                 SubTitle = service.IsRunning ?
                     Localize.Action_DisableAndStop_Description :
                     Localize.Action_Disable_Description,
-                Glyph = new(Glyph: "\xEB4A"),
+                Glyph = "\xEB4A",
                 Action = c => DisableService(service)
             });
         }

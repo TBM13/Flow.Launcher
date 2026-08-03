@@ -468,7 +468,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
 
                         return true;
                     },
-                    Glyph = new GlyphInfo(Glyph: "\xe838"),
+                    Glyph = "\xe838",
                 }
             };
 
@@ -482,7 +482,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                         Launch(true);
                         return true;
                     },
-                    Glyph = new GlyphInfo(Glyph: "\xe7ef")
+                    Glyph = "\xe7ef"
                 });
             }
 

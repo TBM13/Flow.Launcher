@@ -105,6 +105,6 @@ namespace Flow.Launcher.Plugin.WindowsSettings.Classes
             }
         }
 
-        public GlyphInfo? IconGlyph { get; set; }
+        public string? IconGlyph { get; set; }
     }
 }

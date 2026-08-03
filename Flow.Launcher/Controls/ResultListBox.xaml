@@ -67,7 +67,7 @@
                     FontFamily="/Resources/SegoeFluentIcons.ttf#Segoe Fluent Icons"
                     FontSize="25"
                     Foreground="{DynamicResource Color05B}"
-                    Text="{Binding Glyph.Glyph}"
+                    Text="{Binding Result.Glyph}"
                     TextAlignment="Center"
                     Visibility="{Binding ShowGlyph}" />
 

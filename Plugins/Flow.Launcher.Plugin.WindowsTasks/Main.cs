@@ -110,7 +110,7 @@ public class Main : IPlugin, IContextMenu
                 res.Add(new()
                 {
                     Title = Localize.TaskAction_Disable,
-                    Glyph = new GlyphInfo(Glyph: "\xEB4A"),
+                    Glyph = "\xEB4A",
                     Action = c =>
                     {
                         task.Enabled = false;
@@ -123,7 +123,7 @@ public class Main : IPlugin, IContextMenu
                 res.Add(new()
                 {
                     Title = Localize.TaskAction_Enable,
-                    Glyph = new GlyphInfo(Glyph: "\xEB49"),
+                    Glyph = "\xEB49",
                     Action = c =>
                     {
                         task.Enabled = true;
@@ -144,7 +144,7 @@ public class Main : IPlugin, IContextMenu
         {
             Title = folder.Name,
             AutoCompleteText = navigateQuery,
-            Glyph = new GlyphInfo(Glyph: "\uF12B"),
+            Glyph = "\uF12B",
             IcoPath = PLUGIN_ICON,
             ContextData = folder,
             CopyText = folder.Path,

@@ -3,13 +3,11 @@ using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.API;
-using Microsoft.Extensions.Logging;
 
 namespace Flow.Launcher.ViewModel;
 
 public partial class ResultViewModel : ObservableObject
 {
-    private readonly PluginSDK.Logging.Logger<ResultViewModel> _logger;
     private readonly IImageLoader _imageLoader;
 
     /// <summary>
@@ -19,9 +17,9 @@ public partial class ResultViewModel : ObservableObject
     [ObservableProperty]
     public partial Func<Point?>? GetScreenCenterPoint { get; set; }
 
-    public Visibility ShowIcon => Glyph is not null ? Visibility.Collapsed : Visibility.Visible;
+    public Visibility ShowIcon => Result.Glyph is not null ? Visibility.Collapsed : Visibility.Visible;
     public Visibility ShowPreviewImage => !string.IsNullOrEmpty(Result.Preview.PreviewImagePath) ? Visibility.Visible : ShowIcon;
-    public Visibility ShowGlyph => Glyph is not null ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility ShowGlyph => Result.Glyph is not null ? Visibility.Visible : Visibility.Collapsed;
 
     public string ShowTitleToolTip => string.IsNullOrEmpty(Result.TitleToolTip)
         ? Result.Title
@@ -68,17 +66,12 @@ public partial class ResultViewModel : ObservableObject
 
     public string PreviewDescription => Result.Preview.Description ?? Result.SubTitle;
 
-    public GlyphInfo? Glyph { get; init; }
     public Result Result { get; }
 
-    public ResultViewModel(
-        ILoggerFactory loggerFactory, IImageLoader imageLoader, Result result)
+    public ResultViewModel(IImageLoader imageLoader, Result result)
     {
-        _logger = new(loggerFactory);
         _imageLoader = imageLoader;
         Result = result;
-
-        Glyph = Result.Glyph;
 
         _image = _imageLoader.LoadingIcon;
         _previewImage = _imageLoader.LoadingIcon;

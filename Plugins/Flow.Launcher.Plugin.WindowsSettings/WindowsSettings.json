@@ -14,10 +14,7 @@
             "Edition",
             "Version"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue946",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue946"
     },
     {
         "Name": "AccessibilityOptions",
@@ -50,10 +47,7 @@
         "AltNames": [
             "Workplace"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue821",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue821"
     },
     {
         "Name": "AccountInfo",
@@ -62,10 +56,7 @@
         "Areas": [
             "AreaPrivacy"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue779",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue779"
     },
     {
         "Name": "Accounts",
@@ -90,10 +81,7 @@
         "Areas": [
             "AreaUpdateAndSecurity"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue930",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue930"
     },
     {
         "Name": "ActivityHistory",
@@ -102,10 +90,7 @@
         "Areas": [
             "AreaPrivacy"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue7c4",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue7c4"
     },
     {
         "Name": "AddHardware",
@@ -164,10 +149,7 @@
         ],
         "Note": "NoteDeprecated17763",
         "DeprecatedInBuild": 17763,
-        "IconGlyph": {
-            "Glyph": "\ue72e",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue72e"
     },
     {
         "Name": "AirplaneMode",
@@ -176,10 +158,7 @@
         "Areas": [
             "AreaNetworkAndInternet"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue709",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue709"
     },
     {
         "Name": "AppDiagnostics",
@@ -188,10 +167,7 @@
         "Areas": [
             "AreaPrivacy"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue9d2",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue9d2"
     },
     {
         "Name": "AppFeatures",
@@ -208,10 +184,7 @@
         "Areas": [
             "AreaApps"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue71d",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue71d"
     },
     {
         "Name": "AppsForWebsites",
@@ -220,10 +193,7 @@
         "Areas": [
             "AreaApps"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue78b",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue78b"
     },
     {
         "Name": "AppVolumeAndDevicePreferences",
@@ -252,10 +222,7 @@
             "Usb"
         ],
         "IntroducedInBuild": 22000,
-        "IconGlyph": {
-            "Glyph": "\ue702",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue702"
     },
     {
         "Name": "Audio",
@@ -298,10 +265,7 @@
         "Areas": [
             "AreaPrivacy"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue753",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue753"
     },
     {
         "Name": "AutoPlay",
@@ -310,10 +274,7 @@
         "Areas": [
             "AreaDevices"
         ],
-        "IconGlyph": {
-            "Glyph": "\uec57",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\uec57"
     },
     {
         "Name": "AutoPlay",
@@ -335,10 +296,7 @@
             "Picture",
             "Image"
         ],
-        "IconGlyph": {
-            "Glyph": "\ueb9f",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ueb9f"
     },
     {
         "Name": "BackgroundApps",
@@ -347,10 +305,7 @@
         "Areas": [
             "AreaPrivacy"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue9d9",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue9d9"
     },
     {
         "Name": "Backup",
@@ -376,10 +331,7 @@
             "AreaSystem"
         ],
         "Note": "NoteBattery",
-        "IconGlyph": {
-            "Glyph": "\ue7e8",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue7e8"
     },
     {
         "Name": "BatterySaverSettings",
@@ -426,10 +378,7 @@
             "AreaDevices"
         ],
         "DeprecatedInBuild": 22000,
-        "IconGlyph": {
-            "Glyph": "\ue702",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue702"
     },
     {
         "Name": "BluetoothDevices",
@@ -474,10 +423,7 @@
         "Areas": [
             "AreaPrivacy"
         ],
-        "IconGlyph": {
-            "Glyph": "\uf738",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\uf738"
     },
     {
         "Name": "Camera",
@@ -486,10 +432,7 @@
         "Areas": [
             "AreaPrivacy"
         ],
-        "IconGlyph": {
-            "Glyph": "\uf439",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\uf439"
     },
     {
         "Name": "CangjieIme",
@@ -560,10 +503,7 @@
         "AltNames": [
             "StartPlaces"
         ],
-        "IconGlyph": {
-            "Glyph": "\ueca5",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ueca5"
     },
     {
         "Name": "ClientServiceForNetWare",
@@ -583,10 +523,7 @@
         "Areas": [
             "AreaSystem"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue77f",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue77f"
     },
     {
         "Name": "ClosedCaptions",
@@ -595,10 +532,7 @@
         "Areas": [
             "AreaEaseOfAccess"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue7f0",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue7f0"
     },
     {
         "Name": "ColorFilters",
@@ -618,10 +552,7 @@
             "protanopia",
             "tritanopia"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue790",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue790"
     },
     {
         "Name": "ColorManagement",
@@ -647,10 +578,7 @@
             "TaskbarColor",
             "WindowBorder"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue790",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue790"
     },
     {
         "Name": "ComponentServices",
@@ -718,10 +646,7 @@
         "Areas": [
             "AreaPrivacy"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue716",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue716"
     },
     {
         "Name": "Cortana",
@@ -760,10 +685,7 @@
         "Areas": [
             "AreaNetworkAndInternet"
         ],
-        "IconGlyph": {
-            "Glyph": "\uec27",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\uec27"
     },
     {
         "Name": "DateAndTime",
@@ -772,10 +694,7 @@
         "Areas": [
             "AreaTimeAndLanguage"
         ],
-        "IconGlyph": {
-            "Glyph": "\uec92",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\uec92"
     },
     {
         "Name": "DateAndTime",
@@ -795,10 +714,7 @@
         "Areas": [
             "AreaApps"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue7ac",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue7ac"
     },
     {
         "Name": "DefaultCamera",
@@ -833,10 +749,7 @@
         "Areas": [
             "AreaSystem"
         ],
-        "IconGlyph": {
-            "Glyph": "\ueda2",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ueda2"
     },
     {
         "Name": "DefenderFirewallAdvancedSecurity",
@@ -854,10 +767,7 @@
         "Areas": [
             "AreaUpdateAndSecurity"
         ],
-        "IconGlyph": {
-            "Glyph": "\uf785",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\uf785"
     },
     {
         "Name": "DesktopThemes",
@@ -901,10 +811,7 @@
             "BluetoothDevices"
         ],
         "IntroducedInBuild": 22000,
-        "IconGlyph": {
-            "Glyph": "\ue772",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue772"
     },
     {
         "Name": "DevicesAndPrinters",
@@ -931,10 +838,7 @@
         "Areas": [
             "AreaNetworkAndInternet"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue83c",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue83c"
     },
     {
         "Name": "DirectAccess",
@@ -980,10 +884,7 @@
             "WarmerColor",
             "RedEye"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue7f4",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue7f4"
     },
     {
         "Name": "Display",
@@ -998,10 +899,7 @@
             "ScrollBars",
             "Size"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue8e9",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue8e9"
     },
     {
         "Name": "DisplayProperties",
@@ -1021,10 +919,7 @@
         "Areas": [
             "AreaPrivacy"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue7c3",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue7c3"
     },
     {
         "Name": "DuplicatingMyDisplay",
@@ -1104,10 +999,7 @@
         "Areas": [
             "AreaAccounts"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue715",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue715"
     },
     {
         "Name": "Encryption",
@@ -1144,10 +1036,7 @@
             "Dhcp",
             "Ip"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue839",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue839"
     },
     {
         "Name": "EventViewer",
@@ -1174,10 +1063,7 @@
         "Areas": [
             "AreaEaseOfAccess"
         ],
-        "IconGlyph": {
-            "Glyph": "\uf19d",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\uf19d"
     },
     {
         "Name": "EyeTracker",
@@ -1214,10 +1100,7 @@
         "Areas": [
             "AreaPrivacy"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue7c3",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue7c3"
     },
     {
         "Name": "FindFast",
@@ -1237,10 +1120,7 @@
         "Areas": [
             "AreaUpdateAndSecurity"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue707",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue707"
     },
     {
         "Name": "FocusAssistQuietHours",
@@ -1281,10 +1161,7 @@
         "Areas": [
             "AreaPersonalization"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue8d2",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue8d2"
     },
     {
         "Name": "ForDevelopers",
@@ -1301,10 +1178,7 @@
         "Areas": [
             "AreaGaming"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue713",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue713"
     },
     {
         "Name": "GameControllers",
@@ -1321,10 +1195,7 @@
         "Areas": [
             "AreaGaming"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue713",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue713"
     },
     {
         "Name": "GameMode",
@@ -1333,10 +1204,7 @@
         "Areas": [
             "AreaGaming"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue7fc",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue7fc"
     },
     {
         "Name": "General",
@@ -1345,10 +1213,7 @@
         "Areas": [
             "AreaPrivacy"
         ],
-        "IconGlyph": {
-            "Glyph": "\uec20",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\uec20"
     },
     {
         "Name": "GetPrograms",
@@ -1407,10 +1272,7 @@
         "Areas": [
             "AreaEaseOfAccess"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue7a1",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue7a1"
     },
     {
         "Name": "HomeGroup",
@@ -1449,10 +1311,7 @@
         "AltNames": [
             "SpeechTyping"
         ],
-        "IconGlyph": {
-            "Glyph": "\ueadf",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ueadf"
     },
     {
         "Name": "InternetOptions",
@@ -1513,10 +1372,7 @@
         "Areas": [
             "AreaTimeAndLanguage"
         ],
-        "IconGlyph": {
-            "Glyph": "\uf2b7z",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\uf2b7z"
     },
     {
         "Name": "Keyboard",
@@ -1534,10 +1390,7 @@
             "CapsLock",
             "NumLock"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue765",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue765"
     },
     {
         "Name": "LocalGroupPolicy",
@@ -1565,10 +1418,7 @@
         "Areas": [
             "AreaPrivacy"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue707",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue707"
     },
     {
         "Name": "LockScreen",
@@ -1581,10 +1431,7 @@
             "Image",
             "Picture"
         ],
-        "IconGlyph": {
-            "Glyph": "\uee3f",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\uee3f"
     },
     {
         "Name": "Magnifier",
@@ -1596,10 +1443,7 @@
         "AltNames": [
             "Zoom"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue8a3",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue8a3"
     },
     {
         "Name": "MailMicrosoftExchangeOrWindowsMessaging",
@@ -1632,10 +1476,7 @@
         "Areas": [
             "AreaApps"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue71d",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue71d"
     },
     {
         "Name": "Messaging",
@@ -1644,10 +1485,7 @@
         "Areas": [
             "AreaSystem"
         ],
-        "IconGlyph": {
-            "Glyph": "\uebdb",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\uebdb"
     },
     {
         "Name": "Messaging",
@@ -1656,10 +1494,7 @@
         "Areas": [
             "AreaPrivacy"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue8bd",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue8bd"
     },
     {
         "Name": "Microphone",
@@ -1668,10 +1503,7 @@
         "Areas": [
             "AreaPrivacy"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue720",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue720"
     },
     {
         "Name": "MicrosoftMailPostOffice",
@@ -1691,10 +1523,7 @@
         "Areas": [
             "AreaNetworkAndInternet"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue88a",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue88a"
     },
     {
         "Name": "MoreDetails",
@@ -1723,10 +1552,7 @@
             "Keypad",
             "Touch"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue962",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue962"
     },
     {
         "Name": "Mouse",
@@ -1744,10 +1570,7 @@
             "AreaDevices"
         ],
         "Note": "NoteTouchpad",
-        "IconGlyph": {
-            "Glyph": "\ue962",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue962"
     },
     {
         "Name": "MouseFontsKeyboardAndPrintersProperties",
@@ -1770,10 +1593,7 @@
         "AltNames": [
             "TouchFeedback"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue7c9",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue7c9"
     },
     {
         "Name": "MultimediaProperties",
@@ -1799,10 +1619,7 @@
             "AltAndTab",
             "VirtualDesktops"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue7c4",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue7c4"
     },
     {
         "Name": "Narrator",
@@ -1811,10 +1628,7 @@
         "Areas": [
             "AreaEaseOfAccess"
         ],
-        "IconGlyph": {
-            "Glyph": "\uf83b",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\uf83b"
     },
     {
         "Name": "NavigationBar",
@@ -1854,10 +1668,7 @@
             "Dhcp",
             "Ip"
         ],
-        "IconGlyph": {
-            "Glyph": "\uec27",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\uec27"
     },
     {
         "Name": "NetworkAndSharingCenter",
@@ -1926,10 +1737,7 @@
         "Areas": [
             "AreaSystem"
         ],
-        "IconGlyph": {
-            "Glyph": "\uf08c",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\uf08c"
     },
     {
         "Name": "Notifications",
@@ -1954,10 +1762,7 @@
         "Areas": [
             "AreaSystem"
         ],
-        "IconGlyph": {
-            "Glyph": "\uf2a3",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\uf2a3"
     },
     {
         "Name": "OdbcDataSourceAdministrator32Bit",
@@ -1993,10 +1798,7 @@
         "Areas": [
             "AreaApps"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue826",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue826"
     },
     {
         "Name": "OfflineMapsDownloadMaps",
@@ -2038,10 +1840,7 @@
         "AltNames": [
             "CustomDevices"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue772",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue772"
     },
     {
         "Name": "OtherOptions",
@@ -2095,10 +1894,7 @@
         "Areas": [
             "AreaDevices"
         ],
-        "IconGlyph": {
-            "Glyph": "\uedc6",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\uedc6"
     },
     {
         "Name": "PeopleNearMe",
@@ -2193,10 +1989,7 @@
         "Areas": [
             "AreaPrivacy"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue77e",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue77e"
     },
     {
         "Name": "PhoneDefaultApps",
@@ -2265,10 +2058,7 @@
         "Areas": [
             "AreaSystem"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue7e8",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue7e8"
     },
     {
         "Name": "PowerOptions",
@@ -2302,10 +2092,7 @@
         "Areas": [
             "AreaDevices"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue749",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue749"
     },
     {
         "Name": "PrintManagement",
@@ -2340,10 +2127,7 @@
         "Areas": [
             "AreaSystem"
         ],
-        "IconGlyph": {
-            "Glyph": "\uebc6",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\uebc6"
     },
     {
         "Name": "Provisioning",
@@ -2369,10 +2153,7 @@
         "Areas": [
             "AreaNetworkAndInternet"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue968",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue968"
     },
     {
         "Name": "Quickime",
@@ -2389,10 +2170,7 @@
         "Areas": [
             "AreaPrivacy"
         ],
-        "IconGlyph": {
-            "Glyph": "\uec05",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\uec05"
     },
     {
         "Name": "Recovery",
@@ -2420,10 +2198,7 @@
         "AltNames": [
             "RegionFormatting"
         ],
-        "IconGlyph": {
-            "Glyph": "\uf49a",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\uf49a"
     },
     {
         "Name": "RegionalLanguage",
@@ -2467,10 +2242,7 @@
         "Areas": [
             "AreaSystem"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue8af",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue8af"
     },
     {
         "Name": "ResultantSetOfPolicy",
@@ -2510,10 +2282,7 @@
         "Areas": [
             "AreaSystem"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue7f4",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue7f4"
     },
     {
         "Name": "SecurityCenter",
@@ -2592,10 +2361,7 @@
         "AltNames": [
             "Crossdevice"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue72d",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue72d"
     },
     {
         "Name": "SharedFolders",
@@ -2614,10 +2380,7 @@
         "Areas": [
             "AreaAccounts"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue8d7",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue8d7"
     },
     {
         "Name": "SignInOptionsDynamicLock",
@@ -2637,10 +2400,7 @@
         "AltNames": [
             "Audio"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue995",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue995"
     },
     {
         "Name": "Sound",
@@ -2664,10 +2424,7 @@
             "Recognition",
             "Talk"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue720",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue720"
     },
     {
         "Name": "Speech",
@@ -2700,10 +2457,7 @@
         "Areas": [
             "AreaPersonalization"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue8fc",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue8fc"
     },
     {
         "Name": "StartupApps",
@@ -2712,10 +2466,7 @@
         "Areas": [
             "AreaApps"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue7b5",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue7b5"
     },
     {
         "Name": "StoragePolicies",
@@ -2732,10 +2483,7 @@
         "Areas": [
             "AreaSystem"
         ],
-        "IconGlyph": {
-            "Glyph": "\ueda2",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ueda2"
     },
     {
         "Name": "SyncCenter",
@@ -2752,10 +2500,7 @@
         "Areas": [
             "AreaAccounts"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue895",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue895"
     },
     {
         "Name": "System",
@@ -2786,10 +2531,7 @@
         "Areas": [
             "AreaSystem"
         ],
-        "IconGlyph": {
-            "Glyph": "\uebfc",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\uebfc"
     },
     {
         "Name": "TabletPcSettings",
@@ -2817,10 +2559,7 @@
         "Areas": [
             "AreaPersonalization"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue90e",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue90e"
     },
     {
         "Name": "Tasks",
@@ -2873,10 +2612,7 @@
         "Areas": [
             "AreaPersonalization"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue771",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue771"
     },
     {
         "Name": "Touchpad",
@@ -2886,10 +2622,7 @@
             "AreaDevices"
         ],
         "Note": "NoteTouchpad",
-        "IconGlyph": {
-            "Glyph": "\uefa5",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\uefa5"
     },
     {
         "Name": "TpmManagement",
@@ -2907,10 +2640,7 @@
         "Areas": [
             "AreaUpdateAndSecurity"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue90f",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue90f"
     },
     {
         "Name": "TruePlay",
@@ -2929,10 +2659,7 @@
         "Areas": [
             "AreaDevices"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue765",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue765"
     },
     {
         "Name": "Uninstall",
@@ -2953,10 +2680,7 @@
         "Areas": [
             "AreaDevices"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue88e",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue88e"
     },
     {
         "Name": "UserAccounts",
@@ -2973,10 +2697,7 @@
         "Areas": [
             "AreaApps"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue714",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue714"
     },
     {
         "Name": "Videos",
@@ -2985,10 +2706,7 @@
         "Areas": [
             "AreaPrivacy"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue8b2",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue8b2"
     },
     {
         "Name": "VoiceActivation",
@@ -2997,10 +2715,7 @@
         "Areas": [
             "AreaPrivacy"
         ],
-        "IconGlyph": {
-            "Glyph": "\uf12e",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\uf12e"
     },
     {
         "Name": "Vpn",
@@ -3009,10 +2724,7 @@
         "Areas": [
             "AreaNetworkAndInternet"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue705",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue705"
     },
     {
         "Name": "WelcomeCenter",
@@ -3029,10 +2741,7 @@
         "Areas": [
             "AreaSurfaceHub"
         ],
-        "IconGlyph": {
-            "Glyph": "\uee3f",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\uee3f"
     },
     {
         "Name": "Wheel",
@@ -3054,10 +2763,7 @@
         "AltNames": [
             "ShortNameWiFi"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue701",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue701"
     },
     {
         "Name": "WiFiCalling",
@@ -3155,10 +2861,7 @@
         "AltNames": [
             "WindowsSearchSettings"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue773",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue773"
     },
     {
         "Name": "WindowsSecurity",
@@ -3176,10 +2879,7 @@
             "IsolatedBrowsing",
             "ExploitProtection"
         ],
-        "IconGlyph": {
-            "Glyph": "\uea18",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\uea18"
     },
     {
         "Name": "WindowsUpdate",
@@ -3188,10 +2888,7 @@
         "Areas": [
             "AreaUpdateAndSecurity"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue895",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue895"
     },
     {
         "Name": "WindowsUpdateAdvancedOptions",
@@ -3295,9 +2992,6 @@
         "Areas": [
             "AreaAccounts"
         ],
-        "IconGlyph": {
-            "Glyph": "\ue779",
-            "FontFamily": "/Resources/#Segoe Fluent Icons"
-        }
+        "IconGlyph": "\ue779"
     }
 ]

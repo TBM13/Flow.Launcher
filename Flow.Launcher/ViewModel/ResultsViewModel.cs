@@ -8,13 +8,11 @@ using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Helper;
 using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.API;
-using Microsoft.Extensions.Logging;
 
 namespace Flow.Launcher.ViewModel;
 
 public partial class ResultsViewModel : ObservableObject, IDisposable
 {
-    private readonly ILoggerFactory _loggerFactory;
     private readonly MainViewModel _mainVM;
     private readonly ISettingsAPI _settings;
     private readonly IImageLoader _imageLoader;
@@ -22,9 +20,8 @@ public partial class ResultsViewModel : ObservableObject, IDisposable
 
     public BulkObservableCollection<ResultViewModel> Results { get; }
 
-    public ResultsViewModel(ILoggerFactory loggerFactory, MainViewModel mainVM, ISettingsAPI settings, IImageLoader imageLoader)
+    public ResultsViewModel(MainViewModel mainVM, ISettingsAPI settings, IImageLoader imageLoader)
     {
-        _loggerFactory = loggerFactory;
         _mainVM = mainVM;
         _settings = settings;
         _imageLoader = imageLoader;
@@ -142,7 +139,7 @@ public partial class ResultsViewModel : ObservableObject, IDisposable
         if (newRawResults.Count == 0)
             return Results;
 
-        var newResults = newRawResults.Select(r => new ResultViewModel(_loggerFactory, _imageLoader, r));
+        var newResults = newRawResults.Select(r => new ResultViewModel(_imageLoader, r));
         return Results.Concat(newResults).OrderByDescending(r => r.Result.Score);
     }
 
@@ -152,7 +149,7 @@ public partial class ResultsViewModel : ObservableObject, IDisposable
             return Results;
 
         var newResults = resultsForUpdates.SelectMany(
-            u => u.Results, (u, r) => new ResultViewModel(_loggerFactory, _imageLoader, r));
+            u => u.Results, (u, r) => new ResultViewModel(_imageLoader, r));
 
         if (resultsForUpdates.Any(x => x.ShouldClearExistingResults))
             return newResults.OrderByDescending(rv => rv.Result.Score);

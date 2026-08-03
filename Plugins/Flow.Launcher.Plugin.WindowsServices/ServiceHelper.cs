@@ -300,18 +300,18 @@ public static class ServiceHelper
         }
     }
 
-    private static GlyphInfo GetResultGlyph(ServiceResult svc)
+    private static string? GetResultGlyph(ServiceResult svc)
     {
         if (svc.StartType == ServiceStartMode.Disabled && svc.Status == ServiceControllerStatus.Stopped)
-            return new(Glyph: "\xeb90");
+            return "\xeb90";
 
-        return new(Glyph: svc.Status switch
+        return svc.Status switch
         {
             ServiceControllerStatus.Stopped => "\xea39",
             ServiceControllerStatus.Running => "\xe930",
             ServiceControllerStatus.Paused => "\xe769",
             _ => "\xe9ce" // Unknown
-        });
+        };
     }
 
     private static string GetResultSubTitle(ServiceResult svc)

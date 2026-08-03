@@ -53,7 +53,7 @@ public record Result
     /// <summary>
     /// A glyph that will be displayed with the result, instead of an icon image.
     /// </summary>
-    public GlyphInfo? Glyph { get; set; }
+    public string? Glyph { get; set; }
 
     /// <summary>
     /// The action that will be executed when the result is selected.

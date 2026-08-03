@@ -28,7 +28,7 @@ internal class ContextMenu(PluginInitContext context, Settings settings) : ICont
                     _context.API.CopyToClipboard(record.FullPath, showDefaultNotification: false);
                     return true;
                 },
-                Glyph = new GlyphInfo("\ue8c8")
+                Glyph = "\ue8c8"
             });
 
             if (record.Type == ResultType.Folder)
@@ -41,7 +41,7 @@ internal class ContextMenu(PluginInitContext context, Settings settings) : ICont
             {
                 Title = Localize.GeneralResult_ShowWindowsMenu,
                 SubTitle = Localize.GeneralResult_ShowWindowsMenu_Subtitle,
-                Glyph = new GlyphInfo("\ue700"),
+                Glyph = "\ue700",
                 Action = c =>
                 {
                     ResultManager.ShowNativeContextMenu(record.FullPath, record.Type, c.ResultPosition);
@@ -71,7 +71,7 @@ internal class ContextMenu(PluginInitContext context, Settings settings) : ICont
 
                         return true;
                     },
-                    Glyph = new GlyphInfo("\ue748"),
+                    Glyph = "\ue748",
                 });
         }
 
@@ -101,7 +101,7 @@ internal class ContextMenu(PluginInitContext context, Settings settings) : ICont
                     return false;
                 }
             },
-            Glyph = new GlyphInfo("\ue756")
+            Glyph = "\ue756"
         };
     }
 
@@ -117,7 +117,7 @@ internal class ContextMenu(PluginInitContext context, Settings settings) : ICont
                 Process.Start("rundll32.exe", $"{Path.Combine(Environment.SystemDirectory, "shell32.dll")},OpenAs_RunDLL {record.FullPath}");
                 return true;
             },
-            Glyph = new GlyphInfo("\ue7ac"),
+            Glyph = "\ue7ac",
         };
     }
 

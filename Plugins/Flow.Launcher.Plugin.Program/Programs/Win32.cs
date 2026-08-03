@@ -249,7 +249,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
 
                         return true;
                     },
-                    Glyph = new GlyphInfo(Glyph: "\xe7ee"),
+                    Glyph = "\xe7ee",
                 },
                 new()
                 {
@@ -259,7 +259,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                         Launch(true);
                         return true;
                     },
-                    Glyph = new GlyphInfo(Glyph: "\xe7ef"),
+                    Glyph = "\xe7ef",
                 },
                 new()
                 {
@@ -270,7 +270,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
 
                         return true;
                     },
-                    Glyph = new GlyphInfo(Glyph: "\xe838"),
+                    Glyph = "\xe838",
                 },
             };
             if (Extension(FullPath) == ShortcutExtension)
@@ -290,7 +290,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     FileExplorerHelper.OpenFolderAndSelectFile(ExecutablePath);
                     return true;
                 },
-                Glyph = new GlyphInfo(Glyph: "\xe8de"),
+                Glyph = "\xe8de",
             };
         }
 
