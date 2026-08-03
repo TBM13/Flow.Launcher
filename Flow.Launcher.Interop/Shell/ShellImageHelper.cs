@@ -104,22 +104,19 @@ public static class ShellImageHelper
         };
 
         HBITMAP hBitmap = default;
-        int remainingAttempts = 3;
-        while (true)
+        for (int remainingAttempts = 3; remainingAttempts > 0; remainingAttempts--)
         {
-            try
-            {
-                imageFactory.GetImage(size, (SIIGBF)options, &hBitmap);
-                break;
-            }
-            catch (COMException ex) when (
-                ex.HResult == (int)HRESULT.E_PENDING && remainingAttempts > 0)
+            HRESULT res = imageFactory.GetImage(size, (SIIGBF)options, &hBitmap);
+            if (res == HRESULT.E_PENDING)
             {
                 // This is a normal exception when the app was recently opened.
                 // Wait a few miliseconds and retry
                 Thread.Sleep(15);
-                remainingAttempts--;
+                continue;
             }
+
+            res.ThrowOnFailure();
+            break;
         }
 
         return hBitmap;

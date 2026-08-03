@@ -41,7 +41,8 @@ public static class ShellHelper
         PWSTR displayName = default;
         try
         {
-            shellItem.GetDisplayName(SIGDN.SIGDN_NORMALDISPLAY, out displayName);
+            shellItem.GetDisplayName(SIGDN.SIGDN_NORMALDISPLAY, out displayName)
+                .ThrowOnFailure();
             return displayName.ToString();
         }
         finally

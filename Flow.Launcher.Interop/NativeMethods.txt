@@ -111,3 +111,4 @@ GetCurrentProcess
 LockWorkStation
 SetSuspendState
 ShellExecute
+SysFreeString

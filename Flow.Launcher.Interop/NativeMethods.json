@@ -1,6 +1,9 @@
 ﻿{
   "$schema": "https://aka.ms/CsWin32.schema.json",
   "comInterop": {
-    "useComSourceGenerators": true
+    // Use modern AOT-compatible COM source generators
+    "useComSourceGenerators": true,
+    // Make COM methods preserve their HRESULT return values instead of throwing exceptions automatically
+    "preserveSigMethods": [ "*" ]
   }
 }

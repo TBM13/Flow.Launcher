@@ -113,7 +113,8 @@ public sealed class ShellContextMenu : IDisposable
             if (Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
                 flags |= CMF_EXTENDEDVERBS;
 
-            _contextMenu!.QueryContextMenu(menu, 0, CMD_FIRST, CMD_LAST, flags);
+            _contextMenu!.QueryContextMenu(menu, 0, CMD_FIRST, CMD_LAST, flags)
+                .ThrowOnFailure();
 
             // Use the foreground window as owner for the popup menu
             HWND ownerWindow = PInvoke.GetForegroundWindow();
@@ -154,7 +155,7 @@ public sealed class ShellContextMenu : IDisposable
                     (ITEMIDLIST**)pPIDLs,
                     &iid,
                     null,
-                    out object result);
+                    out object result).ThrowOnFailure();
 
                 if (result is IContextMenu contextMenu)
                 {
@@ -193,7 +194,7 @@ public sealed class ShellContextMenu : IDisposable
                 nShow = (int)SHOW_WINDOW_CMD.SW_SHOWNORMAL
             };
 
-            contextMenu.InvokeCommand((CMINVOKECOMMANDINFO*)&invoke);
+            contextMenu.InvokeCommand((CMINVOKECOMMANDINFO*)&invoke).ThrowOnFailure();
         }
     }
 
@@ -216,7 +217,8 @@ public sealed class ShellContextMenu : IDisposable
                 {
                     uint attrs = 0;
                     ITEMIDLIST* pidl = null;
-                    _parentFolder!.ParseDisplayName(HWND.Null, null, pName, null, &pidl, ref attrs);
+                    _parentFolder!.ParseDisplayName(HWND.Null, null, pName, null, &pidl, ref attrs)
+                        .ThrowOnFailure();
 
                     if (pidl == null)
                     {
@@ -259,7 +261,8 @@ public sealed class ShellContextMenu : IDisposable
                 {
                     uint attrs = 0;
                     ITEMIDLIST* pidl = null;
-                    _parentFolder!.ParseDisplayName(HWND.Null, null, pPath, null, &pidl, ref attrs);
+                    _parentFolder!.ParseDisplayName(HWND.Null, null, pPath, null, &pidl, ref attrs)
+                        .ThrowOnFailure();
 
                     if (pidl == null)
                     {
@@ -291,14 +294,16 @@ public sealed class ShellContextMenu : IDisposable
             ITEMIDLIST* pidl = null;
             uint attrs = 0;
 
-            desktop.ParseDisplayName(HWND.Null, null, pPath, null, &pidl, ref attrs);
+            desktop.ParseDisplayName(HWND.Null, null, pPath, null, &pidl, ref attrs)
+                .ThrowOnFailure();
             if (pidl == null) return false;
 
             try
             {
                 // Get display name for the folder
                 STRRET strRet = default;
-                _desktopFolder!.GetDisplayNameOf(pidl, SHGDNF.SHGDN_FORPARSING, &strRet);
+                _desktopFolder!.GetDisplayNameOf(pidl, SHGDNF.SHGDN_FORPARSING, &strRet)
+                    .ThrowOnFailure();
 
                 try
                 {
@@ -322,7 +327,8 @@ public sealed class ShellContextMenu : IDisposable
                 }
 
                 // Get IShellFolder for the parent
-                desktop.BindToObject(*pidl, null, out IShellFolder shellFolder);
+                desktop.BindToObject(*pidl, null, out IShellFolder shellFolder)
+                    .ThrowOnFailure();
                 _parentFolder = shellFolder;
                 return true;
             }

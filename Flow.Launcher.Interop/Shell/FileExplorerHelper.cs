@@ -48,7 +48,7 @@ public static class FileExplorerHelper
     /// </summary>
     /// <remarks>The desktop itself is considered a file explorer window.</remarks>
     /// <returns>Null if no explorer window is focused or it is minimized.</returns>
-    private static string? GetForegroundExplorerLocationUrl()
+    private static unsafe string? GetForegroundExplorerLocationUrl()
     {
         // Object managed by GC
         IShellWindows windows = ShellWindows.CreateInstance<IShellWindows>();
@@ -71,30 +71,47 @@ public static class FileExplorerHelper
         if (targetWindow == shellDesktopWindow)
             return DesktopLocationUrl;
 
-        int count = windows.get_Count();
+        windows.get_Count(out int count).ThrowOnFailure();
         for (int i = 0; i < count; i++)
         {
             using ComVariant index = ComVariant.Create(i);
-            try
+
+            if (windows.Item(index, out IDispatch item).Failed)
+                // The window may have been closed or become unresponsive
+                continue;
+
+            if (item is IWebBrowser2 browser)
             {
-                IDispatch item = windows.Item(index);
-                if (item is IWebBrowser2 browser)
+                BSTR fullName = default;
+                BSTR locationUrl = default;
+                try
                 {
                     // Make sure that the window is indeed a file explorer
                     // we don't want Internet Explorer or the classic control panel
-                    BSTR fullName = browser.get_FullName();
+                    if (browser.get_FullName(&fullName).Failed)
+                        continue;
                     if (!Path.GetFileName(fullName).Equals("explorer.exe", StringComparison.OrdinalIgnoreCase))
                         continue;
 
-                    HWND hwnd = new(browser.get_HWND());
+                    if (browser.get_HWND(out SHANDLE_PTR pHWND).Failed)
+                        continue;
+
+                    HWND hwnd = new(pHWND);
                     if (hwnd == targetWindow && !PInvoke.IsIconic(hwnd))
-                        return browser.get_LocationURL().ToString();
+                    {
+                        if (browser.get_LocationURL(&locationUrl).Failed)
+                            continue;
+
+                        return locationUrl.ToString();
+                    }
                 }
-            }
-            catch (COMException)
-            {
-                // The window may have been closed or become unresponsive
-                continue;
+                finally
+                {
+                    if (fullName.Value is not null)
+                        PInvoke.SysFreeString(fullName);
+                    if (locationUrl.Value is not null)
+                        PInvoke.SysFreeString(locationUrl);
+                }
             }
         }
 

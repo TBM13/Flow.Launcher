@@ -25,7 +25,7 @@ public static class ShortcutHelper
     {
         // Object managed by GC
         IShellLinkW link = ShellLink.CreateInstance<IShellLinkW>();
-        ((IPersistFile)link).Load(path, STGM.STGM_READ);
+        ((IPersistFile)link).Load(path, STGM.STGM_READ).ThrowOnFailure();
         return link;
     }
 
@@ -38,10 +38,11 @@ public static class ShortcutHelper
         // SLR_NOTRACK & SLR_NOSEARCH: don't search for the target if it's missing. This can be
         //   super slow, specially for network paths.
         // https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ishelllinka-resolve
-        link.Resolve(HWND.Null, (uint)(SLR_FLAGS.SLR_NO_UI | SLR_FLAGS.SLR_NOTRACK | SLR_FLAGS.SLR_NOSEARCH));
+        link.Resolve(HWND.Null, (uint)(SLR_FLAGS.SLR_NO_UI | SLR_FLAGS.SLR_NOTRACK | SLR_FLAGS.SLR_NOSEARCH))
+            .ThrowOnFailure();
 
         char* buffer = stackalloc char[(int)PInvoke.MAX_PATH];
-        link.GetPath(buffer, (int)PInvoke.MAX_PATH, null, 0);
+        link.GetPath(buffer, (int)PInvoke.MAX_PATH, null, 0).ThrowOnFailure();
 
         string targetPath = new string(buffer);
         if (targetPath.Length >= PInvoke.MAX_PATH - 1)
@@ -60,7 +61,7 @@ public static class ShortcutHelper
         IShellLinkW link = LoadShellLink(path);
 
         char* descriptionBuffer = stackalloc char[(int)PInvoke.INFOTIPSIZE];
-        link.GetDescription(descriptionBuffer, (int)PInvoke.INFOTIPSIZE);
+        link.GetDescription(descriptionBuffer, (int)PInvoke.INFOTIPSIZE).ThrowOnFailure();
         string description = new(descriptionBuffer);
 
         string args;
@@ -68,7 +69,7 @@ public static class ShortcutHelper
         PROPVARIANT propVar = default;
         try
         {
-            ((IPropertyStore)link).GetValue(in pKey, out propVar);
+            ((IPropertyStore)link).GetValue(in pKey, out propVar).ThrowOnFailure();
             args = propVar.Anonymous.Anonymous.vt switch
             {
                 VARENUM.VT_EMPTY => string.Empty,
