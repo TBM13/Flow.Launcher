@@ -76,12 +76,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
             loggerFactory, Path.Combine(DataLocation.SettingsDirectory, "UserSelectedRecord.json"));
         _userSelectedRecord = _userSelectedRecordStorage.TryLoad();
 
-        _contextMenu = new ResultsViewModel(this, Settings)
+        _contextMenu = new ResultsViewModel(loggerFactory, this, Settings, imageLoader)
         {
             LeftClickResultCommand = OpenResultCommand,
             RightClickResultCommand = LoadContextMenuCommand,
         };
-        _results = new ResultsViewModel(this, Settings)
+        _results = new ResultsViewModel(loggerFactory, this, Settings, imageLoader)
         {
             LeftClickResultCommand = OpenResultCommand,
             RightClickResultCommand = LoadContextMenuCommand,

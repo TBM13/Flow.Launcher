@@ -1,29 +1,16 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.DependencyInjection;
-using Flow.Launcher.Core.Settings;
 using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.API;
-using Flow.Launcher.PluginSDK.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Flow.Launcher.ViewModel;
 
 public partial class ResultViewModel : ObservableObject
 {
-    // TODO: Check if there is any better alternative
-    private static readonly Logger<ResultViewModel> _logger = Ioc.Default.GetRequiredService<Logger<ResultViewModel>>();
-    private static readonly IImageLoader _imageLoader = Ioc.Default.GetRequiredService<IImageLoader>();
-
-    public ResultViewModel(Result result, ISettingsAPI settings)
-    {
-        Settings = settings;
-        Result = result;
-
-        Glyph = Result.Glyph;
-    }
-
-    public ISettingsAPI Settings { get; }
+    private readonly PluginSDK.Logging.Logger<ResultViewModel> _logger;
+    private readonly IImageLoader _imageLoader;
 
     /// <summary>
     /// Gets the center point of this result's UI element in screen coordinates.
@@ -32,41 +19,9 @@ public partial class ResultViewModel : ObservableObject
     [ObservableProperty]
     public partial Func<Point?>? GetScreenCenterPoint { get; set; }
 
-    public Visibility ShowIcon
-    {
-        get
-        {
-            if (GlyphAvailable)
-                return Visibility.Collapsed;
-
-            return Visibility.Visible;
-        }
-    }
-
-    public Visibility ShowPreviewImage
-    {
-        get
-        {
-            if (PreviewImageAvailable)
-                return Visibility.Visible;
-
-            // Fall back to icon
-            return ShowIcon;
-        }
-    }
-
-    public Visibility ShowGlyph
-    {
-        get
-        {
-            if (GlyphAvailable)
-                return Visibility.Visible;
-
-            return Visibility.Collapsed;
-        }
-    }
-
-    private bool GlyphAvailable => Glyph is not null;
+    public Visibility ShowIcon => Glyph is not null ? Visibility.Collapsed : Visibility.Visible;
+    public Visibility ShowPreviewImage => PreviewImageAvailable ? Visibility.Visible : ShowIcon;
+    public Visibility ShowGlyph => Glyph is not null ? Visibility.Visible : Visibility.Collapsed;
 
     private bool PreviewImageAvailable
         => !string.IsNullOrEmpty(Result.Preview.PreviewImagePath) || Result.Preview.PreviewDelegate != null;
@@ -81,9 +36,8 @@ public partial class ResultViewModel : ObservableObject
 
     private volatile bool _imageLoaded;
     private volatile bool _previewImageLoaded;
-
-    private ImageSource _image = _imageLoader.LoadingIcon;
-    private ImageSource _previewImage = _imageLoader.LoadingIcon;
+    private ImageSource _image;
+    private ImageSource _previewImage;
 
     public ImageSource Image
     {
@@ -118,6 +72,20 @@ public partial class ResultViewModel : ObservableObject
     public string PreviewDescription => Result.Preview.Description ?? Result.SubTitle;
 
     public GlyphInfo? Glyph { get; init; }
+    public Result Result { get; }
+
+    public ResultViewModel(
+        ILoggerFactory loggerFactory, IImageLoader imageLoader, Result result)
+    {
+        _logger = new(loggerFactory);
+        _imageLoader = imageLoader;
+        Result = result;
+
+        Glyph = Result.Glyph;
+
+        _image = _imageLoader.LoadingIcon;
+        _previewImage = _imageLoader.LoadingIcon;
+    }
 
     private async Task<ImageSource> LoadImageInternalAsync(string? imagePath, Result.IconDelegate? icon, bool loadFullImage)
     {
@@ -162,8 +130,6 @@ public partial class ResultViewModel : ObservableObject
             _ = LoadPreviewImageAsync();
         }
     }
-
-    public Result Result { get; }
 
     public override bool Equals(object? obj)
     {
