@@ -47,11 +47,11 @@
         <KeyBinding Key="Escape" Command="{Binding EscCommand}" />
         <KeyBinding
             Key="Home"
-            Command="{Binding SelectFirstResultCommand}"
+            Command="{Binding SelectedResults.SelectFirstResultCommand}"
             Modifiers="Alt" />
         <KeyBinding
             Key="End"
-            Command="{Binding SelectLastResultCommand}"
+            Command="{Binding SelectedResults.SelectLastResultCommand}"
             Modifiers="Alt" />
         <KeyBinding
             Key="R"
@@ -101,10 +101,10 @@
             Modifiers="Ctrl+Shift" />
         <pluginsdk:KeyBinding Command="{Binding TogglePreviewCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static hotkeys:DefaultHotkeys.TogglePreview}}" />
         <pluginsdk:KeyBinding Command="{Binding AutocompleteQueryCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static hotkeys:DefaultHotkeys.Autocomplete}}" />
-        <pluginsdk:KeyBinding Command="{Binding SelectNextItemCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static hotkeys:DefaultHotkeys.SelectNextResult}}" />
-        <pluginsdk:KeyBinding Command="{Binding SelectPrevItemCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static hotkeys:DefaultHotkeys.SelectPreviousResult}}" />
-        <pluginsdk:KeyBinding Command="{Binding SelectNextPageCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static hotkeys:DefaultHotkeys.SelectNextPage}}" />
-        <pluginsdk:KeyBinding Command="{Binding SelectPrevPageCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static hotkeys:DefaultHotkeys.SelectPreviousPage}}" />
+        <pluginsdk:KeyBinding Command="{Binding SelectedResults.SelectNextResultCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static hotkeys:DefaultHotkeys.SelectNextResult}}" />
+        <pluginsdk:KeyBinding Command="{Binding SelectedResults.SelectPrevResultCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static hotkeys:DefaultHotkeys.SelectPreviousResult}}" />
+        <pluginsdk:KeyBinding Command="{Binding SelectedResults.SelectNextPageCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static hotkeys:DefaultHotkeys.SelectNextPage}}" />
+        <pluginsdk:KeyBinding Command="{Binding SelectedResults.SelectPrevPageCommand}" Hotkey="{Binding Path=Hotkey, Source={x:Static hotkeys:DefaultHotkeys.SelectPreviousPage}}" />
     </Window.InputBindings>
 
     <Border
@@ -230,7 +230,6 @@
                 Grid.Row="1"
                 Grid.Column="2"
                 MinHeight="{Binding PreviewMinHeight}"
-                MaxHeight="{Binding ElementName=ResultListBox, Path=ActualHeight}"
                 Margin="0 0 10 5"
                 Content="{Binding PreviewContent}"
                 Visibility="{Binding PreviewVisibility}" />

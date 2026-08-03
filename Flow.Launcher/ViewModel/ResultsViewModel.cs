@@ -1,63 +1,45 @@
-﻿using System.Collections.Specialized;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core.Settings;
+using Flow.Launcher.Helper;
 using Flow.Launcher.PluginSDK;
-using Flow.Launcher.PluginSDK.Logging;
 
 namespace Flow.Launcher.ViewModel;
 
-public partial class ResultsViewModel : ObservableObject
+public partial class ResultsViewModel : ObservableObject, IDisposable
 {
-    private readonly Logger<ResultsViewModel> _logger;
     private readonly MainViewModel _mainVM;
     private readonly ISettingsAPI _settings;
     private readonly object _collectionLock = new();
 
-    public ResultCollection Results { get; }
+    public BulkObservableCollection<ResultViewModel> Results { get; }
 
-    public ResultsViewModel(Logger<ResultsViewModel> logger,
-        MainViewModel mainVM, ISettingsAPI settings)
+    public ResultsViewModel(MainViewModel mainVM, ISettingsAPI settings)
     {
-        _logger = logger;
         _mainVM = mainVM;
         _settings = settings;
 
         Results = [];
         BindingOperations.EnableCollectionSynchronization(Results, _collectionLock);
 
-        _settings.PropertyChanged += (s, e) =>
-        {
-            switch (e.PropertyName)
-            {
-                case nameof(_settings.MaxResultsToShow):
-                    OnPropertyChanged(nameof(MaxHeight));
-                    break;
-            }
-        };
+        _settings.PropertyChanged += OnSettingChanged;
     }
 
-    [ObservableProperty]
-    public partial bool IsPreviewOn { get; set; }
-
-    public double MaxHeight
+    private void OnSettingChanged(object? sender, PropertyChangedEventArgs e)
     {
-        get
+        switch (e.PropertyName)
         {
-            var newResultsCount = _settings.MaxResultsToShow;
-            if (IsPreviewOn)
-            {
-                newResultsCount = (int)Math.Ceiling(380 / Const.ItemHeightSize);
-                if (newResultsCount < _settings.MaxResultsToShow)
-                {
-                    newResultsCount = _settings.MaxResultsToShow;
-                }
-            }
-            return newResultsCount * Const.ItemHeightSize;
+            case nameof(_settings.MaxResultsToShow):
+                OnPropertyChanged(nameof(MaxHeight));
+                break;
         }
     }
+
+    public double MaxHeight => _settings.MaxResultsToShow * Const.ItemHeightSize;
 
     [ObservableProperty]
     public partial int SelectedIndex { get; set; }
@@ -74,62 +56,38 @@ public partial class ResultsViewModel : ObservableObject
 
     private int NewIndex(int i)
     {
-        var n = Results.Count;
-        if (n > 0)
-        {
-            i = (n + i) % n;
-            return i;
-        }
-        else
-        {
-            // SelectedIndex returns -1 if selection is empty.
+        int n = Results.Count;
+        if (n == 0)
             return -1;
-        }
+
+        return ((i % n) + n) % n;
     }
 
-    public void SelectNextResult()
-    {
-        SelectedIndex = NewIndex(SelectedIndex + 1);
-    }
-
-    public void SelectPrevResult()
-    {
-        SelectedIndex = NewIndex(SelectedIndex - 1);
-    }
-
-    public void SelectNextPage()
-    {
-        SelectedIndex = NewIndex(SelectedIndex + _settings.MaxResultsToShow);
-    }
-
-    public void SelectPrevPage()
-    {
-        SelectedIndex = NewIndex(SelectedIndex - _settings.MaxResultsToShow);
-    }
-
-    public void SelectFirstResult()
-    {
-        SelectedIndex = NewIndex(0);
-    }
-
-    public void SelectLastResult()
-    {
-        SelectedIndex = NewIndex(Results.Count - 1);
-    }
+    [RelayCommand]
+    public void SelectNextResult() => SelectedIndex = NewIndex(SelectedIndex + 1);
+    [RelayCommand]
+    public void SelectPrevResult() => SelectedIndex = NewIndex(SelectedIndex - 1);
+    [RelayCommand]
+    public void SelectNextPage() => SelectedIndex = NewIndex(SelectedIndex + _settings.MaxResultsToShow);
+    [RelayCommand]
+    public void SelectPrevPage() => SelectedIndex = NewIndex(SelectedIndex - _settings.MaxResultsToShow);
+    [RelayCommand]
+    public void SelectFirstResult() => SelectedIndex = NewIndex(0);
+    [RelayCommand]
+    public void SelectLastResult() => SelectedIndex = NewIndex(Results.Count - 1);
 
     public void Clear()
     {
         lock (_collectionLock)
-            Results.RemoveAll();
+            Results.Clear();
     }
 
     /// <summary>
     /// To avoid deadlock, this method should not called from main thread
     /// </summary>
-    public void AddResults(List<Result> newRawResults, string resultId)
+    public void AddResults(List<Result> newRawResults)
     {
-        var newResults = NewResults(newRawResults, resultId);
-
+        var newResults = NewResults(newRawResults);
         UpdateResults(newResults);
     }
 
@@ -144,12 +102,12 @@ public partial class ResultsViewModel : ObservableObject
         UpdateResults(newResults, reselect, token);
     }
 
-    private void UpdateResults(List<ResultViewModel> newResults, bool reselect = true, CancellationToken token = default)
+    private void UpdateResults(IEnumerable<ResultViewModel> newResults, bool reselect = true, CancellationToken token = default)
     {
         lock (_collectionLock)
         {
             // update UI in one run, so it can avoid UI flickering
-            Results.Update(newResults, token);
+            Results.ReplaceAll(newResults);
             if (reselect && Results.Any())
                 SelectedItem = Results[0];
         }
@@ -173,122 +131,32 @@ public partial class ResultsViewModel : ObservableObject
         }
     }
 
-    private List<ResultViewModel> NewResults(List<Result> newRawResults, string resultId)
+    private IEnumerable<ResultViewModel> NewResults(List<Result> newRawResults)
     {
         if (newRawResults.Count == 0)
             return Results;
 
         var newResults = newRawResults.Select(r => new ResultViewModel(r, _settings));
-
-        return [.. Results.Where(r => r.Result.PluginID != resultId)
-            .Concat(newResults)
-            .OrderByDescending(r => r.Result.Score)
-        ];
+        return Results.Concat(newResults).OrderByDescending(r => r.Result.Score);
     }
 
-    private List<ResultViewModel> NewResults(ICollection<ResultsForUpdate> resultsForUpdates)
+    private IEnumerable<ResultViewModel> NewResults(ICollection<ResultsForUpdate> resultsForUpdates)
     {
         if (resultsForUpdates.Count == 0)
-        {
-            _logger.LogDebug($"No results for updates, returning existing results");
             return Results;
-        }
 
         var newResults = resultsForUpdates.SelectMany(u => u.Results, (u, r) => new ResultViewModel(r, _settings));
 
         if (resultsForUpdates.Any(x => x.ShouldClearExistingResults))
-        {
-            _logger.LogDebug($"Existing results are cleared for query");
-            return [.. newResults.OrderByDescending(rv => rv.Result.Score)];
-        }
+            return newResults.OrderByDescending(rv => rv.Result.Score);
 
-        _logger.LogDebug($"Keeping existing results for {resultsForUpdates.Count} queries");
-        return [.. Results.Where(r => r?.Result != null && resultsForUpdates.All(u => u.ID != r.Result.PluginID))
-                          .Concat(newResults)
-                          .OrderByDescending(rv => rv.Result.Score)];
+        return Results.Where(r => resultsForUpdates.All(u => u.ID != r.Result.PluginID))
+                .Concat(newResults)
+                .OrderByDescending(rv => rv.Result.Score);
     }
 
-    public class ResultCollection : List<ResultViewModel>, INotifyCollectionChanged
+    public void Dispose()
     {
-        private long editTime = 0;
-
-        public event NotifyCollectionChangedEventHandler? CollectionChanged;
-
-        protected void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
-        {
-            CollectionChanged?.Invoke(this, e);
-        }
-
-        private void BulkAddAll(List<ResultViewModel> resultViews, CancellationToken token = default)
-        {
-            AddRange(resultViews);
-
-            // can return because the list will be cleared next time updated, which include a reset event
-            if (token.IsCancellationRequested)
-                return;
-
-            // manually update event
-            // wpf use DirectX / double buffered already, so just reset all won't cause ui flickering
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-        }
-
-        private void AddAll(List<ResultViewModel> Items, CancellationToken token = default)
-        {
-            for (int i = 0; i < Items.Count; i++)
-            {
-                var item = Items[i];
-                if (token.IsCancellationRequested)
-                    return;
-                Add(item);
-                OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, i));
-            }
-        }
-
-        public void RemoveAll(int Capacity = 512)
-        {
-            Clear();
-            if (this.Capacity > 8000 && Capacity < this.Capacity)
-                this.Capacity = Capacity;
-
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-        }
-
-        /// <summary>
-        /// Update the results collection with new results, try to keep identical results
-        /// </summary>
-        /// <param name="newItems"></param>
-        public void Update(List<ResultViewModel> newItems, CancellationToken token = default)
-        {
-            // Since NewResults may need to clear existing results, so we cannot check token cancellation here
-            if (Count == 0 && newItems.Count == 0)
-                return;
-
-            if (editTime < 10 || newItems.Count < 30)
-            {
-                if (Count != 0) RemoveAll(newItems.Count);
-
-                // After results are removed, we need to check the token cancellation
-                // so that we will not add new items from the cancelled queries
-                if (token.IsCancellationRequested) return;
-
-                AddAll(newItems, token);
-                editTime++;
-            }
-            else
-            {
-                Clear();
-
-                // After results are removed, we need to check the token cancellation
-                // so that we will not add new items from the cancelled queries
-                if (token.IsCancellationRequested) return;
-
-                BulkAddAll(newItems, token);
-                if (Capacity > 8000 && newItems.Count < 3000)
-                {
-                    Capacity = newItems.Count;
-                }
-                editTime++;
-            }
-        }
+        _settings.PropertyChanged -= OnSettingChanged;
     }
 }

@@ -250,20 +250,20 @@ public partial class MainWindow : Window
         {
             case Key.Down:
                 _isArrowKeyPressed = true;
-                _vm.SelectNextItemCommand.Execute(null);
+                _vm.SelectedResults.SelectNextResult();
                 e.Handled = true;
                 break;
             case Key.Up:
                 _isArrowKeyPressed = true;
-                _vm.SelectPrevItemCommand.Execute(null);
+                _vm.SelectedResults.SelectPrevResult();
                 e.Handled = true;
                 break;
             case Key.PageDown:
-                _vm.SelectNextPageCommand.Execute(null);
+                _vm.SelectedResults.SelectNextPage();
                 e.Handled = true;
                 break;
             case Key.PageUp:
-                _vm.SelectPrevPageCommand.Execute(null);
+                _vm.SelectedResults.SelectPrevPage();
                 e.Handled = true;
                 break;
             case Key.Right:
