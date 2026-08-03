@@ -80,10 +80,6 @@ public static class ResultManager
             SubTitle = subtitle,
             AutoCompleteText = GetAutoCompleteText(query, path, ResultType.Folder),
             CopyText = path,
-            Preview = new Result.PreviewInfo
-            {
-                FilePath = path,
-            },
             PreviewPanel = new Lazy<UserControl>(() => new PreviewPanel(Main.Settings, path, ResultType.Folder)),
             Action = c =>
             {
@@ -135,10 +131,6 @@ public static class ResultManager
             AutoCompleteText = GetAutoCompleteText(query, path, ResultType.Volume),
             IcoPath = path,
             Score = score,
-            Preview = new Result.PreviewInfo
-            {
-                FilePath = path,
-            },
             Action = c =>
             {
                 if (c.PressedKeys.AltPressed)

@@ -1,5 +1,4 @@
 ﻿using System.Windows.Controls;
-using System.Windows.Media;
 
 namespace Flow.Launcher.PluginSDK;
 
@@ -50,13 +49,6 @@ public record Result
     /// </summary>
     /// <remarks><see cref="Glyph"/> is prioritized if it's not null.</remarks>
     public string? IcoPath { get; set; }
-
-    public delegate ImageSource IconDelegate();
-
-    /// <summary>
-    /// If provided, the result of this method will be used as the icon for the result.
-    /// </summary>
-    public IconDelegate? Icon = null;
 
     /// <summary>
     /// A glyph that will be displayed with the result, instead of an icon image.
@@ -169,15 +161,5 @@ public record Result
         /// When a value is not set, the <see cref="SubTitle"/> will be used.
         /// </remarks>
         public string? Description { get; set; } = null;
-
-        /// <summary>
-        /// Delegate to get the preview panel's image
-        /// </summary>
-        public IconDelegate? PreviewDelegate { get; set; } = null;
-
-        /// <summary>
-        /// File path of the result. For third-party programs providing external preview.
-        /// </summary>
-        public string? FilePath { get; set; } = null;
     }
 }

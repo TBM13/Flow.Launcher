@@ -20,11 +20,8 @@ public partial class ResultViewModel : ObservableObject
     public partial Func<Point?>? GetScreenCenterPoint { get; set; }
 
     public Visibility ShowIcon => Glyph is not null ? Visibility.Collapsed : Visibility.Visible;
-    public Visibility ShowPreviewImage => PreviewImageAvailable ? Visibility.Visible : ShowIcon;
+    public Visibility ShowPreviewImage => !string.IsNullOrEmpty(Result.Preview.PreviewImagePath) ? Visibility.Visible : ShowIcon;
     public Visibility ShowGlyph => Glyph is not null ? Visibility.Visible : Visibility.Collapsed;
-
-    private bool PreviewImageAvailable
-        => !string.IsNullOrEmpty(Result.Preview.PreviewImagePath) || Result.Preview.PreviewDelegate != null;
 
     public string ShowTitleToolTip => string.IsNullOrEmpty(Result.TitleToolTip)
         ? Result.Title
@@ -87,21 +84,8 @@ public partial class ResultViewModel : ObservableObject
         _previewImage = _imageLoader.LoadingIcon;
     }
 
-    private async Task<ImageSource> LoadImageInternalAsync(string? imagePath, Result.IconDelegate? icon, bool loadFullImage)
+    private async Task<ImageSource> LoadImageInternalAsync(string? imagePath, bool loadFullImage)
     {
-        if (string.IsNullOrEmpty(imagePath) && icon != null)
-        {
-            try
-            {
-                return icon();
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e,
-                    $"IcoPath is empty and exception when calling IconDelegate for result <{Result.Title}> of plugin <{Result.PluginID}>");
-            }
-        }
-
         imagePath ??= string.Empty;
         return await _imageLoader.LoadAsync(imagePath, loadFullImage).ConfigureAwait(false);
     }
@@ -109,17 +93,13 @@ public partial class ResultViewModel : ObservableObject
     private async Task LoadImageAsync()
     {
         var imagePath = Result.IcoPath;
-        var iconDelegate = Result.Icon;
-
-        Image = await LoadImageInternalAsync(imagePath, iconDelegate, false);
+        Image = await LoadImageInternalAsync(imagePath, false);
     }
 
     private async Task LoadPreviewImageAsync()
     {
         var imagePath = Result.Preview.PreviewImagePath ?? Result.IcoPath;
-        var iconDelegate = Result.Preview.PreviewDelegate ?? Result.Icon;
-
-        PreviewImage = await LoadImageInternalAsync(imagePath, iconDelegate, true);
+        PreviewImage = await LoadImageInternalAsync(imagePath, true);
     }
 
     public void LoadPreviewImage()
