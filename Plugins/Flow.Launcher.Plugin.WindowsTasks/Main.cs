@@ -109,7 +109,7 @@ public class Main : IPlugin, IContextMenu
             {
                 res.Add(new()
                 {
-                    Title = Localize.TaskAction_Disable,
+                    Title = "Disable",
                     Glyph = "\xEB4A",
                     Action = c =>
                     {
@@ -122,7 +122,7 @@ public class Main : IPlugin, IContextMenu
             {
                 res.Add(new()
                 {
-                    Title = Localize.TaskAction_Enable,
+                    Title = "Enable",
                     Glyph = "\xEB49",
                     Action = c =>
                     {
@@ -198,13 +198,13 @@ public class Main : IPlugin, IContextMenu
         StringBuilder sb = new();
         string localizedState = task.State switch
         {
-            TaskState.Disabled => Localize.TaskState_Disabled,
-            TaskState.Queued => Localize.TaskState_Queued,
-            TaskState.Ready => Localize.TaskState_Ready,
-            TaskState.Running => Localize.TaskState_Running,
-            TaskState.Unknown or _ => Localize.TaskState_Unknown,
+            TaskState.Disabled => "Disabled",
+            TaskState.Queued => "Queued",
+            TaskState.Ready => "Ready",
+            TaskState.Running => "Running",
+            TaskState.Unknown or _ => "Unknown",
         };
-        sb.Append(Localize.TaskState(localizedState));
+        sb.Append($"State: {localizedState}");
 
         // A 1999 date usually means the task was never run
         if (task.LastRunTime.Year >= 2000)
@@ -212,7 +212,7 @@ public class Main : IPlugin, IContextMenu
             sb.Append(" - ");
 
             string lastRunTime = task.LastRunTime.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.CurrentCulture);
-            sb.Append(Localize.LastRunTime(lastRunTime));
+            sb.Append($"Last run: {lastRunTime}");
         }
 
         // A 0001 date usually means there is no next run time scheduled
@@ -224,7 +224,7 @@ public class Main : IPlugin, IContextMenu
                 sb.Append(" - ");
 
                 string nextRunTime = task.NextRunTime.ToString("dd/MM/yyyy HH:mm:ss", CultureInfo.CurrentCulture);
-                sb.Append(Localize.NextRunTime(nextRunTime));
+                sb.Append($"Next run: {nextRunTime}");
             }
         }
 

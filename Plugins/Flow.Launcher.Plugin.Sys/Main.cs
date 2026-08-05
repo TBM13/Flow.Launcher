@@ -72,13 +72,13 @@ namespace Flow.Launcher.Plugin.Sys
             [
                 new Result
                 {
-                    Title = Localize.Cmd_Shutdown,
-                    SubTitle = Localize.Cmd_Shutdown_Description,
+                    Title = "Shutdown",
+                    SubTitle = "Shutdown Computer",
                     Glyph = "\xe7e8",
                     Action = c =>
                     {
                         var result = MessageBox.Show(
-                            Localize.Dialog_ConfirmShutdown, Localize.Cmd_Shutdown_Description,
+                            "Are you sure you want to shutdown the computer?", "Shutdown Computer",
                             MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
                         if (result == MessageBoxResult.Yes)
@@ -95,13 +95,13 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = Localize.Cmd_Restart,
-                    SubTitle = Localize.Cmd_Restart_Description,
+                    Title = "Restart",
+                    SubTitle = "Restart Computer",
                     Glyph = "\xe777",
                     Action = c =>
                     {
                         var result = MessageBox.Show(
-                            Localize.Dialog_ConfirmRestart, Localize.Cmd_Restart_Description,
+                            "Are you sure you want to restart the computer?", "Restart Computer",
                             MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
                         if (result == MessageBoxResult.Yes)
@@ -118,13 +118,13 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = Localize.Cmd_RestartAdvanced,
-                    SubTitle = Localize.Cmd_RestartAdvanced_Description,
+                    Title = "Restart With Advanced Boot Options",
+                    SubTitle = "Restart the computer with Advanced Boot Options for Safe and Debugging modes, as well as other options",
                     Glyph = "\xecc5",
                     Action = c =>
                     {
                         var result = MessageBox.Show(
-                            Localize.Dialog_ConfirmRestartAdvanced, Localize.Cmd_RestartAdvanced_Description,
+                            "Are you sure you want to restart the computer with Advanced Boot Options?", "Restart the computer with Advanced Boot Options for Safe and Debugging modes, as well as other options",
                             MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
                         if (result == MessageBoxResult.Yes)
@@ -141,13 +141,13 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = Localize.Cmd_LogOff,
-                    SubTitle = Localize.Cmd_LogOff_Description,
+                    Title = "Log Off/Sign Out",
+                    SubTitle = "Log off",
                     Glyph = "\xe77b",
                     Action = c =>
                     {
                         var result = MessageBox.Show(
-                            Localize.Dialog_ConfirmLogOff, Localize.Cmd_LogOff_Description,
+                            "Are you sure you want to log off?", "Log off",
                             MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
                         if (result == MessageBoxResult.Yes)
@@ -158,8 +158,8 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = Localize.Cmd_Lock,
-                    SubTitle = Localize.Cmd_Lock_Description,
+                    Title = "Lock",
+                    SubTitle = "Lock this computer",
                     Glyph = "\xe72e",
                     Action = c =>
                     {
@@ -169,8 +169,8 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = Localize.Cmd_Sleep,
-                    SubTitle = Localize.Cmd_Sleep_Description,
+                    Title = "Sleep",
+                    SubTitle = "Put computer to sleep",
                     Glyph = "\xec46",
                     Action = c =>
                     {
@@ -180,8 +180,8 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = Localize.Cmd_Hibernate,
-                    SubTitle = Localize.Cmd_Hibernate_Description,
+                    Title = "Hibernate",
+                    SubTitle = "Hibernate computer",
                     Glyph = "\xe8be",
                     Action= c =>
                     {
@@ -191,7 +191,7 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = Localize.Cmd_OpenRecycleBin,
+                    Title = "Open Recycle Bin",
                     Glyph = "\xe74d",
                     CopyText = recycleBinFolder,
                     Action = c =>
@@ -203,8 +203,8 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = Localize.Cmd_Exit,
-                    SubTitle = Localize.Cmd_Exit_Description,
+                    Title = "Exit",
+                    SubTitle = "Exit Flow Launcher",
                     IcoPath = "Images\\app.png",
                     Glyph = "\xe89f",
                     Action = c =>
@@ -216,8 +216,8 @@ namespace Flow.Launcher.Plugin.Sys
                 },
                 new Result
                 {
-                    Title = Localize.Cmd_Settings,
-                    SubTitle = Localize.Cmd_Settings_Description,
+                    Title = "Settings",
+                    SubTitle = "Open Flow Launcher Settings",
                     Glyph = "\xf210",
                     IcoPath = "Images\\app.png",
                     Action = c =>

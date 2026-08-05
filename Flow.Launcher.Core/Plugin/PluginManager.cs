@@ -159,8 +159,8 @@ namespace Flow.Launcher.Core.Plugin
             {
                 var failed = string.Join(",", _initFailedPlugins.Values.Select(x => x.Name));
                 IPublicAPI.Instance.ShowMsg(
-                    Localize.Plugins_FailToInit,
-                    Localize.Plugins_FailToInit_Message(failed),
+                    "Fail to Init Plugins",
+                    $"Plugins: {failed} - fail to load and would be disabled, please contact plugin creator for help",
                     "",
                     false
                 );
@@ -214,8 +214,8 @@ namespace Flow.Launcher.Core.Plugin
             {
                 Result r = new()
                 {
-                    Title = Localize.Plugin_StillInitializing(metadata.Name),
-                    SubTitle = Localize.Plugin_StillInitializing_Subtitle,
+                    Title = metadata.Name + ": This plugin is still initializing...",
+                    SubTitle = "Select this result to requery",
                     AutoCompleteText = query.TrimmedQuery,
                     IcoPath = metadata.IcoPath,
                     PluginID = metadata.ID,
@@ -250,8 +250,8 @@ namespace Flow.Launcher.Core.Plugin
             {
                 Result r = new()
                 {
-                    Title = Localize.Plugin_FailedToRespond(metadata.Name),
-                    SubTitle = Localize.Plugin_FailedToRespond_Subtitle,
+                    Title = metadata.Name + ": Failed to respond!",
+                    SubTitle = "Select this result for more info",
                     AutoCompleteText = query.TrimmedQuery,
                     IcoPath = Constant.ErrorIcon,
                     PluginID = metadata.ID,
@@ -269,8 +269,8 @@ namespace Flow.Launcher.Core.Plugin
             {
                 Result r = new()
                 {
-                    Title = Localize.Plugin_StillInitializing(metadata.Name),
-                    SubTitle = Localize.Plugin_StillInitializing_Subtitle,
+                    Title = metadata.Name + ": This plugin is still initializing...",
+                    SubTitle = "Select this result to requery",
                     AutoCompleteText = query.TrimmedQuery,
                     IcoPath = metadata.IcoPath,
                     PluginID = metadata.ID,

@@ -104,12 +104,12 @@ public static class ResultManager
                 catch (Exception ex)
                 {
                     Main.Context.Logger.LogError(ex, $"Failed to open dir {path}");
-                    MessageBox.Show(ex.Message, Localize.Error_OpenDir);
+                    MessageBox.Show(ex.Message, "Could not open folder");
                     return false;
                 }
             },
             Score = score,
-            TitleToolTip = Localize.FolderResult_OpenDirectoryTooltip,
+            TitleToolTip = "Ctrl + Enter to open the directory",
             SubTitleToolTip = path,
             ContextData = new SearchResult { Type = ResultType.Folder, FullPath = path }
         };
@@ -121,7 +121,7 @@ public static class ResultManager
         DriveInfo drv = new DriveInfo(driveLetter);
         var freespace = ToReadableSize(drv.AvailableFreeSpace, 2);
         var totalspace = ToReadableSize(drv.TotalSize, 2);
-        var subtitle = Localize.DiskResult_FreeSpace(freespace, totalspace);
+        var subtitle = $"{freespace} free of {totalspace}";
         double usingSize = (Convert.ToDouble(drv.TotalSize) - Convert.ToDouble(drv.AvailableFreeSpace)) / Convert.ToDouble(drv.TotalSize) * 100;
 
         return new Result
@@ -184,8 +184,8 @@ public static class ResultManager
 
         return new Result
         {
-            Title = Localize.FolderResult_OpenResultFolder,
-            SubTitle = Localize.FolderResult_OpenResultFolder_Subtitle,
+            Title = "Open in Default File Manager",
+            SubTitle = "Use '*' as a search wildcard, '>' to include subdirectories.",
             AutoCompleteText = GetAutoCompleteText(query, path, ResultType.Folder),
             IcoPath = folderPath,
             Score = 500,
@@ -252,7 +252,7 @@ public static class ResultManager
 
                 return true;
             },
-            TitleToolTip = Localize.FileResult_OpenContainingFolderTooltip,
+            TitleToolTip = "Ctrl + Enter to open the containing folder",
             SubTitleToolTip = filePath,
             ContextData = new SearchResult { Type = ResultType.File, FullPath = filePath }
         };
@@ -272,7 +272,7 @@ public static class ResultManager
         catch (Exception e)
         {
             Main.Context.Logger.LogError(e, $"Failed to open file {filePath}");
-            Main.Context.API.ShowMsgError(Localize.Error_OpenFile);
+            Main.Context.API.ShowMsgError("Could not open file");
         }
     }
 
@@ -286,7 +286,7 @@ public static class ResultManager
         catch (Exception e)
         {
             Main.Context.Logger.LogError(e, $"Failed to open folder {folderPath}");
-            Main.Context.API.ShowMsgError(Localize.Error_OpenDir);
+            Main.Context.API.ShowMsgError("Could not open folder");
         }
     }
 
@@ -299,7 +299,7 @@ public static class ResultManager
         catch (Exception e)
         {
             Main.Context.Logger.LogError(e, $"Failed to open folder and select file {filePath}");
-            Main.Context.API.ShowMsgError(Localize.Error_OpenDir);
+            Main.Context.API.ShowMsgError("Could not open folder");
         }
     }
 }

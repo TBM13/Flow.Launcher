@@ -20,9 +20,9 @@ internal class ContextMenu(PluginInitContext context, Settings settings) : ICont
         if (selectedResult.ContextData is SearchResult record)
         {
             contextMenus.Add(new Result
-            {
-                Title = Localize.GeneralResult_CopyPath,
-                SubTitle = Localize.GeneralResult_CopyPath_Subtitle,
+                {
+                    Title = "Copy path",
+                    SubTitle = "You can open the parent dir. with CTRL + Click on the result",
                 Action = _ =>
                 {
                     _context.API.CopyToClipboard(record.FullPath, showDefaultNotification: false);
@@ -39,8 +39,8 @@ internal class ContextMenu(PluginInitContext context, Settings settings) : ICont
             // Show windows context menu
             contextMenus.Add(new Result()
             {
-                Title = Localize.GeneralResult_ShowWindowsMenu,
-                SubTitle = Localize.GeneralResult_ShowWindowsMenu_Subtitle,
+                Title = "Show Windows Context Menu",
+                SubTitle = "You can also open it with Alt + Click on the result",
                 Glyph = "\ue700",
                 Action = c =>
                 {
@@ -53,8 +53,8 @@ internal class ContextMenu(PluginInitContext context, Settings settings) : ICont
                 // Run as different user
                 contextMenus.Add(new Result
                 {
-                    Title = Localize.FileResult_RunAsDifferentUser,
-                    SubTitle = Localize.FileResult_RunAsDifferentUser_Subtitle,
+                    Title = "Run as different user",
+                    SubTitle = "Run the selected file using a different user account",
                     Action = (context) =>
                     {
                         try
@@ -64,8 +64,8 @@ internal class ContextMenu(PluginInitContext context, Settings settings) : ICont
                         catch (FileNotFoundException e)
                         {
                             _context.API.ShowMsgError(
-                                Localize.PluginName,
-                                Localize.Error_FileNotFound(e.Message));
+                                "Explorer",
+                                $"File not found: {e.Message}");
                             return false;
                         }
 
@@ -81,7 +81,7 @@ internal class ContextMenu(PluginInitContext context, Settings settings) : ICont
     private Result CreateOpenWithShellResult(SearchResult record)
     {
         string shellPath = _settings.ShellPath;
-        string name = $"{Localize.FolderResult_OpenWithShell} {Path.GetFileNameWithoutExtension(shellPath)}";
+        string name = $"Open With Shell: {Path.GetFileNameWithoutExtension(shellPath)}";
 
         return new Result
         {
@@ -95,7 +95,7 @@ internal class ContextMenu(PluginInitContext context, Settings settings) : ICont
                 }
                 catch (Exception e)
                 {
-                    var message = Localize.Error_OpenWithShell(record.FullPath, Path.GetFileNameWithoutExtension(shellPath), shellPath);
+                    var message = $"Failed to open folder {record.FullPath} with Shell {Path.GetFileNameWithoutExtension(shellPath)} at {shellPath}";
                     // TODO: Make ShowMsgError log the exception
                     _context.API.ShowMsgError(message);
                     return false;
@@ -109,8 +109,8 @@ internal class ContextMenu(PluginInitContext context, Settings settings) : ICont
     {
         return new Result
         {
-            Title = Localize.FileResult_OpenWith,
-            SubTitle = Localize.FileResult_OpenWith_Subtitle,
+            Title = "Open With",
+            SubTitle = "Select a program to open with",
             Action = _ =>
             {
                 // No need to de-elevate since we are opening a windows menu which cannot bring security risks

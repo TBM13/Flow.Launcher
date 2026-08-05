@@ -46,7 +46,7 @@ public class Main : IPlugin, IContextMenu
         }
         catch (Exception e)
         {
-            Context.API.ShowMsgError(Localize.Error_ChangeStartupTypeFail, e.ToString());
+            Context.API.ShowMsgError("Failed to change startup type", e.ToString());
             return false;
         }
 
@@ -58,7 +58,7 @@ public class Main : IPlugin, IContextMenu
             }
             catch (Exception e)
             {
-                Context.API.ShowMsgError(Localize.Error_StartServiceFail, e.ToString());
+                Context.API.ShowMsgError("Failed to start service", e.ToString());
                 return false;
             }
         }
@@ -75,7 +75,7 @@ public class Main : IPlugin, IContextMenu
         }
         catch (Exception e)
         {
-            Context.API.ShowMsgError(Localize.Error_ChangeStartupTypeFail, e.ToString());
+            Context.API.ShowMsgError("Failed to change startup type", e.ToString());
             return false;
         }
 
@@ -87,7 +87,7 @@ public class Main : IPlugin, IContextMenu
             }
             catch (Exception e)
             {
-                Context.API.ShowMsgError(Localize.Error_StopServiceFail, e.ToString());
+                Context.API.ShowMsgError("Failed to stop service", e.ToString());
                 return false;
             }
         }
@@ -108,7 +108,7 @@ public class Main : IPlugin, IContextMenu
             {
                 results.Add(new Result()
                 {
-                    Title = Localize.Action_RestartService,
+                    Title = "Restart",
                     Glyph = "\xe777",
                     Action = c =>
                     {
@@ -118,7 +118,7 @@ public class Main : IPlugin, IContextMenu
                         }
                         catch (Exception e)
                         {
-                            Context.API.ShowMsgError(Localize.Error_RestartServiceFail, e.ToString());
+                            Context.API.ShowMsgError("Failed to restart service", e.ToString());
                             return false;
                         }
 
@@ -130,7 +130,7 @@ public class Main : IPlugin, IContextMenu
 
             results.Add(new Result()
             {
-                Title = Localize.Action_StopService,
+                Title = "Stop",
                 Glyph = "\xe769",
                 Action = c =>
                 {
@@ -140,7 +140,7 @@ public class Main : IPlugin, IContextMenu
                     }
                     catch (Exception e)
                     {
-                        Context.API.ShowMsgError(Localize.Error_StopServiceFail, e.ToString());
+                        Context.API.ShowMsgError("Failed to stop service", e.ToString());
                         return false;
                     }
 
@@ -153,7 +153,7 @@ public class Main : IPlugin, IContextMenu
         {
             results.Add(new Result()
             {
-                Title = Localize.Action_StartService,
+                Title = "Start",
                 Glyph = "\xe768",
                 Action = c =>
                 {
@@ -163,7 +163,7 @@ public class Main : IPlugin, IContextMenu
                     }
                     catch (Exception e)
                     {
-                        Context.API.ShowMsgError(Localize.Error_StartServiceFail, e.ToString());
+                        Context.API.ShowMsgError("Failed to start service", e.ToString());
                         return false;
                     }
 
@@ -177,30 +177,30 @@ public class Main : IPlugin, IContextMenu
         {
             results.Add(new Result()
             {
-                Title = Localize.Action_EnableManual,
+                Title = "Enable (manual)",
                 SubTitle = service.IsRunning ?
-                    Localize.Action_EnableManual_Description :
-                    Localize.Action_EnableManualAndStart_Description,
+                    "Set startup type to manual" :
+                    "Set startup type to manual & start the service",
                 Glyph = "\xEB49",
                 Action = c => EnableService(service, Action.EnableManual)
             });
 
             results.Add(new Result()
             {
-                Title = Localize.Action_EnableAutomatic,
+                Title = "Enable (automatic)",
                 SubTitle = service.IsRunning ?
-                    Localize.Action_EnableAutomatic_Description :
-                    Localize.Action_EnableAutomaticAndStart_Description,
+                    "Set startup type to automatic" :
+                    "Set startup type to automatic & start the service",
                 Glyph = "\xEB49",
                 Action = c => EnableService(service, Action.EnableAutomatic)
             });
 
             results.Add(new Result()
             {
-                Title = Localize.Action_EnableAutomaticDelayed,
+                Title = "Enable (automatic delayed)",
                 SubTitle = service.IsRunning ?
-                    Localize.Action_EnableAutomaticDelayed_Description :
-                    Localize.Action_EnableAutomaticDelayedAndStart_Description,
+                    "Set startup type to automatic delayed" :
+                    "Set startup type to automatic delayed & start the service",
                 Glyph = "\xEB49",
                 Action = c => EnableService(service, Action.EnableAutomaticDelayed)
             });
@@ -209,10 +209,10 @@ public class Main : IPlugin, IContextMenu
         {
             results.Add(new Result()
             {
-                Title = Localize.Action_Disable,
+                Title = "Disable",
                 SubTitle = service.IsRunning ?
-                    Localize.Action_DisableAndStop_Description :
-                    Localize.Action_Disable_Description,
+                    "Set startup type to disabled & stop the service" :
+                    "Set startup type to disabled",
                 Glyph = "\xEB4A",
                 Action = c => DisableService(service)
             });

@@ -17,7 +17,7 @@ public partial class PreviewPanel : UserControl
     public string FileName { get; }
 
     [ObservableProperty]
-    private string _fileSize = Localize.Preview_UnknownValue;
+    private string _fileSize = "Unknown";
 
     [ObservableProperty]
     private string _createdAt = "";
@@ -103,17 +103,17 @@ public partial class PreviewPanel : UserControl
         catch (FileNotFoundException)
         {
             Main.Context.Logger.LogError($"File not found: {filePath}");
-            return Localize.Preview_UnknownValue;
+            return "Unknown";
         }
         catch (UnauthorizedAccessException)
         {
             Main.Context.Logger.LogError($"Access denied to file: {filePath}");
-            return Localize.Preview_UnknownValue;
+            return "Unknown";
         }
         catch (Exception e)
         {
             Main.Context.Logger.LogError(e, $"Failed to get file size for {filePath}");
-            return Localize.Preview_UnknownValue;
+            return "Unknown";
         }
     }
 
@@ -134,17 +134,17 @@ public partial class PreviewPanel : UserControl
         catch (FileNotFoundException)
         {
             Main.Context.Logger.LogError($"File not found: {filePath}");
-            return Localize.Preview_UnknownValue;
+            return "Unknown";
         }
         catch (UnauthorizedAccessException)
         {
             Main.Context.Logger.LogError($"Access denied to file: {filePath}");
-            return Localize.Preview_UnknownValue;
+            return "Unknown";
         }
         catch (Exception e)
         {
             Main.Context.Logger.LogError(e, $"Failed to get file created date for {filePath}");
-            return Localize.Preview_UnknownValue;
+            return "Unknown";
         }
     }
 
@@ -165,17 +165,17 @@ public partial class PreviewPanel : UserControl
         catch (FileNotFoundException)
         {
             Main.Context.Logger.LogError($"File not found: {filePath}");
-            return Localize.Preview_UnknownValue;
+            return "Unknown";
         }
         catch (UnauthorizedAccessException)
         {
             Main.Context.Logger.LogError($"Access denied to file: {filePath}");
-            return Localize.Preview_UnknownValue;
+            return "Unknown";
         }
         catch (Exception e)
         {
             Main.Context.Logger.LogError(e, $"Failed to get file modified date for {filePath}");
-            return Localize.Preview_UnknownValue;
+            return "Unknown";
         }
     }
 
@@ -197,17 +197,17 @@ public partial class PreviewPanel : UserControl
         catch (FileNotFoundException)
         {
             Main.Context.Logger.LogError($"Folder not found: {folderPath}");
-            return Localize.Preview_UnknownValue;
+            return "Unknown";
         }
         catch (UnauthorizedAccessException)
         {
             Main.Context.Logger.LogError($"Access denied to folder: {folderPath}");
-            return Localize.Preview_UnknownValue;
+            return "Unknown";
         }
         catch (OperationCanceledException)
         {
             Main.Context.Logger.LogError($"Operation timed out while calculating folder size for {folderPath}");
-            return Localize.Preview_UnknownValue;
+            return "Unknown";
         }
         // For parallel operations, AggregateException may be thrown if any of the tasks fail
         catch (AggregateException ae)
@@ -216,22 +216,22 @@ public partial class PreviewPanel : UserControl
             {
                 case FileNotFoundException:
                     Main.Context.Logger.LogError($"Folder not found: {folderPath}");
-                    return Localize.Preview_UnknownValue;
+                    return "Unknown";
                 case UnauthorizedAccessException:
                     Main.Context.Logger.LogError($"Access denied to folder: {folderPath}");
-                    return Localize.Preview_UnknownValue;
+                    return "Unknown";
                 case OperationCanceledException:
                     Main.Context.Logger.LogError($"Operation timed out while calculating folder size for {folderPath}");
-                    return Localize.Preview_UnknownValue;
+                    return "Unknown";
                 default:
                     Main.Context.Logger.LogError(ae, $"Failed to get folder size for {folderPath}");
-                    return Localize.Preview_UnknownValue;
+                    return "Unknown";
             }
         }
         catch (Exception e)
         {
             Main.Context.Logger.LogError(e, $"Failed to get folder size for {folderPath}");
-            return Localize.Preview_UnknownValue;
+            return "Unknown";
         }
     }
 
@@ -252,17 +252,17 @@ public partial class PreviewPanel : UserControl
         catch (FileNotFoundException)
         {
             Main.Context.Logger.LogError($"Folder not found: {folderPath}");
-            return Localize.Preview_UnknownValue;
+            return "Unknown";
         }
         catch (UnauthorizedAccessException)
         {
             Main.Context.Logger.LogError($"Access denied to folder: {folderPath}");
-            return Localize.Preview_UnknownValue;
+            return "Unknown";
         }
         catch (Exception e)
         {
             Main.Context.Logger.LogError(e, $"Failed to get folder created date for {folderPath}");
-            return Localize.Preview_UnknownValue;
+            return "Unknown";
         }
     }
 
@@ -283,17 +283,17 @@ public partial class PreviewPanel : UserControl
         catch (FileNotFoundException)
         {
             Main.Context.Logger.LogError($"Folder not found: {folderPath}");
-            return Localize.Preview_UnknownValue;
+            return "Unknown";
         }
         catch (UnauthorizedAccessException)
         {
             Main.Context.Logger.LogError($"Access denied to folder: {folderPath}");
-            return Localize.Preview_UnknownValue;
+            return "Unknown";
         }
         catch (Exception e)
         {
             Main.Context.Logger.LogError(e, $"Failed to get folder modified date for {folderPath}");
-            return Localize.Preview_UnknownValue;
+            return "Unknown";
         }
     }
 
@@ -303,20 +303,20 @@ public partial class PreviewPanel : UserControl
         var difference = now - fileDateTime;
 
         if (difference.TotalDays < 1)
-            return Localize.Preview_Today;
+            return "Today";
         if (difference.TotalDays < 30)
-            return Localize.Preview_DaysAgo((int)difference.TotalDays);
+            return $"{(int)difference.TotalDays} days ago";
 
         var monthsDiff = (now.Year - fileDateTime.Year) * 12 + now.Month - fileDateTime.Month;
         if (monthsDiff == 1)
-            return Localize.Preview_OneMonthAgo;
+            return "1 month ago";
         if (monthsDiff < 12)
-            return Localize.Preview_MonthsAgo(monthsDiff);
+            return $"{monthsDiff} months ago";
 
         var yearsDiff = now.Year - fileDateTime.Year;
         if (now.Month < fileDateTime.Month || (now.Month == fileDateTime.Month && now.Day < fileDateTime.Day))
             yearsDiff--;
 
-        return yearsDiff == 1 ? Localize.Preview_OneYearAgo : Localize.Preview_YearsAgo(yearsDiff);
+        return yearsDiff == 1 ? "1 year ago" : $"{yearsDiff} years ago";
     }
 }
