@@ -73,7 +73,7 @@ public partial class ResultListBox
         // Unsubscribe first to prevent duplicate registrations during UI recycling
         element.DataContextChanged -= OnItemDataContextChanged;
         element.DataContextChanged += OnItemDataContextChanged;
-        SetupScreenPositionDelegate(element);
+        SetupViewModel(element);
     }
 
     private void OnItemUnloaded(object sender, RoutedEventArgs e)
@@ -95,13 +95,16 @@ public partial class ResultListBox
         if (e.OldValue is ResultViewModel oldViewModel)
             oldViewModel.GetScreenCenterPoint = null;
 
-        SetupScreenPositionDelegate(element);
+        SetupViewModel(element);
     }
 
-    private static void SetupScreenPositionDelegate(FrameworkElement element)
+    private static void SetupViewModel(FrameworkElement element)
     {
         if (element.DataContext is ResultViewModel viewModel)
+        {
             viewModel.GetScreenCenterPoint = () => CalculateScreenCenterPoint(element);
+            _ = viewModel.LoadImageAsync();
+        }
     }
 
     private static Point? CalculateScreenCenterPoint(FrameworkElement element)

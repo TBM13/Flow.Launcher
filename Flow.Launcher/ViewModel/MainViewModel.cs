@@ -616,7 +616,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private void ShowInternalPreview()
     {
         ResultAreaColumn = RESULTAREA_COLUMN_PREVIEWSHOWN;
-        PreviewSelectedItem?.LoadPreviewImage();
+        PreviewSelectedItem?.LoadPreviewImageAsync();
     }
 
     private void HideInternalPreview()
@@ -640,7 +640,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private async Task UpdatePreviewAsync()
     {
         if (InternalPreviewVisible)
-            PreviewSelectedItem?.LoadPreviewImage();
+            PreviewSelectedItem?.LoadPreviewImageAsync();
     }
 
     #endregion

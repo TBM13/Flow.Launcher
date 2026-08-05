@@ -29,40 +29,10 @@ public partial class ResultViewModel : ObservableObject
         ? Result.SubTitle
         : Result.SubTitleToolTip;
 
-    private volatile bool _imageLoaded;
-    private volatile bool _previewImageLoaded;
-    private ImageSource _image;
-    private ImageSource _previewImage;
-
-    public ImageSource Image
-    {
-        get
-        {
-            if (!_imageLoaded)
-            {
-                _imageLoaded = true;
-                _ = LoadImageAsync();
-            }
-
-            return _image;
-        }
-        private set => SetProperty(ref _image, value);
-    }
-
-    public ImageSource PreviewImage
-    {
-        get
-        {
-            if (!_previewImageLoaded)
-            {
-                _previewImageLoaded = true;
-                _ = LoadPreviewImageAsync();
-            }
-
-            return _previewImage;
-        }
-        private set => SetProperty(ref _previewImage, value);
-    }
+    [ObservableProperty]
+    public partial ImageSource Image { get; private set; }
+    [ObservableProperty]
+    public partial ImageSource PreviewImage { get; private set; }
 
     public string PreviewDescription => Result.Preview.Description ?? Result.SubTitle;
 
@@ -73,35 +43,28 @@ public partial class ResultViewModel : ObservableObject
         _imageLoader = imageLoader;
         Result = result;
 
-        _image = _imageLoader.LoadingIcon;
-        _previewImage = _imageLoader.LoadingIcon;
+        Image = _imageLoader.LoadingIcon;
+        PreviewImage = _imageLoader.LoadingIcon;
+
+        _ = LoadImageAsync();
     }
 
-    private async Task<ImageSource> LoadImageInternalAsync(string? imagePath, bool loadFullImage)
+    public async Task LoadImageAsync()
     {
-        imagePath ??= string.Empty;
-        return await _imageLoader.LoadAsync(imagePath, loadFullImage).ConfigureAwait(false);
+        string? imagePath = Result.IcoPath;
+        if (imagePath is null)
+            return;
+
+        Image = await _imageLoader.LoadAsync(imagePath, false);
     }
 
-    private async Task LoadImageAsync()
+    public async Task LoadPreviewImageAsync()
     {
-        var imagePath = Result.IcoPath;
-        Image = await LoadImageInternalAsync(imagePath, false);
-    }
+        string? imagePath = Result.Preview.PreviewImagePath ?? Result.IcoPath;
+        if (imagePath is null)
+            return;
 
-    private async Task LoadPreviewImageAsync()
-    {
-        var imagePath = Result.Preview.PreviewImagePath ?? Result.IcoPath;
-        PreviewImage = await LoadImageInternalAsync(imagePath, true);
-    }
-
-    public void LoadPreviewImage()
-    {
-        if (!_previewImageLoaded && ShowPreviewImage == Visibility.Visible)
-        {
-            _previewImageLoaded = true;
-            _ = LoadPreviewImageAsync();
-        }
+        PreviewImage = await _imageLoader.LoadAsync(imagePath, true);
     }
 
     public override bool Equals(object? obj)
