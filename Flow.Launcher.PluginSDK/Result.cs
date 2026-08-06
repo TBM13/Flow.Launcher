@@ -78,11 +78,6 @@ public record Result
     public int Score { get; set; }
 
     /// <summary>
-    /// Query information associated with the result
-    /// </summary>
-    internal Query? OriginQuery { get; set; }
-
-    /// <summary>
     /// Additional data associated with this result
     /// </summary>
     /// <example>

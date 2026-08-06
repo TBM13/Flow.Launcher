@@ -11,18 +11,18 @@ public class UserSelectedRecord
     private Dictionary<long, int> _recordsWithQuery = [];
 #pragma warning restore IDE0044 // Add readonly modifier
 
-    public void Add(Result result)
+    public void Add(Result result, Query? query)
     {
-        if (result.OriginQuery is not null)
-            Increment(GetQueryAndResultHashCode(result.OriginQuery, result));
+        if (query is not null)
+            Increment(GetQueryAndResultHashCode(query, result));
 
         Increment(GetResultHashCode(result));
     }
 
-    public int GetSelectedCount(Result result)
+    public int GetSelectedCount(Result result, Query? query)
     {
-        int queryCount = result.OriginQuery is not null
-            ? _recordsWithQuery.GetValueOrDefault(GetQueryAndResultHashCode(result.OriginQuery, result))
+        int queryCount = query is not null
+            ? _recordsWithQuery.GetValueOrDefault(GetQueryAndResultHashCode(query, result))
             : 0;
 
         int resultCount = _recordsWithQuery.GetValueOrDefault(GetResultHashCode(result));

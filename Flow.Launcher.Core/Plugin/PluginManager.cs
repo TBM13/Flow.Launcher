@@ -219,7 +219,6 @@ namespace Flow.Launcher.Core.Plugin
                     AutoCompleteText = query.TrimmedQuery,
                     IcoPath = metadata.IcoPath,
                     PluginID = metadata.ID,
-                    OriginQuery = query,
                     Action = _ =>
                     {
                         IPublicAPI.Instance.ReQuery();
@@ -255,7 +254,6 @@ namespace Flow.Launcher.Core.Plugin
                     AutoCompleteText = query.TrimmedQuery,
                     IcoPath = Constant.ErrorIcon,
                     PluginID = metadata.ID,
-                    OriginQuery = query,
                     Action = _ => { throw new FlowPluginException(metadata, e); }
                 };
 
@@ -274,7 +272,6 @@ namespace Flow.Launcher.Core.Plugin
                     AutoCompleteText = query.TrimmedQuery,
                     IcoPath = metadata.IcoPath,
                     PluginID = metadata.ID,
-                    OriginQuery = query,
                     Action = _ =>
                     {
                         IPublicAPI.Instance.ReQuery();
@@ -369,7 +366,6 @@ namespace Flow.Launcher.Core.Plugin
             foreach (var r in results)
             {
                 r.PluginID = metadata.ID;
-                r.OriginQuery = query;
             }
         }
 
@@ -406,7 +402,6 @@ namespace Flow.Launcher.Core.Plugin
                     foreach (Result r in results)
                     {
                         r.PluginID = metadata.ID;
-                        r.OriginQuery = result.OriginQuery;
                     }
 
                     return results;

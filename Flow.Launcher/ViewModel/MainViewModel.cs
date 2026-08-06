@@ -265,7 +265,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
 
         // Record user selected result for result ranking
-        _userSelectedRecord.Add(result);
+        _userSelectedRecord.Add(result, _lastQuery);
     }
 
     private static List<Result> DeepCloneResults(IReadOnlyList<Result> results, CancellationToken token = default)
@@ -1170,13 +1170,13 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 var priorityScore = metaResults.Metadata.Priority * 150;
                 if (result.AddSelectedCount)
                 {
-                    if ((long)result.Score + _userSelectedRecord.GetSelectedCount(result) + priorityScore > Result.MaxScore)
+                    if ((long)result.Score + _userSelectedRecord.GetSelectedCount(result, _lastQuery) + priorityScore > Result.MaxScore)
                     {
                         result.Score = Result.MaxScore;
                     }
                     else
                     {
-                        result.Score += _userSelectedRecord.GetSelectedCount(result) + priorityScore;
+                        result.Score += _userSelectedRecord.GetSelectedCount(result, _lastQuery) + priorityScore;
                     }
                 }
                 else
