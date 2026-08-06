@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Windows;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Core.Hotkeys;
 using Flow.Launcher.PluginSDK.Hotkeys;
 using iNKORE.UI.WPF.Modern.Controls;
 
-namespace Flow.Launcher;
+namespace Flow.Launcher.Dialogs;
 
 public partial class HotkeyControlDialog : ContentDialog
 {

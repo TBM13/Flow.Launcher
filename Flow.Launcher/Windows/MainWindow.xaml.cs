@@ -5,7 +5,6 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Shell;
 using System.Windows.Threading;
-using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Helper;
@@ -18,7 +17,7 @@ using iNKORE.UI.WPF.Modern;
 using DataObject = System.Windows.DataObject;
 using Key = System.Windows.Input.Key;
 
-namespace Flow.Launcher;
+namespace Flow.Launcher.Windows;
 
 public partial class MainWindow : Window
 {

@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
+using Flow.Launcher.Dialogs;
 using Flow.Launcher.PluginSDK.Hotkeys;
 
 namespace Flow.Launcher.Controls;

@@ -14,6 +14,7 @@ using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.Settings;
 using Flow.Launcher.Settings.Pages;
 using Flow.Launcher.ViewModel;
+using Flow.Launcher.Windows;
 using iNKORE.UI.WPF.Modern.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

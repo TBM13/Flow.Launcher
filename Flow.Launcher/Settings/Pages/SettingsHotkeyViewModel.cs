@@ -4,7 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core.Hotkeys;
 using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Core.UserSettings;
-using Flow.Launcher.PluginSDK.API;
+using Flow.Launcher.Windows;
 
 namespace Flow.Launcher.Settings.Pages;
 

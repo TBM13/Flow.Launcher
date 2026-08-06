@@ -8,6 +8,7 @@ using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Logging;
 using Flow.Launcher.PluginSDK.Plugins;
 using Flow.Launcher.PluginSDK.Plugins.Interfaces;
+using Flow.Launcher.Windows;
 using PluginSettingsObj = Flow.Launcher.Core.UserSettings.Plugin;
 
 namespace Flow.Launcher.ViewModel

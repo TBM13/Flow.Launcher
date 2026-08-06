@@ -1,5 +1,5 @@
 <Window
-    x:Class="Flow.Launcher.CustomQueryHotkeySetting"
+    x:Class="Flow.Launcher.Windows.CustomQueryHotkeySetting"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:Flow.Launcher.Controls"
@@ -11,7 +11,7 @@
     Background="{DynamicResource PopuBGColor}"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
     Foreground="{DynamicResource PopupTextColor}"
-    Icon="Images\app.png"
+    Icon="/Images/app.png"
     MouseDown="window_MouseDown"
     ResizeMode="NoResize"
     SizeToContent="Height"
