@@ -740,19 +740,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
         if (_updateSource is not null)
             await _updateSource.CancelAsync();
 
-        _logger.LogDebug($"Start query with text: <{QueryText}>");
-
-        var query = await ConstructQueryAsync(QueryText, isReQuery);
-
-        if (query == null) // shortcut expanded
-        {
-            ClearResults();
-            return;
-        }
-
-        _logger.LogDebug($"Start query with ActionKeyword <{query.ActionKeyword}> and TrimmedQuery <{query.TrimmedQuery}>");
-
-        var currentIsHomeQuery = query.IsHomeQuery;
+        Query query = QueryBuilder.Build(QueryText, isReQuery, _pluginManager.GetNonGlobalPlugins());
+        _logger.LogDebug($"Start query with text: <{QueryText}> & ActionKeyword <{query.ActionKeyword}> and TrimmedQuery <{query.TrimmedQuery}>");
 
         _updateSource?.Dispose();
 
@@ -766,7 +755,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             if (currentCancellationToken.IsCancellationRequested) return;
 
             ICollection<PluginMetadata> plugins = Array.Empty<PluginMetadata>();
-            if (currentIsHomeQuery)
+            if (query.IsHomeQuery)
             {
                 if (Settings.ShowHomePage)
                 {
@@ -806,7 +795,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             // plugins are ICollection, meaning LINQ will get the Count and preallocate Array
 
             Task[] tasks;
-            if (currentIsHomeQuery)
+            if (query.IsHomeQuery)
             {
                 if (ShouldClearExistingResultsForNonQuery(plugins))
                 {
@@ -864,7 +853,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             // Task.Yield will force it to run in ThreadPool
             await Task.Yield();
 
-            var results = currentIsHomeQuery ?
+            var results = query.IsHomeQuery ?
                 await _pluginManager.QueryHomeForPluginAsync(plugin, query, token) :
                 await _pluginManager.QueryForPluginAsync(plugin, query, token);
 
@@ -890,39 +879,6 @@ public partial class MainViewModel : ObservableObject, IDisposable
             {
                 _logger.LogError($"Unable to add item to Result Update Queue");
             }
-        }
-    }
-
-    private async Task<Query?> ConstructQueryAsync(
-        string queryText, bool isRequery)
-    {
-        if (string.IsNullOrWhiteSpace(queryText))
-        {
-            return QueryBuilder.Build(string.Empty, isRequery, _pluginManager.GetNonGlobalPlugins());
-        }
-
-        var queryBuilder = new StringBuilder(queryText);
-        var queryBuilderTmp = new StringBuilder(queryText);
-
-        // Apply builtin shortcuts
-        await BuildQueryAsync(queryBuilder, queryBuilderTmp);
-
-        return QueryBuilder.Build(queryBuilder.ToString(), isRequery, _pluginManager.GetNonGlobalPlugins());
-    }
-
-    private async Task BuildQueryAsync(StringBuilder queryBuilder, StringBuilder queryBuilderTmp)
-    {
-        var queryChanged = false;
-
-        // Show expanded builtin shortcuts
-        if (queryChanged)
-        {
-            // Use private field to avoid infinite recursion
-            _queryText = queryBuilderTmp.ToString();
-            // When executing OnPropertyChanged, QueryTextBox_TextChanged1 and Query will be called
-            // So we need to ignore it so that we will not call Query again
-            _ignoredQueryText = _queryText;
-            OnPropertyChanged(nameof(QueryText));
         }
     }
 
