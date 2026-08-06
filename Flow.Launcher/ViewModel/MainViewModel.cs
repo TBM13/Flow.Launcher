@@ -19,7 +19,6 @@ using Flow.Launcher.Interop.Shell;
 using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Plugins;
-using Flow.Launcher.Storage;
 using Microsoft.Extensions.Logging;
 
 namespace Flow.Launcher.ViewModel;

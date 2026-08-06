@@ -2,7 +2,7 @@
 using System.Text.Json.Serialization;
 using Flow.Launcher.PluginSDK;
 
-namespace Flow.Launcher.Storage;
+namespace Flow.Launcher.Core.Settings;
 
 public class UserSelectedRecord
 {
