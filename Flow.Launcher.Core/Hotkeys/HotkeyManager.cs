@@ -3,10 +3,8 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Flow.Launcher.Core.Settings;
-using Flow.Launcher.Core.UserSettings;
 using Flow.Launcher.Interop;
 using Flow.Launcher.Interop.Input;
-using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Hotkeys;
 using Flow.Launcher.PluginSDK.Logging;
 using Flow.Launcher.PluginSDK.Plugins;
@@ -58,12 +56,6 @@ public class HotkeyManager : IDisposable
         // Register app hotkeys
         foreach (AppHotkeyInfo hotkey in DefaultHotkeys.AppHotkeys)
             RegisterHotkey(hotkey, null);
-
-        // Register global custom query hotkeys
-        foreach (CustomPluginHotkey hotkey in _settings.CustomPluginHotkeys)
-        {
-            RegisterCustomQueryHotkey(hotkey);
-        }
 
         // Start listening for hotkeys
         _keyboardManager.OnHotkeyTriggered += OnGlobalHotkeyTriggered;
@@ -355,44 +347,6 @@ public class HotkeyManager : IDisposable
             default:
                 throw new InvalidOperationException();
         }
-    }
-
-    /// <summary>
-    /// Registers the given custom query hotkey.
-    /// </summary>
-    public void RegisterCustomQueryHotkey(CustomPluginHotkey queryHotkeyInfo)
-    {
-        Hotkey hotkey = default;
-        if (!string.IsNullOrEmpty(queryHotkeyInfo.Hotkey))
-        {
-            if (!Hotkey.TryParse(queryHotkeyInfo.Hotkey, out hotkey))
-            {
-                _logger.LogError($"Invalid hotkey '{queryHotkeyInfo.Hotkey}' for custom query \"{queryHotkeyInfo.ActionKeyword}\"");
-                return;
-            }
-        }
-
-        GlobalHotkeyInfo info = new()
-        {
-            Id = $"CustomQuery {queryHotkeyInfo.ActionKeyword}",
-            Name = $"Custom query \"{queryHotkeyInfo.ActionKeyword}\"",
-            DefaultHotkey = hotkey,
-            OnHotkeyTriggered = () =>
-            {
-                IPublicAPI.Instance.ShowMainWindow();
-                // Make sure to go back to the query results page first since it can cause issues if current page is context menu
-                IPublicAPI.Instance.BackToQueryResults();
-                IPublicAPI.Instance.ChangeQuery(queryHotkeyInfo.ActionKeyword, true);
-            }
-        };
-
-        RegisterHotkey(info, null);
-    }
-
-    public void UnregisterCustomQueryHotkey(CustomPluginHotkey hotkey)
-    {
-        string id = $"CustomQuery {hotkey.ActionKeyword}";
-        UnregisterHotkey(id);
     }
 
     /// <summary>

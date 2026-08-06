@@ -742,7 +742,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         _logger.LogDebug($"Start query with text: <{QueryText}>");
 
-        var query = await ConstructQueryAsync(QueryText, isReQuery, Settings.CustomShortcuts, Settings.BuiltinShortcuts);
+        var query = await ConstructQueryAsync(QueryText, isReQuery);
 
         if (query == null) // shortcut expanded
         {
@@ -894,9 +894,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     }
 
     private async Task<Query?> ConstructQueryAsync(
-        string queryText, bool isRequery,
-        IEnumerable<CustomShortcutModel> customShortcuts,
-        IEnumerable<BaseBuiltinShortcutModel> builtInShortcuts)
+        string queryText, bool isRequery)
     {
         if (string.IsNullOrWhiteSpace(queryText))
         {
@@ -906,59 +904,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
         var queryBuilder = new StringBuilder(queryText);
         var queryBuilderTmp = new StringBuilder(queryText);
 
-        // Sorting order is important here, the reason is for matching longest shortcut by default
-        foreach (var shortcut in customShortcuts.OrderByDescending(x => x.Key.Length))
-        {
-            if (queryBuilder.Equals(shortcut.Key))
-            {
-                queryBuilder.Replace(shortcut.Key, shortcut.Expand());
-            }
-
-            queryBuilder.Replace('@' + shortcut.Key, shortcut.Expand());
-        }
-
         // Apply builtin shortcuts
-        await BuildQueryAsync(builtInShortcuts, queryBuilder, queryBuilderTmp);
+        await BuildQueryAsync(queryBuilder, queryBuilderTmp);
 
         return QueryBuilder.Build(queryBuilder.ToString(), isRequery, _pluginManager.GetNonGlobalPlugins());
     }
 
-    private async Task BuildQueryAsync(IEnumerable<BaseBuiltinShortcutModel> builtInShortcuts,
-        StringBuilder queryBuilder, StringBuilder queryBuilderTmp)
+    private async Task BuildQueryAsync(StringBuilder queryBuilder, StringBuilder queryBuilderTmp)
     {
-        var customExpanded = queryBuilder.ToString();
-
         var queryChanged = false;
-
-        foreach (var shortcut in builtInShortcuts)
-        {
-            try
-            {
-                if (customExpanded.Contains(shortcut.Key))
-                {
-                    string expansion;
-                    if (shortcut is BuiltinShortcutModel syncShortcut)
-                    {
-                        expansion = syncShortcut.Expand();
-                    }
-                    else if (shortcut is AsyncBuiltinShortcutModel asyncShortcut)
-                    {
-                        expansion = await asyncShortcut.ExpandAsync();
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                    queryBuilder.Replace(shortcut.Key, expansion);
-                    queryBuilderTmp.Replace(shortcut.Key, expansion);
-                    queryChanged = true;
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, $"Error when expanding shortcut {shortcut.Key}");
-            }
-        }
 
         // Show expanded builtin shortcuts
         if (queryChanged)

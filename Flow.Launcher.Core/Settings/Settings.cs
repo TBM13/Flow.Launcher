@@ -99,18 +99,7 @@ internal partial class Settings : ObservableObject, ISettingsAPI
     public partial bool IgnoreHotkeysOnFullscreen { get; set; }
 
     public Dictionary<string, string> Hotkeys { get; init; } = [];
-    public ObservableCollection<CustomPluginHotkey> CustomPluginHotkeys { get; init; } = [];
     #endregion
-
-    public ObservableCollection<CustomShortcutModel> CustomShortcuts { get; init; } = [];
-
-    [JsonIgnore]
-    public ObservableCollection<BaseBuiltinShortcutModel> BuiltinShortcuts { get; } =
-    [
-        new AsyncBuiltinShortcutModel("{clipboard}", "Get text from clipboard.", () => ApplicationHelper.StartSTATaskAsync(Clipboard.GetText)),
-        new BuiltinShortcutModel("{active_explorer_path}", "Get path from active explorer.", () => FileExplorerHelper.GetForegroundExplorerPath() ?? "<error>")
-    ];
-
 
     // This needs to be loaded last by staying at the bottom
     [ObservableProperty]

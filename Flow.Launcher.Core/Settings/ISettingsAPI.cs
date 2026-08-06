@@ -184,10 +184,7 @@ public interface ISettingsAPI : INotifyPropertyChanged, INotifyPropertyChanging
     bool IgnoreHotkeysOnFullscreen { get; set; }
 
     Dictionary<string, string> Hotkeys { get; }
-    ObservableCollection<CustomPluginHotkey> CustomPluginHotkeys { get; }
     #endregion
 
-    ObservableCollection<CustomShortcutModel> CustomShortcuts { get; }
-    ObservableCollection<BaseBuiltinShortcutModel> BuiltinShortcuts { get; }
     PluginsSettings PluginSettings { get; }
 }
