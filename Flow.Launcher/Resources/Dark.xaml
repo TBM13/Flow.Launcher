@@ -8,9 +8,7 @@
     <SolidColorBrush x:Key="Color00B" Color="#2b2b2b" />
     <SolidColorBrush x:Key="Color01B" Color="#202020" />
     <SolidColorBrush x:Key="Color03B" Color="#1d1d1d" />
-    <SolidColorBrush x:Key="Color04B" Color="#cfcfcf" />
     <SolidColorBrush x:Key="Color05B" Color="#ffffff" />
-    <SolidColorBrush x:Key="Color12B" Color="#373737" />
     <SolidColorBrush x:Key="Color15B" Color="#5d5d5d" />
 
     <!--  Typo  -->
@@ -19,7 +17,6 @@
     <SolidColorBrush x:Key="PopupButtonAreaBGColor" Color="#2b2b2b" />
     <SolidColorBrush x:Key="PopupButtonAreaBorderColor" Color="#3f3f3f" />
 
-    <SolidColorBrush x:Key="CustomContextHover" Color="#3a3a3a" />
     <SolidColorBrush x:Key="ContextSeparator" Color="#3c3c3c" />
 
     <!--  Resource for HotkeyControlDialog  -->
