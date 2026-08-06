@@ -13,16 +13,14 @@ namespace Flow.Launcher.ViewModel;
 
 public partial class ResultsViewModel : ObservableObject, IDisposable
 {
-    private readonly MainViewModel _mainVM;
     private readonly ISettingsAPI _settings;
     private readonly IImageLoader _imageLoader;
     private readonly object _collectionLock = new();
 
     public BulkObservableCollection<ResultViewModel> Results { get; }
 
-    public ResultsViewModel(MainViewModel mainVM, ISettingsAPI settings, IImageLoader imageLoader)
+    public ResultsViewModel(ISettingsAPI settings, IImageLoader imageLoader)
     {
-        _mainVM = mainVM;
         _settings = settings;
         _imageLoader = imageLoader;
 
@@ -121,12 +119,8 @@ public partial class ResultsViewModel : ObservableObject, IDisposable
         switch (Visibility)
         {
             case Visibility.Collapsed when Results.Count > 0:
-                if (_mainVM == null || // The results are for preview only in appearance page
-                    _mainVM.ResultsSelected(this)) // The results are selected
-                {
-                    SelectedIndex = 0;
-                    Visibility = Visibility.Visible;
-                }
+                SelectedIndex = 0;
+                Visibility = Visibility.Visible;
                 break;
             case Visibility.Visible when Results.Count == 0:
                 Visibility = Visibility.Collapsed;

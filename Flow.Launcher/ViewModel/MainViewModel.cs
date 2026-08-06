@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Text;
 using System.Threading.Channels;
 using System.Windows;
 using System.Windows.Controls;
@@ -27,6 +26,7 @@ namespace Flow.Launcher.ViewModel;
 public partial class MainViewModel : ObservableObject, IDisposable
 {
     private readonly PluginSDK.Logging.Logger<MainViewModel> _logger;
+    private readonly ISettingsAPI _settings;
     private readonly PluginManager _pluginManager;
     private readonly HotkeyManager _hotkeyManager;
     private readonly IImageLoader _imageLoader;
@@ -60,12 +60,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
         _lastQuery = null;
         _ignoredQueryText = null; // null as invalid value
 
-        Settings = settings;
-        Settings.PropertyChanged += (_, args) =>
+        _settings = settings;
+        _settings.PropertyChanged += (_, args) =>
         {
             switch (args.PropertyName)
             {
-                case nameof(Settings.WindowWidth):
+                case nameof(_settings.WindowWidth):
                     OnPropertyChanged(nameof(MainWindowWidth));
                     break;
             }
@@ -75,12 +75,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
             loggerFactory, Path.Combine(DataLocation.SettingsDirectory, "UserSelectedRecord.json"));
         _userSelectedRecord = _userSelectedRecordStorage.TryLoad();
 
-        _contextMenu = new ResultsViewModel(this, Settings, imageLoader)
+        _contextMenu = new ResultsViewModel(_settings, imageLoader)
         {
             LeftClickResultCommand = OpenResultCommand,
             RightClickResultCommand = LoadContextMenuCommand,
         };
-        _results = new ResultsViewModel(this, Settings, imageLoader)
+        _results = new ResultsViewModel(_settings, imageLoader)
         {
             LeftClickResultCommand = OpenResultCommand,
             RightClickResultCommand = LoadContextMenuCommand,
@@ -184,7 +184,9 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public void ReQuery(bool reselect)
     {
-        BackToQueryResults();
+        if (ContextMenuSelected)
+            SelectedResults = _results;
+
         // When we are re-querying, we should not delay the query
         _ = QueryResultsAsync(isReQuery: true, reSelect: reselect);
     }
@@ -206,13 +208,18 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void Backspace(object index)
     {
-        var query = QueryBuilder.Build(QueryText, isRequery: false, _pluginManager.GetNonGlobalPlugins());
-        string actionKeyword = query.ActionKeyword.Length == 0
-            ? string.Empty
-            : query.ActionKeyword + PluginSDK.Query.TermSeparator;
+        if (_lastQuery is null)
+        {
+            _logger.LogError($"Backspace command called but _lastQuery is null");
+            return;
+        }
 
-        string search = query.Search;
-        if (search.EndsWith('\\') || search.EndsWith('/'))
+        string actionKeyword = _lastQuery.ActionKeyword.Length == 0
+            ? string.Empty
+            : _lastQuery.ActionKeyword + PluginSDK.Query.TermSeparator;
+
+        ReadOnlySpan<char> search = _lastQuery.Search;
+        if (search.Length > 0 && search[^1] is '\\' or '/')
             search = search[..^1];
 
         int lastSeparatorIndex = Math.Max(search.LastIndexOf('\\'), search.LastIndexOf('/'));
@@ -224,15 +231,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void AutocompleteQuery()
     {
-        var result = SelectedResults.SelectedItem?.Result;
-        if (result != null && !ContextMenuSelected) // SelectedItem returns null if selection is empty.
+        Result? result = SelectedResults.SelectedItem?.Result;
+        if (result is not null && !ContextMenuSelected)
         {
-            var autoCompleteText = result.Title;
-
+            string autoCompleteText = result.Title;
             if (!string.IsNullOrEmpty(result.AutoCompleteText))
-            {
                 autoCompleteText = result.AutoCompleteText;
-            }
 
             ChangeQueryText(autoCompleteText);
         }
@@ -258,9 +262,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }).ConfigureAwait(false);
 
         if (hideWindow)
-        {
             Hide();
-        }
 
         // Record user selected result for result ranking
         _userSelectedRecord.Add(result, _lastQuery);
@@ -272,9 +274,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         foreach (var result in results.ToList())
         {
             if (token.IsCancellationRequested)
-            {
                 break;
-            }
 
             resultsCopy.Add(result with { });
         }
@@ -298,27 +298,17 @@ public partial class MainViewModel : ObservableObject, IDisposable
             Hide();
     }
 
-    public void BackToQueryResults()
-    {
-        if (ContextMenuSelected)
-            SelectedResults = _results;
-    }
-
     [RelayCommand]
     public void CopyAlternative()
     {
-        var result = _results.SelectedItem?.Result?.CopyText;
-
-        if (result != null)
-        {
-            IPublicAPI.Instance.CopyToClipboard(result, directCopy: false);
-        }
+        string? copyText = _results.SelectedItem?.Result.CopyText;
+        if (copyText is not null)
+            IPublicAPI.Instance.CopyToClipboard(copyText, directCopy: false);
     }
 
     #endregion
 
     #region ViewModel Properties
-    public ISettingsAPI Settings { get; }
 
     private string _queryText;
     public string QueryText
@@ -353,15 +343,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void IncreaseMaxResult()
     {
-        if (Settings.MaxResultsToShow < 17)
-            Settings.MaxResultsToShow++;
+        if (_settings.MaxResultsToShow < 17)
+            _settings.MaxResultsToShow++;
     }
 
     [RelayCommand]
     private void DecreaseMaxResult()
     {
-        if (Settings.MaxResultsToShow > 2)
-            Settings.MaxResultsToShow--;
+        if (_settings.MaxResultsToShow > 2)
+            _settings.MaxResultsToShow--;
     }
 
     /// <summary>
@@ -502,11 +492,11 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public double MainWindowWidth
     {
-        get => Settings.WindowWidth;
+        get => _settings.WindowWidth;
         set
         {
             if (!MainWindowVisibilityStatus) return;
-            Settings.WindowWidth = value;
+            _settings.WindowWidth = value;
         }
     }
 
@@ -598,7 +588,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public void ResetPreview()
     {
-        if (Settings.AlwaysPreview)
+        if (_settings.AlwaysPreview)
             ShowInternalPreview();
         else
             HidePreview();
@@ -710,7 +700,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             ICollection<PluginMetadata> plugins = Array.Empty<PluginMetadata>();
             if (query.IsHomeQuery)
             {
-                if (Settings.ShowHomePage)
+                if (_settings.ShowHomePage)
                 {
                     plugins = _pluginManager.GetAllInitializedPlugins(includeFailed: false);
                 }
@@ -890,12 +880,6 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public bool ContextMenuSelected => SelectedResults == _contextMenu;
 
-    internal bool ResultsSelected(ResultsViewModel results)
-    {
-        var selected = SelectedResults == results;
-        return selected;
-    }
-
     #endregion
 
     #region Public Methods
@@ -923,7 +907,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         MainWindowVisibilityStatus = true;
 
         // Show the taskbar if the setting is enabled
-        if (Settings.ShowTaskbarWhenOpened && !_taskbarShownByFlow)
+        if (_settings.ShowTaskbarWhenOpened && !_taskbarShownByFlow)
         {
             TaskbarHelper.ShowTaskbar();
             _taskbarShownByFlow = true;
@@ -932,16 +916,17 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public async void Hide()
     {
-        BackToQueryResults();
+        if (ContextMenuSelected)
+            SelectedResults = _results;
 
-        switch (Settings.LastQueryMode)
+        switch (_settings.LastQueryMode)
         {
             case LastQueryMode.Empty:
                 await ChangeQueryTextAsync(string.Empty);
                 break;
             case LastQueryMode.Preserved:
             case LastQueryMode.Selected:
-                LastQuerySelected = Settings.LastQueryMode == LastQueryMode.Preserved;
+                LastQuerySelected = _settings.LastQueryMode == LastQueryMode.Preserved;
                 break;
             case LastQueryMode.ActionKeywordPreserved:
             case LastQueryMode.ActionKeywordSelected:
@@ -951,7 +936,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
                     newQuery += " ";
                 await ChangeQueryTextAsync(newQuery);
 
-                if (Settings.LastQueryMode == LastQueryMode.ActionKeywordSelected)
+                if (_settings.LastQueryMode == LastQueryMode.ActionKeywordSelected)
                     LastQuerySelected = false;
                 break;
         }

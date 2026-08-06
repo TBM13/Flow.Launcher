@@ -279,8 +279,6 @@ public class PublicAPIInstance : IPublicAPI
 
     public void ReQuery(bool reselect = true) => _mainVM.ReQuery(reselect);
 
-    public void BackToQueryResults() => _mainVM.BackToQueryResults();
-
     private readonly ConcurrentDictionary<(string, string, Type), ISavable> _pluginBinaryStorages = new();
 
     public void SavePluginCaches()

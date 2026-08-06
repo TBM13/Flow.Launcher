@@ -212,12 +212,6 @@ public interface IPublicAPI
     public void ReQuery(bool reselect = true);
 
     /// <summary>
-    /// Back to the query results.
-    /// This method should run when selected item is from context menu or history.
-    /// </summary>
-    public void BackToQueryResults();
-
-    /// <summary>
     /// Save all Flow's plugins caches
     /// </summary>
     void SavePluginCaches();
