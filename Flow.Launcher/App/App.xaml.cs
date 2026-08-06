@@ -238,7 +238,7 @@ public partial class App : Application
         // Refresh home page after plugins are initialized because users may open main window during plugin initialization
         // And home page is created without full plugin list
         MainViewModel mainVM = Ioc.Default.GetRequiredService<MainViewModel>();
-        if (_settings.ShowHomePage && mainVM.QueryResultsSelected() && string.IsNullOrEmpty(mainVM.QueryText))
+        if (_settings.ShowHomePage && !mainVM.ContextMenuSelected && string.IsNullOrEmpty(mainVM.QueryText))
         {
             mainVM.QueryResults();
         }

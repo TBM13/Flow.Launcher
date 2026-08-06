@@ -44,7 +44,6 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private Task _resultsViewUpdateTask;
 
     private readonly ResultsViewModel _results, _contextMenu;
-    private readonly IReadOnlyList<Result> _emptyResult = [];
 
     private bool _taskbarShownByFlow = false;
 
@@ -95,7 +94,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
             {
                 case nameof(_results.SelectedItem):
                     PreviewSelectedItem = _results.SelectedItem;
-                    _ = UpdatePreviewAsync();
+                    if (InternalPreviewVisible)
+                        PreviewSelectedItem?.LoadPreviewImageAsync();
                     break;
             }
         };
@@ -175,7 +175,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [RelayCommand]
     public void ReQuery()
     {
-        if (QueryResultsSelected())
+        if (!ContextMenuSelected)
         {
             // When we are re-querying, we should not delay the query
             _ = QueryResultsAsync(isReQuery: true);
@@ -192,7 +192,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void LoadContextMenu()
     {
-        if (QueryResultsSelected())
+        if (!ContextMenuSelected)
         {
             // When switch to ContextMenu from QueryResults, but no item being chosen, should do nothing
             // i.e. Shift+Enter/Ctrl+O right after Alt + Space should do nothing
@@ -200,9 +200,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 SelectedResults = _contextMenu;
         }
         else
-        {
             SelectedResults = _results;
-        }
     }
 
     [RelayCommand]
@@ -227,7 +225,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private void AutocompleteQuery()
     {
         var result = SelectedResults.SelectedItem?.Result;
-        if (result != null && QueryResultsSelected()) // SelectedItem returns null if selection is empty.
+        if (result != null && !ContextMenuSelected) // SelectedItem returns null if selection is empty.
         {
             var autoCompleteText = result.Title;
 
@@ -294,22 +292,16 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void Esc()
     {
-        if (!QueryResultsSelected())
-        {
+        if (ContextMenuSelected)
             SelectedResults = _results;
-        }
         else
-        {
             Hide();
-        }
     }
 
     public void BackToQueryResults()
     {
-        if (!QueryResultsSelected())
-        {
+        if (ContextMenuSelected)
             SelectedResults = _results;
-        }
     }
 
     [RelayCommand]
@@ -349,10 +341,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void DecreaseWidth()
     {
-        if (MainWindowWidth - 100 < 400 || MainWindowWidth == 400)
-        {
+        if (MainWindowWidth - 100 < 400)
             MainWindowWidth = 400;
-        }
         else
         {
             MainWindowWidth -= 100;
@@ -363,19 +353,15 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void IncreaseMaxResult()
     {
-        if (Settings.MaxResultsToShow == 17)
-            return;
-
-        Settings.MaxResultsToShow += 1;
+        if (Settings.MaxResultsToShow < 17)
+            Settings.MaxResultsToShow++;
     }
 
     [RelayCommand]
     private void DecreaseMaxResult()
     {
-        if (Settings.MaxResultsToShow == 2)
-            return;
-
-        Settings.MaxResultsToShow -= 1;
+        if (Settings.MaxResultsToShow > 2)
+            Settings.MaxResultsToShow--;
     }
 
     /// <summary>
@@ -455,14 +441,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private string _queryTextBeforeLeaveResults = string.Empty;
     public ResultsViewModel SelectedResults
     {
-        get => field;
+        get;
         private set
         {
-            var isReturningFromContextMenu = ContextMenuSelected();
+            var isReturningFromContextMenu = ContextMenuSelected;
             field = value;
             OnPropertyChanged();
 
-            if (QueryResultsSelected())
+            if (!ContextMenuSelected)
             {
                 // QueryText setter (used in ChangeQueryText) runs the query again, resetting the selected
                 // result from the one that was selected before going into the context menu to the first result.
@@ -589,28 +575,19 @@ public partial class MainViewModel : ObservableObject, IDisposable
     [NotifyPropertyChangedFor(nameof(PreviewMinHeight))]
     public partial int ResultAreaColumn { get; set; } = RESULTAREA_COLUMN_PREVIEWHIDDEN;
 
-    private async Task ShowPreviewAsync()
-    {
-        ShowInternalPreview();
-    }
-
     private void HidePreview()
     {
         if (InternalPreviewVisible)
-            HideInternalPreview();
+            ResultAreaColumn = RESULTAREA_COLUMN_PREVIEWHIDDEN;
     }
 
     [RelayCommand]
     private void TogglePreview()
     {
         if (InternalPreviewVisible)
-        {
             HidePreview();
-        }
         else
-        {
-            _ = ShowPreviewAsync();
-        }
+            ShowInternalPreview();
     }
 
     private void ShowInternalPreview()
@@ -619,28 +596,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
         PreviewSelectedItem?.LoadPreviewImageAsync();
     }
 
-    private void HideInternalPreview()
-    {
-        ResultAreaColumn = RESULTAREA_COLUMN_PREVIEWHIDDEN;
-    }
-
     public void ResetPreview()
     {
-        switch (Settings.AlwaysPreview)
-        {
-            case true:
-                ShowInternalPreview();
-                break;
-            case false:
-                HidePreview();
-                break;
-        }
-    }
-
-    private async Task UpdatePreviewAsync()
-    {
-        if (InternalPreviewVisible)
-            PreviewSelectedItem?.LoadPreviewImageAsync();
+        if (Settings.AlwaysPreview)
+            ShowInternalPreview();
+        else
+            HidePreview();
     }
 
     #endregion
@@ -668,26 +629,18 @@ public partial class MainViewModel : ObservableObject, IDisposable
             }
         }
 
-        if (QueryResultsSelected())
-        {
+        if (!ContextMenuSelected)
             _ = QueryResultsAsync(isReQuery);
-        }
-        else if (ContextMenuSelected())
-        {
+        else
             QueryContextMenu();
-        }
     }
 
     private async Task QueryAsync(bool isReQuery = false)
     {
-        if (QueryResultsSelected())
-        {
+        if (!ContextMenuSelected)
             await QueryResultsAsync(isReQuery);
-        }
-        else if (ContextMenuSelected())
-        {
+        else
             QueryContextMenu();
-        }
     }
 
     private void QueryContextMenu()
@@ -862,7 +815,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             IReadOnlyList<Result> resultsCopy;
             if (results == null)
             {
-                resultsCopy = _emptyResult;
+                resultsCopy = [];
             }
             else
             {
@@ -935,17 +888,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         return false;
     }
 
-    internal bool QueryResultsSelected()
-    {
-        var selected = SelectedResults == _results;
-        return selected;
-    }
-
-    private bool ContextMenuSelected()
-    {
-        var selected = SelectedResults == _contextMenu;
-        return selected;
-    }
+    public bool ContextMenuSelected => SelectedResults == _contextMenu;
 
     internal bool ResultsSelected(ResultsViewModel results)
     {
@@ -1111,33 +1054,19 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     #endregion
 
-    #region IDisposable
-
     private bool _disposed = false;
-
-    protected virtual void Dispose(bool disposing)
+    public void Dispose()
     {
         if (!_disposed)
         {
-            if (disposing)
+            _disposed = true;
+
+            _updateSource?.Dispose();
+            _resultsUpdateChannelWriter?.Complete();
+            if (_resultsViewUpdateTask?.IsCompleted == true)
             {
-                _updateSource?.Dispose();
-                _resultsUpdateChannelWriter?.Complete();
-                if (_resultsViewUpdateTask?.IsCompleted == true)
-                {
-                    _resultsViewUpdateTask.Dispose();
-                }
-                _disposed = true;
+                _resultsViewUpdateTask.Dispose();
             }
         }
     }
-
-    public void Dispose()
-    {
-        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
-    }
-
-    #endregion
 }

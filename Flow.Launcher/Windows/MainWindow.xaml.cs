@@ -146,7 +146,7 @@ public partial class MainWindow : Window
                     break;
 
                 case nameof(MainViewModel.SelectedResults):
-                    if (_vm.QueryResultsSelected())
+                    if (!_vm.ContextMenuSelected)
                     {
                         // Restore previous scroll position
                         ResultListBox.ScrollViewer.ScrollToVerticalOffset(_resultListboxVerticalOffset);
@@ -180,7 +180,7 @@ public partial class MainWindow : Window
                     SetupResizeMode();
                     break;
                 case nameof(ISettingsAPI.ShowHomePage):
-                    if (_vm.QueryResultsSelected() && string.IsNullOrEmpty(_vm.QueryText))
+                    if (!_vm.ContextMenuSelected && string.IsNullOrEmpty(_vm.QueryText))
                     {
                         _vm.QueryResults();
                     }
@@ -266,7 +266,7 @@ public partial class MainWindow : Window
                 e.Handled = true;
                 break;
             case Key.Right:
-                if (_vm.QueryResultsSelected()
+                if (!_vm.ContextMenuSelected
                     && QueryTextBox.CaretIndex == QueryTextBox.Text.Length)
                 {
                     _vm.LoadContextMenuCommand.Execute(null);
@@ -274,7 +274,7 @@ public partial class MainWindow : Window
                 }
                 break;
             case Key.Left:
-                if (!_vm.QueryResultsSelected() && QueryTextBox.CaretIndex == 0)
+                if (_vm.ContextMenuSelected && QueryTextBox.CaretIndex == 0)
                 {
                     _vm.EscCommand.Execute(null);
                     e.Handled = true;
@@ -283,7 +283,7 @@ public partial class MainWindow : Window
             case Key.Back:
                 if (Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
                 {
-                    if (_vm.QueryResultsSelected()
+                    if (!_vm.ContextMenuSelected
                         && QueryTextBox.Text.Length > 0
                         && QueryTextBox.CaretIndex == QueryTextBox.Text.Length)
                     {
