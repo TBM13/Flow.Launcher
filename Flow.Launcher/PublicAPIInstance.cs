@@ -20,7 +20,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Flow.Launcher;
 
-public class PublicAPIInstance : IPublicAPI
+public class PublicAPIInstance : IPublicAPI, IDisposable
 {
     private readonly ILoggerFactory _loggerFactory;
     private readonly PluginSDK.Logging.Logger<PublicAPIInstance> _logger;
@@ -31,6 +31,7 @@ public class PublicAPIInstance : IPublicAPI
     private readonly StringMatcher _stringMatcher;
     private Window? _settingWindow;
     private readonly Lock _saveSettingsLock = new();
+    private bool _disposed;
 
     public IImageLoader ImageLoader { get; }
 
@@ -313,5 +314,13 @@ public class PublicAPIInstance : IPublicAPI
         }
 
         value.TrySave();
+    }
+
+    public void Dispose()
+    {
+        if (Interlocked.Exchange(ref _disposed, true))
+            return;
+
+        SaveAppAllSettings();
     }
 }

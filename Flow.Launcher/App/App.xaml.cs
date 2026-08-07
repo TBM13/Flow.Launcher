@@ -27,9 +27,6 @@ namespace Flow.Launcher.App;
 
 public partial class App : Application
 {
-    public static bool LoadingOrExiting => _mainWindow is null || _mainWindow.CanClose;
-
-    private static MainWindow _mainWindow;
     private IHost? _host;
     private readonly ISettingsAPI _settings;
     private readonly PluginSDK.Logging.Logger<App>? _logger;
@@ -49,35 +46,35 @@ public partial class App : Application
             return;
         }
 
-        EarlyLoggerFactory earlyLoggerFactory = new();
-
-        ISettingsAPI settings;
         try
         {
-            settings = SettingsFactory.LoadSettings(earlyLoggerFactory);
-        }
-        catch (Exception e)
-        {
-            ShowErrorMsgboxAndFailFast("Failed to load settings", e);
-            throw;
-        }
+            EarlyLoggerFactory earlyLoggerFactory = new();
 
-        // Restart as admin if needed
-        if (settings.AlwaysRunAsAdmin && !Environment.IsPrivilegedProcess)
-        {
-            // Only restart when we are not debugging on Visual Studio
-            bool isDebugging = Debugger.IsAttached
-                // Set when using Visual Studio's performance profiler
-                || !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DIAGHUB_SESSION_ID"));
-            if (!isDebugging)
+            ISettingsAPI settings;
+            try
             {
-                RestartApp(true);
-                return;
+                settings = SettingsFactory.LoadSettings(earlyLoggerFactory);
             }
-        }
+            catch (Exception e)
+            {
+                ShowErrorMsgboxAndFailFast("Failed to load settings", e);
+                throw;
+            }
 
-        try
-        {
+            // Restart as admin if needed
+            if (settings.AlwaysRunAsAdmin && !Environment.IsPrivilegedProcess)
+            {
+                // Only restart when we are not debugging on Visual Studio
+                bool isDebugging = Debugger.IsAttached
+                    // Set when using Visual Studio's performance profiler
+                    || !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DIAGHUB_SESSION_ID"));
+                if (!isDebugging)
+                {
+                    RestartApp(true);
+                    return;
+                }
+            }
+
             App application = new(earlyLoggerFactory, settings);
             application.InitializeComponent();
             application.Run();
@@ -172,7 +169,8 @@ public partial class App : Application
         }
 
         // Ensure logs are flushed even if OnExit is not called (e.g. Environment.Exit is used)
-        AppDomain.CurrentDomain.ProcessExit += (s, ev) => Task.Run(CleanUpAndFlushAsync).GetAwaiter().GetResult();
+        AppDomain.CurrentDomain.ProcessExit += (s, ev)
+            => CleanUpAndFlushAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
         try
         {
@@ -221,7 +219,7 @@ public partial class App : Application
         _logger.LogInfo($"Runtime info:{RuntimeInfo}");
 
         // Initialize MainWindow and HotkeyManager
-        _mainWindow = Ioc.Default.GetRequiredService<MainWindow>();
+        Ioc.Default.GetRequiredService<MainWindow>();
         Ioc.Default.GetRequiredService<HotkeyManager>();
 
         // Ensure we support reading files with old encodings such as Windows-1252
@@ -256,9 +254,9 @@ public partial class App : Application
             if (_logger is not null)
             {
                 if (ex is not null)
-                    _logger?.LogCritical(ex, $"{message}");
+                    _logger.LogCritical(ex, $"{message}");
                 else
-                    _logger?.LogCritical($"{message}");
+                    _logger.LogCritical($"{message}");
             }
             else
             {
@@ -266,9 +264,7 @@ public partial class App : Application
                 Console.Error.WriteLine($"{message}\n{ex}");
             }
 
-            Exception exceptionToReport = ex
-                ?? new InvalidOperationException($"{message} (No exception provided)");
-
+            Exception exceptionToReport = ex ?? new($"{message} (No exception provided)");
             try
             {
                 if (Current?.Dispatcher?.CheckAccess() == true)
@@ -294,7 +290,7 @@ public partial class App : Application
             else
                 HandleException(null, "Unhandled exception");
 
-            Task.Run(CleanUpAndFlushAsync).GetAwaiter().GetResult();
+            CleanUpAndFlushAsync().ConfigureAwait(false).GetAwaiter().GetResult();
         };
 
         DispatcherUnhandledException += (s, e) =>
@@ -326,7 +322,8 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
-        Task.Run(CleanUpAndFlushAsync).GetAwaiter().GetResult();
+        _logger?.LogInfo($"Exiting -------------------------------------------------------");
+        CleanUpAndFlushAsync().ConfigureAwait(false).GetAwaiter().GetResult();
         base.OnExit(e);
     }
 
@@ -334,24 +331,33 @@ public partial class App : Application
     {
         // Ensure dispose is not called by multiple threads at the same time
         IHost? host = Interlocked.Exchange(ref _host, null);
-        if (host is not null)
-        {
-            try
-            {
-                await host.StopAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+        if (host is null)
+            return;
 
-                if (host is IAsyncDisposable asyncHost)
-                    await asyncHost.DisposeAsync().ConfigureAwait(false);
-                else
-                    host.Dispose();
-            }
-            catch (Exception e)
-            {
-                // We should not use the logger service here since it may have already been disposed
-                string msg = $"Failed to dispose host: {e}";
-                Trace.WriteLine(msg);
-                Console.Error.WriteLine(msg);
-            }
+        try
+        {
+            await host.StopAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            // We should not use the logger service here since it may have already been disposed
+            string msg = $"Failed to stop host: {e}";
+            Trace.WriteLine(msg);
+            Console.Error.WriteLine(msg);
+        }
+
+        try
+        {
+            if (host is IAsyncDisposable asyncHost)
+                await asyncHost.DisposeAsync().ConfigureAwait(false);
+            else
+                host.Dispose();
+        }
+        catch (Exception e)
+        {
+            string msg = $"Failed to dispose host: {e}";
+            Trace.WriteLine(msg);
+            Console.Error.WriteLine(msg);
         }
     }
 }

@@ -26,10 +26,6 @@ public partial class SettingViewModel(ISettingsAPI settings,
 
     public void SaveAllSettings()
     {
-        // If app is exiting, settings save is not needed because main window closing event will handle this
-        if (App.App.LoadingOrExiting)
-            return;
-
         Settings.Save();
         IPublicAPI.Instance.SavePluginSettings();
     }

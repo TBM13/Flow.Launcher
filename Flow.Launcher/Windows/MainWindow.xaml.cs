@@ -1,11 +1,9 @@
-﻿using System.ComponentModel;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Shell;
 using System.Windows.Threading;
-using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Helper;
 using Flow.Launcher.Interop;
@@ -21,9 +19,6 @@ namespace Flow.Launcher.Windows;
 
 public partial class MainWindow : Window
 {
-    // Window Event: Close Event
-    public bool CanClose { get; set; } = false;
-
     private readonly Logger<MainWindow> _logger;
     private readonly MainViewModel _vm;
     private readonly ISettingsAPI _settings;
@@ -195,20 +190,6 @@ public partial class MainWindow : Window
         }
     }
 
-    private async void OnClosing(object sender, CancelEventArgs e)
-    {
-        // TODO: Would it be better to move this to OnClosed?
-        if (!CanClose)
-        {
-            CanClose = true;
-            IPublicAPI.Instance.SaveAppAllSettings();
-            e.Cancel = true;
-            // After plugins are all disposed, we shutdown application to close app
-            // We use this instead of Close() to avoid InvalidOperationException when calling Close() in OnClosing event
-            Application.Current.Shutdown();
-        }
-    }
-
     private void OnClosed(object sender, EventArgs e)
     {
         try
@@ -224,6 +205,8 @@ public partial class MainWindow : Window
         {
             _hwndSource = null;
         }
+
+        Application.Current.Shutdown();
     }
 
     private void OnDeactivated(object sender, EventArgs e)

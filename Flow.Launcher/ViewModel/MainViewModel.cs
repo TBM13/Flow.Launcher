@@ -888,9 +888,6 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public void Show()
     {
-        // When application is exiting, we should not show the main window
-        if (App.App.LoadingOrExiting) return;
-
         // When application is exiting, the Application.Current will be null
         Application.Current?.Dispatcher.Invoke(() =>
         {

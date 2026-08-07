@@ -17,7 +17,6 @@
     d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
     AllowDrop="True"
     Closed="OnClosed"
-    Closing="OnClosing"
     Deactivated="OnDeactivated"
     Icon="/Images/app.png"
     Left="{Binding MainWindowLeft, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
