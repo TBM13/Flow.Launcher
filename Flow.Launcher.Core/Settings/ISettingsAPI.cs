@@ -114,11 +114,6 @@ public interface ISettingsAPI : INotifyPropertyChanged, INotifyPropertyChanging
     double CustomDisplayPositionTop { get; set; }
 
     /// <summary>
-    /// Indicates whether Flow Launcher should always be shown on top of all other windows.
-    /// </summary>
-    bool ShowAtTopmost { get; set; }
-
-    /// <summary>
     /// When true, Flow Launcher will not show itself on startup.
     /// </summary>
     /// <remarks>

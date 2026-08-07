@@ -48,17 +48,6 @@
             <ui:ToggleSwitch IsOn="{Binding Settings.ShowTaskbarWhenOpened}" />
         </ui:SettingsCard>
 
-        <ui:SettingsCard
-            Margin="0 14 0 0"
-            Description="Overrides other programs' 'Always on Top' setting and displays Flow in the foremost position."
-            Header="Show Search Window at Foremost">
-            <ui:SettingsCard.HeaderIcon>
-                <ui:FontIcon Glyph="&#xf5ed;" />
-            </ui:SettingsCard.HeaderIcon>
-
-            <ui:ToggleSwitch IsOn="{Binding Settings.ShowAtTopmost}" />
-        </ui:SettingsCard>
-
         <ui:SettingsCard Margin="0 4 0 0" Header="Search Window Location">
             <ui:SettingsCard.HeaderIcon>
                 <ui:FontIcon Glyph="&#xe7f4;" />

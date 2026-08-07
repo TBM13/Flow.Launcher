@@ -23,16 +23,12 @@ public partial class MainWindow : Window
     private readonly MainViewModel _vm;
     private readonly ISettingsAPI _settings;
 
-    // Window Event: Key Event
-    private bool _isArrowKeyPressed = false;
-
-    // Window WndProc
     private HwndSource? _hwndSource;
     private int _initialWidth;
     private int _initialHeight;
     private bool _cloaked;
 
-    // ResultListbox
+    private bool _isArrowKeyPressed = false;
     private double _resultListboxVerticalOffset = 0;
 
     public MainWindow(Logger<MainWindow> logger, MainViewModel viewModel, ISettingsAPI settings)
@@ -42,14 +38,10 @@ public partial class MainWindow : Window
         _settings = settings;
         DataContext = _vm;
 
-        Topmost = _settings.ShowAtTopmost;
-
         InitializeComponent();
 
         DataObject.AddPastingHandler(QueryTextBox, QueryTextBox_OnPaste);
     }
-
-    #region Window Event
 
     private void OnSourceInitialized(object sender, EventArgs e)
     {
@@ -66,25 +58,32 @@ public partial class MainWindow : Window
 
     private void OnLoaded(object sender, RoutedEventArgs _)
     {
-        // Hide window if need
-        if (_settings.HideOnStartup)
-        {
-            _vm.Hide();
-        }
-        else
-        {
-            _vm.Show();
-        }
-
-        // Initialize color scheme
+        // Handle settings
         if (_settings.ColorScheme == ColorScheme.Light)
-        {
             ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
-        }
         else if (_settings.ColorScheme == ColorScheme.Dark)
-        {
             ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
-        }
+
+        if (_settings.HideOnStartup)
+            _vm.Hide();
+        else
+            _vm.Show();
+
+        _settings.PropertyChanged += (o, e) =>
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(ISettingsAPI.FixedWindowSize):
+                    SetupResizeMode();
+                    break;
+                case nameof(ISettingsAPI.ShowHomePage):
+                    if (!_vm.ContextMenuSelected && string.IsNullOrEmpty(_vm.QueryText))
+                    {
+                        _vm.QueryResults();
+                    }
+                    break;
+            }
+        };
 
         // Initialize resize mode after refreshing frame
         SetupResizeMode();
@@ -115,8 +114,7 @@ public partial class MainWindow : Window
                                 _cloaked = false;
                             }
 
-                            // Update position & Activate
-                            UpdatePosition();
+                            InitializePosition();
                             Activate();
 
                             // Reset preview
@@ -167,26 +165,6 @@ public partial class MainWindow : Window
                     QueryTextBox.BeginChange();
                     QueryTextBox.Text = _vm.QueryText;
                     QueryTextBox.EndChange();
-                    break;
-            }
-        };
-
-        // Settings property changed event
-        _settings.PropertyChanged += (o, e) =>
-        {
-            switch (e.PropertyName)
-            {
-                case nameof(ISettingsAPI.FixedWindowSize):
-                    SetupResizeMode();
-                    break;
-                case nameof(ISettingsAPI.ShowHomePage):
-                    if (!_vm.ContextMenuSelected && string.IsNullOrEmpty(_vm.QueryText))
-                    {
-                        _vm.QueryResults();
-                    }
-                    break;
-                case nameof(ISettingsAPI.ShowAtTopmost):
-                    Topmost = _settings.ShowAtTopmost;
                     break;
             }
         };
@@ -303,19 +281,11 @@ public partial class MainWindow : Window
         }
     }
 
-    #endregion
-
-    #region Window Context Menu Event
-
     private void OnContextMenusForSettingsClick(object sender, RoutedEventArgs e)
     {
         _vm.Hide();
         IPublicAPI.Instance.OpenSettingDialog();
     }
-
-    #endregion
-
-    #region Window WndProc
 
     private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
     {
@@ -387,82 +357,60 @@ public partial class MainWindow : Window
         return IntPtr.Zero;
     }
 
-    #endregion
-
-    #region Window Position
-
-    /// <summary>
-    /// Avoid calling this function at startup since we can't access the monitor information while the user is logging-in.
-    /// </summary>
-    private void UpdatePosition()
-    {
-        // Initialize call twice to work around multi-display alignment issue- https://github.com/Flow-Launcher/Flow.Launcher/issues/2910
-        InitializePosition();
-        InitializePosition();
-    }
-
     /// <summary>
     /// Avoid calling this function at startup since we can't access the monitor information while the user is logging-in.
     /// </summary>
     private void InitializePosition()
     {
-        // Initialize call twice to work around multi-display alignment issue- https://github.com/Flow-Launcher/Flow.Launcher/issues/2910
-        InitializePositionInner();
-        InitializePositionInner();
-        return;
-
-        void InitializePositionInner()
+        if (_settings.Display == DisplayType.RememberLastDisplay)
         {
-            if (_settings.Display == DisplayType.RememberLastDisplay)
+            var lastDisplayWidth = _settings.LastDisplayWidth;
+            var lastDisplayHeight = _settings.LastDisplayHeight;
+            GetDpi(out var previousDpiX, out var previousDpiY);
+
+            _settings.LastDisplayWidth = SystemParameters.VirtualScreenWidth;
+            _settings.LastDisplayHeight = SystemParameters.VirtualScreenHeight;
+            GetDpi(out var currentDpiX, out var currentDpiY);
+
+            if (lastDisplayWidth != 0 && lastDisplayHeight != 0 &&
+                previousDpiX != 0 && previousDpiY != 0 &&
+                (lastDisplayWidth != SystemParameters.VirtualScreenWidth ||
+                 lastDisplayHeight != SystemParameters.VirtualScreenHeight ||
+                 previousDpiX != currentDpiX || previousDpiY != currentDpiY))
             {
-                var lastDisplayWidth = _settings.LastDisplayWidth;
-                var lastDisplayHeight = _settings.LastDisplayHeight;
-                GetDpi(out var previousDpiX, out var previousDpiY);
-
-                _settings.LastDisplayWidth = SystemParameters.VirtualScreenWidth;
-                _settings.LastDisplayHeight = SystemParameters.VirtualScreenHeight;
-                GetDpi(out var currentDpiX, out var currentDpiY);
-
-                if (lastDisplayWidth != 0 && lastDisplayHeight != 0 &&
-                    previousDpiX != 0 && previousDpiY != 0 &&
-                    (lastDisplayWidth != SystemParameters.VirtualScreenWidth ||
-                     lastDisplayHeight != SystemParameters.VirtualScreenHeight ||
-                     previousDpiX != currentDpiX || previousDpiY != currentDpiY))
-                {
-                    AdjustPositionForResolutionChange();
-                    return;
-                }
+                AdjustPositionForResolutionChange();
+                return;
             }
-            else
+        }
+        else
+        {
+            var screen = SelectedScreen();
+            switch (_settings.DisplayPosition)
             {
-                var screen = SelectedScreen();
-                switch (_settings.DisplayPosition)
-                {
-                    case DisplayPosition.Center:
-                        Left = HorizonCenter(screen);
-                        Top = VerticalCenter(screen);
-                        break;
-                    case DisplayPosition.CenterTop:
-                        Left = HorizonCenter(screen);
-                        Top = VerticalTop(screen);
-                        break;
-                    case DisplayPosition.LeftTop:
-                        Left = HorizonLeft(screen);
-                        Top = VerticalTop(screen);
-                        break;
-                    case DisplayPosition.RightTop:
-                        Left = HorizonRight(screen);
-                        Top = VerticalTop(screen);
-                        break;
-                    case DisplayPosition.Custom:
-                        var customLeft = WpfHelper.TransformPixelsToDIP(this,
-                            screen.WorkingArea.X + _settings.CustomDisplayPositionLeft, 0);
-                        var customTop = WpfHelper.TransformPixelsToDIP(this, 0,
-                            screen.WorkingArea.Y + _settings.CustomDisplayPositionTop);
-                        Left = customLeft.X;
-                        Top = customTop.Y;
-                        break;
-                }
+                case DisplayPosition.Center:
+                    Left = HorizonCenter(screen);
+                    Top = VerticalCenter(screen);
+                    break;
+                case DisplayPosition.CenterTop:
+                    Left = HorizonCenter(screen);
+                    Top = VerticalTop(screen);
+                    break;
+                case DisplayPosition.LeftTop:
+                    Left = HorizonLeft(screen);
+                    Top = VerticalTop(screen);
+                    break;
+                case DisplayPosition.RightTop:
+                    Left = HorizonRight(screen);
+                    Top = VerticalTop(screen);
+                    break;
+                case DisplayPosition.Custom:
+                    var customLeft = WpfHelper.TransformPixelsToDIP(this,
+                        screen.WorkingArea.X + _settings.CustomDisplayPositionLeft, 0);
+                    var customTop = WpfHelper.TransformPixelsToDIP(this, 0,
+                        screen.WorkingArea.Y + _settings.CustomDisplayPositionTop);
+                    Left = customLeft.X;
+                    Top = customTop.Y;
+                    break;
             }
         }
     }
@@ -581,10 +529,6 @@ public partial class MainWindow : Window
         return top;
     }
 
-    #endregion
-
-    #region QueryTextBox Event
-
     private void QueryTextBox_OnCopy(object sender, ExecutedRoutedEventArgs e)
     {
         var result = _vm.SelectedResults.SelectedItem?.Result;
@@ -628,8 +572,6 @@ public partial class MainWindow : Window
     {
         e.Handled = true;
     }
-
-    #endregion
 
     private void SetupResizeMode()
     {
