@@ -3,7 +3,6 @@ using System.Threading.Channels;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Controls;
@@ -13,12 +12,10 @@ using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Core.Storage;
 using Flow.Launcher.Core.UserSettings;
-using Flow.Launcher.Interop;
 using Flow.Launcher.Interop.Shell;
 using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Plugins;
-using Flow.Launcher.Windows;
 using Microsoft.Extensions.Logging;
 
 namespace Flow.Launcher.ViewModel;
@@ -888,17 +885,6 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public void Show()
     {
-        // When application is exiting, the Application.Current will be null
-        Application.Current?.Dispatcher.Invoke(() =>
-        {
-            // When application is exiting, the Application.Current will be null
-            if (Application.Current?.MainWindow is MainWindow mainWindow)
-            {
-                // 📌 Remove DWM Cloak (Make the window visible normally)
-                WindowHelper.DWMSetCloakForWindow(mainWindow, false);
-            }
-        }, DispatcherPriority.Render);
-
         // Update WPF properties
         MainWindowVisibility = Visibility.Visible;
         MainWindowVisibilityStatus = true;
@@ -937,17 +923,6 @@ public partial class MainViewModel : ObservableObject, IDisposable
                     LastQuerySelected = false;
                 break;
         }
-
-        // When application is exiting, the Application.Current will be null
-        Application.Current?.Dispatcher.Invoke(() =>
-        {
-            // When application is exiting, the Application.Current will be null
-            if (Application.Current?.MainWindow is MainWindow mainWindow)
-            {
-                // 📌 Apply DWM Cloak (Completely hide the window)
-                WindowHelper.DWMSetCloakForWindow(mainWindow, true);
-            }
-        }, DispatcherPriority.Render);
 
         // Hide the taskbar if the setting is enabled
         if (_taskbarShownByFlow)

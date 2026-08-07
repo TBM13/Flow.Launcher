@@ -30,6 +30,7 @@ public partial class MainWindow : Window
     private HwndSource? _hwndSource;
     private int _initialWidth;
     private int _initialHeight;
+    private bool _cloaked;
 
     // ResultListbox
     private double _resultListboxVerticalOffset = 0;
@@ -50,15 +51,17 @@ public partial class MainWindow : Window
 
     #region Window Event
 
-#pragma warning disable VSTHRD100 // Avoid async void methods
-
     private void OnSourceInitialized(object sender, EventArgs e)
     {
         nint handle = WindowHelper.GetWindowHandle(this, true);
         _hwndSource = HwndSource.FromHwnd(handle);
         _hwndSource.AddHook(WndProc);
-        WindowHelper.HideFromAltTab(this);
-        WindowHelper.DisableControlBox(this);
+        WindowHelper.HideFromAltTab(handle);
+        WindowHelper.DisableControlBox(handle);
+
+        // Cloak window to prevent visual artifact at startup
+        WindowHelper.DWMSetCloakForWindow(handle, true);
+        _cloaked = true;
     }
 
     private void OnLoaded(object sender, RoutedEventArgs _)
@@ -102,31 +105,36 @@ public partial class MainWindow : Window
             switch (e.PropertyName)
             {
                 case nameof(MainViewModel.MainWindowVisibilityStatus):
+                    Dispatcher.Invoke(() =>
                     {
-                        Dispatcher.Invoke(() =>
+                        if (_vm.MainWindowVisibilityStatus)
                         {
-                            if (_vm.MainWindowVisibilityStatus)
+                            if (_cloaked)
                             {
-                                // Update position & Activate
-                                UpdatePosition();
-                                Activate();
-
-                                // Reset preview
-                                _vm.ResetPreview();
-
-                                // Select last query if need
-                                if (!_vm.LastQuerySelected)
-                                {
-                                    QueryTextBox.SelectAll();
-                                    _vm.LastQuerySelected = true;
-                                }
-
-                                // Focus query box
-                                QueryTextBox.Focus();
+                                WindowHelper.DWMSetCloakForWindow(_hwndSource!.Handle, false);
+                                _cloaked = false;
                             }
-                        });
-                        break;
-                    }
+
+                            // Update position & Activate
+                            UpdatePosition();
+                            Activate();
+
+                            // Reset preview
+                            _vm.ResetPreview();
+
+                            // Select last query if need
+                            if (!_vm.LastQuerySelected)
+                            {
+                                QueryTextBox.SelectAll();
+                                _vm.LastQuerySelected = true;
+                            }
+
+                            // Focus query box
+                            QueryTextBox.Focus();
+                        }
+                    });
+                    break;
+
                 case nameof(MainViewModel.QueryTextCursorMovedToEnd):
                     if (_vm.QueryTextCursorMovedToEnd)
                     {
@@ -294,8 +302,6 @@ public partial class MainWindow : Window
             e.Handled = true; // Ignore Mouse Hover when press Arrowkeys
         }
     }
-
-#pragma warning restore VSTHRD100 // Avoid async void methods
 
     #endregion
 

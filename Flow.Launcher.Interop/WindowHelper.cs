@@ -227,13 +227,13 @@ public static class WindowHelper
     /// but still gets composed by DWM.
     /// </summary>
     /// <param name="cloak">Whether the cloak attribute should be set or removed.</param>
-    public static void DWMSetCloakForWindow(Window window, bool cloak)
+    public static void DWMSetCloakForWindow(nint hwnd, bool cloak)
     {
         BOOL cloaked = cloak;
         unsafe
         {
             PInvoke.DwmSetWindowAttribute(
-                (HWND)GetWindowHandle(window),
+                new(hwnd),
                 DWMWINDOWATTRIBUTE.DWMWA_CLOAK,
                 &cloaked,
                 (uint)sizeof(BOOL)).ThrowOnFailure();
@@ -243,31 +243,31 @@ public static class WindowHelper
     /// <summary>
     /// Hides the window from the Alt+Tab window list.
     /// </summary>
-    public static void HideFromAltTab(Window window)
+    public static void HideFromAltTab(nint hwnd)
     {
-        HWND hwnd = (HWND)GetWindowHandle(window);
-        int exStyle = GetWindowStyle(hwnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE);
+        HWND window = new(hwnd);
+        int exStyle = GetWindowStyle(window, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE);
 
         // Add TOOLWINDOW style, remove APPWINDOW style
         uint newExStyle = ((uint)exStyle | (uint)WINDOW_EX_STYLE.WS_EX_TOOLWINDOW)
             & ~(uint)WINDOW_EX_STYLE.WS_EX_APPWINDOW;
 
-        SetWindowStyle(hwnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, (int)newExStyle);
+        SetWindowStyle(window, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, (int)newExStyle);
     }
 
     /// <summary>
     /// Disables the window toolbar's control box
     /// and the system menu that appears when pressing Alt+Space.
     /// </summary>
-    public static void DisableControlBox(Window window)
+    public static void DisableControlBox(nint hwnd)
     {
-        HWND hwnd = (HWND)GetWindowHandle(window);
+        HWND window = new(hwnd);
 
         // Remove SYSMENU style
-        int style = GetWindowStyle(hwnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE);
+        int style = GetWindowStyle(window, WINDOW_LONG_PTR_INDEX.GWL_STYLE);
         style &= ~(int)WINDOW_STYLE.WS_SYSMENU;
 
-        SetWindowStyle(hwnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE, style);
+        SetWindowStyle(window, WINDOW_LONG_PTR_INDEX.GWL_STYLE, style);
     }
 
     /// <exception cref="Win32Exception"></exception>
