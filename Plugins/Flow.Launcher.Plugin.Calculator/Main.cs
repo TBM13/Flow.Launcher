@@ -66,4 +66,6 @@ public class Main : IPlugin
 
         return [res];
     }
+
+    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 }

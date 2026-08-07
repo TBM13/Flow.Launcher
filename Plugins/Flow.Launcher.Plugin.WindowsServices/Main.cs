@@ -220,4 +220,6 @@ public class Main : IPlugin, IContextMenu
 
         return results;
     }
+
+    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 }

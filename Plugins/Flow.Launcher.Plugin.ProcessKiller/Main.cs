@@ -157,4 +157,6 @@ public class Main : IPlugin, IContextMenu, ISettingProvider
     {
         return new SettingsControl(_viewModel);
     }
+
+    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 }

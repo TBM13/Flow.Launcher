@@ -27,7 +27,6 @@ public partial class MainWindow : Window
     private readonly Logger<MainWindow> _logger;
     private readonly MainViewModel _vm;
     private readonly ISettingsAPI _settings;
-    private readonly PluginManager _pluginManager;
 
     // Window Event: Key Event
     private bool _isArrowKeyPressed = false;
@@ -40,13 +39,11 @@ public partial class MainWindow : Window
     // ResultListbox
     private double _resultListboxVerticalOffset = 0;
 
-    public MainWindow(Logger<MainWindow> logger, MainViewModel viewModel,
-        ISettingsAPI settings, PluginManager pluginManager)
+    public MainWindow(Logger<MainWindow> logger, MainViewModel viewModel, ISettingsAPI settings)
     {
         _logger = logger;
         _vm = viewModel;
         _settings = settings;
-        _pluginManager = pluginManager;
         DataContext = _vm;
 
         Topmost = _settings.ShowAtTopmost;
@@ -206,7 +203,6 @@ public partial class MainWindow : Window
             CanClose = true;
             IPublicAPI.Instance.SaveAppAllSettings();
             e.Cancel = true;
-            await _pluginManager.DisposePluginsAsync();
             // After plugins are all disposed, we shutdown application to close app
             // We use this instead of Close() to avoid InvalidOperationException when calling Close() in OnClosing event
             Application.Current.Shutdown();

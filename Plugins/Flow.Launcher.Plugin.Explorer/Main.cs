@@ -70,4 +70,6 @@ public class Main : ISettingProvider, IAsyncPlugin, IContextMenu, IMagicQueryPro
         string? explorerPath = FileExplorerHelper.GetForegroundExplorerPath();
         return explorerPath;
     }
+
+    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 }

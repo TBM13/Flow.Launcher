@@ -277,5 +277,7 @@ namespace Flow.Launcher.Plugin.Sys
 
             return results;
         }
+
+        public ValueTask DisposeAsync() => ValueTask.CompletedTask;
     }
 }

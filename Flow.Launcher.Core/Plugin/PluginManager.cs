@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Flow.Launcher.Core.Plugin;
 
-public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger)
+public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger) : IAsyncDisposable
 {
     private readonly PluginMetadata[] Plugins =
     [
@@ -33,37 +33,9 @@ public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger)
     private readonly ConcurrentDictionary<string, PluginMetadata> _nonGlobalPlugins = [];
 
     private PluginsSettings _settings;
+    private bool _disposed;
 
     private readonly ConcurrentBag<PluginMetadata> _contextMenuPlugins = [];
-
-    public async ValueTask DisposePluginsAsync()
-    {
-        // Still call dispose for all plugins even if initialization failed, so that we can clean up resources
-        foreach (var pluginPair in GetAllInitializedPlugins(includeFailed: true))
-        {
-            await DisposePluginAsync(pluginPair);
-        }
-    }
-
-    private async Task DisposePluginAsync(PluginMetadata metadata)
-    {
-        try
-        {
-            switch (metadata.Plugin)
-            {
-                case IDisposable disposable:
-                    disposable.Dispose();
-                    break;
-                case IAsyncDisposable asyncDisposable:
-                    await asyncDisposable.DisposeAsync();
-                    break;
-            }
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, $"Failed to dispose plugin {metadata.Name}");
-        }
-    }
 
     /// <summary>
     /// Load plugins from the directories specified in Directories.
@@ -434,5 +406,39 @@ public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger)
 
         // Update action keywords in plugin metadata
         plugin.ActionKeywords.Remove(oldActionkeyword);
+    }
+
+    // TODO: Dispose plugins individually when they are disabled
+    public async ValueTask DisposeAsync()
+    {
+        if (Interlocked.Exchange(ref _disposed, true) == true)
+            return;
+
+        List<Task> disposeTasks = [.. GetAllInitializedPlugins(includeFailed: true)
+            .Select(r => r.Plugin.DisposeAsync().AsTask())];
+
+        if (disposeTasks.Count == 0)
+            return;
+
+        _logger.LogInfo($"Disposing {disposeTasks.Count} plugins");
+        Task timeoutTask = Task.Delay(TimeSpan.FromSeconds(5));
+        Task allDisposedTask = Task.WhenAll(disposeTasks);
+        Task completedTask = await Task.WhenAny(allDisposedTask, timeoutTask).ConfigureAwait(false);
+
+        if (completedTask == timeoutTask)
+            _logger.LogWarn($"One or more plugins timed out during disposal");
+
+        // Extract all thrown exceptions
+        List<Exception> exceptions = [.. disposeTasks
+            .Where(t => t.IsFaulted && t.Exception is not null)
+            .SelectMany(t => t.Exception!.InnerExceptions)];
+
+        if (exceptions.Count > 0)
+        {
+            _logger.LogError(
+                new AggregateException(exceptions),
+                $"{exceptions.Count} plugin(s) failed to dispose"
+            );
+        }
     }
 }

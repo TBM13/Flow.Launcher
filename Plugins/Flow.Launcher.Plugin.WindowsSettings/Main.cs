@@ -44,5 +44,7 @@ namespace Flow.Launcher.Plugin.WindowsSettings
             var newList = ResultHelper.GetResultList(Context.API, _settingsList!, query);
             return newList;
         }
+
+        public ValueTask DisposeAsync() => ValueTask.CompletedTask;
     }
 }

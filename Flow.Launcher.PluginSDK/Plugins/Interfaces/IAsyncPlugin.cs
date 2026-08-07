@@ -14,5 +14,11 @@ public interface IAsyncPlugin
     /// <param name="context"></param>
     /// <returns></returns>
     Task InitAsync(PluginInitContext context);
+
+    /// <summary>
+    /// Called when the plugin is being disposed (app is shutting down or the plugin was disabled).
+    /// </summary>
+    /// <remarks>This is called even if the plugin failed to initialize.</remarks>
+    ValueTask DisposeAsync();
 }
 

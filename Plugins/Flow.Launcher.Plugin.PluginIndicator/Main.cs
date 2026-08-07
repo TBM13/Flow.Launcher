@@ -77,4 +77,6 @@ public class Main : IPlugin
 
         return results;
     }
+
+    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 }
