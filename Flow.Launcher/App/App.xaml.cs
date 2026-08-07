@@ -172,7 +172,7 @@ public partial class App : Application
         }
 
         // Ensure logs are flushed even if OnExit is not called (e.g. Environment.Exit is used)
-        AppDomain.CurrentDomain.ProcessExit += (s, ev) => CleanUpAndFlush();
+        AppDomain.CurrentDomain.ProcessExit += (s, ev) => Task.Run(CleanUpAndFlushAsync).GetAwaiter().GetResult();
 
         try
         {
@@ -294,8 +294,7 @@ public partial class App : Application
             else
                 HandleException(null, "Unhandled exception");
 
-            // Ensure all logs are flushed
-            CleanUpAndFlush();
+            Task.Run(CleanUpAndFlushAsync).GetAwaiter().GetResult();
         };
 
         DispatcherUnhandledException += (s, e) =>
@@ -327,24 +326,32 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
-        CleanUpAndFlush();
+        Task.Run(CleanUpAndFlushAsync).GetAwaiter().GetResult();
         base.OnExit(e);
     }
 
-    private void CleanUpAndFlush()
+    private async Task CleanUpAndFlushAsync()
     {
         // Ensure dispose is not called by multiple threads at the same time
         IHost? host = Interlocked.Exchange(ref _host, null);
-        try
+        if (host is not null)
         {
-            host?.Dispose();
-        }
-        catch (Exception e)
-        {
-            // We should not use the logger service here since it may have already been disposed
-            string msg = $"Failed to dispose host: {e}";
-            Trace.WriteLine(msg);
-            Console.Error.WriteLine(msg);
+            try
+            {
+                await host.StopAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
+
+                if (host is IAsyncDisposable asyncHost)
+                    await asyncHost.DisposeAsync().ConfigureAwait(false);
+                else
+                    host.Dispose();
+            }
+            catch (Exception e)
+            {
+                // We should not use the logger service here since it may have already been disposed
+                string msg = $"Failed to dispose host: {e}";
+                Trace.WriteLine(msg);
+                Console.Error.WriteLine(msg);
+            }
         }
     }
 }
