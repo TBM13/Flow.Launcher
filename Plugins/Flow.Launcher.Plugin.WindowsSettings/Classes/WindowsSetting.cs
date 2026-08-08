@@ -20,91 +20,78 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE. */
 
-using Flow.Launcher.PluginSDK;
+namespace Flow.Launcher.Plugin.WindowsSettings.Classes;
 
-namespace Flow.Launcher.Plugin.WindowsSettings.Classes
+internal enum WindowsSettingType
 {
-    internal enum WindowsSettingType
+    AppControlPanel,
+    AppSettingsApp,
+    AppMMC
+}
+
+internal record WindowsSetting
+{
+    /// <summary>
+    /// The symbol which is used as delimiter between the parts of the path.
+    /// </summary>
+    private const string PATH_DELIMITER_SEQUENCE = "\u0020\u0020\u02C3\u0020\u0020"; // "<space><space><arrow><space><space>"
+
+    public required string Name { get; set; }
+    public required WindowsSettingType Type { get; set; }
+    public required string Command { get; set; }
+
+    public string DisplayType
     {
-        AppControlPanel,
-        AppSettingsApp,
-        AppMMC
+        get => field ?? Enum.GetName(Type) ?? "<Unknown>";
+        set;
     }
 
-    internal record WindowsSetting(string Name, WindowsSettingType Type, string Command)
+    /// <summary>
+    /// The areas of this setting. The order is fixed to the order in json.
+    /// </summary>
+    public IList<string>? Areas { get; set; }
+
+    /// <summary>
+    /// The alternative names of this setting.
+    /// </summary>
+    public IEnumerable<string>? AltNames { get; set; }
+
+    /// <summary>
+    /// An additional note of this settings.
+    /// <para>(e.g. why is not supported on your system)</para>
+    /// </summary>
+    public string? Note { get; set; }
+
+    /// <summary>
+    /// The value with the generated area path as string.
+    /// This IS NOT part of the JSON data.
+    /// </summary>
+    public string JoinedAreaPath
     {
-        /// <summary>
-        /// The symbol which is used as delimiter between the parts of the path.
-        /// </summary>
-        private const string PATH_DELIMITER_SEQUENCE = "\u0020\u0020\u02C3\u0020\u0020"; // "<space><space><arrow><space><space>"
-
-        public string Name { get; set; } = Name;
-        public WindowsSettingType Type { get; set; } = Type;
-        public string Command { get; set; } = Command;
-
-        public string DisplayType
+        get
         {
-            get => field ?? Enum.GetName(Type) ?? "<Unknown>";
-            set => field = value;
+            field ??= Areas is null ? string.Empty : string.Join(PATH_DELIMITER_SEQUENCE, Areas);
+            return field;
         }
-
-        /// <summary>
-        /// The areas of this setting. The order is fixed to the order in json.
-        /// </summary>
-        public IList<string>? Areas { get; set; }
-
-        /// <summary>
-        /// The alternative names of this setting.
-        /// </summary>
-        public IEnumerable<string>? AltNames { get; set; }
-
-        /// <summary>
-        /// An additional note of this settings.
-        /// <para>(e.g. why is not supported on your system)</para>
-        /// </summary>
-        public string? Note { get; set; }
-
-        /// <summary>
-        /// The minimum needed Windows build for this setting.
-        /// </summary>
-        public uint? IntroducedInBuild { get; set; }
-
-        /// <summary>
-        /// The Windows build since this setting is not longer present.
-        /// </summary>
-        public uint? DeprecatedInBuild { get; set; }
-
-        /// <summary>
-        /// The value with the generated area path as string.
-        /// This Property IS NOT part of the JSON data.
-        /// </summary>
-        public string JoinedAreaPath
-        {
-            get
-            {
-                field ??= Areas is null ? string.Empty : string.Join(PATH_DELIMITER_SEQUENCE, Areas);
-                return field;
-            }
-        }
-
-        /// <summary>
-        /// The value with the generated full settings path (App and areas) as string.
-        /// This Property IS NOT part of the JSON data.
-        /// </summary>
-        public string JoinedFullSettingsPath
-        {
-            get
-            {
-                if (field is null)
-                {
-                    string path = string.IsNullOrEmpty(JoinedAreaPath) ? Command : JoinedAreaPath;
-                    field = $"{DisplayType}{PATH_DELIMITER_SEQUENCE}{path}";
-                }
-
-                return field;
-            }
-        }
-
-        public string? IconGlyph { get; set; }
     }
+
+    /// <summary>
+    /// The value with the generated full settings path (App and areas) as string.
+    /// This IS NOT part of the JSON data.
+    /// </summary>
+    public string JoinedFullSettingsPath
+    {
+        get
+        {
+            if (field is null)
+            {
+                string path = string.IsNullOrEmpty(JoinedAreaPath) ? Command : JoinedAreaPath;
+                field = $"{DisplayType}{PATH_DELIMITER_SEQUENCE}{path}";
+            }
+
+            return field;
+        }
+    }
+
+    public string? IconGlyph { get; set; }
 }

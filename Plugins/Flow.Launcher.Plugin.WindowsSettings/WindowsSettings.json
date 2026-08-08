@@ -28,16 +28,6 @@
         ]
     },
     {
-        "Name": "AccessoryApps",
-        "Type": "AppSettingsApp",
-        "Command": "ms-settings:privacy-accessoryapps",
-        "Areas": [
-            "AreaPrivacy"
-        ],
-        "Note": "NoteDeprecated17763",
-        "DeprecatedInBuild": 17763
-    },
-    {
         "Name": "AccessWorkOrSchool",
         "Type": "AppSettingsApp",
         "Command": "ms-settings:workplace",
@@ -141,17 +131,6 @@
         "Note": "NoteDisplayGraphics"
     },
     {
-        "Name": "AdvertisingId",
-        "Type": "AppSettingsApp",
-        "Command": "ms-settings:privacy-advertisingid",
-        "Areas": [
-            "AreaPrivacy"
-        ],
-        "Note": "NoteDeprecated17763",
-        "DeprecatedInBuild": 17763,
-        "IconGlyph": "\ue72e"
-    },
-    {
         "Name": "AirplaneMode",
         "Type": "AppSettingsApp",
         "Command": "ms-settings:network-airplanemode",
@@ -201,9 +180,7 @@
         "Command": "ms-settings:apps-volume",
         "Areas": [
             "AreaSystem"
-        ],
-        "Note": "NoteSince18362",
-        "IntroducedInBuild": 18362
+        ]
     },
     {
         "Name": "AreaBluetoothAndDevices11",
@@ -221,7 +198,6 @@
             "AutoPlay",
             "Usb"
         ],
-        "IntroducedInBuild": 22000,
         "IconGlyph": "\ue702"
     },
     {
@@ -369,16 +345,6 @@
         "Areas": [
             "AreaSystemAndSecurity"
         ]
-    },
-    {
-        "Name": "BluetoothAndDevices10",
-        "Type": "AppSettingsApp",
-        "Command": "ms-settings:bluetooth",
-        "Areas": [
-            "AreaDevices"
-        ],
-        "DeprecatedInBuild": 22000,
-        "IconGlyph": "\ue702"
     },
     {
         "Name": "BluetoothDevices",
@@ -717,16 +683,6 @@
         "IconGlyph": "\ue7ac"
     },
     {
-        "Name": "DefaultCamera",
-        "Type": "AppSettingsApp",
-        "Command": "ms-settings:camera",
-        "Areas": [
-            "AreaDevices"
-        ],
-        "Note": "NoteDeprecated17763",
-        "DeprecatedInBuild": 17763
-    },
-    {
         "Name": "DefaultLocation",
         "Type": "AppControlPanel",
         "Command": "control /name Microsoft.DefaultLocation",
@@ -810,17 +766,7 @@
             "AddDevices",
             "BluetoothDevices"
         ],
-        "IntroducedInBuild": 22000,
         "IconGlyph": "\ue772"
-    },
-    {
-        "Name": "DevicesAndPrinters",
-        "Type": "AppControlPanel",
-        "Command": "control /name Microsoft.DevicesAndPrinters",
-        "Areas": [
-            "AreaHardwareAndSound"
-        ],
-        "DeprecatedInBuild": 22000
     },
     {
         "Name": "DevicesAndPrinters",
@@ -828,8 +774,7 @@
         "Command": "explorer.exe shell:::{A8A91A66-3A7D-4424-8D24-04E180695C7A}",
         "Areas": [
             "AreaHardwareAndSound"
-        ],
-        "IntroducedInBuild": 22000
+        ]
     },
     {
         "Name": "DialUp",
@@ -1232,16 +1177,6 @@
         ]
     },
     {
-        "Name": "Glance",
-        "Type": "AppSettingsApp",
-        "Command": "ms-settings:personalization-glance",
-        "Areas": [
-            "AreaPersonalization"
-        ],
-        "Note": "NoteDeprecated17763",
-        "DeprecatedInBuild": 17763
-    },
-    {
         "Name": "GraphicsSettings",
         "Type": "AppSettingsApp",
         "Command": "ms-settings:display-advancedgraphics",
@@ -1631,16 +1566,6 @@
         "IconGlyph": "\uf83b"
     },
     {
-        "Name": "NavigationBar",
-        "Type": "AppSettingsApp",
-        "Command": "ms-settings:personalization-navbar",
-        "Areas": [
-            "AreaPersonalization"
-        ],
-        "Note": "NoteDeprecated17763",
-        "DeprecatedInBuild": 17763
-    },
-    {
         "Name": "NearbyShareSettings",
         "Type": "AppSettingsApp",
         "Command": "ms-settings:crossdevice",
@@ -1843,16 +1768,6 @@
         "IconGlyph": "\ue772"
     },
     {
-        "Name": "OtherOptions",
-        "Type": "AppSettingsApp",
-        "Command": "ms-settings:easeofaccess-otheroptions",
-        "Areas": [
-            "AreaEaseOfAccess"
-        ],
-        "Note": "NoteDeprecated17763",
-        "DeprecatedInBuild": 17763
-    },
-    {
         "Name": "ParentalControls",
         "Type": "AppControlPanel",
         "Command": "control /name Microsoft.ParentalControls",
@@ -1947,16 +1862,6 @@
         "AltNames": [
             "MobileDevices"
         ]
-    },
-    {
-        "Name": "Phone",
-        "Type": "AppSettingsApp",
-        "Command": "ms-settings:phone",
-        "Areas": [
-            "AreaSystem"
-        ],
-        "Note": "NoteDeprecated17763",
-        "DeprecatedInBuild": 17763
     },
     {
         "Name": "PhoneAndModem",
@@ -2643,16 +2548,6 @@
         "IconGlyph": "\ue90f"
     },
     {
-        "Name": "TruePlay",
-        "Type": "AppSettingsApp",
-        "Command": "ms-settings:gaming-trueplay",
-        "Areas": [
-            "AreaGaming"
-        ],
-        "Note": "NoteDeprecated17763",
-        "DeprecatedInBuild": 17763
-    },
-    {
         "Name": "Typing",
         "Type": "AppSettingsApp",
         "Command": "ms-settings:typing",
@@ -2904,8 +2799,7 @@
         "Command": "ms-settings:windowsupdate",
         "Areas": [
             "AreaUpdateAndSecurity"
-        ],
-        "IntroducedInBuild": 22000
+        ]
     },
     {
         "Name": "WindowsUpdateCheckForUpdates",
@@ -2929,9 +2823,7 @@
         "Command": "ms-settings:windowsupdate-optionalupdates",
         "Areas": [
             "AreaUpdateAndSecurity"
-        ],
-        "Note": "NoteSince19041",
-        "IntroducedInBuild": 19041
+        ]
     },
     {
         "Name": "WindowsUpdateViewUpdateHistory",
