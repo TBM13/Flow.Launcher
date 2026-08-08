@@ -73,9 +73,6 @@ public partial class MainWindow : Window
         {
             switch (e.PropertyName)
             {
-                case nameof(ISettingsAPI.FixedWindowSize):
-                    SetupResizeMode();
-                    break;
                 case nameof(ISettingsAPI.ShowHomePage):
                     if (!_vm.ContextMenuSelected && string.IsNullOrEmpty(_vm.QueryText))
                     {
@@ -84,9 +81,6 @@ public partial class MainWindow : Window
                     break;
             }
         };
-
-        // Initialize resize mode after refreshing frame
-        SetupResizeMode();
 
         // Reset preview
         _vm.ResetPreview();
@@ -302,21 +296,17 @@ public partial class MainWindow : Window
                 //(Without this check, releasing from a snap can cause the window height to hit the minimum, resulting in only 2 results being shown.)
                 if (_initialHeight != (int)Height && Height > (QueryTextBox.Height + Const.ItemHeightSize))
                 {
-                    if (!_settings.FixedWindowSize)
-                    {
-                        // Get shadow margin
-                        var shadowMargin = 0;
+                    var shadowMargin = 0;
 
-                        // Calculate max results to show
-                        var itemCount = (Height - (QueryTextBox.Height + 14) - shadowMargin) / Const.ItemHeightSize;
-                        if (itemCount < 2)
-                        {
-                            _settings.MaxResultsToShow = 2;
-                        }
-                        else
-                        {
-                            _settings.MaxResultsToShow = Convert.ToInt32(Math.Truncate(itemCount));
-                        }
+                    // Calculate max results to show
+                    var itemCount = (Height - (QueryTextBox.Height + 14) - shadowMargin) / Const.ItemHeightSize;
+                    if (itemCount < 2)
+                    {
+                        _settings.MaxResultsToShow = 2;
+                    }
+                    else
+                    {
+                        _settings.MaxResultsToShow = Convert.ToInt32(Math.Truncate(itemCount));
                     }
 
                     SizeToContent = SizeToContent.Height;
@@ -329,12 +319,7 @@ public partial class MainWindow : Window
 
                 if (_initialWidth != (int)Width)
                 {
-                    if (!_settings.FixedWindowSize)
-                    {
-                        // Update width
-                        _settings.WindowWidth = Width;
-                    }
-
+                    _settings.WindowWidth = Width;
                     SizeToContent = SizeToContent.Height;
                 }
 
@@ -571,18 +556,6 @@ public partial class MainWindow : Window
     private void QueryTextBox_OnPreviewDragOver(object sender, DragEventArgs e)
     {
         e.Handled = true;
-    }
-
-    private void SetupResizeMode()
-    {
-        ResizeMode = _settings.FixedWindowSize ? ResizeMode.NoResize : ResizeMode.CanResize;
-        if (WindowChrome.GetWindowChrome(this) is WindowChrome windowChrome)
-        {
-            if (_settings.FixedWindowSize)
-                windowChrome.ResizeBorderThickness = new(0);
-            else
-                windowChrome.ResizeBorderThickness = SystemParameters.WindowResizeBorderThickness;
-        }
     }
 
     private void QueryTextBox_TextChanged1(object sender, TextChangedEventArgs e)

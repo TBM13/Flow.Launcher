@@ -157,10 +157,6 @@ public interface ISettingsAPI : INotifyPropertyChanged, INotifyPropertyChanging
     /// Determines the height of the Flow Launcher window based on the number of results that should be shown.
     /// </summary>
     int MaxResultsToShow { get; set; }
-    /// <summary>
-    /// Indicates whether the window size is fixed (not adjustable by dragging).
-    /// </summary>
-    bool FixedWindowSize { get; set; }
 
     /// <summary>
     /// The current width of the Flow Launcher window.

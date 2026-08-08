@@ -78,9 +78,6 @@ internal partial class Settings : ObservableObject, ISettingsAPI
     public partial int MaxResultsToShow { get; set; } = 5;
 
     [ObservableProperty]
-    public partial bool FixedWindowSize { get; set; }
-
-    [ObservableProperty]
     public partial double WindowWidth { get; set; } = 785;
 
     [ObservableProperty]
