@@ -49,14 +49,6 @@
         "IconGlyph": "\ue779"
     },
     {
-        "Name": "Accounts",
-        "Type": "AppSettingsApp",
-        "Command": "ms-settings:surfacehub-accounts",
-        "Areas": [
-            "AreaSurfaceHub"
-        ]
-    },
-    {
         "Name": "ActionCenter",
         "Type": "AppControlPanel",
         "Command": "control /name Microsoft.ActionCenter",
@@ -72,15 +64,6 @@
             "AreaUpdateAndSecurity"
         ],
         "IconGlyph": "\ue930"
-    },
-    {
-        "Name": "ActivityHistory",
-        "Type": "AppSettingsApp",
-        "Command": "ms-settings:privacy-activityhistory",
-        "Areas": [
-            "AreaPrivacy"
-        ],
-        "IconGlyph": "\ue7c4"
     },
     {
         "Name": "AddHardware",
@@ -214,18 +197,6 @@
         ]
     },
     {
-        "Name": "AudioAndSpeech",
-        "Type": "AppSettingsApp",
-        "Command": "ms-settings:holographic-audio",
-        "Areas": [
-            "AreaMixedReality"
-        ],
-        "Note": "NoteMixedReality",
-        "AltNames": [
-            "HolographicAudio"
-        ]
-    },
-    {
         "Name": "AuthorizationManager",
         "Type": "AppMMC",
         "Command": "azman.msc",
@@ -261,37 +232,6 @@
         ]
     },
     {
-        "Name": "Background",
-        "Type": "AppSettingsApp",
-        "Command": "ms-settings:personalization-background",
-        "Areas": [
-            "AreaPersonalization"
-        ],
-        "AltNames": [
-            "Wallpaper",
-            "Picture",
-            "Image"
-        ],
-        "IconGlyph": "\ueb9f"
-    },
-    {
-        "Name": "BackgroundApps",
-        "Type": "AppSettingsApp",
-        "Command": "ms-settings:privacy-backgroundapps",
-        "Areas": [
-            "AreaPrivacy"
-        ],
-        "IconGlyph": "\ue9d9"
-    },
-    {
-        "Name": "Backup",
-        "Type": "AppSettingsApp",
-        "Command": "ms-settings:backup",
-        "Areas": [
-            "AreaUpdateAndSecurity"
-        ]
-    },
-    {
         "Name": "BackupAndRestore",
         "Type": "AppControlPanel",
         "Command": "control /name Microsoft.BackupAndRestore",
@@ -317,18 +257,6 @@
             "AreaSystem"
         ],
         "Note": "NoteBattery"
-    },
-    {
-        "Name": "BatteryUse",
-        "Type": "AppSettingsApp",
-        "Command": "ms-settings:batterysaver-usagedetails",
-        "Areas": [
-            "AreaSystem"
-        ],
-        "Note": "NoteBattery",
-        "AltNames": [
-            "BatterySaverUsageDetails"
-        ]
     },
     {
         "Name": "BiometricDevices",
@@ -367,14 +295,6 @@
         ]
     },
     {
-        "Name": "Broadcasting",
-        "Type": "AppSettingsApp",
-        "Command": "ms-settings:gaming-broadcasting",
-        "Areas": [
-            "AreaGaming"
-        ]
-    },
-    {
         "Name": "Calendar",
         "Type": "AppSettingsApp",
         "Command": "ms-settings:privacy-calendar",
@@ -406,14 +326,6 @@
         "Command": "ms-settings:regionlanguage-cangjieime",
         "Areas": [
             "AreaTimeAndLanguage"
-        ]
-    },
-    {
-        "Name": "CellularAndSim",
-        "Type": "AppSettingsApp",
-        "Command": "ms-settings:network-cellular",
-        "Areas": [
-            "AreaNetworkAndInternet"
         ]
     },
     {
@@ -615,25 +527,6 @@
         "IconGlyph": "\ue716"
     },
     {
-        "Name": "Cortana",
-        "Type": "AppSettingsApp",
-        "Command": "ms-settings:cortana",
-        "Areas": [
-            "AreaCortana"
-        ]
-    },
-    {
-        "Name": "CortanaLanguage",
-        "Type": "AppSettingsApp",
-        "Command": "ms-settings:cortana-language",
-        "Areas": [
-            "AreaCortana"
-        ],
-        "AltNames": [
-            "Talk"
-        ]
-    },
-    {
         "Name": "CredentialManager",
         "Type": "AppControlPanel",
         "Command": "control /name Microsoft.CredentialManager",
@@ -784,15 +677,6 @@
             "AreaNetworkAndInternet"
         ],
         "IconGlyph": "\ue83c"
-    },
-    {
-        "Name": "DirectAccess",
-        "Type": "AppSettingsApp",
-        "Command": "ms-settings:network-directaccess",
-        "Areas": [
-            "AreaNetworkAndInternet"
-        ],
-        "Note": "NoteDirectAccess"
     },
     {
         "Name": "DirectOpenYourPhone",
@@ -955,18 +839,6 @@
         ]
     },
     {
-        "Name": "Environment",
-        "Type": "AppSettingsApp",
-        "Command": "ms-settings:privacy-holographic-environment",
-        "Areas": [
-            "AreaMixedReality"
-        ],
-        "Note": "NoteMixedReality",
-        "AltNames": [
-            "HolographicEnvironment"
-        ]
-    },
-    {
         "Name": "Ethernet",
         "Type": "AppSettingsApp",
         "Command": "ms-settings:network-ethernet",
@@ -993,15 +865,6 @@
         ]
     },
     {
-        "Name": "Extras",
-        "Type": "AppSettingsApp",
-        "Command": "ms-settings:extras",
-        "Areas": [
-            "AreaExtras"
-        ],
-        "Note": "NoteThirdParty"
-    },
-    {
         "Name": "EyeControl",
         "Type": "AppSettingsApp",
         "Command": "ms-settings:easeofaccess-eyecontrol",
@@ -1009,15 +872,6 @@
             "AreaEaseOfAccess"
         ],
         "IconGlyph": "\uf19d"
-    },
-    {
-        "Name": "EyeTracker",
-        "Type": "AppSettingsApp",
-        "Command": "ms-settings:privacy-eyetracker",
-        "Areas": [
-            "AreaPrivacy"
-        ],
-        "Note": "NoteEyetrackerHardware"
     },
     {
         "Name": "FamilyAndOtherPeople",
@@ -1461,14 +1315,6 @@
         "IconGlyph": "\ue88a"
     },
     {
-        "Name": "MoreDetails",
-        "Type": "AppSettingsApp",
-        "Command": "ms-settings:cortana-moredetails",
-        "Areas": [
-            "AreaCortana"
-        ]
-    },
-    {
         "Name": "Motion",
         "Type": "AppSettingsApp",
         "Command": "ms-settings:privacy-motion",
@@ -1667,14 +1513,6 @@
     {
         "Name": "Notifications",
         "Type": "AppSettingsApp",
-        "Command": "ms-settings:cortana-notifications",
-        "Areas": [
-            "AreaCortana"
-        ]
-    },
-    {
-        "Name": "Notifications",
-        "Type": "AppSettingsApp",
         "Command": "ms-settings:privacy-notifications",
         "Areas": [
             "AreaPrivacy"
@@ -1834,14 +1672,6 @@
         "AltNames": [
             "MMC_mmcexe",
             "MMC_perfmon"
-        ]
-    },
-    {
-        "Name": "PermissionsAndHistory",
-        "Type": "AppSettingsApp",
-        "Command": "ms-settings:cortana-permissions",
-        "Areas": [
-            "AreaCortana"
         ]
     },
     {
@@ -2447,14 +2277,6 @@
         ],
         "AltNames": [
             "TabletPC.cpl"
-        ]
-    },
-    {
-        "Name": "TalkToCortana",
-        "Type": "AppSettingsApp",
-        "Command": "ms-settings:cortana-talktocortana",
-        "Areas": [
-            "AreaCortana"
         ]
     },
     {
