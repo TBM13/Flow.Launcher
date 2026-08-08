@@ -32,7 +32,6 @@ public sealed class Main : IPlugin
     {
         Context = context;
         _settingsList = JsonSettingsListHelper.ReadAllPossibleSettings();
-        TranslationHelper.TranslateAllSettings(_settingsList);
     }
 
     public List<Result>? Query(Query query)
