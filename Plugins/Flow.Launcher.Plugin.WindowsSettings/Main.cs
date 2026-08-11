@@ -12,7 +12,7 @@ public static class PluginMetadataDefinition
         ID = "5b1ac9a65f5a4717980d1b2a743b9855",
         ActionKeywords = ["*", "cfg"],
         Name = "Windows Settings",
-        Description = "Show and search Windows 11 settings.",
+        Description = "List and search Windows 11 settings.",
         Author = "TBM13",
         Version = "1.0.0",
         IcoPath = "Images/Plugin.WindowsSettings.png",
@@ -29,7 +29,7 @@ public sealed class Main : IPlugin
     /// Key is a page's path (e.g. "System/Display/").
     /// Value is all the settings that should be shown on that path.
     /// </summary>
-    private readonly Dictionary<string, List<Result>> _allSettings = [];
+    private readonly Dictionary<string, List<Result>> _allSettings = new(StringComparer.OrdinalIgnoreCase);
 
     public void Init(PluginInitContext ctx)
     {
@@ -54,7 +54,7 @@ public sealed class Main : IPlugin
     private void AddSetting(string path, Setting setting)
     {
         Result result = setting.ToResult(_context);
-        result.SubTitle = path.Replace("/", "  ˃  ");
+        result.SubTitle = path.TrimEnd('/').Replace("/", "  ˃  ");
 
         if (setting is SettingsPage page)
             result.AutocompleteText = (true, path + page.LocalPath);
@@ -74,16 +74,30 @@ public sealed class Main : IPlugin
         if (query.IsHomeQuery || (query.ActionKeyword.Length > 0 && string.IsNullOrWhiteSpace(query.Search)))
             return _allSettings[AllSettings.Settings.LocalPath];
 
-        /*IEnumerable<Result> settingsToSearch;
+        IEnumerable<Result>? settingsToSearch = null;
 
+        // If the query has a valid path, remove it and limit the search to that path's settings
         string search = query.Search.Replace('\\', '/');
         int lastSeparatorIndex = search.LastIndexOf('/');
         if (lastSeparatorIndex != -1)
         {
             string path = search[..(lastSeparatorIndex + 1)];
             if (_allSettings.TryGetValue(path, out List<Result>? pathSettings))
-                return _context.API.Search(pathSettings, search[(lastSeparatorIndex + 1)..]);
-        }*/
+            {
+                settingsToSearch = pathSettings;
+                // Remove the path, leave only the search term
+                search = search[(lastSeparatorIndex + 1)..];
+            }
+        }
+
+        settingsToSearch ??= _allSettings.Values.SelectMany(list => list);
+
+        // If the query does not have a search term, return all the settings for this path
+        if (string.IsNullOrWhiteSpace(search))
+            return [.. settingsToSearch];
+
+        // Query has a search term: only return settings that match
+        // TODO
 
         return null;
     }
