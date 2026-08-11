@@ -59,9 +59,9 @@ public class Main : IPlugin, IContextMenu, ISettingProvider
             {
                 // Get max score from searching window title, process name & ID and process path
                 MatchResult windowTitleMatch = pr.WindowTitle is not null
-                    ? Context.API.FuzzySearch(searchTerm, pr.WindowTitle) : default;
-                MatchResult processPathMatch = Context.API.FuzzySearch(searchTerm, pr.Path);
-                MatchResult processNameIdMatch = Context.API.FuzzySearch(searchTerm, processNameIdTitle);
+                    ? Context.API.StringMatcher.FuzzyMatch(searchTerm, pr.WindowTitle) : default;
+                MatchResult processPathMatch = Context.API.StringMatcher.FuzzyMatch(searchTerm, pr.Path);
+                MatchResult processNameIdMatch = Context.API.StringMatcher.FuzzyMatch(searchTerm, processNameIdTitle);
 
                 score = Math.Max(windowTitleMatch.Score, processNameIdMatch.Score);
                 score = Math.Max(score, processPathMatch.Score);

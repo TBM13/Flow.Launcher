@@ -94,7 +94,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
             if (candidates.Count == 0)
                 return default;
 
-            var match = candidates.Select(candidate => Main.Context.API.FuzzySearch(query, candidate))
+            var match = candidates.Select(candidate => Main.Context.API.StringMatcher.FuzzyMatch(query, candidate))
                 .MaxBy(match => match.Score);
 
             return match.IsSearchPrecisionScoreMet ? match : default;
@@ -114,14 +114,14 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 resultName.Equals(Description))
             {
                 title = resultName;
-                matchResult = Main.Context.API.FuzzySearch(query, resultName);
+                matchResult = Main.Context.API.StringMatcher.FuzzyMatch(query, resultName);
             }
             else
             {
                 // Search in both
                 title = $"{resultName}: {Description}";
-                var nameMatch = Main.Context.API.FuzzySearch(query, resultName);
-                var descriptionMatch = Main.Context.API.FuzzySearch(query, Description);
+                var nameMatch = Main.Context.API.StringMatcher.FuzzyMatch(query, resultName);
+                var descriptionMatch = Main.Context.API.StringMatcher.FuzzyMatch(query, Description);
                 if (descriptionMatch.Score > nameMatch.Score)
                 {
                     matchResult = descriptionMatch;

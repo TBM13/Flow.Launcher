@@ -48,9 +48,9 @@ public class Main : IPlugin
                 MatchResult searchResult;
                 if (!query.IsHomeQuery && !string.IsNullOrEmpty(query.Search))
                 {
-                    searchResult = _context.API.FuzzySearch(query.Search, keyword);
+                    searchResult = _context.API.StringMatcher.FuzzyMatch(query.Search, keyword);
                     if (!searchResult.IsSearchPrecisionScoreMet)
-                        searchResult = _context.API.FuzzySearch(query.Search, plugin.Name);
+                        searchResult = _context.API.StringMatcher.FuzzyMatch(query.Search, plugin.Name);
 
                     if (!searchResult.IsSearchPrecisionScoreMet)
                         continue;

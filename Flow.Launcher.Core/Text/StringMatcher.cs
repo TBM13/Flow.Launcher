@@ -1,9 +1,10 @@
 ﻿using Flow.Launcher.Core.Settings;
 using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.API;
 
 namespace Flow.Launcher.Core.Text;
 
-public class StringMatcher(ISettingsAPI settings)
+public class StringMatcher(ISettingsAPI settings) : IStringMatcher
 {
     private readonly ISettingsAPI _settings = settings;
 

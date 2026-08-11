@@ -664,10 +664,10 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 (
                     r =>
                     {
-                        var match = IPublicAPI.Instance.FuzzySearch(query, r.Title);
+                        var match = IPublicAPI.Instance.StringMatcher.FuzzyMatch(query, r.Title);
                         if (!match.IsSearchPrecisionScoreMet)
                         {
-                            match = IPublicAPI.Instance.FuzzySearch(query, r.SubTitle);
+                            match = IPublicAPI.Instance.StringMatcher.FuzzyMatch(query, r.SubTitle);
                         }
 
                         if (!match.IsSearchPrecisionScoreMet) return false;

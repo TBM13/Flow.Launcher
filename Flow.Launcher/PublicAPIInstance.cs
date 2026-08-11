@@ -7,7 +7,6 @@ using Flow.Launcher.Core;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Core.Storage;
-using Flow.Launcher.Core.Text;
 using Flow.Launcher.Core.UserSettings;
 using Flow.Launcher.Interop;
 using Flow.Launcher.PluginSDK;
@@ -28,17 +27,18 @@ public class PublicAPIInstance : IPublicAPI, IDisposable
     private readonly MainViewModel _mainVM;
     private readonly PluginManager _pluginManager;
     private readonly Notification _notification;
-    private readonly StringMatcher _stringMatcher;
     private Window? _settingWindow;
     private readonly Lock _saveSettingsLock = new();
     private bool _disposed;
 
     public IImageLoader ImageLoader { get; }
 
+    public IStringMatcher StringMatcher { get; }
+
     public PublicAPIInstance(ILoggerFactory loggerFactory,
         MainViewModel mainVM, ISettingsAPI settings,
         IImageLoader imageLoader, PluginManager pluginManager, Notification notification,
-        StringMatcher stringMatcher)
+        IStringMatcher stringMatcher)
     {
         _loggerFactory = loggerFactory;
         _logger = new(loggerFactory);
@@ -46,8 +46,8 @@ public class PublicAPIInstance : IPublicAPI, IDisposable
         _settings = settings;
         _pluginManager = pluginManager;
         _notification = notification;
-        _stringMatcher = stringMatcher;
         ImageLoader = imageLoader;
+        StringMatcher = stringMatcher;
 
         IPublicAPI.Instance = this;
     }
@@ -223,10 +223,6 @@ public class PublicAPIInstance : IPublicAPI, IDisposable
 
     public List<PluginMetadata> GetAllInitializedPlugins(bool includeFailed) =>
         _pluginManager.GetAllInitializedPlugins(includeFailed);
-
-    // TODO: Should StringMatcher be a service or should we make it static and pass the query precision config here?
-    public MatchResult FuzzySearch(string query, string stringToCompare) =>
-        _stringMatcher.FuzzyMatch(query, stringToCompare);
 
     public void AddActionKeyword(string pluginId, string newActionKeyword) =>
         _pluginManager.AddActionKeyword(pluginId, newActionKeyword);

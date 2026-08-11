@@ -144,7 +144,7 @@ public partial class App : Application
                     .AddSingleton<IImageLoader, ImageLoader>()
                     .AddSingleton<PluginManager>()
                     .AddSingleton<Notification>()
-                    .AddSingleton<StringMatcher>()
+                    .AddSingleton<IStringMatcher, StringMatcher>()
 
                     // Main Window
                     .AddSingleton<MainWindow>()

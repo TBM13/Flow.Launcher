@@ -179,10 +179,10 @@ public static class ServiceHelper
             if (!string.IsNullOrWhiteSpace(search))
             {
                 (MatchResult match, bool isHighPriority)[] matches = [
-                    (Main.Context.API.FuzzySearch(search, svcResult.DisplayName), true),
-                    (Main.Context.API.FuzzySearch(search, svcResult.ServiceName), true),
-                    (Main.Context.API.FuzzySearch(search, GetLocalizedStartType(svcResult)), false),
-                    (Main.Context.API.FuzzySearch(search, GetLocalizedStatus(svcResult.Status)), false)
+                    (Main.Context.API.StringMatcher.FuzzyMatch(search, svcResult.DisplayName), true),
+                    (Main.Context.API.StringMatcher.FuzzyMatch(search, svcResult.ServiceName), true),
+                    (Main.Context.API.StringMatcher.FuzzyMatch(search, GetLocalizedStartType(svcResult)), false),
+                    (Main.Context.API.StringMatcher.FuzzyMatch(search, GetLocalizedStatus(svcResult.Status)), false)
                 ];
                 (MatchResult bestMatch, bool isHighPriority) = matches.OrderByDescending(r => r.match.Score).First();
 

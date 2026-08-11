@@ -15,6 +15,8 @@ public interface IPublicAPI
 
     public IImageLoader ImageLoader { get; }
 
+    public IStringMatcher StringMatcher { get; }
+
     /// <summary>
     /// Change Flow.Launcher query.
     /// When current results are from context menu or history, it will go back to query results before changing query.
@@ -151,14 +153,6 @@ public interface IPublicAPI
     /// </param>
     /// <returns></returns>
     List<PluginMetadata> GetAllInitializedPlugins(bool includeFailed);
-
-    /// <summary>
-    /// Fuzzy Search the string with the given query. This is the core search mechanism Flow uses
-    /// </summary>
-    /// <param name="query">Query string</param>
-    /// <param name="stringToCompare">The string that will be compared against the query</param>
-    /// <returns>Match results</returns>
-    MatchResult FuzzySearch(string query, string stringToCompare);
 
     /// <summary>
     /// Add ActionKeyword and update action keyword metadata for specific plugin.

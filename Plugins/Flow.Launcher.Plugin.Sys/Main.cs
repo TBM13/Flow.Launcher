@@ -44,8 +44,8 @@ namespace Flow.Launcher.Plugin.Sys
                 }
 
                 // Match from localized title & localized subtitle & keyword
-                var titleMatch = Context.API.FuzzySearch(query.Search, c.Title);
-                var subTitleMatch = Context.API.FuzzySearch(query.Search, c.SubTitle);
+                var titleMatch = Context.API.StringMatcher.FuzzyMatch(query.Search, c.Title);
+                var subTitleMatch = Context.API.StringMatcher.FuzzyMatch(query.Search, c.SubTitle);
 
                 // Get the largest score from them
                 var score = Math.Max(titleMatch.Score, subTitleMatch.Score);

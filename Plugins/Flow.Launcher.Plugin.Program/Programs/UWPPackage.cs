@@ -394,13 +394,13 @@ namespace Flow.Launcher.Plugin.Program.Programs
             if (!Main._settings.EnableDescription || string.IsNullOrWhiteSpace(Description) || Name.Equals(Description))
             {
                 title = Name;
-                matchResult = Main.Context.API.FuzzySearch(query, Name);
+                matchResult = Main.Context.API.StringMatcher.FuzzyMatch(query, Name);
             }
             else
             {
                 title = $"{Name}: {Description}";
-                var nameMatch = Main.Context.API.FuzzySearch(query, Name);
-                var descriptionMatch = Main.Context.API.FuzzySearch(query, Description);
+                var nameMatch = Main.Context.API.StringMatcher.FuzzyMatch(query, Name);
+                var descriptionMatch = Main.Context.API.StringMatcher.FuzzyMatch(query, Description);
                 if (descriptionMatch.Score > nameMatch.Score)
                 {
                     matchResult = descriptionMatch;
