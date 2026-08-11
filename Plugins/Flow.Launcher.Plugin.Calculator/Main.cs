@@ -58,6 +58,7 @@ public class Main : IPlugin
         Result res = new()
         {
             Title = valueString,
+            AutocompleteText = (true, valueString),
             SubTitle = v.IsDecimal ? string.Empty : $"0x{v.AsInt128():X}",
             IconOrGlyph = PluginMetadataDefinition.Metadata.IcoPath,
             Score = 300,
