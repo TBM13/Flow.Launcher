@@ -71,14 +71,16 @@
                     TextAlignment="Center"
                     Visibility="{Binding ShowGlyph}" />
 
-                <StackPanel Margin="6 0 10 0" VerticalAlignment="Center">
+                <StackPanel
+                    Margin="6 0 10 0"
+                    VerticalAlignment="Center"
+                    ToolTip="{Binding ToolTip}">
                     <!--  Title  -->
                     <TextBlock
                         FontSize="16"
                         Foreground="{DynamicResource Color05B}"
                         Text="{Binding Result.Title}"
-                        TextTrimming="CharacterEllipsis"
-                        ToolTip="{Binding ToolTip}" />
+                        TextTrimming="CharacterEllipsis" />
                     <!--  Subtitle  -->
                     <TextBlock
                         Margin="0 2 0 0"
@@ -86,7 +88,6 @@
                         Foreground="{DynamicResource SubTitleForeground}"
                         Text="{Binding Result.SubTitle}"
                         TextTrimming="CharacterEllipsis"
-                        ToolTip="{Binding ToolTip}"
                         Visibility="{pluginsdk:CollapsedWhen {Binding Result.SubTitle},
                                                              IsEqualTo=''}" />
                 </StackPanel>
