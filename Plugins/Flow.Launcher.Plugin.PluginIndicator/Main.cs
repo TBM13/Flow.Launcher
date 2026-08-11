@@ -1,4 +1,5 @@
 ﻿using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Plugins;
 using Flow.Launcher.PluginSDK.Plugins.Interfaces;
 
@@ -48,11 +49,8 @@ public class Main : IPlugin
                 MatchResult searchResult;
                 if (!query.IsHomeQuery && !string.IsNullOrEmpty(query.Search))
                 {
-                    searchResult = _context.API.StringMatcher.FuzzyMatch(query.Search, keyword);
-                    if (!searchResult.IsSearchPrecisionScoreMet)
-                        searchResult = _context.API.StringMatcher.FuzzyMatch(query.Search, plugin.Name);
-
-                    if (!searchResult.IsSearchPrecisionScoreMet)
+                    searchResult = _context.API.StringMatcher.FuzzySearchBest(query.Search, keyword, plugin.Name);
+                    if (!searchResult.IsThresholdMet)
                         continue;
                 }
                 else

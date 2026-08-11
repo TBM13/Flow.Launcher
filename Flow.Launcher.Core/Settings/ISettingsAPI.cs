@@ -1,8 +1,6 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Windows;
+﻿using System.ComponentModel;
 using Flow.Launcher.Core.UserSettings;
-using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.API;
 
 namespace Flow.Launcher.Core.Settings;
 

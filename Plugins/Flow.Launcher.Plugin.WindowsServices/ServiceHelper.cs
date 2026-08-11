@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using Flow.Launcher.Interop.Shell;
 using Flow.Launcher.Plugin.WindowsServices.Preview;
 using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.API;
 using Microsoft.Win32;
 
 
@@ -179,14 +180,14 @@ public static class ServiceHelper
             if (!string.IsNullOrWhiteSpace(search))
             {
                 (MatchResult match, bool isHighPriority)[] matches = [
-                    (Main.Context.API.StringMatcher.FuzzyMatch(search, svcResult.DisplayName), true),
-                    (Main.Context.API.StringMatcher.FuzzyMatch(search, svcResult.ServiceName), true),
-                    (Main.Context.API.StringMatcher.FuzzyMatch(search, GetLocalizedStartType(svcResult)), false),
-                    (Main.Context.API.StringMatcher.FuzzyMatch(search, GetLocalizedStatus(svcResult.Status)), false)
+                    (Main.Context.API.StringMatcher.FuzzySearch(search, svcResult.DisplayName), true),
+                    (Main.Context.API.StringMatcher.FuzzySearch(search, svcResult.ServiceName), true),
+                    (Main.Context.API.StringMatcher.FuzzySearch(search, GetLocalizedStartType(svcResult)), false),
+                    (Main.Context.API.StringMatcher.FuzzySearch(search, GetLocalizedStatus(svcResult.Status)), false)
                 ];
                 (MatchResult bestMatch, bool isHighPriority) = matches.OrderByDescending(r => r.match.Score).First();
 
-                if (!bestMatch.IsSearchPrecisionScoreMet)
+                if (!bestMatch.IsThresholdMet)
                     return null;
 
                 score = isHighPriority ? bestMatch.Score + 1000 : bestMatch.Score;

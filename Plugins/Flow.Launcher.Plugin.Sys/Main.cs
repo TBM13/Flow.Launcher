@@ -44,14 +44,10 @@ namespace Flow.Launcher.Plugin.Sys
                 }
 
                 // Match from localized title & localized subtitle & keyword
-                var titleMatch = Context.API.StringMatcher.FuzzyMatch(query.Search, c.Title);
-                var subTitleMatch = Context.API.StringMatcher.FuzzyMatch(query.Search, c.SubTitle);
-
-                // Get the largest score from them
-                var score = Math.Max(titleMatch.Score, subTitleMatch.Score);
-                if (score > 0)
+                var match = Context.API.StringMatcher.FuzzySearchBest(query.Search, c.Title, c.SubTitle);
+                if (match.IsThresholdMet)
                 {
-                    c.Score = score;
+                    c.Score = match.Score;
                     results.Add(c);
                 }
             }

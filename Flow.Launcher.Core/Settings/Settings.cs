@@ -1,12 +1,8 @@
-﻿using System.Collections.ObjectModel;
-using System.Text.Json.Serialization;
-using System.Windows;
+﻿using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Flow.Launcher.Core.Storage;
 using Flow.Launcher.Core.UserSettings;
-using Flow.Launcher.Interop;
-using Flow.Launcher.Interop.Shell;
-using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.API;
 
 namespace Flow.Launcher.Core.Settings;
 

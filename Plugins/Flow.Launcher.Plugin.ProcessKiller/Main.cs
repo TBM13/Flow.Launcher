@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using Flow.Launcher.Plugin.ProcessKiller.ViewModels;
 using Flow.Launcher.Plugin.ProcessKiller.Views;
 using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Plugins;
 using Flow.Launcher.PluginSDK.Plugins.Interfaces;
 
@@ -58,14 +59,10 @@ public class Main : IPlugin, IContextMenu, ISettingProvider
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 // Get max score from searching window title, process name & ID and process path
-                MatchResult windowTitleMatch = pr.WindowTitle is not null
-                    ? Context.API.StringMatcher.FuzzyMatch(searchTerm, pr.WindowTitle) : default;
-                MatchResult processPathMatch = Context.API.StringMatcher.FuzzyMatch(searchTerm, pr.Path);
-                MatchResult processNameIdMatch = Context.API.StringMatcher.FuzzyMatch(searchTerm, processNameIdTitle);
+                MatchResult match = Context.API.StringMatcher.FuzzySearchBest(
+                    searchTerm, pr.WindowTitle, pr.Path, processNameIdTitle);
 
-                score = Math.Max(windowTitleMatch.Score, processNameIdMatch.Score);
-                score = Math.Max(score, processPathMatch.Score);
-                if (score <= 0)
+                if (!match.IsThresholdMet)
                     continue;
             }
 

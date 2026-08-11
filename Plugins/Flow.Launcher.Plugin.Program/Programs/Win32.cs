@@ -94,10 +94,10 @@ namespace Flow.Launcher.Plugin.Program.Programs
             if (candidates.Count == 0)
                 return default;
 
-            var match = candidates.Select(candidate => Main.Context.API.StringMatcher.FuzzyMatch(query, candidate))
+            var match = candidates.Select(candidate => Main.Context.API.StringMatcher.FuzzySearch(query, candidate))
                 .MaxBy(match => match.Score);
 
-            return match.IsSearchPrecisionScoreMet ? match : default;
+            return match.IsThresholdMet ? match : default;
         }
 
         public Result Result(string query, IPublicAPI api)
@@ -114,27 +114,18 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 resultName.Equals(Description))
             {
                 title = resultName;
-                matchResult = Main.Context.API.StringMatcher.FuzzyMatch(query, resultName);
+                matchResult = Main.Context.API.StringMatcher.FuzzySearch(query, resultName);
             }
             else
             {
                 // Search in both
                 title = $"{resultName}: {Description}";
-                var nameMatch = Main.Context.API.StringMatcher.FuzzyMatch(query, resultName);
-                var descriptionMatch = Main.Context.API.StringMatcher.FuzzyMatch(query, Description);
-                if (descriptionMatch.Score > nameMatch.Score)
-                {
-                    matchResult = descriptionMatch;
-                }
-                else
-                {
-                    matchResult = nameMatch;
-                }
+                matchResult = Main.Context.API.StringMatcher.FuzzySearchBest(query, resultName, Description);
             }
 
             List<string> candidates = [];
 
-            if (!matchResult.IsSearchPrecisionScoreMet && !string.IsNullOrEmpty(query))
+            if (!matchResult.IsThresholdMet && !string.IsNullOrEmpty(query))
             {
                 if (ExecutableName != null) // only lnk program will need this one
                 {
