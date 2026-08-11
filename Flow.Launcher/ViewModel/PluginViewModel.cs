@@ -58,7 +58,7 @@ namespace Flow.Launcher.ViewModel
         }
 
         public string Version => "Version " + PluginMetadata.Version;
-        public string ActionKeywordsText => string.Join(Query.TermSeparator, PluginMetadata.ActionKeywords);
+        public string ActionKeywordsText => string.Join(' ', PluginMetadata.ActionKeywords);
 
         public PluginViewModel(
             Logger<PluginViewModel> logger, IImageLoader imageLoader, PluginMetadata plugin, PluginSettingsObj settingsObj)

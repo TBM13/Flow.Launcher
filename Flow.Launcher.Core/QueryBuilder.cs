@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Flow.Launcher.PluginSDK;
+﻿using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.Plugins;
 
 namespace Flow.Launcher.Core;
@@ -17,7 +15,6 @@ public static class QueryBuilder
             return new Query()
             {
                 OriginalQuery = string.Empty,
-                TrimmedQuery = string.Empty,
                 Search = string.Empty,
                 ActionKeyword = string.Empty,
                 IsReQuery = isRequery,
@@ -25,7 +22,7 @@ public static class QueryBuilder
             };
         }
 
-        string[] terms = trimmedQuery.Split(Query.TermSeparator, StringSplitOptions.RemoveEmptyEntries);
+        string[] terms = trimmedQuery.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         // Since TermSeparator is a whitespace, terms should never have a length of 0 here
 
         string actionKeyword, search;
@@ -57,7 +54,6 @@ public static class QueryBuilder
         return new Query()
         {
             OriginalQuery = originalQuery,
-            TrimmedQuery = trimmedQuery,
             Search = search,
             ActionKeyword = actionKeyword,
             IsReQuery = isRequery,

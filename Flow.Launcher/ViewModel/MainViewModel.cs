@@ -213,7 +213,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         string actionKeyword = _lastQuery.ActionKeyword.Length == 0
             ? string.Empty
-            : _lastQuery.ActionKeyword + PluginSDK.Query.TermSeparator;
+            : _lastQuery.ActionKeyword + ' ';
 
         ReadOnlySpan<char> search = _lastQuery.Search;
         if (search.Length > 0 && search[^1] is '\\' or '/')
@@ -240,7 +240,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 {
                     string actionKeyword = _lastQuery!.ActionKeyword.Length == 0
                         ? string.Empty
-                        : _lastQuery.ActionKeyword + PluginSDK.Query.TermSeparator;
+                        : _lastQuery.ActionKeyword + ' ';
 
                     ChangeQueryText(actionKeyword + autocompleteText);
                 }
@@ -690,7 +690,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             await _updateSource.CancelAsync();
 
         Query query = QueryBuilder.Build(QueryText, isReQuery, _pluginManager.GetNonGlobalPlugins());
-        _logger.LogDebug($"Start query with text: <{QueryText}> & ActionKeyword <{query.ActionKeyword}> and TrimmedQuery <{query.TrimmedQuery}>");
+        _logger.LogDebug($"Start query with text: <{QueryText}> & ActionKeyword <{query.ActionKeyword}> and query <{query.OriginalQuery}>");
 
         _updateSource?.Dispose();
 

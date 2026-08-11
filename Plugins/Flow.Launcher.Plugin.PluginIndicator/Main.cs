@@ -58,7 +58,7 @@ public class Main : IPlugin
                 else
                     searchResult = default;
 
-                string autoCompleteText = $"{keyword}{PluginSDK.Query.TermSeparator}";
+                string autoCompleteText = $"{keyword} ";
                 results.Add(new Result
                 {
                     Title = keyword,

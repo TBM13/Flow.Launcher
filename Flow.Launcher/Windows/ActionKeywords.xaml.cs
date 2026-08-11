@@ -20,7 +20,7 @@ public partial class ActionKeywords
 
     private void ActionKeyword_OnLoaded(object sender, RoutedEventArgs e)
     {
-        tbOldActionKeyword.Text = string.Join(Query.TermSeparator, _plugin.ActionKeywords);
+        tbOldActionKeyword.Text = string.Join(' ', _plugin.ActionKeywords);
         tbAction.Text = tbOldActionKeyword.Text;
         tbAction.SelectAll();
         tbAction.Focus();
@@ -36,7 +36,7 @@ public partial class ActionKeywords
     {
         var oldActionKeywords = _plugin.ActionKeywords;
 
-        var newActionKeywords = tbAction.Text.Split(Query.TermSeparator)
+        var newActionKeywords = tbAction.Text.Split(' ')
                                              .Where(s => !string.IsNullOrEmpty(s))
                                              .Distinct()
                                              .ToList();
