@@ -57,7 +57,7 @@ public sealed class Main : IPlugin
         result.SubTitle = path.Replace("/", "  ˃  ");
 
         if (setting is SettingsPage page)
-            result.AutoCompleteText = path + page.LocalPath;
+            result.AutocompleteText = (true, path + page.LocalPath);
 
         if (!_allSettings.TryGetValue(path, out List<Result>? pathSettings))
         {

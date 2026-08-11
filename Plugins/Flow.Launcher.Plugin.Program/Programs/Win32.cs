@@ -176,7 +176,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
             var result = new Result
             {
                 Title = title,
-                AutoCompleteText = autocompleteText,
+                AutocompleteText = (false, autocompleteText),
                 SubTitle = subtitle,
                 IconOrGlyph = IcoPath,
                 Score = matchResult.Score,

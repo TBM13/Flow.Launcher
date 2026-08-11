@@ -52,8 +52,8 @@ public class Main : IPlugin, IContextMenu
         {
             TaskFolder folder = TaskService.Instance.RootFolder;
 
-            IEnumerable<Result> folders = folder.EnumerateFolders().Select(f => CreateResult(query, f));
-            IEnumerable<Result> tasks = folder.EnumerateTasks().Select(t => CreateResult(query, t));
+            IEnumerable<Result> folders = folder.EnumerateFolders().Select(CreateResult);
+            IEnumerable<Result> tasks = folder.EnumerateTasks().Select(CreateResult);
 
             return [.. folders, .. tasks];
         }
@@ -65,8 +65,8 @@ public class Main : IPlugin, IContextMenu
             if (folder is null)
                 return [];
 
-            IEnumerable<Result> folders = folder.EnumerateFolders().Select(f => CreateResult(query, f));
-            IEnumerable<Result> tasks = folder.EnumerateTasks().Select(t => CreateResult(query, t));
+            IEnumerable<Result> folders = folder.EnumerateFolders().Select(CreateResult);
+            IEnumerable<Result> tasks = folder.EnumerateTasks().Select(CreateResult);
 
             return [.. folders, .. tasks];
         }
@@ -91,11 +91,11 @@ public class Main : IPlugin, IContextMenu
         IEnumerable<Result> matchedFolders = searchFolder
             .EnumerateFolders()
             .Where(f => f.Name.StartsWith(mustStartWith, StringComparison.CurrentCultureIgnoreCase))
-            .Select(f => CreateResult(query, f));
+            .Select(CreateResult);
         IEnumerable<Result> matchedTasks = searchFolder
             .EnumerateTasks()
             .Where(t => t.Name.StartsWith(mustStartWith, StringComparison.CurrentCultureIgnoreCase))
-            .Select(t => CreateResult(query, t));
+            .Select(CreateResult);
 
         return [.. matchedFolders, .. matchedTasks];
     }
@@ -136,32 +136,30 @@ public class Main : IPlugin, IContextMenu
         return res;
     }
 
-    private static Result CreateResult(Query query, TaskFolder folder)
+    private static Result CreateResult(TaskFolder folder)
     {
-        string navigateQuery = AddActionKeyword(query, folder.Path + '\\');
-
         return new Result
         {
             Title = folder.Name,
-            AutoCompleteText = navigateQuery,
+            AutocompleteText = (true, folder.Path + '\\'),
             IconOrGlyph = "\uF12B",
             ContextData = folder,
             CopyText = folder.Path,
             Action = c =>
             {
-                Context.API.ChangeQuery(navigateQuery);
+                // Context.API.ChangeQuery(navigateQuery);
                 return false;
             }
         };
     }
 
-    private static Result CreateResult(Query query, Task task)
+    private static Result CreateResult(Task task)
     {
         return new Result
         {
             Title = task.Name,
             SubTitle = GetLocalizedSubtitle(task),
-            AutoCompleteText = AddActionKeyword(query, task.Path),
+            AutocompleteText = (true, task.Path),
             IconOrGlyph = task.Enabled ? PLUGIN_ICON : TASK_DISABLED_ICON,
             ContextData = task,
             CopyText = task.Path,
@@ -182,14 +180,6 @@ public class Main : IPlugin, IContextMenu
                 return true;
             }
         };
-    }
-
-    private static string AddActionKeyword(Query query, string s)
-    {
-        if (string.IsNullOrEmpty(query.ActionKeyword))
-            return s;
-
-        return $"{query.ActionKeyword} {s}";
     }
 
     private static string GetLocalizedSubtitle(Task task)

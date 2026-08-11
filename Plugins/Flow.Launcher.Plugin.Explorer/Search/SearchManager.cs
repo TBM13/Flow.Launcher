@@ -50,7 +50,7 @@ public class SearchManager(Settings settings, PluginInitContext context)
         var results = new HashSet<Result>(PathEqualityComparator.Default);
 
         if (EnvironmentVariables.IsEnvironmentVariableSearch(querySearch))
-            return EnvironmentVariables.GetEnvironmentStringPathSuggestions(querySearch, query, Context);
+            return EnvironmentVariables.GetEnvironmentStringPathSuggestions(querySearch, Context);
 
         // Query is a location path with a full environment variable, eg. %appdata%\somefolder\, c:\users\%USERNAME%\downloads
         var needToExpand = EnvironmentVariables.HasEnvironmentVar(querySearch);
@@ -67,8 +67,8 @@ public class SearchManager(Settings settings, PluginInitContext context)
         if (path.EndsWith('\\'))
         {
             results.Add(path.EndsWith(":\\")
-                ? ResultManager.CreateDriveSpaceDisplayResult(query, path)
-                : ResultManager.CreateOpenCurrentFolderResult(query, path));
+                ? ResultManager.CreateDriveSpaceDisplayResult(path)
+                : ResultManager.CreateOpenCurrentFolderResult(path));
         }
 
         if (token.IsCancellationRequested)
@@ -81,7 +81,7 @@ public class SearchManager(Settings settings, PluginInitContext context)
 
         await foreach (var directory in directoryResult.WithCancellation(token).ConfigureAwait(false))
         {
-            results.Add(ResultManager.CreateResult(query, directory, isRecursive));
+            results.Add(ResultManager.CreateResult(directory, isRecursive));
         }
 
         return [.. results];

@@ -15,12 +15,8 @@ public static class ResultManager
 {
     private static readonly string[] SizeUnits = ["B", "KB", "MB", "GB", "TB"];
 
-    public static string GetAutoCompleteText(Query query, string path, ResultType resultType)
+    public static (bool, string) GetAutoCompleteText(string path, ResultType resultType)
     {
-        string actionKeyword = string.IsNullOrEmpty(query.ActionKeyword)
-            ? string.Empty
-            : query.ActionKeyword + ' ';
-
         if (resultType == ResultType.File)
         {
             if (path.EndsWith(".lnk", StringComparison.InvariantCultureIgnoreCase))
@@ -33,17 +29,17 @@ public static class ResultManager
         else if (!path.EndsWith(Path.DirectorySeparatorChar))
             path += Path.DirectorySeparatorChar;
 
-        return actionKeyword + path;
+        return (true, path);
     }
 
-    public static Result CreateResult(Query query, SearchResult result, bool isRecursive)
+    public static Result CreateResult(SearchResult result, bool isRecursive)
     {
         return result.Type switch
         {
             ResultType.Folder or ResultType.Volume =>
-                CreateFolderResult(Path.GetFileName(result.FullPath), isRecursive ? result.FullPath : string.Empty, result.FullPath, query, result.Score),
+                CreateFolderResult(Path.GetFileName(result.FullPath), isRecursive ? result.FullPath : string.Empty, result.FullPath, result.Score),
             ResultType.File =>
-                CreateFileResult(result.FullPath, query, isRecursive, result.Score),
+                CreateFileResult(result.FullPath, isRecursive, result.Score),
             _ => throw new ArgumentOutOfRangeException(null)
         };
     }
@@ -71,14 +67,14 @@ public static class ResultManager
         }
     }
 
-    internal static Result CreateFolderResult(string title, string subtitle, string path, Query query, int score = 0)
+    internal static Result CreateFolderResult(string title, string subtitle, string path, int score = 0)
     {
         return new Result
         {
             Title = title,
             IconOrGlyph = path,
             SubTitle = subtitle,
-            AutoCompleteText = GetAutoCompleteText(query, path, ResultType.Folder),
+            AutocompleteText = GetAutoCompleteText(path, ResultType.Folder),
             CopyText = path,
             PreviewPanel = new Lazy<UserControl>(() => new PreviewPanel(Main.Settings, path, ResultType.Folder)),
             Action = c =>
@@ -114,7 +110,7 @@ public static class ResultManager
         };
     }
 
-    internal static Result CreateDriveSpaceDisplayResult(Query query, string path, int score = 500)
+    internal static Result CreateDriveSpaceDisplayResult(string path, int score = 500)
     {
         var driveLetter = path[..1].ToUpper();
         DriveInfo drv = new DriveInfo(driveLetter);
@@ -127,7 +123,7 @@ public static class ResultManager
         {
             Title = path.ToUpper(),
             SubTitle = subtitle,
-            AutoCompleteText = GetAutoCompleteText(query, path, ResultType.Volume),
+            AutocompleteText = GetAutoCompleteText(path, ResultType.Volume),
             IconOrGlyph = path,
             Score = score,
             Action = c =>
@@ -174,7 +170,7 @@ public static class ResultManager
         return returnStr;
     }
 
-    internal static Result CreateOpenCurrentFolderResult(Query query, string path)
+    internal static Result CreateOpenCurrentFolderResult(string path)
     {
         // Path passed from PathSearchAsync ends with Constants.DirectorySeparator ('\'), need to remove the separator
         // so it's consistent with folder results returned by index search which does not end with one
@@ -184,7 +180,7 @@ public static class ResultManager
         {
             Title = "Open in Default File Manager",
             SubTitle = "Use '*' as a search wildcard, '>' to include subdirectories.",
-            AutoCompleteText = GetAutoCompleteText(query, path, ResultType.Folder),
+            AutocompleteText = GetAutoCompleteText(path, ResultType.Folder),
             IconOrGlyph = folderPath,
             Score = 500,
             CopyText = folderPath,
@@ -209,7 +205,7 @@ public static class ResultManager
         };
     }
 
-    internal static Result CreateFileResult(string filePath, Query query, bool isRecursiveSearch, int score = 0)
+    internal static Result CreateFileResult(string filePath, bool isRecursiveSearch, int score = 0)
     {
         var isShellLink = filePath.EndsWith(".lnk", StringComparison.InvariantCultureIgnoreCase);
         var title = Path.GetFileName(filePath) ?? string.Empty;
@@ -223,7 +219,7 @@ public static class ResultManager
                 isShellLink ? ShortcutHelper.RetrieveTargetPath(filePath) :
                 string.Empty,
             IconOrGlyph = filePath,
-            AutoCompleteText = GetAutoCompleteText(query, filePath, ResultType.File),
+            AutocompleteText = GetAutoCompleteText(filePath, ResultType.File),
             Score = score,
             CopyText = filePath,
             PreviewPanel = new Lazy<UserControl>(() => new PreviewPanel(Main.Settings, filePath, ResultType.File)),

@@ -82,7 +82,7 @@ public class Main : IPlugin, IContextMenu, ISettingProvider
                 SubTitle = pr.Path,
                 Score = score,
                 ContextData = pr.Path,
-                AutoCompleteText = $"{query.ActionKeyword}{PluginSDK.Query.TermSeparator}{p.ProcessName}",
+                AutocompleteText = (true, p.ProcessName),
                 Action = c =>
                 {
                     ProcessUtils.TryKill(p);

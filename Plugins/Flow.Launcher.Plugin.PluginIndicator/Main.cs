@@ -65,7 +65,7 @@ public class Main : IPlugin
                     SubTitle = plugin.Name,
                     Score = searchResult.Score,
                     IconOrGlyph = plugin.IcoPath,
-                    AutoCompleteText = autoCompleteText,
+                    AutocompleteText = (false, autoCompleteText),
                     Action = _ =>
                     {
                         _context.API.ChangeQuery(autoCompleteText);

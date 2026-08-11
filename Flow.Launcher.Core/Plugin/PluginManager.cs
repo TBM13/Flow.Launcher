@@ -168,7 +168,7 @@ public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger) : IAs
             {
                 Title = metadata.Name + ": This plugin is still initializing...",
                 SubTitle = "Select this result to requery",
-                AutoCompleteText = query.TrimmedQuery,
+                AutocompleteText = (false, query.TrimmedQuery),
                 IconOrGlyph = metadata.IcoPath,
                 PluginID = metadata.ID,
                 Action = _ =>
@@ -203,7 +203,7 @@ public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger) : IAs
             {
                 Title = metadata.Name + ": Failed to respond!",
                 SubTitle = "Select this result for more info",
-                AutoCompleteText = query.TrimmedQuery,
+                AutocompleteText = (false, query.TrimmedQuery),
                 IconOrGlyph = Constant.ErrorIcon,
                 PluginID = metadata.ID,
                 Action = _ => { throw new FlowPluginException(metadata, e); }
@@ -221,7 +221,7 @@ public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger) : IAs
             {
                 Title = metadata.Name + ": This plugin is still initializing...",
                 SubTitle = "Select this result to requery",
-                AutoCompleteText = query.TrimmedQuery,
+                AutocompleteText = (false, query.TrimmedQuery),
                 IconOrGlyph = metadata.IcoPath,
                 PluginID = metadata.ID,
                 Action = _ =>

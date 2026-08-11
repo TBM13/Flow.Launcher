@@ -37,12 +37,13 @@ public record Result
     }
 
     /// <summary>
-    /// If provided, the query will be replaced with the value of this property when
-    /// the user presses TAB (or whatever the autocomplete hotkey is) on this result.
+    /// When the user presses the autocomplete hotkey on this result (TAB by default),
+    /// the query will be replaced with this text.
     /// <para/>
-    /// Please include the action keyword prefix when necessary because we don't prepend it automatically.
+    /// The first value of the tuple indicates whether the current query's action keyword
+    /// should be prepended to the text.
     /// </summary>
-    public string? AutoCompleteText { get; set; }
+    public (bool prependActionKeyword, string text)? AutocompleteText { get; set; }
 
     /// <summary>
     /// The path to an image, or a Segoe Fluent glyph (e.g. "\ue701").

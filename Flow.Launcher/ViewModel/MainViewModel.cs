@@ -231,11 +231,20 @@ public partial class MainViewModel : ObservableObject, IDisposable
         Result? result = SelectedResults.SelectedItem?.Result;
         if (result is not null && !ContextMenuSelected)
         {
-            string autoCompleteText = result.Title;
-            if (!string.IsNullOrEmpty(result.AutoCompleteText))
-                autoCompleteText = result.AutoCompleteText;
+            if (result.AutocompleteText.HasValue)
+            {
+                string autocompleteText = result.AutocompleteText.Value.text;
+                if (!result.AutocompleteText.Value.prependActionKeyword)
+                    ChangeQueryText(autocompleteText);
+                else
+                {
+                    string actionKeyword = _lastQuery!.ActionKeyword.Length == 0
+                        ? string.Empty
+                        : _lastQuery.ActionKeyword + PluginSDK.Query.TermSeparator;
 
-            ChangeQueryText(autoCompleteText);
+                    ChangeQueryText(actionKeyword + autocompleteText);
+                }
+            }
         }
     }
 

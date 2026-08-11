@@ -66,7 +66,7 @@ public static class EnvironmentVariables
         return dic;
     }
 
-    internal static List<Result> GetEnvironmentStringPathSuggestions(string querySearch, Query query, PluginInitContext context)
+    internal static List<Result> GetEnvironmentStringPathSuggestions(string querySearch, PluginInitContext context)
     {
         var results = new List<Result>();
         var search = querySearch;
@@ -78,7 +78,7 @@ public static class EnvironmentVariables
 
             if (EnvStringPaths.TryGetValue(search, out var expandedPath))
             {
-                results.Add(ResultManager.CreateFolderResult($"%{search}%", expandedPath, expandedPath, query));
+                results.Add(ResultManager.CreateFolderResult($"%{search}%", expandedPath, expandedPath));
                 return results;
             }
         }
@@ -92,7 +92,7 @@ public static class EnvironmentVariables
         {
             if (p.Key.StartsWith(search, StringComparison.InvariantCultureIgnoreCase))
             {
-                results.Add(ResultManager.CreateFolderResult($"%{p.Key}%", p.Value, p.Value, query));
+                results.Add(ResultManager.CreateFolderResult($"%{p.Key}%", p.Value, p.Value));
             }
         }
 
