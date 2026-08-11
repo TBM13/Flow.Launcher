@@ -6,18 +6,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Flow.Launcher.PluginSDK\Flow.Launcher.PluginSDK.csproj" />
+    <ProjectReference Include="..\..\Flow.Launcher.Interop\Flow.Launcher.Interop.csproj" />
   </ItemGroup>
   
   <ItemGroup>
     <Content Include="Images\*.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <EmbeddedResource Include="WindowsSettings.json">
-    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

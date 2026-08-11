@@ -1,5 +1,4 @@
-﻿using Flow.Launcher.Plugin.WindowsSettings.Classes;
-using Flow.Launcher.Plugin.WindowsSettings.Helper;
+﻿using Flow.Launcher.Plugin.WindowsSettings.Settings;
 using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.Plugins;
 using Flow.Launcher.PluginSDK.Plugins.Interfaces;
@@ -10,11 +9,11 @@ public static class PluginMetadataDefinition
 {
     public static readonly PluginMetadata Metadata = new()
     {
-        ID = "5043CETYU6A748679OPA02D27D99677A",
-        ActionKeywords = ["*"],
+        ID = "5b1ac9a65f5a4717980d1b2a743b9855",
+        ActionKeywords = ["*", "cfg"],
         Name = "Windows Settings",
-        Description = "Search settings inside Control Panel and Settings App",
-        Author = "TobiasSekan",
+        Description = "Show and search Windows 11 settings.",
+        Author = "TBM13",
         Version = "1.0.0",
         IcoPath = "Images/Plugin.WindowsSettings.png",
 
@@ -24,22 +23,69 @@ public static class PluginMetadataDefinition
 
 public sealed class Main : IPlugin
 {
-    private IEnumerable<WindowsSetting> _settingsList = null!;
+    private PluginInitContext _context = null!;
 
-    internal static PluginInitContext Context { get; private set; } = null!;
+    /// <summary>
+    /// Key is a page's path (e.g. "System/Display/").
+    /// Value is all the settings that should be shown on that path.
+    /// </summary>
+    private readonly Dictionary<string, List<Result>> _allSettings = [];
 
-    public void Init(PluginInitContext context)
+    public void Init(PluginInitContext ctx)
     {
-        Context = context;
-        _settingsList = JsonSettingsListHelper.ReadAllPossibleSettings();
+        _context = ctx;
+        AddPage(string.Empty, AllSettings.Settings);
+    }
+
+    private void AddPage(string path, SettingsPage page)
+    {
+        AddSetting(path, page);
+        path += page.LocalPath;
+
+        foreach (Setting setting in page.Settings)
+        {
+            if (setting is SettingsPage subPage)
+                AddPage(path, subPage);
+            else
+                AddSetting(path, setting);
+        }
+    }
+
+    private void AddSetting(string path, Setting setting)
+    {
+        Result result = setting.ToResult(_context);
+        result.SubTitle = path.Replace("/", "  ˃  ");
+
+        if (setting is SettingsPage page)
+            result.AutoCompleteText = path + page.LocalPath;
+
+        if (!_allSettings.TryGetValue(path, out List<Result>? pathSettings))
+        {
+            pathSettings = [];
+            _allSettings[path] = pathSettings;
+        }
+
+        pathSettings.Add(result);
     }
 
     public List<Result>? Query(Query query)
     {
-        if (query.IsHomeQuery)
-            return null;
+        // On empty queries, show all the root setting pages
+        if (query.IsHomeQuery || (query.ActionKeyword.Length > 0 && string.IsNullOrWhiteSpace(query.Search)))
+            return _allSettings[AllSettings.Settings.LocalPath];
 
-        return ResultHelper.GetResultList(Context.API, _settingsList, query);
+        /*IEnumerable<Result> settingsToSearch;
+
+        string search = query.Search.Replace('\\', '/');
+        int lastSeparatorIndex = search.LastIndexOf('/');
+        if (lastSeparatorIndex != -1)
+        {
+            string path = search[..(lastSeparatorIndex + 1)];
+            if (_allSettings.TryGetValue(path, out List<Result>? pathSettings))
+                return _context.API.Search(pathSettings, search[(lastSeparatorIndex + 1)..]);
+        }*/
+
+        return null;
     }
 
     public ValueTask DisposeAsync() => ValueTask.CompletedTask;
