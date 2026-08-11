@@ -20,15 +20,15 @@ internal class ContextMenu(PluginInitContext context, Settings settings) : ICont
         if (selectedResult.ContextData is SearchResult record)
         {
             contextMenus.Add(new Result
-                {
-                    Title = "Copy path",
-                    SubTitle = "You can open the parent dir. with CTRL + Click on the result",
+            {
+                Title = "Copy path",
+                SubTitle = "You can open the parent dir. with CTRL + Click on the result",
                 Action = _ =>
                 {
                     _context.API.CopyToClipboard(record.FullPath, showDefaultNotification: false);
                     return true;
                 },
-                Glyph = "\ue8c8"
+                IconOrGlyph = "\ue8c8"
             });
 
             if (record.Type == ResultType.Folder)
@@ -41,7 +41,7 @@ internal class ContextMenu(PluginInitContext context, Settings settings) : ICont
             {
                 Title = "Show Windows Context Menu",
                 SubTitle = "You can also open it with Alt + Click on the result",
-                Glyph = "\ue700",
+                IconOrGlyph = "\ue700",
                 Action = c =>
                 {
                     ResultManager.ShowNativeContextMenu(record.FullPath, record.Type, c.ResultPosition);
@@ -71,7 +71,7 @@ internal class ContextMenu(PluginInitContext context, Settings settings) : ICont
 
                         return true;
                     },
-                    Glyph = "\ue748",
+                    IconOrGlyph = "\ue748",
                 });
         }
 
@@ -101,7 +101,7 @@ internal class ContextMenu(PluginInitContext context, Settings settings) : ICont
                     return false;
                 }
             },
-            Glyph = "\ue756"
+            IconOrGlyph = "\ue756"
         };
     }
 
@@ -117,7 +117,7 @@ internal class ContextMenu(PluginInitContext context, Settings settings) : ICont
                 Process.Start("rundll32.exe", $"{Path.Combine(Environment.SystemDirectory, "shell32.dll")},OpenAs_RunDLL {record.FullPath}");
                 return true;
             },
-            Glyph = "\ue7ac",
+            IconOrGlyph = "\ue7ac",
         };
     }
 

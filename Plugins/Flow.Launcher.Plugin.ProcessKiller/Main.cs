@@ -75,7 +75,7 @@ public class Main : IPlugin, IContextMenu, ISettingProvider
 
             results.Add(new Result()
             {
-                IcoPath = pr.Path,
+                IconOrGlyph = pr.Path,
                 Title = _settings.ShowWindowTitle && pr.WindowTitle is not null
                     ? pr.WindowTitle : processNameIdTitle,
                 ToolTip = $"{processNameIdTitle}\n\n{pr.Path}",
@@ -108,7 +108,7 @@ public class Main : IPlugin, IContextMenu, ISettingProvider
                 string processName = processesWithSamePath[0].Process.ProcessName;
                 results.Add(new Result()
                 {
-                    IcoPath = firstResult.IcoPath,
+                    IconOrGlyph = firstResult.IconOrGlyph,
                     Title = $"Kill all instances of \"{processName}\"",
                     SubTitle = $"Kill {processesWithSamePath.Count} processes",
                     Score = 2000,
@@ -148,7 +148,7 @@ public class Main : IPlugin, IContextMenu, ISettingProvider
 
                 return true;
             },
-            IcoPath = processPath
+            IconOrGlyph = processPath
         };
         return [res];
     }

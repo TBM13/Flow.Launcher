@@ -475,7 +475,7 @@ namespace Flow.Launcher.Plugin.Program
                         });
                         return false;
                     },
-                    Glyph = "\xece4",
+                    IconOrGlyph = "\xece4",
                 }
             );
 

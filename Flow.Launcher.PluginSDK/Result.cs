@@ -45,15 +45,9 @@ public record Result
     public string? AutoCompleteText { get; set; }
 
     /// <summary>
-    /// The image to be displayed for the result.
+    /// The path to an image, or a Segoe Fluent glyph (e.g. "\ue701").
     /// </summary>
-    /// <remarks><see cref="Glyph"/> is prioritized if it's not null.</remarks>
-    public string? IcoPath { get; set; }
-
-    /// <summary>
-    /// A glyph that will be displayed with the result, instead of an icon image.
-    /// </summary>
-    public string? Glyph { get; set; }
+    public string? IconOrGlyph { get; set; }
 
     /// <summary>
     /// The action that will be executed when the result is selected.

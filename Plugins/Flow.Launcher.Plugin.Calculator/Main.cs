@@ -44,7 +44,7 @@ public class Main : IPlugin
             {
                 Title = "Error",
                 SubTitle = e.Message,
-                IcoPath = PluginMetadataDefinition.Metadata.IcoPath,
+                IconOrGlyph = PluginMetadataDefinition.Metadata.IcoPath,
                 Score = 300,
             };
 
@@ -59,7 +59,7 @@ public class Main : IPlugin
         {
             Title = valueString,
             SubTitle = v.IsDecimal ? string.Empty : $"0x{v.AsInt128():X}",
-            IcoPath = PluginMetadataDefinition.Metadata.IcoPath,
+            IconOrGlyph = PluginMetadataDefinition.Metadata.IcoPath,
             Score = 300,
             CopyText = valueString
         };

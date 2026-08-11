@@ -110,7 +110,7 @@ public class Main : IPlugin, IContextMenu
                 res.Add(new()
                 {
                     Title = "Disable",
-                    Glyph = "\xEB4A",
+                    IconOrGlyph = "\xEB4A",
                     Action = c =>
                     {
                         task.Enabled = false;
@@ -123,7 +123,7 @@ public class Main : IPlugin, IContextMenu
                 res.Add(new()
                 {
                     Title = "Enable",
-                    Glyph = "\xEB49",
+                    IconOrGlyph = "\xEB49",
                     Action = c =>
                     {
                         task.Enabled = true;
@@ -144,8 +144,7 @@ public class Main : IPlugin, IContextMenu
         {
             Title = folder.Name,
             AutoCompleteText = navigateQuery,
-            Glyph = "\uF12B",
-            IcoPath = PLUGIN_ICON,
+            IconOrGlyph = "\uF12B",
             ContextData = folder,
             CopyText = folder.Path,
             Action = c =>
@@ -163,7 +162,7 @@ public class Main : IPlugin, IContextMenu
             Title = task.Name,
             SubTitle = GetLocalizedSubtitle(task),
             AutoCompleteText = AddActionKeyword(query, task.Path),
-            IcoPath = task.Enabled ? PLUGIN_ICON : TASK_DISABLED_ICON,
+            IconOrGlyph = task.Enabled ? PLUGIN_ICON : TASK_DISABLED_ICON,
             ContextData = task,
             CopyText = task.Path,
             Action = c =>

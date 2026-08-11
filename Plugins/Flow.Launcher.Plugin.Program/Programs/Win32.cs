@@ -178,7 +178,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 Title = title,
                 AutoCompleteText = autocompleteText,
                 SubTitle = subtitle,
-                IcoPath = IcoPath,
+                IconOrGlyph = IcoPath,
                 Score = matchResult.Score,
                 ContextData = this,
                 ToolTip = $"{title}\n{ExecutablePath}\n\n{subtitle}",
@@ -249,7 +249,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
 
                         return true;
                     },
-                    Glyph = "\xe7ee",
+                    IconOrGlyph = "\xe7ee",
                 },
                 new()
                 {
@@ -259,7 +259,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                         Launch(true);
                         return true;
                     },
-                    Glyph = "\xe7ef",
+                    IconOrGlyph = "\xe7ef",
                 },
                 new()
                 {
@@ -270,7 +270,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
 
                         return true;
                     },
-                    Glyph = "\xe838",
+                    IconOrGlyph = "\xe838",
                 },
             };
             if (Extension(FullPath) == ShortcutExtension)
@@ -290,7 +290,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                     FileExplorerHelper.OpenFolderAndSelectFile(ExecutablePath);
                     return true;
                 },
-                Glyph = "\xe8de",
+                IconOrGlyph = "\xe8de",
             };
         }
 

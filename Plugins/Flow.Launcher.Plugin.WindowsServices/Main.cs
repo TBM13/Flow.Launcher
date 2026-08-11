@@ -109,7 +109,7 @@ public class Main : IPlugin, IContextMenu
                 results.Add(new Result()
                 {
                     Title = "Restart",
-                    Glyph = "\xe777",
+                    IconOrGlyph = "\xe777",
                     Action = c =>
                     {
                         try
@@ -131,7 +131,7 @@ public class Main : IPlugin, IContextMenu
             results.Add(new Result()
             {
                 Title = "Stop",
-                Glyph = "\xe769",
+                IconOrGlyph = "\xe769",
                 Action = c =>
                 {
                     try
@@ -154,7 +154,7 @@ public class Main : IPlugin, IContextMenu
             results.Add(new Result()
             {
                 Title = "Start",
-                Glyph = "\xe768",
+                IconOrGlyph = "\xe768",
                 Action = c =>
                 {
                     try
@@ -181,7 +181,7 @@ public class Main : IPlugin, IContextMenu
                 SubTitle = service.IsRunning ?
                     "Set startup type to manual" :
                     "Set startup type to manual & start the service",
-                Glyph = "\xEB49",
+                IconOrGlyph = "\xEB49",
                 Action = c => EnableService(service, Action.EnableManual)
             });
 
@@ -191,7 +191,7 @@ public class Main : IPlugin, IContextMenu
                 SubTitle = service.IsRunning ?
                     "Set startup type to automatic" :
                     "Set startup type to automatic & start the service",
-                Glyph = "\xEB49",
+                IconOrGlyph = "\xEB49",
                 Action = c => EnableService(service, Action.EnableAutomatic)
             });
 
@@ -201,7 +201,7 @@ public class Main : IPlugin, IContextMenu
                 SubTitle = service.IsRunning ?
                     "Set startup type to automatic delayed" :
                     "Set startup type to automatic delayed & start the service",
-                Glyph = "\xEB49",
+                IconOrGlyph = "\xEB49",
                 Action = c => EnableService(service, Action.EnableAutomaticDelayed)
             });
         }
@@ -213,7 +213,7 @@ public class Main : IPlugin, IContextMenu
                 SubTitle = service.IsRunning ?
                     "Set startup type to disabled & stop the service" :
                     "Set startup type to disabled",
-                Glyph = "\xEB4A",
+                IconOrGlyph = "\xEB4A",
                 Action = c => DisableService(service)
             });
         }

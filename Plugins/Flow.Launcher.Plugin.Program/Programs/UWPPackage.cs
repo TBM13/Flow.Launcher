@@ -419,7 +419,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 Title = title,
                 AutoCompleteText = Location + '\\',
                 SubTitle = Main._settings.HideAppsPath ? string.Empty : Location,
-                IcoPath = LogoPath,
+                IconOrGlyph = LogoPath,
                 Preview = new Result.PreviewInfo
                 {
                     PreviewImagePath = PreviewImagePath,
@@ -468,7 +468,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
 
                         return true;
                     },
-                    Glyph = "\xe838",
+                    IconOrGlyph = "\xe838",
                 }
             };
 
@@ -482,7 +482,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                         Launch(true);
                         return true;
                     },
-                    Glyph = "\xe7ef"
+                    IconOrGlyph = "\xe7ef"
                 });
             }
 

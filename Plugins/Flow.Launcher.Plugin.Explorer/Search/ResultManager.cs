@@ -76,7 +76,7 @@ public static class ResultManager
         return new Result
         {
             Title = title,
-            IcoPath = path,
+            IconOrGlyph = path,
             SubTitle = subtitle,
             AutoCompleteText = GetAutoCompleteText(query, path, ResultType.Folder),
             CopyText = path,
@@ -128,7 +128,7 @@ public static class ResultManager
             Title = path.ToUpper(),
             SubTitle = subtitle,
             AutoCompleteText = GetAutoCompleteText(query, path, ResultType.Volume),
-            IcoPath = path,
+            IconOrGlyph = path,
             Score = score,
             Action = c =>
             {
@@ -185,7 +185,7 @@ public static class ResultManager
             Title = "Open in Default File Manager",
             SubTitle = "Use '*' as a search wildcard, '>' to include subdirectories.",
             AutoCompleteText = GetAutoCompleteText(query, path, ResultType.Folder),
-            IcoPath = folderPath,
+            IconOrGlyph = folderPath,
             Score = 500,
             CopyText = folderPath,
             Action = c =>
@@ -222,7 +222,7 @@ public static class ResultManager
                 isRecursiveSearch ? filePath :
                 isShellLink ? ShortcutHelper.RetrieveTargetPath(filePath) :
                 string.Empty,
-            IcoPath = filePath,
+            IconOrGlyph = filePath,
             AutoCompleteText = GetAutoCompleteText(query, filePath, ResultType.File),
             Score = score,
             CopyText = filePath,

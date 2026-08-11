@@ -34,8 +34,7 @@ public record Setting
         return new()
         {
             Title = Name,
-            IcoPath = iconPath,
-            Glyph = Glyph,
+            IconOrGlyph = Glyph ?? iconPath,
 
             ToolTip = tooltip,
             CopyText = Command,

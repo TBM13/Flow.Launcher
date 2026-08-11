@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Flow.Launcher.Core.Text;
 using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.API;
 
@@ -17,9 +18,11 @@ public partial class ResultViewModel : ObservableObject
     [ObservableProperty]
     public partial Func<Point?>? GetScreenCenterPoint { get; set; }
 
-    public Visibility ShowIcon => Result.Glyph is not null ? Visibility.Collapsed : Visibility.Visible;
-    public Visibility ShowPreviewImage => !string.IsNullOrEmpty(Result.Preview.PreviewImagePath) ? Visibility.Visible : ShowIcon;
-    public Visibility ShowGlyph => Result.Glyph is not null ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility ShowIcon => !string.IsNullOrEmpty(Result.IconOrGlyph) && ShowGlyph != Visibility.Visible
+        ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility ShowPreviewImage => !string.IsNullOrEmpty(Result.Preview.PreviewImagePath)
+        ? Visibility.Visible : ShowIcon;
+    public Visibility ShowGlyph => GlyphUtils.IsGlyph(Result.IconOrGlyph) ? Visibility.Visible : Visibility.Collapsed;
 
     public string ToolTip => string.IsNullOrEmpty(Result.ToolTip)
         ? $"{Result.Title}\n\n{Result.SubTitle}"
@@ -47,20 +50,15 @@ public partial class ResultViewModel : ObservableObject
 
     public async Task LoadImageAsync()
     {
-        string? imagePath = Result.IcoPath;
-        if (imagePath is null)
-            return;
-
-        Image = await _imageLoader.LoadAsync(imagePath, false);
+        if (ShowIcon == Visibility.Visible)
+            Image = await _imageLoader.LoadAsync(Result.IconOrGlyph!, false);
     }
 
     public async Task LoadPreviewImageAsync()
     {
-        string? imagePath = Result.Preview.PreviewImagePath ?? Result.IcoPath;
-        if (imagePath is null)
-            return;
-
-        PreviewImage = await _imageLoader.LoadAsync(imagePath, true);
+        string? imagePath = Result.Preview.PreviewImagePath ?? Result.IconOrGlyph;
+        if (ShowPreviewImage == Visibility.Visible)
+            PreviewImage = await _imageLoader.LoadAsync(imagePath!, true);
     }
 
     public override bool Equals(object? obj)

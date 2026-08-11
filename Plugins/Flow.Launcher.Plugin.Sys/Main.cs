@@ -74,7 +74,7 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = "Shutdown",
                     SubTitle = "Shutdown Computer",
-                    Glyph = "\xe7e8",
+                    IconOrGlyph = "\xe7e8",
                     Action = c =>
                     {
                         var result = MessageBox.Show(
@@ -97,7 +97,7 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = "Restart",
                     SubTitle = "Restart Computer",
-                    Glyph = "\xe777",
+                    IconOrGlyph = "\xe777",
                     Action = c =>
                     {
                         var result = MessageBox.Show(
@@ -120,7 +120,7 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = "Restart With Advanced Boot Options",
                     SubTitle = "Restart the computer with Advanced Boot Options for Safe and Debugging modes, as well as other options",
-                    Glyph = "\xecc5",
+                    IconOrGlyph = "\xecc5",
                     Action = c =>
                     {
                         var result = MessageBox.Show(
@@ -143,7 +143,7 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = "Log Off/Sign Out",
                     SubTitle = "Log off",
-                    Glyph = "\xe77b",
+                    IconOrGlyph = "\xe77b",
                     Action = c =>
                     {
                         var result = MessageBox.Show(
@@ -160,7 +160,7 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = "Lock",
                     SubTitle = "Lock this computer",
-                    Glyph = "\xe72e",
+                    IconOrGlyph = "\xe72e",
                     Action = c =>
                     {
                         OSHelper.Lock();
@@ -171,7 +171,7 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = "Sleep",
                     SubTitle = "Put computer to sleep",
-                    Glyph = "\xec46",
+                    IconOrGlyph = "\xec46",
                     Action = c =>
                     {
                         OSHelper.Suspend();
@@ -182,7 +182,7 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = "Hibernate",
                     SubTitle = "Hibernate computer",
-                    Glyph = "\xe8be",
+                    IconOrGlyph = "\xe8be",
                     Action= c =>
                     {
                         OSHelper.Suspend(hibernate: true);
@@ -192,7 +192,7 @@ namespace Flow.Launcher.Plugin.Sys
                 new Result
                 {
                     Title = "Open Recycle Bin",
-                    Glyph = "\xe74d",
+                    IconOrGlyph = "\xe74d",
                     CopyText = recycleBinFolder,
                     Action = c =>
                     {
@@ -205,8 +205,7 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = "Exit",
                     SubTitle = "Exit Flow Launcher",
-                    IcoPath = "Images\\app.png",
-                    Glyph = "\xe89f",
+                    IconOrGlyph = "\xe89f",
                     Action = c =>
                     {
                         Context.API.HideMainWindow();
@@ -218,8 +217,7 @@ namespace Flow.Launcher.Plugin.Sys
                 {
                     Title = "Settings",
                     SubTitle = "Open Flow Launcher Settings",
-                    Glyph = "\xf210",
-                    IcoPath = "Images\\app.png",
+                    IconOrGlyph = "\xf210",
                     Action = c =>
                     {
                         Context.API.OpenSettingDialog();
@@ -229,8 +227,7 @@ namespace Flow.Launcher.Plugin.Sys
                 /*new Result
                 {
                     Title = Localize.Cmd_ToggleDarkMode,
-                    Glyph = "\xe7a1",
-                    IcoPath = "Images\\app.png",
+                    IconOrGlyph = "\xe7a1",
                     Action = c =>
                     {
                         using var key = Registry.CurrentUser.OpenSubKey($@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", true);
@@ -265,7 +262,7 @@ namespace Flow.Launcher.Plugin.Sys
                 },*/
                 new Result {
                     Title = "Garbage Collection",
-                    Glyph = "\xE74D",
+                    IconOrGlyph = "\xE74D",
                     Action = c => {
                         GC.Collect();
                         GC.WaitForPendingFinalizers();

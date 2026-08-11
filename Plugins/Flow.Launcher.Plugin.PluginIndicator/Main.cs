@@ -64,7 +64,7 @@ public class Main : IPlugin
                     Title = keyword,
                     SubTitle = plugin.Name,
                     Score = searchResult.Score,
-                    IcoPath = plugin.IcoPath,
+                    IconOrGlyph = plugin.IcoPath,
                     AutoCompleteText = autoCompleteText,
                     Action = _ =>
                     {

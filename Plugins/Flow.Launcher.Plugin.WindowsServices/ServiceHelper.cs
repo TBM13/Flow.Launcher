@@ -196,8 +196,7 @@ public static class ServiceHelper
             {
                 Title = svcResult.DisplayName,
                 SubTitle = GetResultSubTitle(svcResult),
-                Glyph = GetResultGlyph(svcResult),
-                IcoPath = PluginMetadataDefinition.Metadata.IcoPath,
+                IconOrGlyph = GetResultGlyph(svcResult),
                 ContextData = svcResult,
                 CopyText = svcResult.ServiceName,
                 Score = score,
@@ -300,7 +299,7 @@ public static class ServiceHelper
         }
     }
 
-    private static string? GetResultGlyph(ServiceResult svc)
+    private static string GetResultGlyph(ServiceResult svc)
     {
         if (svc.StartType == ServiceStartMode.Disabled && svc.Status == ServiceControllerStatus.Stopped)
             return "\xeb90";

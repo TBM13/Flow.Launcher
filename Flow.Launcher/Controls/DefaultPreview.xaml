@@ -22,7 +22,7 @@
                 FontFamily="/Resources/SegoeFluentIcons.ttf#Segoe Fluent Icons"
                 FontSize="90"
                 Foreground="{DynamicResource Color05B}"
-                Text="{Binding Glyph}"
+                Text="{Binding Result.IconOrGlyph}"
                 Visibility="{Binding ShowGlyph}" />
             <Image
                 MaxWidth="96"
