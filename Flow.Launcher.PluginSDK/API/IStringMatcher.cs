@@ -57,4 +57,9 @@ public interface IStringMatcher
     /// <returns>The match result with the highest score.</returns>
     MatchResult FuzzySearchBest(ReadOnlySpan<char> query,
         ReadOnlySpan<char> c1, ReadOnlySpan<char> c2, ReadOnlySpan<char> c3);
+    /// <summary>
+    /// Performs a fuzzy search to calculate how similar <paramref name="query"/> is to all the candidates.
+    /// </summary>
+    /// <returns>The match result with the highest score.</returns>
+    MatchResult FuzzySearchBest(ReadOnlySpan<char> query, params string[] candidates);
 }

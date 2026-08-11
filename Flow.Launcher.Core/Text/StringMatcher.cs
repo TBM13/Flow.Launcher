@@ -66,6 +66,27 @@ public class StringMatcher(ISettingsAPI settings) : IStringMatcher
         return best.Score >= res3.Score ? best : res3;
     }
 
+    public MatchResult FuzzySearchBest(ReadOnlySpan<char> query, params string[] candidates)
+    {
+        query = query.Trim();
+
+        // Tokenize query
+        Span<Range> qTokens = stackalloc Range[TokenizedString.MaxTokens];
+        TokenizedString q = TokenizedString.Tokenize(query, qTokens);
+
+        // Tokenize candidates & perform fuzzy searches
+        MatchResult best = default;
+        Span<Range> cTokens = stackalloc Range[TokenizedString.MaxTokens];
+        foreach (string candidate in candidates)
+        {
+            TokenizedString c = TokenizedString.Tokenize(candidate.AsSpan().Trim(), cTokens);
+            MatchResult res = FuzzySearch(q, c);
+            if (res.Score > best.Score)
+                best = res;
+        }
+        return best;
+    }
+
     // Current method has two parts, Acronym Match and Fuzzy Search:
     // 
     // Acronym Match:
