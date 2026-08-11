@@ -78,7 +78,7 @@ public class Main : IPlugin, IContextMenu, ISettingProvider
                 IcoPath = pr.Path,
                 Title = _settings.ShowWindowTitle && pr.WindowTitle is not null
                     ? pr.WindowTitle : processNameIdTitle,
-                TitleToolTip = processNameIdTitle,
+                ToolTip = $"{processNameIdTitle}\n\n{pr.Path}",
                 SubTitle = pr.Path,
                 Score = score,
                 ContextData = pr.Path,

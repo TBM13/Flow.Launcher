@@ -91,14 +91,11 @@ public record Result
     public string? PluginID { get; internal set; }
 
     /// <summary>
-    /// Show message as ToolTip on result Title hover over
+    /// Tooltip that should be shown when the user hovers over the result.
+    /// <para/>
+    /// If this is not set, <see cref="Title"/> and <see cref="SubTitle"/> will be shown instead.
     /// </summary>
-    public string? TitleToolTip { get; set; }
-
-    /// <summary>
-    /// Show message as ToolTip on result SubTitle hover over
-    /// </summary>
-    public string? SubTitleToolTip { get; set; }
+    public string? ToolTip { get; set; }
 
     /// <summary>
     /// Customized Preview Panel

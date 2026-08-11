@@ -21,13 +21,9 @@ public partial class ResultViewModel : ObservableObject
     public Visibility ShowPreviewImage => !string.IsNullOrEmpty(Result.Preview.PreviewImagePath) ? Visibility.Visible : ShowIcon;
     public Visibility ShowGlyph => Result.Glyph is not null ? Visibility.Visible : Visibility.Collapsed;
 
-    public string ShowTitleToolTip => string.IsNullOrEmpty(Result.TitleToolTip)
-        ? Result.Title
-        : Result.TitleToolTip;
-
-    public string ShowSubTitleToolTip => string.IsNullOrEmpty(Result.SubTitleToolTip)
-        ? Result.SubTitle
-        : Result.SubTitleToolTip;
+    public string ToolTip => string.IsNullOrEmpty(Result.ToolTip)
+        ? $"{Result.Title}\n\n{Result.SubTitle}"
+        : Result.ToolTip;
 
     [ObservableProperty]
     public partial ImageSource Image { get; private set; }

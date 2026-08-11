@@ -181,7 +181,7 @@ namespace Flow.Launcher.Plugin.Program.Programs
                 IcoPath = IcoPath,
                 Score = matchResult.Score,
                 ContextData = this,
-                TitleToolTip = $"{title}\n{ExecutablePath}",
+                ToolTip = $"{title}\n{ExecutablePath}\n\n{subtitle}",
                 Action = c =>
                 {
                     // Ctrl + Enter to open containing folder

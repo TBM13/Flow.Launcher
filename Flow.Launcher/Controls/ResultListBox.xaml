@@ -78,7 +78,7 @@
                         Foreground="{DynamicResource Color05B}"
                         Text="{Binding Result.Title}"
                         TextTrimming="CharacterEllipsis"
-                        ToolTip="{Binding ShowTitleToolTip}" />
+                        ToolTip="{Binding ToolTip}" />
                     <!--  Subtitle  -->
                     <TextBlock
                         Margin="0 2 0 0"
@@ -86,7 +86,7 @@
                         Foreground="{DynamicResource SubTitleForeground}"
                         Text="{Binding Result.SubTitle}"
                         TextTrimming="CharacterEllipsis"
-                        ToolTip="{Binding ShowSubTitleToolTip}"
+                        ToolTip="{Binding ToolTip}"
                         Visibility="{pluginsdk:CollapsedWhen {Binding Result.SubTitle},
                                                              IsEqualTo=''}" />
                 </StackPanel>

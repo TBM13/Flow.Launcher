@@ -37,8 +37,7 @@ public record Setting
             IcoPath = iconPath,
             Glyph = Glyph,
 
-            TitleToolTip = tooltip,
-            SubTitleToolTip = tooltip,
+            ToolTip = tooltip,
             CopyText = Command,
 
             Action = _ =>

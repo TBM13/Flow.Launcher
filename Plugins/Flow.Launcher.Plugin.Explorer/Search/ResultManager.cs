@@ -109,8 +109,7 @@ public static class ResultManager
                 }
             },
             Score = score,
-            TitleToolTip = "Ctrl + Enter to open the directory",
-            SubTitleToolTip = path,
+            ToolTip = $"Ctrl + Enter to open the directory\n\n{path}",
             ContextData = new SearchResult { Type = ResultType.Folder, FullPath = path }
         };
     }
@@ -142,8 +141,7 @@ public static class ResultManager
                 OpenFolder(path);
                 return true;
             },
-            TitleToolTip = path,
-            SubTitleToolTip = path,
+            ToolTip = path,
             ContextData = new SearchResult { Type = ResultType.Volume, FullPath = path }
         };
     }
@@ -252,8 +250,7 @@ public static class ResultManager
 
                 return true;
             },
-            TitleToolTip = "Ctrl + Enter to open the containing folder",
-            SubTitleToolTip = filePath,
+            ToolTip = $"Ctrl + Enter to open the containing folder\n\n{filePath}",
             ContextData = new SearchResult { Type = ResultType.File, FullPath = filePath }
         };
 
