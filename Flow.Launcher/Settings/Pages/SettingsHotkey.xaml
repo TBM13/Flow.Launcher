@@ -61,56 +61,56 @@
                         <ui:FontIcon Glyph="&#xe8b7;" />
                     </ui:SettingsCard.HeaderIcon>
 
-                    <controls:HotkeyDisplay Keys="Ctrl+Enter" />
+                    <controls:HotkeyControl Keys="Ctrl+Enter" />
                 </ui:SettingsCard>
                 <ui:SettingsCard Header="Run As Admin">
                     <ui:SettingsCard.HeaderIcon>
                         <ui:FontIcon Glyph="&#xe7ef;" />
                     </ui:SettingsCard.HeaderIcon>
 
-                    <controls:HotkeyDisplay Keys="Ctrl+Shift+Enter" />
+                    <controls:HotkeyControl Keys="Ctrl+Shift+Enter" />
                 </ui:SettingsCard>
                 <ui:SettingsCard Header="Copy File Path">
                     <ui:SettingsCard.HeaderIcon>
                         <ui:FontIcon Glyph="&#xe8c8;" />
                     </ui:SettingsCard.HeaderIcon>
 
-                    <controls:HotkeyDisplay Keys="Ctrl+Shift+C" />
+                    <controls:HotkeyControl Keys="Ctrl+Shift+C" />
                 </ui:SettingsCard>
                 <ui:SettingsCard Header="Open Context Menu">
                     <ui:SettingsCard.HeaderIcon>
                         <ui:FontIcon Glyph="&#xede3;" />
                     </ui:SettingsCard.HeaderIcon>
 
-                    <controls:HotkeyDisplay Keys="Shift+Enter" />
+                    <controls:HotkeyControl Keys="Shift+Enter" />
                 </ui:SettingsCard>
                 <ui:SettingsCard Header="Open Native Context Menu">
                     <ui:SettingsCard.HeaderIcon>
                         <ui:FontIcon Glyph="&#xede3;" />
                     </ui:SettingsCard.HeaderIcon>
 
-                    <controls:HotkeyDisplay Keys="Alt+Enter" />
+                    <controls:HotkeyControl Keys="Alt+Enter" />
                 </ui:SettingsCard>
                 <ui:SettingsCard Header="Toggle Game Mode">
                     <ui:SettingsCard.HeaderIcon>
                         <ui:FontIcon Glyph="&#xe7fc;" />
                     </ui:SettingsCard.HeaderIcon>
 
-                    <controls:HotkeyDisplay Keys="Ctrl+F12" />
+                    <controls:HotkeyControl Keys="Ctrl+F12" />
                 </ui:SettingsCard>
                 <ui:SettingsCard Header="Refresh Search Results">
                     <ui:SettingsCard.HeaderIcon>
                         <ui:FontIcon Glyph="&#xe72c;" />
                     </ui:SettingsCard.HeaderIcon>
 
-                    <controls:HotkeyDisplay Keys="Ctrl+R" />
+                    <controls:HotkeyControl Keys="Ctrl+R" />
                 </ui:SettingsCard>
                 <ui:SettingsCard Description="Use when require plugins to reload and update their existing data." Header="Reload Plugins Data">
                     <ui:SettingsCard.HeaderIcon>
                         <ui:FontIcon Glyph="&#xe72c;" />
                     </ui:SettingsCard.HeaderIcon>
 
-                    <controls:HotkeyDisplay Keys="F5" />
+                    <controls:HotkeyControl Keys="F5" />
                 </ui:SettingsCard>
                 <ui:SettingsCard Header="Previous Page">
                     <ui:SettingsCard.HeaderIcon>
@@ -133,8 +133,8 @@
                     </ui:SettingsCard.HeaderIcon>
 
                     <StackPanel Orientation="Horizontal">
-                        <controls:HotkeyDisplay Keys="Ctrl+[" />
-                        <controls:HotkeyDisplay Margin="4 0 0 0" Keys="Ctrl+]" />
+                        <controls:HotkeyControl Keys="Ctrl+[" />
+                        <controls:HotkeyControl Margin="4 0 0 0" Keys="Ctrl+]" />
                     </StackPanel>
                 </ui:SettingsCard>
                 <ui:SettingsCard Header="Quick Adjust Window Height">
@@ -143,8 +143,8 @@
                     </ui:SettingsCard.HeaderIcon>
 
                     <StackPanel Orientation="Horizontal">
-                        <controls:HotkeyDisplay Keys="Ctrl+Plus" />
-                        <controls:HotkeyDisplay Margin="4 0 0 0" Keys="Ctrl+Minus" />
+                        <controls:HotkeyControl Keys="Ctrl+Plus" />
+                        <controls:HotkeyControl Margin="4 0 0 0" Keys="Ctrl+Minus" />
                     </StackPanel>
                 </ui:SettingsCard>
             </ui:SettingsExpander.Items>

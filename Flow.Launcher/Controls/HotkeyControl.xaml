@@ -8,6 +8,7 @@
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     mc:Ignorable="d">
     <Button
+        x:Name="HotkeyButton"
         Padding="5 0"
         ui:ControlHelper.CornerRadius="5"
         Click="GetNewHotkey"
@@ -31,10 +32,10 @@
                             <Style TargetType="Border">
                                 <Setter Property="Background" Value="{DynamicResource AccentButtonBackground}" />
                                 <Style.Triggers>
-                                    <!--  Change color when disabled  -->
-                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=IsEnabled}" Value="False">
+                                    <!--  Disabled style  -->
+                                    <Trigger Property="IsEnabled" Value="False">
                                         <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundBaseLowBrush}" />
-                                    </DataTrigger>
+                                    </Trigger>
                                 </Style.Triggers>
                             </Style>
                         </Border.Style>
