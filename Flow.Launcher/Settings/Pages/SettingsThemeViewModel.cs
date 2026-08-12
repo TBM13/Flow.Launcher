@@ -1,5 +1,6 @@
 ﻿using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Interop;
+using Flow.Launcher.PluginSDK.UI;
 using iNKORE.UI.WPF.Modern;
 
 namespace Flow.Launcher.Settings.Pages;
@@ -12,6 +13,8 @@ public partial class SettingsThemeViewModel(ISettingsAPI settings) : BaseSetting
     public override string IconPath => "pack://application:,,,/Images/theme.png";
 
     public static IEnumerable<int> MaxResultsRange => Enumerable.Range(2, 16);
+
+    public IReadOnlyList<LocalizedEnumItem<ColorScheme>> ColorSchemeItems => EnumLocalization<ColorScheme>.Items;
 
     public void ChangeScheme(ColorScheme scheme)
     {

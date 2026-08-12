@@ -7,7 +7,6 @@
     xmlns:ikw="http://schemas.inkore.net/lib/ui/wpf"
     xmlns:local="clr-namespace:Flow.Launcher.Settings.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:pluginsdk="http://schemas.flowlauncher.com/pluginsdk"
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     d:DataContext="{d:DesignInstance local:SettingsPluginsViewModel}"
     d:DesignHeight="450"
@@ -36,7 +35,8 @@
                     MinWidth="150"
                     MaxWidth="150"
                     HorizontalContentAlignment="Left"
-                    pluginsdk:EnumBinding.EnumType="{x:Type local:PluginDisplayMode}"
+                    ItemsSource="{Binding DisplayModeItems}"
+                    SelectedValuePath="Value"
                     SelectedValue="{Binding SelectedDisplayMode, Mode=TwoWay}" />
                 <Button
                     Width="34"

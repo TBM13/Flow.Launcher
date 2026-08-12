@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Settings;
+using Flow.Launcher.PluginSDK.UI;
 using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.ViewModel;
 using iNKORE.UI.WPF.Modern.Controls;
@@ -45,6 +46,8 @@ public partial class SettingsPluginsViewModel(
     [NotifyPropertyChangedFor(nameof(IsPriorityMode))]
     [NotifyPropertyChangedFor(nameof(IsHomeOnOffMode))]
     public partial PluginDisplayMode SelectedDisplayMode { get; set; }
+
+    public IReadOnlyList<LocalizedEnumItem<PluginDisplayMode>> DisplayModeItems => EnumLocalization<PluginDisplayMode>.Items;
 
     public bool IsOnOffMode => SelectedDisplayMode == PluginDisplayMode.OnOff;
     public bool IsPriorityMode => SelectedDisplayMode == PluginDisplayMode.Priority;

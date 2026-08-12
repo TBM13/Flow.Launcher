@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace Flow.Launcher.PluginSDK.WPF.Converters;
+namespace Flow.Launcher.PluginSDK.UI.Converters;
 
 /// <summary>
 /// Converts a bound value to a <see cref="Visibility"/> depending on whether it
