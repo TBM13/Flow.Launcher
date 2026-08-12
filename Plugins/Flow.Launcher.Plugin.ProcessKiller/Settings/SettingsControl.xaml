@@ -1,11 +1,11 @@
 ﻿<UserControl
-    x:Class="Flow.Launcher.Plugin.ProcessKiller.Views.SettingsControl"
+    x:Class="Flow.Launcher.Plugin.ProcessKiller.Settings.SettingsControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Flow.Launcher.Plugin.ProcessKiller.Settings"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vm="clr-namespace:Flow.Launcher.Plugin.ProcessKiller.ViewModels"
-    d:DataContext="{d:DesignInstance Type=vm:SettingsViewModel}"
+    d:DataContext="{d:DesignInstance Type=local:SettingsViewModel}"
     d:DesignHeight="300"
     d:DesignWidth="500"
     mc:Ignorable="d">

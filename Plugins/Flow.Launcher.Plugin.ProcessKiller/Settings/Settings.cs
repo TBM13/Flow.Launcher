@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace Flow.Launcher.Plugin.ProcessKiller;
+namespace Flow.Launcher.Plugin.ProcessKiller.Settings;
 
 public partial class Settings : ObservableObject
 {

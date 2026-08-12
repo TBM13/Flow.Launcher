@@ -13,14 +13,14 @@ internal static class ProcessUtils
     private static readonly string SvchostPath =
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "svchost.exe");
 
-    public static List<ProcessInfo>? GetKillableProcesses(Settings settings)
+    public static List<ProcessInfo>? GetKillableProcesses(Settings.Settings settings)
     {
         // Get all non-system processes
         Process[] allProcesses = Process.GetProcesses();
         if (allProcesses.Length == 0)
             return null;
 
-        List<ProcessInfo> killableProcesses = [];
+        List<ProcessInfo> killableProcesses = new(allProcesses.Length);
         var processWindowData =
             settings.ShowWindowTitle || settings.PutVisibleWindowProcessesTop
             ? GetWindowsInfo() : [];

@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Windows.Controls;
-using Flow.Launcher.Plugin.ProcessKiller.ViewModels;
-using Flow.Launcher.Plugin.ProcessKiller.Views;
+using Flow.Launcher.Plugin.ProcessKiller.Settings;
 using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Plugins;
@@ -27,7 +26,7 @@ public static class PluginMetadataDefinition
 
 public class Main : IPlugin, IContextMenu, ISettingProvider
 {
-    private Settings _settings = null!;
+    private Settings.Settings _settings = null!;
     private SettingsViewModel _viewModel = null!;
 
     public static PluginInitContext Context { get; private set; } = null!;
@@ -35,12 +34,13 @@ public class Main : IPlugin, IContextMenu, ISettingProvider
     public void Init(PluginInitContext context)
     {
         Context = context;
-        _settings = context.API.LoadSettingJsonStorage<Settings>();
+        _settings = context.API.LoadSettingJsonStorage<Settings.Settings>();
         _viewModel = new SettingsViewModel(_settings);
     }
 
     public List<Result>? Query(Query query)
     {
+        // We do not participate on the home query
         if (query.IsHomeQuery)
             return null;
 
@@ -58,7 +58,6 @@ public class Main : IPlugin, IContextMenu, ISettingProvider
             int score = 0;
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                // Get max score from searching window title, process name & ID and process path
                 MatchResult match = Context.API.StringMatcher.FuzzySearchBest(
                     searchTerm, pr.WindowTitle, pr.Path, processNameIdTitle);
 
