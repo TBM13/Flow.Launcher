@@ -66,7 +66,7 @@ public class StringMatcher(ISettingsAPI settings) : IStringMatcher
         return best.Score >= res3.Score ? best : res3;
     }
 
-    public MatchResult FuzzySearchBest(ReadOnlySpan<char> query, params string[] candidates)
+    public MatchResult FuzzySearchBest(ReadOnlySpan<char> query, string[] candidates)
     {
         query = query.Trim();
 
