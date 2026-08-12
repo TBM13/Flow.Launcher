@@ -644,18 +644,18 @@ public partial class MainViewModel : ObservableObject, IDisposable
         var query = QueryText.ToLower().Trim();
         _contextMenu.Clear();
 
-        var selected = _results.SelectedItem?.Result;
+        var selected = _results.SelectedItem;
 
         if (selected != null) // SelectedItem returns null if selection is empty.
         {
             List<Result> results;
-            if (selected.PluginID == null) // SelectedItem from history in home page.
+            if (selected.PluginID is null) // SelectedItem from history in home page.
             {
                 results = [];
             }
             else
             {
-                results = _pluginManager.GetContextMenusForPlugin(selected) ?? [];
+                results = _pluginManager.GetContextMenusForPlugin(selected.PluginID, selected.Result) ?? [];
             }
 
             if (!string.IsNullOrEmpty(query))
@@ -798,9 +798,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
             // Task.Yield will force it to run in ThreadPool
             await Task.Yield();
 
-            var results = query.IsHomeQuery ?
-                await _pluginManager.QueryHomeForPluginAsync(plugin, query, token) :
-                await _pluginManager.QueryForPluginAsync(plugin, query, token);
+            var results = await _pluginManager.QueryForPluginAsync(plugin, query, token);
 
             if (token.IsCancellationRequested) return;
 

@@ -81,11 +81,6 @@ public record Result
     public object? ContextData { get; set; }
 
     /// <summary>
-    /// The ID of the plugin that generated this result.
-    /// </summary>
-    public string? PluginID { get; internal set; }
-
-    /// <summary>
     /// Tooltip that should be shown when the user hovers over the result.
     /// <para/>
     /// If this is not set, <see cref="Title"/> and <see cref="SubTitle"/> will be shown instead.

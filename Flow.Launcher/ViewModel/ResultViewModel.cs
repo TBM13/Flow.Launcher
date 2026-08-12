@@ -38,10 +38,16 @@ public partial class ResultViewModel : ObservableObject
 
     public Result Result { get; }
 
-    public ResultViewModel(IImageLoader imageLoader, Result result)
+    /// <summary>
+    /// The ID of the plugin that generated this result, or null if the result is not associated with a plugin.
+    /// </summary>
+    public string? PluginID { get; }
+
+    public ResultViewModel(IImageLoader imageLoader, Result result, string? pluginId = null)
     {
         _imageLoader = imageLoader;
         Result = result;
+        PluginID = pluginId;
 
         Image = _imageLoader.LoadingIcon;
         PreviewImage = _imageLoader.LoadingIcon;

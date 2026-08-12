@@ -143,12 +143,12 @@ public partial class ResultsViewModel : ObservableObject, IDisposable
             return Results;
 
         var newResults = resultsForUpdates.SelectMany(
-            u => u.Results, (u, r) => new ResultViewModel(_imageLoader, r));
+            u => u.Results, (u, r) => new ResultViewModel(_imageLoader, r, u.ID));
 
         if (resultsForUpdates.Any(x => x.ShouldClearExistingResults))
             return newResults.OrderByDescending(rv => rv.Result.Score);
 
-        return Results.Where(r => resultsForUpdates.All(u => u.ID != r.Result.PluginID))
+        return Results.Where(r => resultsForUpdates.All(u => u.ID != r.PluginID))
                 .Concat(newResults)
                 .OrderByDescending(rv => rv.Result.Score);
     }

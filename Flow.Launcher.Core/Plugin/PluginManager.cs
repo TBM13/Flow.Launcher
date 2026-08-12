@@ -144,10 +144,8 @@ public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger) : IAs
 
     public IReadOnlyList<PluginMetadata> ValidPluginsForQuery(Query query)
     {
-        if (_nonGlobalPlugins.TryGetValue(query.ActionKeyword, out var plugin))
-        {
+        if (_nonGlobalPlugins.TryGetValue(query.ActionKeyword, out PluginMetadata? plugin))
             return [plugin];
-        }
 
         return _globalPlugins;
     }
@@ -158,13 +156,7 @@ public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger) : IAs
             .Where(p => p.ActionKeywords.Contains(Query.GlobalPluginWildcard))];
     }
 
-    public Task<List<Result>?> QueryForPluginAsync(PluginMetadata metadata, Query query, CancellationToken token)
-        => QueryPluginAsync(metadata, query, token, isHomeQuery: false);
-
-    public Task<List<Result>?> QueryHomeForPluginAsync(PluginMetadata metadata, Query query, CancellationToken token)
-        => QueryPluginAsync(metadata, query, token, isHomeQuery: true);
-
-    private async Task<List<Result>?> QueryPluginAsync(PluginMetadata metadata, Query query, CancellationToken token, bool isHomeQuery)
+    public async Task<List<Result>?> QueryForPluginAsync(PluginMetadata metadata, Query query, CancellationToken token)
     {
         if (IsPluginInitializing(metadata))
         {
@@ -172,7 +164,6 @@ public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger) : IAs
             {
                 Title = metadata.Name + ": This plugin is still initializing...",
                 IconOrGlyph = metadata.IcoPath,
-                PluginID = metadata.ID,
                 Action = _ =>
                 {
                     IPublicAPI.Instance.ReQuery();
@@ -186,11 +177,7 @@ public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger) : IAs
         {
             List<Result>? results = await metadata.Plugin.QueryAsync(query, token).ConfigureAwait(false);
 
-            if (results is not null)
-            {
-                token.ThrowIfCancellationRequested();
-                UpdatePluginMetadata(results, metadata);
-            }
+            token.ThrowIfCancellationRequested();
 
             return results;
         }
@@ -201,7 +188,7 @@ public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger) : IAs
         }
         catch (Exception e)
         {
-            if (isHomeQuery)
+            if (query.IsHomeQuery)
             {
                 _logger.LogError(e, $"Failed to query home for plugin: {metadata.Name}");
                 return null;
@@ -211,7 +198,6 @@ public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger) : IAs
             {
                 Title = metadata.Name + ": Failed to respond!",
                 IconOrGlyph = Constant.ErrorIcon,
-                PluginID = metadata.ID,
                 Action = _ => { throw new FlowPluginException(metadata, e); }
             };
 
@@ -239,30 +225,14 @@ public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger) : IAs
         return null;
     }
 
-    public List<PluginMetadata> GetAllLoadedPlugins()
-    {
-        return [.. _allLoadedPlugins.Values];
-    }
-
+    public List<PluginMetadata> GetAllLoadedPlugins() => [.. _allLoadedPlugins.Values];
     public List<PluginMetadata> GetAllInitializedPlugins(bool includeFailed)
     {
         return [.. _allInitializedPlugins.Values
             .Where(p => includeFailed || !p.InitFailed)
             .Select(p => p.Metadata)];
     }
-
-    public Dictionary<string, PluginMetadata> GetNonGlobalPlugins()
-    {
-        return _nonGlobalPlugins.ToDictionary();
-    }
-
-    public void UpdatePluginMetadata(IReadOnlyList<Result> results, PluginMetadata metadata)
-    {
-        foreach (var r in results)
-        {
-            r.PluginID = metadata.ID;
-        }
-    }
+    public Dictionary<string, PluginMetadata> GetNonGlobalPlugins() => _nonGlobalPlugins.ToDictionary();
 
     /// <summary>
     /// get specified plugin, return null if not found
@@ -278,10 +248,9 @@ public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger) : IAs
         return plugin;
     }
 
-    public List<Result>? GetContextMenusForPlugin(Result result)
+    public List<Result>? GetContextMenusForPlugin(string pluginId, Result result)
     {
-        if (result.PluginID is null
-            || !_allInitializedPlugins.TryGetValue(result.PluginID, out var entry)
+        if (!_allInitializedPlugins.TryGetValue(pluginId, out var entry)
             || entry.Metadata.Plugin is not IContextMenu plugin)
         {
             return null;
@@ -294,11 +263,6 @@ public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger) : IAs
             List<Result>? results = plugin.LoadContextMenus(result);
             if (results is null)
                 return null;
-
-            foreach (Result r in results)
-            {
-                r.PluginID = metadata.ID;
-            }
 
             return results;
         }
