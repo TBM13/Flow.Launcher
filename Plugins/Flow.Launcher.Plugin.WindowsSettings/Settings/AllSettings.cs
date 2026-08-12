@@ -1,4 +1,6 @@
-﻿namespace Flow.Launcher.Plugin.WindowsSettings.Settings;
+﻿using System.Dynamic;
+
+namespace Flow.Launcher.Plugin.WindowsSettings.Settings;
 
 public static class AllSettings
 {
@@ -25,9 +27,15 @@ public static class AllSettings
                         Command = ["ms-settings:display"],
                         Glyph = "\ue7f4",
 
-                        AlternativeNames = ["Screen", "Color profile"],
+                        AlternativeNames = ["Screen"],
 
                         Settings = [
+                            new() {
+                                Type = SettingType.SettingsApp,
+                                Name = "Brightness",
+                                Command = ["ms-settings:display"], // There is no URI for this
+                                Glyph = "\ue706"
+                            },
                             new() {
                                 Type = SettingType.SettingsApp,
                                 Name = "Night light",
@@ -36,15 +44,32 @@ public static class AllSettings
 
                                 AlternativeNames = ["Blue light"]
                             },
+                            new SettingsPage() {
+                                Type = SettingType.SettingsApp,
+                                Name = "Color profile",
+                                Command = ["ms-settings:display"], // There is no URI for this
+                                Glyph = "\uef3c",
+
+                                Settings = [
+                                    new() {
+                                        Type = SettingType.System32Exe,
+                                        Name = "Display Color Calibration",
+                                        Command = ["dccw.exe"],
+
+                                        AlternativeNames = ["dccw.exe"]
+                                    }
+                                ]
+                            },
                             new() {
                                 Type = SettingType.SettingsApp,
                                 Name = "HDR",
-                                Command = ["ms-settings:display-hdr"]
+                                Command = ["ms-settings:display-hdr"],
                             },
                             new() {
                                 Type = SettingType.SettingsApp,
                                 Name = "Advanced display settings",
                                 Command = ["ms-settings:advanceddisplay"],
+                                Glyph = "\ue7f8",
 
                                 AlternativeNames = ["Advanced screen settings"]
                             },
@@ -52,6 +77,7 @@ public static class AllSettings
                                 Type = SettingType.SettingsApp,
                                 Name = "Graphics settings",
                                 Command = ["ms-settings:display-advancedgraphics"],
+                                Glyph = "\uf211",
 
                                 AlternativeNames = ["GPU settings"]
                             }
@@ -72,6 +98,7 @@ public static class AllSettings
                                 Type = SettingType.SettingsApp,
                                 Name = "Sound devices",
                                 Command = ["ms-settings:sound-devices"],
+                                Glyph = "\ue7f5",
 
                                 AlternativeNames = ["Audio devices", "Microphone devices"]
                             },
@@ -79,6 +106,7 @@ public static class AllSettings
                                 Type = SettingType.SettingsApp,
                                 Name = "Volume mixer",
                                 Command = ["ms-settings:apps-volume"],
+                                Glyph = "\uf4c3",
 
                                 AlternativeNames = ["Audio mixer"]
                             },
@@ -99,6 +127,13 @@ public static class AllSettings
                         Name = "Notifications",
                         Command = ["ms-settings:notifications"],
                         Glyph = "\uf2a3"
+                    },
+
+                    // Focus assist
+                    new() {
+                        Type = SettingType.SettingsApp,
+                        Name = "Focus assist",
+                        Command = ["ms-settings:quiethours"],
                     },
 
                     // Energy & battery
@@ -160,6 +195,7 @@ public static class AllSettings
                         Type = SettingType.SettingsApp,
                         Name = "Nearby sharing",
                         Command = ["ms-settings:crossdevice"],
+                        Glyph = "\ue72d",
 
                         AlternativeNames = ["Shared experiences"]
                     },
@@ -173,10 +209,21 @@ public static class AllSettings
                     },
 
                     // For developers
-                    new() {
+                    new SettingsPage() {
                         Type = SettingType.SettingsApp,
                         Name = "For developers",
                         Command = ["ms-settings:developers"],
+                        Glyph = "\uec7a",
+
+                        Settings = [
+                            new() {
+                                Type = SettingType.System32Exe,
+                                Name = "Explorer Options",
+                                Command = ["control.exe", "/name", "Microsoft.FolderOptions"],
+
+                                AlternativeNames = ["Folder Options"]
+                            }
+                        ]
                     },
 
                     // Activation
@@ -231,6 +278,7 @@ public static class AllSettings
                         Type = SettingType.SettingsApp,
                         Name = "System components",
                         Command = ["ms-settings:systemcomponents"],
+                        Glyph = "\ued35",
                     },
 
                     // AI components
@@ -241,11 +289,21 @@ public static class AllSettings
                     },
 
                     // Optional features
-                    new() {
+                    new SettingsPage() {
                         Type = SettingType.SettingsApp,
                         Name = "Optional features",
                         Command = ["ms-settings:optionalfeatures"],
-                        Glyph = "\ue71d"
+                        Glyph = "\ue71d",
+
+                        Settings = [
+                            new() {
+                                Type = SettingType.System32Exe,
+                                Name = "Add or disable Windows features",
+                                Command = ["OptionalFeatures.exe"],
+
+                                AlternativeNames = ["OptionalFeatures.exe"]
+                            }
+                        ]
                     },
 
                     // About
@@ -326,6 +384,7 @@ public static class AllSettings
                         Type = SettingType.SettingsApp,
                         Name = "Connected devices",
                         Command = ["ms-settings:connecteddevices"],
+                        Glyph = "\ue772",
 
                         Settings = [
                             new() {
@@ -372,6 +431,7 @@ public static class AllSettings
                         Type = SettingType.SettingsApp,
                         Name = "Phones",
                         Command = ["ms-settings:mobile-devices"],
+                        Glyph = "\ue8ea",
 
                         AlternativeNames = ["Mobile devices"]
                     },
@@ -379,6 +439,7 @@ public static class AllSettings
                         Type = SettingType.SettingsApp,
                         Name = "Cameras",
                         Command = ["ms-settings:camera"],
+                        Glyph = "\ue722",
                     },
                     new SettingsPage() {
                         Type = SettingType.SettingsApp,
@@ -398,6 +459,7 @@ public static class AllSettings
                         Type = SettingType.SettingsApp,
                         Name = "Keyboard",
                         Command = ["ms-settings:devices-keyboard"],
+                        Glyph = "\ue765",
                     },
                     new() {
                         Type = SettingType.SettingsApp,
@@ -438,6 +500,7 @@ public static class AllSettings
                                 Type = SettingType.SettingsApp,
                                 Name = "Manage known WiFi networks",
                                 Command = ["ms-settings:network-wifisettings"],
+                                Glyph = "\ue8fd",
                             }
                         ],
                     },
@@ -482,6 +545,7 @@ public static class AllSettings
                         Type = SettingType.SettingsApp,
                         Name = "Advanced network settings",
                         Command = ["ms-settings:network-advancedsettings"],
+                        Glyph = "\ueda3",
 
                         Settings = [
                             new() {
@@ -524,12 +588,14 @@ public static class AllSettings
                 Type = SettingType.SettingsApp,
                 Name = "Personalization",
                 Command = ["ms-settings:personalization"],
+                Glyph = "\ue771",
 
                 Settings = [
                     new() {
                         Type = SettingType.SettingsApp,
                         Name = "Background",
                         Command = ["ms-settings:personalization-background"],
+                        Glyph = "\ue91b",
                     },
                     new() {
                         Type = SettingType.SettingsApp,
