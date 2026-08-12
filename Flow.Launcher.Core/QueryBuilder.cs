@@ -1,4 +1,5 @@
-﻿using Flow.Launcher.PluginSDK;
+﻿using Flow.Launcher.Core.Text;
+using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.Plugins;
 
 namespace Flow.Launcher.Core;
@@ -7,10 +8,10 @@ public static class QueryBuilder
 {
     public static Query Build(string originalQuery, bool isRequery, Dictionary<string, PluginMetadata> nonGlobalPlugins)
     {
-        string trimmedQuery = originalQuery.Trim();
+        ReadOnlySpan<char> trimmedQuery = originalQuery.Trim();
 
-        // home query
-        if (trimmedQuery.Length == 0)
+        // Home query
+        if (trimmedQuery.IsEmpty)
         {
             return new Query()
             {
@@ -22,33 +23,39 @@ public static class QueryBuilder
             };
         }
 
-        string[] terms = trimmedQuery.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        // Since TermSeparator is a whitespace, terms should never have a length of 0 here
+        // Tokenize query
+        Span<Range> tokens = stackalloc Range[TokenizedString.MaxTokens];
+        TokenizedString tokenizedQuery = TokenizedString.Tokenize(trimmedQuery, tokens);
 
         string actionKeyword, search;
-        string possibleActionKeyword = terms[0];
+        ReadOnlySpan<char> possibleActionKeyword = tokenizedQuery[0];
 
-        if (nonGlobalPlugins.TryGetValue(possibleActionKeyword, out var pluginMetadata) && !pluginMetadata.Disabled)
+        var lookup = nonGlobalPlugins.GetAlternateLookup<ReadOnlySpan<char>>();
+        if (lookup.TryGetValue(possibleActionKeyword, out PluginMetadata? metadata) && !metadata.Disabled)
         {
-            // use non global plugin for query
-            actionKeyword = possibleActionKeyword;
-            search = terms.Length > 1 ? trimmedQuery[(actionKeyword.Length + 1)..].TrimStart() : string.Empty;
+            // Query has the action keyword of a non-global plugin
+            actionKeyword = possibleActionKeyword.ToString();
+            // TODO: Maybe generate search from the tokenizedQuery
+            search = tokenizedQuery.TokenCount > 1
+                ? trimmedQuery[(actionKeyword.Length + 1)..].TrimStart().ToString()
+                : string.Empty;
         }
-        // Allow queries with a single-digit actionKeyword (that isn't a number nor letter), and no spaces.
-        // For example: '>settings' ('>' is the action keyword)
+        // Allow queries with a single-digit action keyword symbol. E.g. '>settings' ('>' is the action keyword)
         else if (possibleActionKeyword.Length >= 2
                 && !char.IsLetterOrDigit(possibleActionKeyword[0])
-                && nonGlobalPlugins.TryGetValue(possibleActionKeyword[0..1], out var pluginMetadata2)
-                && !pluginMetadata2.Disabled)
+                && lookup.TryGetValue(possibleActionKeyword[..1], out metadata)
+                && !metadata.Disabled)
         {
-            actionKeyword = possibleActionKeyword[0..1];
-            search = trimmedQuery[1..].TrimStart();
+            actionKeyword = possibleActionKeyword[..1].ToString();
+            // TODO: Maybe generate search from the tokenizedQuery
+            search = trimmedQuery[1..].TrimStart().ToString();
         }
         else
         {
-            // non action keyword
+            // No valid action keyword (global query)
             actionKeyword = string.Empty;
-            search = trimmedQuery;
+            // TODO: Maybe generate search from the tokenizedQuery
+            search = trimmedQuery.ToString();
         }
 
         return new Query()
