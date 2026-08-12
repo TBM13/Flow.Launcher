@@ -2,14 +2,13 @@
     x:Class="Flow.Launcher.Plugin.Program.Views.ProgramSetting"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:converters="clr-namespace:Flow.Launcher.Plugin.Program.Views.Converters"
     xmlns:root="clr-namespace:Flow.Launcher.Plugin.Program"
     Height="520"
-    DataContext="{Binding RelativeSource={RelativeSource Self}}"
-    mc:Ignorable="d">
+    DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:ProgramSourceStatusConverter x:Key="ProgramSourceStatusConverter" />
         <Style x:Key="SettingPanelSeparatorStyle" TargetType="Separator">
             <Setter Property="Margin" Value="-70 13.5 -18 13.5" />
             <Setter Property="Height" Value="1" />
@@ -155,18 +154,9 @@
                     <GridViewColumn Width="90" Header="{x:Static root:Localize.Settings_ProgramStatus}">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock TextAlignment="Left">
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="Text" Value="{x:Static root:Localize.Settings_ProgramDisabled}" />
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Enabled, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                                                    <Setter Property="Text" Value="{x:Static root:Localize.Settings_ProgramEnabled}" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
+                                <TextBlock
+                                    Text="{Binding Enabled, Converter={StaticResource ProgramSourceStatusConverter}}"
+                                    TextAlignment="Left" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
