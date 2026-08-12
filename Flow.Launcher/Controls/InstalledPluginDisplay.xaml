@@ -4,8 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:pages="clr-namespace:Flow.Launcher.Settings.Pages"
-    xmlns:pluginsdk="http://schemas.flowlauncher.com/pluginsdk"
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     xmlns:vm="clr-namespace:Flow.Launcher.ViewModel"
     d:DataContext="{d:DesignInstance vm:PluginViewModel}"
@@ -27,8 +25,7 @@
                 <StackPanel
                     VerticalAlignment="Center"
                     Orientation="Horizontal"
-                    Visibility="{pluginsdk:VisibleWhen {Binding DataContext.SelectedDisplayMode, RelativeSource={RelativeSource AncestorType=ui:ItemsRepeater}},
-                                                       IsEqualTo={x:Static pages:PluginDisplayMode.Priority}}">
+                    Visibility="{Binding DataContext.IsPriorityMode, RelativeSource={RelativeSource AncestorType=ui:ItemsRepeater}, Converter={StaticResource BoolToVisibilityConverter}}">
                     <TextBlock
                         Margin="0 0 8 0"
                         VerticalAlignment="Center"
@@ -48,14 +45,12 @@
                 <ui:ToggleSwitch
                     Margin="0 0 8 0"
                     IsOn="{Binding PluginHomeState}"
-                    Visibility="{pluginsdk:VisibleWhen {Binding DataContext.SelectedDisplayMode, RelativeSource={RelativeSource AncestorType=ui:ItemsRepeater}},
-                                                       IsEqualTo={x:Static pages:PluginDisplayMode.HomeOnOff}}" />
+                    Visibility="{Binding DataContext.IsHomeOnOffMode, RelativeSource={RelativeSource AncestorType=ui:ItemsRepeater}, Converter={StaticResource BoolToVisibilityConverter}}" />
 
                 <ui:ToggleSwitch
                     Margin="0 0 8 0"
                     IsOn="{Binding PluginState}"
-                    Visibility="{pluginsdk:VisibleWhen {Binding DataContext.SelectedDisplayMode, RelativeSource={RelativeSource AncestorType=ui:ItemsRepeater}},
-                                                       IsEqualTo={x:Static pages:PluginDisplayMode.OnOff}}" />
+                    Visibility="{Binding DataContext.IsOnOffMode, RelativeSource={RelativeSource AncestorType=ui:ItemsRepeater}, Converter={StaticResource BoolToVisibilityConverter}}" />
             </StackPanel>
         </ui:SettingsExpander.Content>
 

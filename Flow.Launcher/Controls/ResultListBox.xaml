@@ -4,7 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:pluginsdk="http://schemas.flowlauncher.com/pluginsdk"
     xmlns:root="clr-namespace:Flow.Launcher"
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     xmlns:vm="clr-namespace:Flow.Launcher.ViewModel"
@@ -88,8 +87,7 @@
                         Foreground="{DynamicResource SubTitleForeground}"
                         Text="{Binding Result.SubTitle}"
                         TextTrimming="CharacterEllipsis"
-                        Visibility="{pluginsdk:CollapsedWhen {Binding Result.SubTitle},
-                                                             IsEqualTo=''}" />
+                        Visibility="{Binding ShowSubTitle}" />
                 </StackPanel>
             </DockPanel>
         </DataTemplate>

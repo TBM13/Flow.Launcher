@@ -62,16 +62,14 @@
                     Margin="18 0 0 0"
                     ItemsSource="{Binding ScreenNumbers}"
                     SelectedValue="{Binding Settings.DisplayNumber}"
-                    Visibility="{pluginsdk:VisibleWhen {Binding Settings.Display},
-                                                       IsEqualTo={x:Static settings:DisplayType.Custom}}" />
+                    Visibility="{Binding Settings.Display, Converter={StaticResource VisibleWhenEquals}, ConverterParameter={x:Static settings:DisplayType.Custom}}" />
             </StackPanel>
         </ui:SettingsCard>
 
         <ui:SettingsCard
             Margin="0 4 0 0"
             Header="Search Window Position on Monitor"
-            Visibility="{pluginsdk:CollapsedWhen {Binding Settings.Display},
-                                                 IsEqualTo={x:Static settings:DisplayType.RememberLastDisplay}}">
+            Visibility="{Binding Settings.Display, Converter={StaticResource CollapsedWhenEquals}, ConverterParameter={x:Static settings:DisplayType.RememberLastDisplay}}">
             <ui:SettingsCard.HeaderIcon>
                 <ui:FontIcon Glyph="&#xe7f4;" />
             </ui:SettingsCard.HeaderIcon>
@@ -85,8 +83,7 @@
                 <StackPanel
                     Margin="18 0 0 0"
                     Orientation="Horizontal"
-                    Visibility="{pluginsdk:VisibleWhen {Binding Settings.DisplayPosition},
-                                                       IsEqualTo={x:Static settings:DisplayPosition.Custom}}">
+                    Visibility="{Binding Settings.DisplayPosition, Converter={StaticResource VisibleWhenEquals}, ConverterParameter={x:Static settings:DisplayPosition.Custom}}">
 
                     <TextBox MinWidth="80" Text="{Binding Settings.CustomDisplayPositionLeft}" />
                     <TextBlock Margin="10 0 10 0" Text="x" />

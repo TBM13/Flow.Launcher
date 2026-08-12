@@ -3,7 +3,6 @@ using System.Windows;
 using System.Windows.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Flow.Launcher.Core.Image;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Settings;
 using Flow.Launcher.PluginSDK.API;
@@ -42,7 +41,14 @@ public partial class SettingsPluginsViewModel(
             new(_loggerFactory), _imageLoader, plugin, _settings.PluginSettings.GetPluginSettings(plugin.ID)));
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsOnOffMode))]
+    [NotifyPropertyChangedFor(nameof(IsPriorityMode))]
+    [NotifyPropertyChangedFor(nameof(IsHomeOnOffMode))]
     public partial PluginDisplayMode SelectedDisplayMode { get; set; }
+
+    public bool IsOnOffMode => SelectedDisplayMode == PluginDisplayMode.OnOff;
+    public bool IsPriorityMode => SelectedDisplayMode == PluginDisplayMode.Priority;
+    public bool IsHomeOnOffMode => SelectedDisplayMode == PluginDisplayMode.HomeOnOff;
 
     [RelayCommand]
     private async Task OpenHelperAsync(Button button)

@@ -8,5 +8,4 @@ using System.Windows.Markup;
 [assembly: XmlnsDefinition("http://schemas.flowlauncher.com/pluginsdk", "Flow.Launcher.PluginSDK.WPF")]
 [assembly: XmlnsDefinition("http://schemas.flowlauncher.com/pluginsdk", "Flow.Launcher.PluginSDK.WPF.Behaviors")]
 [assembly: XmlnsDefinition("http://schemas.flowlauncher.com/pluginsdk", "Flow.Launcher.PluginSDK.WPF.Converters")]
-[assembly: XmlnsDefinition("http://schemas.flowlauncher.com/pluginsdk", "Flow.Launcher.PluginSDK.WPF.MarkupExtensions")]
 [assembly: XmlnsPrefix("http://schemas.flowlauncher.com/pluginsdk", "pluginsdk")]

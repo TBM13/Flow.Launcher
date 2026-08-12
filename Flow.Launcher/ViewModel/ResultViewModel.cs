@@ -23,6 +23,7 @@ public partial class ResultViewModel : ObservableObject
     public Visibility ShowPreviewImage => !string.IsNullOrEmpty(Result.Preview.PreviewImagePath)
         ? Visibility.Visible : ShowIcon;
     public Visibility ShowGlyph => GlyphUtils.IsGlyph(Result.IconOrGlyph) ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility ShowSubTitle => string.IsNullOrEmpty(Result.SubTitle) ? Visibility.Collapsed : Visibility.Visible;
 
     public string ToolTip => string.IsNullOrEmpty(Result.ToolTip)
         ? $"{Result.Title}\n\n{Result.SubTitle}"

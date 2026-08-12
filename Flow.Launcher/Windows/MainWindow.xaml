@@ -39,9 +39,6 @@
         <!--  Fix this once we move to Avalonia and ideally make the shadow bigger instead of using the OS default one  -->
         <WindowChrome CaptionHeight="9" GlassFrameThickness="0" />
     </WindowChrome.WindowChrome>
-    <Window.Resources>
-        <pluginsdk:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-    </Window.Resources>
     <Window.InputBindings>
         <KeyBinding Key="Escape" Command="{Binding EscCommand}" />
         <KeyBinding
