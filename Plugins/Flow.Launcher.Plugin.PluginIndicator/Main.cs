@@ -46,22 +46,22 @@ public class Main : IPlugin
                     continue;
 
                 // If not a home query, filter results with search term
-                MatchResult searchResult;
-                if (!query.IsHomeQuery && !string.IsNullOrEmpty(query.Search))
+                int score = 0;
+                if (!query.IsHomeQuery && !string.IsNullOrWhiteSpace(query.Search))
                 {
-                    searchResult = _context.API.StringMatcher.FuzzySearchBest(query.Search, keyword, plugin.Name);
-                    if (!searchResult.IsThresholdMet)
+                    MatchResult match = _context.API.StringMatcher.FuzzySearchBest(query.Search, keyword, plugin.Name);
+                    if (!match.IsThresholdMet)
                         continue;
+
+                    score = match.Score;
                 }
-                else
-                    searchResult = default;
 
                 string autoCompleteText = $"{keyword} ";
                 results.Add(new Result
                 {
                     Title = keyword,
                     SubTitle = plugin.Name,
-                    Score = searchResult.Score,
+                    Score = score,
                     IconOrGlyph = plugin.IcoPath,
                     AutocompleteText = (false, autoCompleteText),
                     Action = _ =>
