@@ -699,7 +699,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         {
             if (currentCancellationToken.IsCancellationRequested) return;
 
-            ICollection<PluginMetadata> plugins = Array.Empty<PluginMetadata>();
+            IReadOnlyList<PluginMetadata> plugins = Array.Empty<PluginMetadata>();
             if (query.IsHomeQuery)
             {
                 if (_settings.ShowHomePage)
@@ -869,7 +869,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     /// </summary>
     /// <param name="plugins">The collection of plugins to check.</param>
     /// <returns>True if existing results should be cleared, false otherwise.</returns>
-    private bool ShouldClearExistingResultsForNonQuery(ICollection<PluginMetadata> plugins)
+    private bool ShouldClearExistingResultsForNonQuery(IReadOnlyList<PluginMetadata> plugins)
     {
         if (plugins.Count == 0 || plugins.All(x => x.HomeDisabled == true))
         {
