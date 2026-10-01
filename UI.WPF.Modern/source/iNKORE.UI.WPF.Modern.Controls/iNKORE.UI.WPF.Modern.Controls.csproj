@@ -18,25 +18,6 @@
 		<NoWarn>$(NoWarn);CS1591;1701;1702;CA1416;CS1573</NoWarn>
 	</PropertyGroup>
 
-	<!--<PropertyGroup>
-		<CsWinRTEmbedded>true</CsWinRTEmbedded>
-		<CsWinRTWindowsMetadata>10.0.18362.0</CsWinRTWindowsMetadata>
-		<CsWinRTIncludes>
-			Windows.Foundation;
-			Windows.UI.Color;
-			Windows.UI.IColors;
-			Windows.UI.ViewManagement.HandPreference;
-			Windows.UI.ViewManagement.IUISettings;
-			Windows.UI.ViewManagement.UIColorType;
-			Windows.UI.ViewManagement.UIElementType;
-			Windows.UI.ViewManagement.UISettings;
-		</CsWinRTIncludes>
-		<CsWinRTExcludes>
-			Windows.Foundation.Diagnostics;
-			Windows.Foundation.PropertyType;
-		</CsWinRTExcludes>
-	</PropertyGroup>-->
-
 	<ItemGroup>
 	  <Compile Include="..\iNKORE.UI.WPF.Modern\Properties\AssemblyInfoCommon.cs" Link="Properties\AssemblyInfoCommon.cs" />
 	</ItemGroup>
