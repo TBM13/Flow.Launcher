@@ -4,16 +4,12 @@
     <UseWPF>true</UseWPF>
     <GenerateDependencyFile>false</GenerateDependencyFile>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="iNKORE.UI.WPF.Modern" Version="0.10.2.1" />
-  </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\..\Flow.Launcher.PluginSDK\Flow.Launcher.PluginSDK.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\Flow.Launcher.Interop\Flow.Launcher.Interop.csproj" />
+
+    <ProjectReference Include="..\UI.WPF.Modern\source\iNKORE.UI.WPF.Modern.Controls\iNKORE.UI.WPF.Modern.Controls.csproj" />
   </ItemGroup>
 
   <ItemGroup>
