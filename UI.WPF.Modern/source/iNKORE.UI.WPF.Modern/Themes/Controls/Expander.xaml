@@ -533,9 +533,6 @@
         <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Stretch" />
-        <Setter Property="chelper:ExpanderAnimationsHelper.IsEnabled" Value="True" />
-        <Setter Property="chelper:ExpanderAnimationsHelper.ExpandAnimationDuration" Value="{DynamicResource ExpandAnimationDuration}" />
-        <Setter Property="chelper:ExpanderAnimationsHelper.CollapseAnimationDuration" Value="{DynamicResource CollapseAnimationDuration}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Expander">
@@ -562,7 +559,8 @@
                             Tag="{TemplateBinding chelper:ControlHelper.CornerRadius}" />
                         <!--  The clip is a composition clip applied in code  -->
                         <ikw:ClippedContent x:Name="ExpanderContentClip" DockPanel.Dock="Bottom"
-                                            ClipToBounds="True">
+                                            ClipToBounds="True"
+                                            Visibility="Collapsed">
                             
                             <ikw:ClippedContent
                                 x:Name="ExpanderContent"
@@ -590,6 +588,9 @@
                         </ikw:ClippedContent>
                     </DockPanel>
                     <ControlTemplate.Triggers>
+                        <Trigger Property="IsExpanded" Value="True">
+                            <Setter TargetName="ExpanderContentClip" Property="Visibility" Value="Visible" />
+                        </Trigger>
                         <Trigger Property="ExpandDirection" Value="Right">
                             <Setter TargetName="ExpanderHeader" Property="Style" Value="{DynamicResource ExpanderCardRightHeaderRightStyle}" />
                             <Setter TargetName="ExpanderHeader" Property="Padding" Value="{DynamicResource ExpanderHeaderVerticalPadding}" />

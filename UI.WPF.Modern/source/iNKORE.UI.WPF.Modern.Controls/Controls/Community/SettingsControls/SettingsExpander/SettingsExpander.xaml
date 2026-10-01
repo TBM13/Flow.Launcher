@@ -158,9 +158,6 @@
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="ui:ControlHelper.CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
-        <Setter Property="chelper:ExpanderAnimationsHelper.IsEnabled" Value="True" />
-        <Setter Property="chelper:ExpanderAnimationsHelper.ExpandAnimationDuration" Value="{DynamicResource ExpandAnimationDuration}" />
-        <Setter Property="chelper:ExpanderAnimationsHelper.CollapseAnimationDuration" Value="{DynamicResource CollapseAnimationDuration}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Expander">
@@ -172,7 +169,8 @@
 
                         <!--  The clip is a composition clip applied in code  -->
                         <ikw:ClippedContent x:Name="ExpanderContentClip" Grid.Row="1"
-                                            ClipToBounds="True">
+                                            ClipToBounds="True"
+                                            Visibility="Collapsed">
                             <ikw:ClippedContent
                                 x:Name="ExpanderContent"
                                 MinHeight="{DynamicResource SettingsExpanderContentMinHeight}"
@@ -220,6 +218,9 @@
                     </Grid>
                     
                     <ControlTemplate.Triggers>
+                        <Trigger Property="IsExpanded" Value="True">
+                            <Setter TargetName="ExpanderContentClip" Property="Visibility" Value="Visible" />
+                        </Trigger>
                          <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsExpanded" Value="true" />
