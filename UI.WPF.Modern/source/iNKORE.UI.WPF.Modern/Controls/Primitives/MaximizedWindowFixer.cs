@@ -10,6 +10,10 @@ using System.Windows.Media;
 using iNKORE.UI.WPF.Helpers;
 using iNKORE.UI.WPF.Modern.Helpers;
 using iNKORE.UI.WPF.Modern.Native;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.Graphics.Gdi;
+using Windows.Win32.UI.WindowsAndMessaging;
 using static iNKORE.UI.WPF.Modern.Native.User32;
 //using Windows.Win32;
 //using Windows.Win32.Foundation;
@@ -150,14 +154,14 @@ namespace iNKORE.UI.WPF.Modern.Controls.Primitives
 
             switch (message)
             {
-                case (int)WM.SETTINGCHANGE:
+                case PInvoke.WM_SETTINGCHANGE:
                     InvalidateMaximizedWindowBorder();
                     UpdateWindowPadding();
                     break;
-                case (int)WM.WINDOWPOSCHANGING:
+                case PInvoke.WM_WINDOWPOSCHANGING:
                     OnWindowPosChanging(lParam);
                     break;
-                case (int)WM.WINDOWPOSCHANGED:
+                case PInvoke.WM_WINDOWPOSCHANGED:
                     if (!_maximizedWindowBorder.HasValue)
                     {
                         UpdateWindowPadding();
@@ -186,7 +190,7 @@ namespace iNKORE.UI.WPF.Modern.Controls.Primitives
                             if (monitor != IntPtr.Zero)
                             {
                                 MONITORINFO info = GetMonitorInfo(monitor);
-                                bool primary = (info.dwFlags & NativeMethods.MONITORINFOF_PRIMARY) != 0;
+                                bool primary = (info.dwFlags & PInvoke.MONITORINFOF_PRIMARY) != 0;
                                 if (primary)
                                 {
                                     if (pos.x < 0 &&

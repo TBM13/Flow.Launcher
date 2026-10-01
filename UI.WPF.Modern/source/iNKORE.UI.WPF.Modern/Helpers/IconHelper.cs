@@ -1,9 +1,10 @@
-﻿using iNKORE.UI.WPF.Modern.Native;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
+using iNKORE.UI.WPF.Modern.Native;
+using Windows.Win32.UI.WindowsAndMessaging;
 //using Windows.Win32;
 //using Windows.Win32.UI.WindowsAndMessaging;
 

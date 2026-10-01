@@ -17,6 +17,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using iNKORE.UI.WPF.Modern.Common;
 using iNKORE.UI.WPF.Modern.Native;
+using Windows.Win32;
 
 namespace iNKORE.UI.WPF.Modern.Controls
 {
@@ -1077,7 +1078,7 @@ namespace iNKORE.UI.WPF.Modern.Controls
         {
             switch (msg)
             {
-                case (int)User32.WM.MOUSEHWHEEL:
+                case (int)PInvoke.WM_MOUSEHWHEEL:
                     if (handled ||
                         !IsMouseOver ||
                         (Keyboard.Modifiers & ModifierKeys.Control) is ModifierKeys.Control ||
@@ -1088,9 +1089,9 @@ namespace iNKORE.UI.WPF.Modern.Controls
 
                     var tilt = (short)((wParam.ToInt64() >> 16) & 0xFFFF);
                     HandleWheelChange(-tilt);
-                    
+
                     handled = true;
-                    return (IntPtr)1;
+                    return 1;
             }
 
             return IntPtr.Zero;
@@ -1103,25 +1104,25 @@ namespace iNKORE.UI.WPF.Modern.Controls
         protected override void OnMouseWheel(MouseWheelEventArgs e)
         {
             base.OnMouseWheel(e);
-           
-            if (e.Handled || 
+
+            if (e.Handled ||
                 (Environment.TickCount - _lastScrollWheelTick > ScrollWheelDelayTicks && IsTryingToGoBeyondEnd(e.Delta)) ||
-                (Keyboard.Modifiers & ModifierKeys.Control) is ModifierKeys.Control || 
+                (Keyboard.Modifiers & ModifierKeys.Control) is ModifierKeys.Control ||
                 (!SourceIsMouseWheel(e.Delta) && Orientation is Orientation.Horizontal))
             {
                 return;
             }
-            
+
             HandleWheelChange(e.Delta);
             e.Handled = true;
-            
+
             //Mouse sends multiples of 120
             static bool SourceIsMouseWheel(int delta) => delta % 120 is 0;
 
             bool IsTryingToGoBeyondEnd(int delta) => (SelectedIndex >= Items.Count - 1 && delta < 0) ||
                                                      (SelectedIndex is 0 && delta > 0);
         }
-        
+
         private void HandleWheelChange(int delta)
         {
             FocusWithNoVisuals();
@@ -1130,7 +1131,7 @@ namespace iNKORE.UI.WPF.Modern.Controls
             var currentTick = Environment.TickCount;
 
             if ((delta < 0 && _lastScrollWheelDelta >= 0) ||
-                (delta > 0 && _lastScrollWheelDelta <= 0) || 
+                (delta > 0 && _lastScrollWheelDelta <= 0) ||
                 currentTick - _lastScrollWheelTick > ScrollWheelDelayTicks)
             {
                 canFlip = true;
@@ -1606,7 +1607,7 @@ namespace iNKORE.UI.WPF.Modern.Controls
             UpdateVisualState(true);
         }
     }
-    
+
     public class DoubleValueHolder : DependencyObject
     {
         public static readonly DependencyProperty XProperty =
@@ -1664,5 +1665,5 @@ namespace iNKORE.UI.WPF.Modern.Controls
             throw new NotImplementedException();
         }
     }
-    
+
 }

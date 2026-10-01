@@ -19,6 +19,8 @@ using iNKORE.UI.WPF.Helpers;
 //using Windows.Win32.UI.WindowsAndMessaging;
 using iNKORE.UI.WPF.Modern.Helpers;
 using iNKORE.UI.WPF.Modern.Native;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace iNKORE.UI.WPF.Modern.Controls.Primitives
 {
@@ -708,7 +710,7 @@ namespace iNKORE.UI.WPF.Modern.Controls.Primitives
             private HwndSource _window;
         }
 
-#endregion
+        #endregion
 
         #region Positioner
 
