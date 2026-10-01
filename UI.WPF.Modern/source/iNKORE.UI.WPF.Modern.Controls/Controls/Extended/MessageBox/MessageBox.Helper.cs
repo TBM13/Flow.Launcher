@@ -1,12 +1,12 @@
-﻿using iNKORE.UI.WPF.Modern.Common;
-using iNKORE.UI.WPF.Modern.Common.IconKeys;
-using iNKORE.UI.WPF.Modern.Controls;
-using iNKORE.UI.WPF.Modern.Extensions;
-using System;
+﻿using System;
 using System.Linq;
 using System.Media;
 using System.Threading.Tasks;
 using System.Windows;
+using iNKORE.UI.WPF.Modern.Common;
+using iNKORE.UI.WPF.Modern.Common.IconKeys;
+using iNKORE.UI.WPF.Modern.Controls;
+using iNKORE.UI.WPF.Modern.Extensions;
 
 namespace iNKORE.UI.WPF.Modern.Controls
 {
@@ -76,7 +76,7 @@ namespace iNKORE.UI.WPF.Modern.Controls
         /// <param name="icon">A <see cref="MessageBoxImage"/> value that specifies the icon to display.</param>
         /// <returns>A <see cref="MessageBoxResult"/> value that specifies which message box button is clicked by the user.</returns>
         /// <remarks>Use an overload of the Show method, which enables you to specify an owner window. Otherwise, the message box is owned by the window that is currently active.</remarks>
-        public static MessageBoxResult Show(string messageBoxText, string caption, MessageBoxButton button, MessageBoxImage icon)=>
+        public static MessageBoxResult Show(string messageBoxText, string caption, MessageBoxButton button, MessageBoxImage icon) =>
             Show(messageBoxText, caption, button, icon, null);
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace iNKORE.UI.WPF.Modern.Controls
         /// <returns>A <see cref="MessageBoxResult"/> value that specifies which message box button is clicked by the user.</returns>
         /// <remarks>By default, the message box appears in front of the window that is currently active.</remarks>
         public static MessageBoxResult Show(Window owner, string messageBoxText, string caption, MessageBoxButton button) =>
-            Show(owner, messageBoxText, caption, button, (IconSource)null);
+            Show(owner, messageBoxText, caption, button, null);
 
         /// <summary>
         /// Displays a message box that has a message, title bar caption, button, and icon; and that accepts a default message box result and returns a result.
@@ -164,7 +164,7 @@ namespace iNKORE.UI.WPF.Modern.Controls
         /// <param name="icon">A <see cref="MessageBoxImage"/> value that specifies the icon to display.</param>
         /// <returns>A <see cref="MessageBoxResult"/> value that specifies which message box button is clicked by the user.</returns>
         /// <remarks>By default, the message box appears in front of the window that is currently active.</remarks>
-        public static MessageBoxResult Show(Window owner, string messageBoxText, string caption, MessageBoxButton button, MessageBoxImage icon)=>
+        public static MessageBoxResult Show(Window owner, string messageBoxText, string caption, MessageBoxButton button, MessageBoxImage icon) =>
             Show(owner, messageBoxText, caption, button, icon, null);
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace iNKORE.UI.WPF.Modern.Controls
         /// <remarks>By default, the message box appears in front of the window that is currently active.</remarks>
         public static MessageBoxResult Show(Window owner, string messageBoxText, string caption, MessageBoxButton button, IconSource icon) =>
             Show(owner, messageBoxText, caption, button, icon, null);
-        
+
         /// <summary>
         /// Displays a message box in front of the specified window. The message box displays a message, title bar caption, button, and icon; and accepts a default message box result and returns a result.
         /// </summary>
@@ -361,7 +361,7 @@ namespace iNKORE.UI.WPF.Modern.Controls
         /// <returns>An asynchronous operation showing the message box. When complete, returns a <see cref="MessageBoxResult"/>.</returns>
         /// <remarks>By default, the message box appears in front of the window that is currently active.</remarks>
         public static Task<MessageBoxResult> ShowAsync(Window owner, string messageBoxText, string caption, MessageBoxButton button) =>
-            ShowAsync(owner, messageBoxText, caption, button, (IconSource)null);
+            ShowAsync(owner, messageBoxText, caption, button, null);
 
         /// <summary>
         /// Begins an asynchronous operation to displays a message box that has a message, title bar caption, button, and icon; and that accepts a default message box result and returns a result.
@@ -485,9 +485,7 @@ namespace iNKORE.UI.WPF.Modern.Controls
         public static Task<MessageBoxResult> ShowAsync(Window owner, string messageBoxText, string caption, MessageBoxButton button, IconSource icon, MessageBoxResult? defaultResult, SystemSound sound = null)
         {
             TaskCompletionSource<MessageBoxResult> taskSource = new TaskCompletionSource<MessageBoxResult>(
-#if !NET452
                 TaskCreationOptions.RunContinuationsAsynchronously
-#endif
             );
 
             Application.Current.Dispatcher.Invoke(() =>

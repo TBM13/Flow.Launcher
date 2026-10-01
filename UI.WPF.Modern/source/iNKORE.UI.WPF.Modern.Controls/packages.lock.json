@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "dependencies": {
+    "net11.0-windows10.0.19041": {
+      "iNKORE.UI.WPF": {
+        "type": "Direct",
+        "requested": "[1.2.8, )",
+        "resolved": "1.2.8",
+        "contentHash": "7b+z25JFdhGAfyJqlVIF0vLbmgsRvqDZMvhGPTz20gzQigDPMqVUOoCCKB5824GtYsjFCYNilmaowb+4yWATkQ=="
+      },
+      "inkore.ui.wpf.modern": {
+        "type": "Project",
+        "dependencies": {
+          "iNKORE.UI.WPF": "[1.2.8, )"
+        }
+      }
+    }
+  }
+}

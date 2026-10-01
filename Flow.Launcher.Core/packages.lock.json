@@ -37,14 +37,6 @@
         "resolved": "1.2.8",
         "contentHash": "7b+z25JFdhGAfyJqlVIF0vLbmgsRvqDZMvhGPTz20gzQigDPMqVUOoCCKB5824GtYsjFCYNilmaowb+4yWATkQ=="
       },
-      "iNKORE.UI.WPF.Modern": {
-        "type": "Transitive",
-        "resolved": "0.10.2.1",
-        "contentHash": "nGwuuVul+TcLCTgPmaAZCc0fYFqUpCNZ8PiulVT3gZnsWt/AvxMZ0DSPpuyI/iRPc/NhFIg9lSIR7uaHWV0I/Q==",
-        "dependencies": {
-          "iNKORE.UI.WPF": "1.2.8"
-        }
-      },
       "MemoryPack": {
         "type": "Transitive",
         "resolved": "1.21.4",
@@ -183,7 +175,8 @@
         "dependencies": {
           "Flow.Launcher.Interop": "[1.0.0, )",
           "Flow.Launcher.PluginSDK": "[1.0.0, )",
-          "iNKORE.UI.WPF.Modern": "[0.10.2.1, )"
+          "iNKORE.UI.WPF.Modern": "[1.0.0, )",
+          "iNKORE.UI.WPF.Modern.Controls": "[1.0.0, )"
         }
       },
       "flow.launcher.plugin.pluginindicator": {
@@ -243,6 +236,19 @@
           "CommunityToolkit.Mvvm": "[8.4.2, )",
           "MemoryPack": "[1.21.4, )",
           "ZLogger": "[2.5.10, )"
+        }
+      },
+      "inkore.ui.wpf.modern": {
+        "type": "Project",
+        "dependencies": {
+          "iNKORE.UI.WPF": "[1.2.8, )"
+        }
+      },
+      "inkore.ui.wpf.modern.controls": {
+        "type": "Project",
+        "dependencies": {
+          "iNKORE.UI.WPF": "[1.2.8, )",
+          "iNKORE.UI.WPF.Modern": "[1.0.0, )"
         }
       }
     }

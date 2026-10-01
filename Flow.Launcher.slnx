@@ -44,8 +44,4 @@
   <Folder Name="/UI.WPF.Modern/Assets/Misc/">
     <File Path="UI.WPF.Modern/assets/misc/iNKORE.Pulic.snk" />
   </Folder>
-  <Folder Name="/UI.WPF.Modern/SolutionItems/">
-    <File Path="UI.WPF.Modern/Directory.Build.props" />
-    <File Path="UI.WPF.Modern/Directory.Build.targets" />
-  </Folder>
 </Solution>

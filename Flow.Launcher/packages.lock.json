@@ -318,7 +318,8 @@
         "dependencies": {
           "Flow.Launcher.Interop": "[1.0.0, )",
           "Flow.Launcher.PluginSDK": "[1.0.0, )",
-          "iNKORE.UI.WPF.Modern": "[0.10.2.1, )"
+          "iNKORE.UI.WPF.Modern": "[1.0.0, )",
+          "iNKORE.UI.WPF.Modern.Controls": "[1.0.0, )"
         }
       },
       "flow.launcher.plugin.pluginindicator": {
@@ -384,6 +385,13 @@
         "type": "Project",
         "dependencies": {
           "iNKORE.UI.WPF": "[1.2.8, )"
+        }
+      },
+      "inkore.ui.wpf.modern.controls": {
+        "type": "Project",
+        "dependencies": {
+          "iNKORE.UI.WPF": "[1.2.8, )",
+          "iNKORE.UI.WPF.Modern": "[1.0.0, )"
         }
       }
     },
