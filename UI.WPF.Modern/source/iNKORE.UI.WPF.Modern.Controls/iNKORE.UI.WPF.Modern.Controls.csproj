@@ -3,7 +3,10 @@
 	<PropertyGroup>
 		<TargetFramework>net11.0-windows10.0.19041.0</TargetFramework>
 		<UseWPF>true</UseWPF>
+
 		<NeutralLanguage>en-US</NeutralLanguage>
+    <SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
+    
 		<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);GetDocumentationFile</TargetsForTfmSpecificBuildOutput>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
@@ -49,10 +52,6 @@
 		<None Update="iNKORE.UI.WPF.Modern.Controls.xml">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Resources\Strings\" />
 	</ItemGroup>
 
 </Project>

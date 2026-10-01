@@ -4,8 +4,11 @@
 		<TargetFramework>net11.0-windows10.0.19041.0</TargetFramework>
 		<UseWPF>true</UseWPF>
 		<UseWinRT>true</UseWinRT>
+
 		<NeutralLanguage>en-US</NeutralLanguage>
-		<NoWarn>1701;1702;1573;1591;CA1416</NoWarn>
+    <SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
+
+    <NoWarn>1701;1702;1573;1591;CA1416</NoWarn>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<ApplicationIcon>..\..\assets\icons\WpfLibrary.ico</ApplicationIcon>
 		<SignAssembly>True</SignAssembly>
