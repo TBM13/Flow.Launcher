@@ -1,8 +1,8 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:iNKORE.UI.WPF.Modern.Controls"
     xmlns:ikw="http://schemas.inkore.net/lib/ui/wpf"
+    xmlns:local="clr-namespace:iNKORE.UI.WPF.Modern.Controls"
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary>
@@ -65,7 +65,8 @@
                                             HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
                                             IsTabStop="False"
                                             VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
-                                            <Border x:Name="Border_UpperBackground"
+                                            <Border
+                                                x:Name="Border_UpperBackground"
                                                 Padding="{DynamicResource ContentDialogPadding}"
                                                 Background="{DynamicResource LayerOnAcrylicFillColorDefaultBrush}"
                                                 BorderBrush="{DynamicResource ContentDialogSeparatorBorderBrush}"
@@ -108,7 +109,7 @@
                                                         </Grid.ColumnDefinitions>
                                                         <ContentControl
                                                             x:Name="UserIconBox"
-                                                            Margin="0,0,16,0"
+                                                            Margin="0 0 16 0"
                                                             VerticalAlignment="Center"
                                                             Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TemplateSettings.IconElement}"
                                                             IsTabStop="False"
@@ -286,22 +287,10 @@
                             <Setter TargetName="CancelButton" Property="Style" Value="{DynamicResource AccentButtonStyle}" />
                         </Trigger>
 
-                        <!--<Trigger Property="ui:WindowHelper.SystemBackdropType" Value="None">
-                            <Setter TargetName="Border_UpperBackground" Property="Background" Value="{DynamicResource ContentDialogTopOverlay}"/>
-                        </Trigger>-->
-                        
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        <Style.Triggers>
-            <!--<Trigger Property="ui:WindowHelper.SystemBackdropType" Value="Acrylic">
-                <Setter Property="WindowChrome.WindowChrome" Value="{DynamicResource AcrylicWindowChrome}"/>
-            </Trigger>-->
-            <!--<Trigger Property="ui:WindowHelper.SystemBackdropType" Value="None">
-                <Setter Property="Background" Value="{DynamicResource ContentDialogBackground}"/>
-            </Trigger>-->
-        </Style.Triggers>
     </Style>
 
 </ResourceDictionary>

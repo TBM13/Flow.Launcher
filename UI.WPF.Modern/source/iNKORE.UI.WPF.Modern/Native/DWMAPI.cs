@@ -26,47 +26,6 @@ internal static class DWMAPI
     }
 
     /// <summary>
-    /// Represents the current DWM color accent settings.
-    /// </summary>
-    public struct DWMCOLORIZATIONPARAMS
-    {
-        /// <summary>
-        /// ColorizationColor
-        /// </summary>
-        public uint clrColor;
-
-        /// <summary>
-        /// ColorizationAfterglow.
-        /// </summary>
-        public uint clrAfterGlow;
-
-        /// <summary>
-        /// ColorizationColorBalance.
-        /// </summary>
-        public uint nIntensity;
-
-        /// <summary>
-        /// ColorizationAfterglowBalance.
-        /// </summary>
-        public uint clrAfterGlowBalance;
-
-        /// <summary>
-        /// ColorizationBlurBalance.
-        /// </summary>
-        public uint clrBlurBalance;
-
-        /// <summary>
-        /// ColorizationGlassReflectionIntensity.
-        /// </summary>
-        public uint clrGlassReflectionIntensity;
-
-        /// <summary>
-        /// ColorizationOpaqueBlend.
-        /// </summary>
-        public bool fOpaque;
-    }
-
-    /// <summary>
     /// Sets the value of Desktop Window Manager (DWM) non-client rendering attributes for a window.
     /// </summary>
     /// <param name="hWnd">The handle to the window for which the attribute value is to be set.</param>

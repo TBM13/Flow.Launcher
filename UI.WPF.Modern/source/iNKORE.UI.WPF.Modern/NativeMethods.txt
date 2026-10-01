@@ -29,5 +29,3 @@ GetWindowPlacement
 MonitorFromRect
 SetWindowLong
 SetWindowPos
-
-DWM_SYSTEMBACKDROP_TYPE
