@@ -8,13 +8,14 @@
 		<NeutralLanguage>en-US</NeutralLanguage>
     <SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
 
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+
     <NoWarn>1701;1702;1573;1591;CA1416</NoWarn>
-		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<ApplicationIcon>..\..\assets\icons\WpfLibrary.ico</ApplicationIcon>
 		<SignAssembly>True</SignAssembly>
 		<AssemblyOriginatorKeyFile>..\..\assets\others\iNKORE.Pulic.snk</AssemblyOriginatorKeyFile>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<NoWarn>$(NoWarn);CS1591;1701;1702;CA1416;CS8632</NoWarn>
 	</PropertyGroup>
 

@@ -6,10 +6,11 @@
 
 		<NeutralLanguage>en-US</NeutralLanguage>
     <SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
-    
-		<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);GetDocumentationFile</TargetsForTfmSpecificBuildOutput>
-		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);GetDocumentationFile</TargetsForTfmSpecificBuildOutput>
 		<ApplicationIcon>..\..\assets\icons\WpfLibrary.ico</ApplicationIcon>
 		<SignAssembly>True</SignAssembly>
 		<AssemblyOriginatorKeyFile>..\..\assets\others\iNKORE.Pulic.snk</AssemblyOriginatorKeyFile>
