@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Data;
-using System.Windows.Media;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Media;
 
 namespace iNKORE.UI.WPF.Modern.Controls
 {
@@ -193,23 +193,6 @@ namespace iNKORE.UI.WPF.Modern.Controls
 
         #endregion
 
-        #region UseAcrylic
-
-        public static readonly DependencyProperty UseAcrylicProperty =
-            DependencyProperty.Register(
-                nameof(UseAcrylic),
-                typeof(bool),
-                typeof(MediaPlayerElement),
-                new PropertyMetadata(true));
-
-        public bool UseAcrylic
-        {
-            get => (bool)GetValue(UseAcrylicProperty);
-            set => SetValue(UseAcrylicProperty, value);
-        }
-
-        #endregion
-
         #region IsOpening
 
         public static readonly DependencyProperty IsOpeningProperty =
@@ -296,12 +279,6 @@ namespace iNKORE.UI.WPF.Modern.Controls
                         Path = new PropertyPath(nameof(MediaPlayer))
                     });
                 }
-                transportControls.SetBinding(MediaTransportControls.UseAcrylicProperty, new Binding
-                {
-                    Source = this,
-                    Mode = BindingMode.OneWay,
-                    Path = new PropertyPath(nameof(UseAcrylic))
-                });
             }
         }
     }

@@ -13,25 +13,5 @@ namespace iNKORE.UI.WPF.Modern.Controls
         public MediaTransportControlsTemplateSettings()
         {
         }
-
-        #region AcrylicBrush
-
-        private static readonly DependencyPropertyKey AcrylicBrushPropertyKey =
-            DependencyProperty.RegisterReadOnly(
-                nameof(AcrylicBrush),
-                typeof(Brush),
-                typeof(MediaTransportControlsTemplateSettings),
-                null);
-
-        public static readonly DependencyProperty AcrylicBrushProperty =
-            AcrylicBrushPropertyKey.DependencyProperty;
-
-        public Brush AcrylicBrush
-        {
-            get => (Brush)GetValue(AcrylicBrushProperty);
-            set => SetValue(AcrylicBrushPropertyKey, value);
-        }
-
-        #endregion
     }
 }

@@ -1,10 +1,4 @@
-﻿using iNKORE.UI.WPF.Converters;
-using iNKORE.UI.WPF.Helpers;
-using iNKORE.UI.WPF.Modern.Common.Converters;
-using iNKORE.UI.WPF.Modern.Controls.Primitives;
-using iNKORE.UI.WPF.Modern.Helpers;
-using iNKORE.UI.WPF.Modern.Markup;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +14,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using iNKORE.UI.WPF.Converters;
+using iNKORE.UI.WPF.Helpers;
+using iNKORE.UI.WPF.Modern.Common.Converters;
+using iNKORE.UI.WPF.Modern.Controls.Primitives;
+using iNKORE.UI.WPF.Modern.Helpers;
+using iNKORE.UI.WPF.Modern.Markup;
 
 namespace iNKORE.UI.WPF.Modern.Controls
 {
@@ -341,7 +341,6 @@ namespace iNKORE.UI.WPF.Modern.Controls
             {
                 var templateSettings = TemplateSettings;
                 HasTarget = true;
-                templateSettings.AcrylicBrush = new AcrylicBrushExtension { Target = Target, NoiseOpacity = 0.01 }.CreatAcrylicBrush();
 
                 var isOpeningBinding = new MultiBinding
                 {

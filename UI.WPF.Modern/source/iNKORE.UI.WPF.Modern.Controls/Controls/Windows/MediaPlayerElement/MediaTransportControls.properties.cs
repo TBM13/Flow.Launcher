@@ -530,23 +530,6 @@ namespace iNKORE.UI.WPF.Modern.Controls
 
         #endregion
 
-        #region UseAcrylic
-
-        public static readonly DependencyProperty UseAcrylicProperty =
-            DependencyProperty.Register(
-                nameof(UseAcrylic),
-                typeof(bool),
-                typeof(MediaTransportControls),
-                new PropertyMetadata(true));
-
-        public bool UseAcrylic
-        {
-            get => (bool)GetValue(UseAcrylicProperty);
-            set => SetValue(UseAcrylicProperty, value);
-        }
-
-        #endregion
-
         #region IsOpening
 
         public static readonly DependencyProperty IsOpeningProperty =
