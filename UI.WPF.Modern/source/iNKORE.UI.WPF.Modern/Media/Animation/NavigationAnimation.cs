@@ -1,8 +1,8 @@
-﻿using iNKORE.UI.WPF.Modern.Common;
-using System;
+﻿using System;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using iNKORE.UI.WPF.Modern.Common;
 
 namespace iNKORE.UI.WPF.Modern.Media.Animation
 {
@@ -62,11 +62,7 @@ namespace iNKORE.UI.WPF.Modern.Media.Animation
 
         private BitmapCache GetBitmapCache()
         {
-#if NET462_OR_NEWER
             return new BitmapCache(VisualTreeHelper.GetDpi(_element).PixelsPerDip);
-#else
-            return _defaultBitmapCache;
-#endif
         }
 
         private static readonly BitmapCache _defaultBitmapCache;

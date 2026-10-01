@@ -111,11 +111,7 @@ namespace iNKORE.UI.WPF.Modern.Controls
 
             if (ShadowAssist.UseBitmapCache && animateFrom != AnimateFrom.None)
             {
-#if NET462_OR_NEWER
                 var bitmapCache = new BitmapCache(VisualTreeHelper.GetDpi(presenter).PixelsPerDip);
-#else
-                var bitmapCache = s_bitmapCacheMode;
-#endif
                 presenter.CacheMode = bitmapCache;
             }
 

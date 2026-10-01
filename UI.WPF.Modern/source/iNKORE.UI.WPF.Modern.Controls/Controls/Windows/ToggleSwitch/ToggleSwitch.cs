@@ -74,7 +74,7 @@ namespace iNKORE.UI.WPF.Modern.Controls
 
         #region Header
 
-        
+
         public object Header
         {
             get => GetValue(HeaderProperty);
@@ -331,11 +331,7 @@ namespace iNKORE.UI.WPF.Modern.Controls
                 {
                     if (_bitmapCache == null)
                     {
-#if NET462_OR_NEWER
                         _bitmapCache = new BitmapCache(VisualTreeHelper.GetDpi(this).PixelsPerDip);
-#else
-                        _bitmapCache = new BitmapCache(2);
-#endif
                     }
 
                     SwitchThumb.CacheMode = _bitmapCache;
@@ -383,7 +379,6 @@ namespace iNKORE.UI.WPF.Modern.Controls
             }
         }
 
-#if NET462_OR_NEWER
         protected override void OnDpiChanged(DpiScale oldDpi, DpiScale newDpi)
         {
             base.OnDpiChanged(oldDpi, newDpi);
@@ -393,7 +388,6 @@ namespace iNKORE.UI.WPF.Modern.Controls
                 _bitmapCache.RenderAtScale = newDpi.PixelsPerDip;
             }
         }
-#endif
 
         protected override void OnKeyUp(KeyEventArgs e)
         {

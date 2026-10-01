@@ -17,7 +17,7 @@ namespace iNKORE.UI.WPF.Modern.Automation.Peers
         ISelectionItemProvider,
         IExpandCollapseProvider
     {
-        private static  ControlStrings ResourceAccessor => NavigationView.ResourceAccessor;
+        private static ControlStrings ResourceAccessor => NavigationView.ResourceAccessor;
 
         public NavigationViewItemAutomationPeer(NavigationViewItem owner) :
             base(owner)
@@ -81,7 +81,6 @@ namespace iNKORE.UI.WPF.Modern.Automation.Peers
             }
         }
 
-#if NET48_OR_NEWER
         protected override int GetPositionInSetCore()
         {
             int positionInSet = 0;
@@ -116,7 +115,6 @@ namespace iNKORE.UI.WPF.Modern.Automation.Peers
 
             return sizeOfSet;
         }
-#endif
 
         void IInvokeProvider.Invoke()
         {

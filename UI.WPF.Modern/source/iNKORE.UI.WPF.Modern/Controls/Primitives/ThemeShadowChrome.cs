@@ -1,7 +1,4 @@
-﻿using iNKORE.UI.WPF.Modern.Common;
-using iNKORE.UI.WPF.Modern.Controls.Helpers;
-using iNKORE.UI.WPF.Modern.Helpers;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,6 +6,9 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Effects;
+using iNKORE.UI.WPF.Modern.Common;
+using iNKORE.UI.WPF.Modern.Controls.Helpers;
+using iNKORE.UI.WPF.Modern.Helpers;
 
 namespace iNKORE.UI.WPF.Modern.Controls.Primitives
 {
@@ -31,11 +31,7 @@ namespace iNKORE.UI.WPF.Modern.Controls.Primitives
         {
             if (ShadowAssist.UseBitmapCache)
             {
-#if NET462_OR_NEWER
                 _bitmapCache = new BitmapCache(VisualTreeHelper.GetDpi(this).PixelsPerDip);
-#else
-                _bitmapCache = new BitmapCache();
-#endif
 
                 _background = new Grid
                 {
@@ -297,7 +293,6 @@ namespace iNKORE.UI.WPF.Modern.Controls.Primitives
             return base.ArrangeOverride(arrangeSize);
         }
 
-#if NET462_OR_NEWER
         protected override void OnDpiChanged(DpiScale oldDpi, DpiScale newDpi)
         {
             base.OnDpiChanged(oldDpi, newDpi);
@@ -307,7 +302,6 @@ namespace iNKORE.UI.WPF.Modern.Controls.Primitives
                 _bitmapCache.RenderAtScale = newDpi.PixelsPerDip;
             }
         }
-#endif
 
         private void OnVisualParentChanged()
         {
@@ -459,7 +453,7 @@ namespace iNKORE.UI.WPF.Modern.Controls.Primitives
                 _parentPopupControl.Dispose();
             }
 
-            _parentPopupControl = value as PopupControl;
+            _parentPopupControl = value;
 
             if (_parentPopupControl != null)
             {
@@ -782,7 +776,7 @@ namespace iNKORE.UI.WPF.Modern.Controls.Primitives
             public FrameworkElement Control =>
                 _contextMenu as FrameworkElement ??
                 _toolTip as FrameworkElement ??
-                _popup as FrameworkElement;
+                _popup;
 
             public PlacementMode Placement
             {

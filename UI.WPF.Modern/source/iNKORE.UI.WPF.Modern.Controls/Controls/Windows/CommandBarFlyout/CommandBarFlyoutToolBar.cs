@@ -339,9 +339,7 @@ namespace iNKORE.UI.WPF.Modern.Controls.Primitives
             // Ensure the SizeOfSet and PositionInSet automation properties
             // for the primary commands and the MoreButton account for the
             // potential MoreButton.
-#if NET48_OR_NEWER
             EnsureAutomationSetCountAndPosition();
-#endif
 
             if (m_currentPrimaryItemsEndElement != null)
             {
@@ -363,7 +361,8 @@ namespace iNKORE.UI.WPF.Modern.Controls.Primitives
                 {
                     Control primaryCommandAsControl = element as Control;
                     return IsControlFocusable(primaryCommandAsControl, checkTabStop);
-                };
+                }
+                ;
 
                 var primaryCommands = PrimaryCommands;
                 for (int i = primaryCommands.Count - 1; i >= 0; i--)
@@ -618,7 +617,6 @@ namespace iNKORE.UI.WPF.Modern.Controls.Primitives
             }
         }
 
-#if NET48_OR_NEWER
         void EnsureAutomationSetCountAndPosition()
         {
             var moreButton = m_moreButton;
@@ -658,7 +656,6 @@ namespace iNKORE.UI.WPF.Modern.Controls.Primitives
                 AutomationProperties.SetPositionInSet(moreButton, sizeOfSet);
             }
         }
-#endif
 
         void EnsureFocusedPrimaryCommand()
         {

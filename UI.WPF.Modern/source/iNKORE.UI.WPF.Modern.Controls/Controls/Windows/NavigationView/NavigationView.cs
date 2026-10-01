@@ -263,9 +263,7 @@ namespace iNKORE.UI.WPF.Modern.Controls
             if (ShadowAssist.UseBitmapCache)
             {
                 m_bitmapCache = new BitmapCache();
-#if NET462_OR_NEWER
                 m_bitmapCache.RenderAtScale = VisualTreeHelper.GetDpi(this).PixelsPerDip;
-#endif
             }
         }
 
@@ -780,7 +778,8 @@ namespace iNKORE.UI.WPF.Modern.Controls
                         UpdateSelectionForMenuItems();
                         return MenuItems;
                     }
-                };
+                }
+                ;
                 itemsSource = init();
             }
 
@@ -1090,7 +1089,8 @@ namespace iNKORE.UI.WPF.Modern.Controls
                         }
                     }
                     return NavigationRecommendedTransitionDirection.Default;
-                };
+                }
+                ;
                 recommendedDirection = init();
             }
 
@@ -1608,7 +1608,7 @@ namespace iNKORE.UI.WPF.Modern.Controls
                 {
                     m_visualItemsSeparator.Visibility = Visibility.Visible;
                 }
-                else if(IsFooterSeparatorVisible == false && m_visualItemsSeparator != null)
+                else if (IsFooterSeparatorVisible == false && m_visualItemsSeparator != null)
                 {
                     m_visualItemsSeparator.Visibility = Visibility.Collapsed;
                 }
@@ -1933,7 +1933,7 @@ namespace iNKORE.UI.WPF.Modern.Controls
             }
 
             templateSettings.PaneToggleButtonWidth = newButtonWidths;
-            templateSettings.SmallerPaneToggleButtonWidth = Math.Max(0, newButtonWidths-8);
+            templateSettings.SmallerPaneToggleButtonWidth = Math.Max(0, newButtonWidths - 8);
 
             //if (m_backButton is { } backButton)
             //{
@@ -3881,7 +3881,7 @@ namespace iNKORE.UI.WPF.Modern.Controls
             // - we verify that they are meant to follow the selected item as specified in the original order
             // - we verify that the preceding item is meant to directly precede the selected item in the original order
             // If these two conditions are not met, we move all items to the primary list and trigger a re-arrangement of the items.
-            if (indexInPrimary < (int)(primaryListSize - 1))
+            if (indexInPrimary < primaryListSize - 1)
             {
                 var nextIndexInPrimary = indexInPrimary + 1;
                 var nextIndexInOriginal = selectedOriginalIndex + 1;
@@ -3902,7 +3902,7 @@ namespace iNKORE.UI.WPF.Modern.Controls
 
 
                 // Check whether items following the selected item are out of order
-                while (!needRearrange && nextIndexInPrimary < (int)primaryListSize)
+                while (!needRearrange && nextIndexInPrimary < primaryListSize)
                 {
                     List<int> nextIndexInVector = new List<int>();
                     nextIndexInVector.Add(nextIndexInPrimary);
@@ -4185,7 +4185,7 @@ namespace iNKORE.UI.WPF.Modern.Controls
                 }
                 UpdatePaneLayout();
             }
-            else if(property == IsFooterSeparatorVisibleProperty)
+            else if (property == IsFooterSeparatorVisibleProperty)
             {
                 UpdatePaneLayout();
             }
@@ -5830,7 +5830,6 @@ namespace iNKORE.UI.WPF.Modern.Controls
             return GetTemplateChild(childName);
         }
 
-#if NET462_OR_NEWER
         protected override void OnDpiChanged(DpiScale oldDpi, DpiScale newDpi)
         {
             base.OnDpiChanged(oldDpi, newDpi);
@@ -5840,7 +5839,6 @@ namespace iNKORE.UI.WPF.Modern.Controls
                 m_bitmapCache.RenderAtScale = newDpi.PixelsPerDip;
             }
         }
-#endif
 
         bool m_InitialNonForcedModeUpdate = true;
 

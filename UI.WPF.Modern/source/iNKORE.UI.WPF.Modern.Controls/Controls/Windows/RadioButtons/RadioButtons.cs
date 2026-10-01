@@ -403,7 +403,8 @@ namespace iNKORE.UI.WPF.Modern.Controls
                             return itemsSourceView.Count - 1;
                         }
                         return -1;
-                    };
+                    }
+                    ;
                     var index = calculateIndex();
 
                     if (repeater.GetElementIndex(sourceAsUIElement) == index)
@@ -432,7 +433,6 @@ namespace iNKORE.UI.WPF.Modern.Controls
                         Select(args.Index);
                     }
                 }
-#if NET48_OR_NEWER
                 var repeater = m_repeater;
                 if (repeater != null)
                 {
@@ -443,7 +443,6 @@ namespace iNKORE.UI.WPF.Modern.Controls
                         element.SetValue(AutomationProperties.SizeOfSetProperty, itemSourceView.Count);
                     }
                 }
-#endif
             }
         }
 
@@ -474,9 +473,7 @@ namespace iNKORE.UI.WPF.Modern.Controls
             var element = args.Element;
             if (element != null)
             {
-#if NET48_OR_NEWER
                 element.SetValue(AutomationProperties.PositionInSetProperty, args.NewIndex + 1);
-#endif
                 // When the selected item's index changes, update selection to match
                 if (element is ToggleButton elementAsToggle)
                 {
@@ -490,7 +487,6 @@ namespace iNKORE.UI.WPF.Modern.Controls
 
         void OnRepeaterCollectionChanged(object sender, object args)
         {
-#if NET48_OR_NEWER
             var repeater = m_repeater;
             if (repeater != null)
             {
@@ -508,7 +504,6 @@ namespace iNKORE.UI.WPF.Modern.Controls
                     }
                 }
             }
-#endif
         }
 
         void Select(int index)

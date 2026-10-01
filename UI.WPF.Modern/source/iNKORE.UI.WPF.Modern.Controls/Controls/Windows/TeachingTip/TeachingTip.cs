@@ -7,20 +7,20 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Automation.Peers;
-using System.Windows.Automation;
-using System.Windows.Controls.Primitives;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media.Animation;
-using System.Windows.Media;
-using System.Windows.Shapes;
 using System.Windows;
+using System.Windows.Automation;
+using System.Windows.Automation.Peers;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
+using System.Windows.Shapes;
+using iNKORE.UI.WPF.Common;
+using iNKORE.UI.WPF.Modern.Common;
 using iNKORE.UI.WPF.Modern.Media.Animation;
 using static CppWinRTHelpers;
 using static iNKORE.UI.WPF.Modern.Common.ResourceAccessor;
-using iNKORE.UI.WPF.Modern.Common;
-using iNKORE.UI.WPF.Common;
 
 namespace iNKORE.UI.WPF.Modern.Controls
 {
@@ -2181,15 +2181,9 @@ namespace iNKORE.UI.WPF.Modern.Controls
                 Debug.Assert(!m_returnTopForOutOfWindowPlacement, "When returnTopForOutOfWindowPlacement is true we will never need to get the screen bounds");
 
                 double dpiScaleX, dpiScaleY;
-#if NET462_OR_NEWER
                 DpiScale dpi = VisualTreeHelper.GetDpi(this);
                 dpiScaleX = dpi.DpiScaleX;
                 dpiScaleY = dpi.DpiScaleY;
-#else
-                Matrix transformToDevice = PresentationSource.FromVisual(this).CompositionTarget.TransformToDevice;
-                dpiScaleX = transformToDevice.M11;
-                dpiScaleY = transformToDevice.M22;
-#endif
 
                 return new Rect(-windowBounds.X,
                     -windowBounds.Y,
@@ -2402,7 +2396,8 @@ namespace iNKORE.UI.WPF.Modern.Controls
                     return SR_InfoBarIconSeverityWarningName;
                 case InfoBarSeverity.Error:
                     return SR_InfoBarIconSeverityErrorName;
-            };
+            }
+            ;
             return SR_InfoBarIconSeverityInformationalName;
         }
 

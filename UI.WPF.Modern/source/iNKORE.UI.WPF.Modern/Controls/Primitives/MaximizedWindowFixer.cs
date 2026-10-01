@@ -1,7 +1,4 @@
-﻿using iNKORE.UI.WPF.Helpers;
-using iNKORE.UI.WPF.Modern.Helpers;
-using iNKORE.UI.WPF.Modern.Native;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
@@ -10,6 +7,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
+using iNKORE.UI.WPF.Helpers;
+using iNKORE.UI.WPF.Modern.Helpers;
+using iNKORE.UI.WPF.Modern.Native;
 using static iNKORE.UI.WPF.Modern.Native.User32;
 //using Windows.Win32;
 //using Windows.Win32.Foundation;
@@ -77,9 +77,7 @@ namespace iNKORE.UI.WPF.Modern.Controls.Primitives
             _hwnd = new WindowInteropHelper(window).Handle;
 
             _window.StateChanged += WindowStateChanged;
-#if NET462_OR_NEWER
             _window.DpiChanged += WindowDpiChanged;
-#endif
             _window.Closed += WindowClosed;
 
             if (_hwnd != IntPtr.Zero)
@@ -103,9 +101,7 @@ namespace iNKORE.UI.WPF.Modern.Controls.Primitives
             {
                 _window.SourceInitialized -= WindowSourceInitialized;
                 _window.StateChanged -= WindowStateChanged;
-#if NET462_OR_NEWER
                 _window.DpiChanged -= WindowDpiChanged;
-#endif
                 _window.Closed -= WindowClosed;
                 _window.ClearValue(Control.PaddingProperty);
                 _window = null;
@@ -136,13 +132,11 @@ namespace iNKORE.UI.WPF.Modern.Controls.Primitives
             UpdateWindowPadding();
         }
 
-#if NET462_OR_NEWER
         private void WindowDpiChanged(object sender, DpiChangedEventArgs e)
         {
             InvalidateMaximizedWindowBorder();
             UpdateWindowPadding();
         }
-#endif
 
         private void WindowClosed(object sender, EventArgs e)
         {
@@ -153,7 +147,7 @@ namespace iNKORE.UI.WPF.Modern.Controls.Primitives
         {
             IntPtr retInt = IntPtr.Zero;
             uint message = (uint)msg;
-            
+
             switch (message)
             {
                 case (int)WM.SETTINGCHANGE:
@@ -227,15 +221,9 @@ namespace iNKORE.UI.WPF.Modern.Controls.Primitives
             }
 
             double dpiScaleX, dpiScaleY;
-#if NET462_OR_NEWER
             DpiScale dpi = VisualTreeHelper.GetDpi(_window);
             dpiScaleX = dpi.DpiScaleX;
             dpiScaleY = dpi.DpiScaleY;
-#else
-            Matrix transformToDevice = _hwndSource.CompositionTarget.TransformToDevice;
-            dpiScaleX = transformToDevice.M11;
-            dpiScaleY = transformToDevice.M22;
-#endif
 
             int frameWidth = User32.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXSIZEFRAME);
             int frameHeight = User32.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYSIZEFRAME);

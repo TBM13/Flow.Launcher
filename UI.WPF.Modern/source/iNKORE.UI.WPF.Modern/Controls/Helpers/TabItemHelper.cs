@@ -1,7 +1,4 @@
-﻿using iNKORE.UI.WPF.Helpers;
-using iNKORE.UI.WPF.Modern.Common;
-using iNKORE.UI.WPF.Modern.Helpers;
-using System;
+﻿using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,6 +7,9 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Markup;
 using System.Windows.Media;
+using iNKORE.UI.WPF.Helpers;
+using iNKORE.UI.WPF.Modern.Common;
+using iNKORE.UI.WPF.Modern.Helpers;
 
 namespace iNKORE.UI.WPF.Modern.Controls.Helpers
 {
@@ -21,7 +21,7 @@ namespace iNKORE.UI.WPF.Modern.Controls.Helpers
             {
                 return headerString;
             }
-            
+
             return null;
         }
 
@@ -30,14 +30,14 @@ namespace iNKORE.UI.WPF.Modern.Controls.Helpers
             throw new NotImplementedException();
         }
     }
-    
+
     /// <summary>
     /// TabViewItem Properties
     /// </summary>
     public static class TabItemHelper
     {
         private static readonly ResourceAccessor ResourceAccessor = new(typeof(TabItemHelper));
-        
+
         #region IsEnabled
 
         public static bool GetIsEnabled(TabItem element)
@@ -68,7 +68,7 @@ namespace iNKORE.UI.WPF.Modern.Controls.Helpers
             {
                 item.Loaded -= OnLoaded;
                 item.SizeChanged -= OnSizeChanged;
-                BindingOperations.ClearBinding(item,FrameworkElement.ToolTipProperty);
+                BindingOperations.ClearBinding(item, FrameworkElement.ToolTipProperty);
             }
         }
 
@@ -341,13 +341,7 @@ namespace iNKORE.UI.WPF.Modern.Controls.Helpers
             try
             {
                 var scaleFactor = 1.5;
-#if NET462_OR_NEWER
                 scaleFactor = VisualTreeHelper.GetDpi(tabItem).DpiScaleX;
-#else
-                HwndSource hwnd = (HwndSource)PresentationSource.FromVisual(tabItem);
-                Matrix transformToDevice = hwnd.CompositionTarget.TransformToDevice;
-                scaleFactor = transformToDevice.M11;
-#endif
                 var height = tabItem.ActualHeight;
                 var popupRadius = ControlHelper.GetCornerRadius(tabItem);
                 var leftCorner = popupRadius.TopLeft;

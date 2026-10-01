@@ -1,9 +1,4 @@
-﻿using iNKORE.UI.WPF.Helpers;
-using iNKORE.UI.WPF.Modern.Common;
-using iNKORE.UI.WPF.Modern.Controls.Primitives;
-using iNKORE.UI.WPF.Modern.Helpers;
-using iNKORE.UI.WPF.Modern.Native;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +9,11 @@ using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
+using iNKORE.UI.WPF.Helpers;
+using iNKORE.UI.WPF.Modern.Common;
+using iNKORE.UI.WPF.Modern.Controls.Primitives;
+using iNKORE.UI.WPF.Modern.Helpers;
+using iNKORE.UI.WPF.Modern.Native;
 using static iNKORE.UI.WPF.Modern.Native.User32;
 
 namespace iNKORE.UI.WPF.Modern.Helpers.Styles
@@ -45,12 +45,7 @@ namespace iNKORE.UI.WPF.Modern.Helpers.Styles
 
             HwndSource hwnd = (HwndSource)PresentationSource.FromVisual(button);
 
-#if NET462_OR_NEWER
             _dpiScale = VisualTreeHelper.GetDpi(button).DpiScaleX;
-#else
-            Matrix transformToDevice = hwnd.CompositionTarget.TransformToDevice;
-            _dpiScale = transformToDevice.M11;
-#endif
 
             SetHoverColor();
 
@@ -61,7 +56,7 @@ namespace iNKORE.UI.WPF.Modern.Helpers.Styles
 
         public void Unregister()
         {
-            if(_button != null)
+            if (_button != null)
             {
                 _isButtonFocused = false;
 
@@ -177,7 +172,7 @@ namespace iNKORE.UI.WPF.Modern.Helpers.Styles
                 // int positionY = lParam.ToInt32() >> 16;
 
                 // https://github.com/iNKORE-NET/UI.WPF.Modern/issues/60#issuecomment-2121990538
-                uint lparam32 = (uint)lParam.ToInt64(); short positionX = (short)(lparam32 & 0xffff); 
+                uint lparam32 = (uint)lParam.ToInt64(); short positionX = (short)(lparam32 & 0xffff);
                 short positionY = (short)((lparam32 >> 16) & 0xffff);
 
 
