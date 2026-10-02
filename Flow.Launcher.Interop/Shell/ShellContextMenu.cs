@@ -15,22 +15,10 @@ namespace Flow.Launcher.Interop.Shell;
 /// <remarks>
 /// Limitation: Only handles files/folders in the same directory.
 /// </remarks>
-// Based on code from https://www.codeproject.com/Articles/22012/Explorer-Shell-Context-Menu
 // TODO: Handle IContextMenu2 and IContextMenu3
 // TODO: Review code
 public sealed class ShellContextMenu : IDisposable
 {
-    // CMIC_MASK constants - these don't seem to be exposed by CsWin32
-    private const uint CMIC_MASK_UNICODE = 0x00004000;
-    private const uint CMIC_MASK_PTINVOKE = 0x20000000;
-    private const uint CMIC_MASK_SHIFT_DOWN = 0x10000000;
-    private const uint CMIC_MASK_CONTROL_DOWN = 0x40000000;
-
-    // CMF flags for QueryContextMenu - these don't seem to be exposed by CsWin32
-    private const uint CMF_NORMAL = 0x00000000;
-    private const uint CMF_EXPLORE = 0x00000004;
-    private const uint CMF_EXTENDEDVERBS = 0x00000100;
-
     private const uint CMD_FIRST = 1;
     private const uint CMD_LAST = 30000;
 
@@ -110,9 +98,9 @@ public sealed class ShellContextMenu : IDisposable
 
             menu = PInvoke.CreatePopupMenu();
 
-            uint flags = CMF_EXPLORE | CMF_NORMAL;
+            uint flags = PInvoke.CMF_EXPLORE | PInvoke.CMF_NORMAL;
             if (Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
-                flags |= CMF_EXTENDEDVERBS;
+                flags |= PInvoke.CMF_EXTENDEDVERBS;
 
             _contextMenu!.QueryContextMenu(menu, 0, CMD_FIRST, CMD_LAST, flags)
                 .ThrowOnFailure();
@@ -188,9 +176,9 @@ public sealed class ShellContextMenu : IDisposable
                 lpVerb = new PCSTR((byte*)cmdOffset),
                 lpVerbW = new PCWSTR((char*)cmdOffset),
                 lpDirectoryW = pFolder,
-                fMask = CMIC_MASK_UNICODE | CMIC_MASK_PTINVOKE |
-                        (modifiers.HasFlag(ModifierKeys.Control) ? CMIC_MASK_CONTROL_DOWN : 0) |
-                        (modifiers.HasFlag(ModifierKeys.Shift) ? CMIC_MASK_SHIFT_DOWN : 0),
+                fMask = PInvoke.SEE_MASK_UNICODE | PInvoke.CMIC_MASK_PTINVOKE |
+                        (modifiers.HasFlag(ModifierKeys.Control) ? PInvoke.CMIC_MASK_CONTROL_DOWN : 0) |
+                        (modifiers.HasFlag(ModifierKeys.Shift) ? PInvoke.CMIC_MASK_SHIFT_DOWN : 0),
                 ptInvoke = point,
                 nShow = (int)SHOW_WINDOW_CMD.SW_SHOWNORMAL
             };
