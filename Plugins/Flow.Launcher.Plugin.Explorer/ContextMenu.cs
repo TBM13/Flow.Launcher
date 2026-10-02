@@ -44,7 +44,9 @@ internal class ContextMenu(PluginInitContext context, Settings settings) : ICont
                 IconOrGlyph = "\ue700",
                 Action = c =>
                 {
-                    ResultManager.ShowNativeContextMenu(record.FullPath, record.Type, c.ResultPosition);
+                    ResultManager.ShowNativeContextMenu(
+                        record.FullPath, record.Type, c.ResultPosition,
+                        showExtendedmenu: c.PressedKeys.ShiftPressed);
                     return false;
                 },
             });

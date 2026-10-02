@@ -9,100 +9,83 @@ using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Flow.Launcher.Interop.Shell;
 
-/// <summary>
-/// Shows the Windows Explorer shell context menu for files, folders or drives.
-/// </summary>
-/// <remarks>
-/// Limitation: Only handles files/folders in the same directory.
-/// </remarks>
 // TODO: Handle IContextMenu2 and IContextMenu3
-// TODO: Review code
-public sealed class ShellContextMenu : IDisposable
+public static class ShellContextMenu
 {
     private const uint CMD_FIRST = 1;
     private const uint CMD_LAST = 30000;
 
-    private IContextMenu? _contextMenu;
-    private IShellFolder? _desktopFolder;
-    private IShellFolder? _parentFolder;
-    private IntPtr[]? _pidls;
-    private string? _parentFolderPath;
-    private bool _disposed;
-
-    public void Dispose()
-    {
-        if (_disposed) return;
-        _disposed = true;
-
-        ReleaseAll();
-        GC.SuppressFinalize(this);
-    }
-
     /// <summary>
-    /// Shows the context menu for the specified files.
+    /// Shows the Windows Explorer shell context menu for the given files.
     /// </summary>
     /// <param name="files">Files to show context menu for (must be in the same directory)</param>
     /// <param name="screenPoint">Screen coordinates where to show the menu</param>
-    public void ShowContextMenu(FileInfo[] files, Point screenPoint)
+    /// <param name="showExtendedMenu">Whether to show the extended context menu</param>
+    public static void ShowContextMenu(FileInfo[] files, Point screenPoint, bool showExtendedMenu)
     {
-        if (files is null || files.Length == 0) return;
+        if (files.Length == 0)
+            return;
 
-        ReleaseAll();
-        _pidls = GetPIDLs(files[0].DirectoryName, files, static fi => fi.Name);
-        ShowContextMenuCore(screenPoint);
+        ShowContextMenu(files[0].DirectoryName, files, static fi => fi.Name, screenPoint, showExtendedMenu);
     }
 
     /// <summary>
-    /// Shows the context menu for the specified directories.
+    /// Shows the Windows Explorer shell context menu for the given directories.
     /// </summary>
     /// <param name="directories">Directories to show context menu for (must have the same parent)</param>
     /// <param name="screenPoint">Screen coordinates where to show the menu</param>
-    public void ShowContextMenu(DirectoryInfo[] directories, Point screenPoint)
+    /// <param name="showExtendedMenu">Whether to show the extended context menu</param>
+    public static void ShowContextMenu(DirectoryInfo[] directories, Point screenPoint, bool showExtendedMenu)
     {
-        if (directories is null || directories.Length == 0) return;
+        if (directories.Length == 0)
+            return;
 
-        ReleaseAll();
-        _pidls = GetPIDLs(directories[0].Parent?.FullName, directories, static di => di.Name);
-        ShowContextMenuCore(screenPoint);
+        ShowContextMenu(directories[0].Parent?.FullName, directories, static di => di.Name, screenPoint, showExtendedMenu);
     }
 
     /// <summary>
-    /// Shows the context menu for the specified drives.
+    /// Shows the Windows Explorer shell context menu for the given drives.
     /// </summary>
     /// <param name="drives">Drives to show context menu for</param>
     /// <param name="screenPoint">Screen coordinates where to show the menu</param>
-    public void ShowContextMenu(DriveInfo[] drives, Point screenPoint)
+    /// <param name="showExtendedMenu">Whether to show the extended context menu</param>
+    public static void ShowContextMenu(DriveInfo[] drives, Point screenPoint, bool showExtendedMenu)
     {
-        if (drives is null || drives.Length == 0) return;
+        if (drives.Length == 0)
+            return;
 
-        ReleaseAll();
-        const string myComputerPath = "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}";
-        _pidls = GetPIDLs(myComputerPath, drives, static drive => drive.Name);
-        ShowContextMenuCore(screenPoint);
+        string myComputerPath = $"::{PInvoke.CLSID_MyComputer:B}";
+        ShowContextMenu(myComputerPath, drives, static drive => drive.Name, screenPoint, showExtendedMenu);
     }
 
-    private unsafe void ShowContextMenuCore(Point screenPoint)
+    private static unsafe void ShowContextMenu<T>(
+        string? parentPath, T[] items, Func<T, string> getName, Point screenPoint, bool showExtendedMenu)
     {
-        if (_pidls is null || _parentFolder is null)
-        {
-            ReleaseAll();
+        if (items.Length == 0)
             return;
-        }
 
+        IShellFolder? desktopFolder = null;
+        IShellFolder? parentFolder = null;
+        IContextMenu? contextMenu = null;
+        IntPtr[]? pidls = null;
+        string? parentFolderPath = null;
         HMENU menu = default;
 
         try
         {
-            if (!TryGetContextMenu(_parentFolder, _pidls))
+            pidls = GetPIDLs(
+                ref desktopFolder, ref parentFolder, ref parentFolderPath, parentPath, items, getName);
+            if (pidls is null || parentFolder is null ||
+                !TryGetContextMenu(parentFolder, pidls, out contextMenu))
                 return;
 
             menu = PInvoke.CreatePopupMenu();
 
             uint flags = PInvoke.CMF_EXPLORE | PInvoke.CMF_NORMAL;
-            if (Keyboard.Modifiers.HasFlag(ModifierKeys.Shift))
+            if (showExtendedMenu)
                 flags |= PInvoke.CMF_EXTENDEDVERBS;
 
-            _contextMenu!.QueryContextMenu(menu, 0, CMD_FIRST, CMD_LAST, flags)
+            contextMenu!.QueryContextMenu(menu, 0, CMD_FIRST, CMD_LAST, flags)
                 .ThrowOnFailure();
 
             // Use the foreground window as owner for the popup menu
@@ -120,19 +103,22 @@ public sealed class ShellContextMenu : IDisposable
             menu = HMENU.Null;
 
             if (selectedCmd != 0)
-                InvokeCommand(_contextMenu, selectedCmd, _parentFolderPath!, screenPoint, ownerWindow);
+                InvokeCommand(contextMenu, selectedCmd, parentFolderPath!, screenPoint, ownerWindow);
         }
         finally
         {
             if (menu != HMENU.Null)
                 PInvoke.DestroyMenu(menu);
 
-            ReleaseAll();
+            if (pidls is not null)
+                FreePIDLs(pidls, pidls.Length);
         }
     }
 
-    private unsafe bool TryGetContextMenu(IShellFolder parentFolder, IntPtr[] pidls)
+    private static unsafe bool TryGetContextMenu(
+        IShellFolder parentFolder, IntPtr[] pidls, out IContextMenu? contextMenu)
     {
+        contextMenu = null;
         try
         {
             fixed (IntPtr* pPIDLs = pidls)
@@ -146,9 +132,9 @@ public sealed class ShellContextMenu : IDisposable
                     null,
                     out object result).ThrowOnFailure();
 
-                if (result is IContextMenu contextMenu)
+                if (result is IContextMenu resultContextMenu)
                 {
-                    _contextMenu = contextMenu;
+                    contextMenu = resultContextMenu;
                     return true;
                 }
             }
@@ -158,13 +144,15 @@ public sealed class ShellContextMenu : IDisposable
             // GetUIObjectOf throws on failure
         }
 
-        _contextMenu = null;
         return false;
     }
 
     private static unsafe void InvokeCommand(
         IContextMenu contextMenu, uint cmd, string folder, Point point, HWND ownerWindow)
     {
+        if (cmd < CMD_FIRST || cmd > CMD_LAST)
+            throw new ArgumentOutOfRangeException(nameof(cmd), "Command ID is out of range");
+
         fixed (char* pFolder = folder)
         {
             var cmdOffset = (nuint)(cmd - CMD_FIRST);
@@ -187,11 +175,17 @@ public sealed class ShellContextMenu : IDisposable
         }
     }
 
-    private unsafe IntPtr[]? GetPIDLs<T>(string? parentPath, T[] items, Func<T, string> getName)
+    private static unsafe IntPtr[]? GetPIDLs<T>(
+        ref IShellFolder? desktopFolder,
+        ref IShellFolder? parentFolder,
+        ref string? parentFolderPath,
+        string? parentPath,
+        T[] items,
+        Func<T, string> getName)
     {
         if (string.IsNullOrEmpty(parentPath)) return null;
 
-        if (!TryGetParentFolder(parentPath))
+        if (!TryGetParentFolder(ref desktopFolder, ref parentFolder, ref parentFolderPath, parentPath))
             return null;
 
         var pidls = new IntPtr[items.Length];
@@ -206,7 +200,7 @@ public sealed class ShellContextMenu : IDisposable
                 {
                     uint attrs = 0;
                     ITEMIDLIST* pidl = null;
-                    _parentFolder!.ParseDisplayName(HWND.Null, null, pName, null, &pidl, ref attrs)
+                    parentFolder!.ParseDisplayName(HWND.Null, null, pName, null, &pidl, ref attrs)
                         .ThrowOnFailure();
 
                     if (pidl == null)
@@ -228,11 +222,15 @@ public sealed class ShellContextMenu : IDisposable
         }
     }
 
-    private unsafe bool TryGetParentFolder(string folderPath)
+    private static unsafe bool TryGetParentFolder(
+        ref IShellFolder? desktopFolder,
+        ref IShellFolder? parentFolder,
+        ref string? parentFolderPath,
+        string folderPath)
     {
-        if (_parentFolder is not null) return true;
+        if (parentFolder is not null) return true;
 
-        IShellFolder desktop = GetDesktopFolder();
+        IShellFolder desktop = GetDesktopFolder(ref desktopFolder);
 
         fixed (char* pPath = folderPath)
         {
@@ -247,7 +245,7 @@ public sealed class ShellContextMenu : IDisposable
             {
                 // Get display name for the folder
                 STRRET strRet = default;
-                _desktopFolder!.GetDisplayNameOf(pidl, SHGDNF.SHGDN_FORPARSING, &strRet)
+                desktopFolder!.GetDisplayNameOf(pidl, SHGDNF.SHGDN_FORPARSING, &strRet)
                     .ThrowOnFailure();
 
                 try
@@ -262,7 +260,7 @@ public sealed class ShellContextMenu : IDisposable
                         throw new PathTooLongException(
                             "The parent folder path exceeds the maximum allowed length");
 
-                    _parentFolderPath = buffer.ToString();
+                    parentFolderPath = buffer.ToString();
                 }
                 finally
                 {
@@ -274,7 +272,7 @@ public sealed class ShellContextMenu : IDisposable
                 // Get IShellFolder for the parent
                 desktop.BindToObject(*pidl, null, out IShellFolder shellFolder)
                     .ThrowOnFailure();
-                _parentFolder = shellFolder;
+                parentFolder = shellFolder;
                 return true;
             }
             finally
@@ -284,36 +282,14 @@ public sealed class ShellContextMenu : IDisposable
         }
     }
 
-    private IShellFolder GetDesktopFolder()
+    private static IShellFolder GetDesktopFolder(ref IShellFolder? desktopFolder)
     {
-        if (_desktopFolder is null)
+        if (desktopFolder is null)
         {
             PInvoke.SHGetDesktopFolder(out IShellFolder folder).ThrowOnFailure();
-            _desktopFolder = folder;
+            desktopFolder = folder;
         }
-        return _desktopFolder;
-    }
-
-    private void ReleaseAll()
-    {
-        if (_contextMenu is not null)
-        {
-            _contextMenu = null;
-        }
-        if (_desktopFolder is not null)
-        {
-            _desktopFolder = null;
-        }
-        if (_parentFolder is not null)
-        {
-            _parentFolder = null;
-        }
-        if (_pidls is not null)
-        {
-            FreePIDLs(_pidls, _pidls.Length);
-            _pidls = null;
-        }
-        _parentFolderPath = null;
+        return desktopFolder;
     }
 
     private static unsafe void FreePIDLs(IntPtr[] pidls, int count)

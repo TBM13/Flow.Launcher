@@ -44,7 +44,7 @@ public static class ResultManager
         };
     }
 
-    internal static void ShowNativeContextMenu(string path, ResultType type, Point showPosition)
+    internal static void ShowNativeContextMenu(string path, ResultType type, Point showPosition, bool showExtendedmenu)
     {
         System.Drawing.Point point = new((int)showPosition.X, (int)showPosition.Y);
 
@@ -52,17 +52,17 @@ public static class ResultManager
         {
             case ResultType.File:
                 var fileInfo = new FileInfo[] { new(path) };
-                new ShellContextMenu().ShowContextMenu(fileInfo, point);
+                ShellContextMenu.ShowContextMenu(fileInfo, point, showExtendedmenu);
                 break;
 
             case ResultType.Folder:
                 var folderInfo = new System.IO.DirectoryInfo[] { new(path) };
-                new ShellContextMenu().ShowContextMenu(folderInfo, point);
+                ShellContextMenu.ShowContextMenu(folderInfo, point, showExtendedmenu);
                 break;
 
             case ResultType.Volume:
                 var driveInfo = new DriveInfo[] { new(path) };
-                new ShellContextMenu().ShowContextMenu(driveInfo, point);
+                ShellContextMenu.ShowContextMenu(driveInfo, point, showExtendedmenu);
                 break;
         }
     }
@@ -82,7 +82,9 @@ public static class ResultManager
                 IPressedKeys keys = c.PressedKeys;
                 if (keys.AltPressed)
                 {
-                    ShowNativeContextMenu(path, ResultType.Folder, c.ResultPosition);
+                    ShowNativeContextMenu(
+                        path, ResultType.Folder, c.ResultPosition,
+                        showExtendedmenu: c.PressedKeys.ShiftPressed);
                     return false;
                 }
                 // Open containing folder
@@ -130,7 +132,9 @@ public static class ResultManager
             {
                 if (c.PressedKeys.AltPressed)
                 {
-                    ShowNativeContextMenu(path, ResultType.Volume, c.ResultPosition);
+                    ShowNativeContextMenu(
+                        path, ResultType.Volume, c.ResultPosition,
+                        showExtendedmenu: c.PressedKeys.ShiftPressed);
                     return false;
                 }
 
@@ -188,7 +192,9 @@ public static class ResultManager
             {
                 if (c.PressedKeys.AltPressed)
                 {
-                    ShowNativeContextMenu(folderPath, ResultType.Folder, c.ResultPosition);
+                    ShowNativeContextMenu(
+                        folderPath, ResultType.Folder, c.ResultPosition,
+                        showExtendedmenu: c.PressedKeys.ShiftPressed);
                     return false;
                 }
                 // Open containing folder
@@ -228,7 +234,9 @@ public static class ResultManager
                 IPressedKeys keys = c.PressedKeys;
                 if (keys.AltPressed)
                 {
-                    ShowNativeContextMenu(filePath, ResultType.File, c.ResultPosition);
+                    ShowNativeContextMenu(
+                        filePath, ResultType.File, c.ResultPosition,
+                        showExtendedmenu: c.PressedKeys.ShiftPressed);
                     return false;
                 }
                 if (keys.OnlyModifiersPressed(ModifierKeys.Shift))
