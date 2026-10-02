@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
 using Flow.Launcher.Interop.Files;
 using Windows.Win32;
@@ -17,43 +16,20 @@ namespace Flow.Launcher.Interop.Shell;
 /// </summary>
 public static class FileExplorerHelper
 {
-    private static readonly string DesktopLocationUrl =
-        new Uri(Environment.GetFolderPath(Environment.SpecialFolder.Desktop)).AbsoluteUri;
+    private static readonly string DesktopLocationPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
     /// <summary>
-    /// Gets the path of the file explorer window that is currently in the foreground,
-    /// or immediately behind our own window if we are focused.
+    /// Gets the path of the active tab on the file explorer window
+    /// that is in the foreground (or immediately behind our own window if we are focused).
     /// </summary>
     /// <remarks>The desktop itself is considered a file explorer window.</remarks>
     /// <returns>Null if no explorer window is focused or it is minimized.</returns>
-    public static string? GetForegroundExplorerPath()
+    public static unsafe string? GetForegroundExplorerPath()
     {
-        string? locationUrl = GetForegroundExplorerLocationUrl();
-        if (string.IsNullOrEmpty(locationUrl))
-            return null;
-
-        if (!Uri.TryCreate(locationUrl, UriKind.Absolute, out Uri? uri))
-            return null;
-
-        string path = uri.LocalPath;
-        if (!Path.EndsInDirectorySeparator(path))
-            path += Path.DirectorySeparatorChar;
-
-        return path;
-    }
-
-    /// <summary>
-    /// Gets the LocationURL of the file explorer window that is currently in the foreground,
-    /// or immediately behind our own window if we are focused.
-    /// </summary>
-    /// <remarks>The desktop itself is considered a file explorer window.</remarks>
-    /// <returns>Null if no explorer window is focused or it is minimized.</returns>
-    private static unsafe string? GetForegroundExplorerLocationUrl()
-    {
-        // Object managed by GC
-        IShellWindows windows = ShellWindows.CreateInstance<IShellWindows>();
-
         HWND foregroundWindow = PInvoke.GetForegroundWindow();
+        if (foregroundWindow.IsNull)
+            return null;
+
         HWND targetWindow = foregroundWindow;
         HWND shellDesktopWindow = PInvoke.GetShellWindow();
 
@@ -64,13 +40,21 @@ public static class FileExplorerHelper
         {
             targetWindow = GetNextVisibleWindow(foregroundWindow);
             if (targetWindow.IsNull || targetWindow == shellDesktopWindow)
-                return DesktopLocationUrl;
+                return DesktopLocationPath;
         }
 
         // If the desktop itself is the foreground window, return its location
         if (targetWindow == shellDesktopWindow)
-            return DesktopLocationUrl;
+            return DesktopLocationPath;
 
+        // Explorer exposes each tab as a ShellTabWindowClass child.
+        // The first one in Z-order should be the active tab
+        HWND activeTabWindow = PInvoke.FindWindowEx(targetWindow, HWND.Null, "ShellTabWindowClass", null);
+        if (activeTabWindow.IsNull)
+            return null;
+
+        // Object managed by GC
+        IShellWindows windows = ShellWindows.CreateInstance<IShellWindows>();
         windows.get_Count(out int count).ThrowOnFailure();
         for (int i = 0; i < count; i++)
         {
@@ -83,7 +67,6 @@ public static class FileExplorerHelper
             if (item is IWebBrowser2 browser)
             {
                 BSTR fullName = default;
-                BSTR locationUrl = default;
                 try
                 {
                     // Make sure that the window is indeed a file explorer
@@ -99,18 +82,48 @@ public static class FileExplorerHelper
                     HWND hwnd = new(pHWND);
                     if (hwnd == targetWindow && !PInvoke.IsIconic(hwnd))
                     {
-                        if (browser.get_LocationURL(&locationUrl).Failed)
+                        if (item is not Windows.Win32.System.Com.IServiceProvider serviceProvider)
+                            continue;
+                        if (serviceProvider.QueryService(
+                            typeof(IShellBrowser).GUID, out IShellBrowser shellBrowser).Failed)
+                            continue;
+                        if (shellBrowser.GetWindow(out HWND shellBrowserWindow).Failed)
                             continue;
 
-                        return locationUrl.ToString();
+                        if (shellBrowserWindow != activeTabWindow)
+                            continue;
+
+                        if (shellBrowser.QueryActiveShellView(out IShellView shellView).Failed ||
+                            shellView is not IFolderView folderView)
+                            continue;
+
+                        if (folderView.GetFolder(out IPersistFolder2 persistFolder).Failed)
+                            continue;
+
+                        ITEMIDLIST* pidl = null;
+                        PWSTR path = default;
+                        try
+                        {
+                            if (persistFolder.GetCurFolder(out pidl).Failed || pidl is null)
+                                continue;
+                            if (PInvoke.SHGetNameFromIDList(in *pidl, SIGDN.SIGDN_FILESYSPATH, out path).Failed || path.Value is null)
+                                continue;
+
+                            return path.ToString();
+                        }
+                        finally
+                        {
+                            if (pidl is not null)
+                                PInvoke.CoTaskMemFree(pidl);
+                            if (path.Value is not null)
+                                PInvoke.CoTaskMemFree(path);
+                        }
                     }
                 }
                 finally
                 {
                     if (fullName.Value is not null)
                         PInvoke.SysFreeString(fullName);
-                    if (locationUrl.Value is not null)
-                        PInvoke.SysFreeString(locationUrl);
                 }
             }
         }

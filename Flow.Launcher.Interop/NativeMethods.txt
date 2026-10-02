@@ -6,6 +6,10 @@ IsIconic
 ShellWindows
 IShellWindows
 IWebBrowser2
+IServiceProvider
+IShellBrowser
+IFolderView
+IPersistFolder2
 GetWindow
 IsWindowVisible
 SHCreateItemFromParsingName
@@ -31,6 +35,7 @@ OleInitialize
 OleUninitialize
 GetWindowThreadProcessId
 SHParseDisplayName
+SHGetNameFromIDList
 SHOpenFolderAndSelectItems
 CoTaskMemFree
 ShellLink

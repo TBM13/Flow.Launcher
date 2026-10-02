@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.IO;
+using System.Windows.Controls;
 using Flow.Launcher.Interop.Shell;
 using Flow.Launcher.Plugin.Explorer.Search;
 using Flow.Launcher.Plugin.Explorer.ViewModels;
@@ -67,8 +68,14 @@ public class Main : ISettingProvider, IAsyncPlugin, IContextMenu, IMagicQueryPro
 
     public string? GenerateMagicQuery()
     {
-        string? explorerPath = FileExplorerHelper.GetForegroundExplorerPath();
-        return explorerPath;
+        string? path = FileExplorerHelper.GetForegroundExplorerPath();
+        if (path is null)
+            return null;
+
+        if (!Path.EndsInDirectorySeparator(path))
+            path += Path.DirectorySeparatorChar;
+
+        return path;
     }
 
     public ValueTask DisposeAsync() => ValueTask.CompletedTask;
