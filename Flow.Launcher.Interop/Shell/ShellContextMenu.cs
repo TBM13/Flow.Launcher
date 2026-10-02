@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
 using System.IO;
 using System.Windows.Input;
+using System.Windows.Interop;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Shell;
@@ -9,7 +10,6 @@ using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Flow.Launcher.Interop.Shell;
 
-// TODO: Handle IContextMenu2 and IContextMenu3
 public static class ShellContextMenu
 {
     private const uint CMD_FIRST = 1;
@@ -90,14 +90,28 @@ public static class ShellContextMenu
 
             // Use the foreground window as owner for the popup menu
             HWND ownerWindow = PInvoke.GetForegroundWindow();
+            IContextMenu2? contextMenu2 = contextMenu as IContextMenu2;
+            IContextMenu3? contextMenu3 = contextMenu as IContextMenu3;
+            HwndSource? ownerSource = HwndSource.FromHwnd((nint)ownerWindow);
+            nint menuMessageHook(nint _, int message, nint wParam, nint lParam, ref bool handled) =>
+                HandleMenuMessage(contextMenu2, contextMenu3, (uint)message, wParam, lParam, ref handled);
 
-            uint selectedCmd = (uint)PInvoke.TrackPopupMenuEx(
-                menu,
-                (uint)TRACK_POPUP_MENU_FLAGS.TPM_RETURNCMD,
-                screenPoint.X,
-                screenPoint.Y,
-                ownerWindow,
-                null).Value;
+            ownerSource?.AddHook(menuMessageHook);
+            uint selectedCmd;
+            try
+            {
+                selectedCmd = (uint)PInvoke.TrackPopupMenuEx(
+                    menu,
+                    (uint)TRACK_POPUP_MENU_FLAGS.TPM_RETURNCMD,
+                    screenPoint.X,
+                    screenPoint.Y,
+                    ownerWindow,
+                    null).Value;
+            }
+            finally
+            {
+                ownerSource?.RemoveHook(menuMessageHook);
+            }
 
             PInvoke.DestroyMenu(menu);
             menu = HMENU.Null;
@@ -113,6 +127,38 @@ public static class ShellContextMenu
             if (pidls is not null)
                 FreePIDLs(pidls, pidls.Length);
         }
+    }
+
+    private static unsafe nint HandleMenuMessage(
+        IContextMenu2? contextMenu2,
+        IContextMenu3? contextMenu3,
+        uint message,
+        nint wParam,
+        nint lParam,
+        ref bool handled)
+    {
+        if (message is not (PInvoke.WM_DRAWITEM or PInvoke.WM_MEASUREITEM or PInvoke.WM_INITMENUPOPUP or PInvoke.WM_MENUCHAR))
+            return 0;
+
+        if (contextMenu3 is not null)
+        {
+            LRESULT result = default;
+            HRESULT hr = contextMenu3.HandleMenuMsg2(message, (nuint)wParam, lParam, &result);
+            if (!hr.Failed)
+            {
+                handled = true;
+                return result.Value;
+            }
+        }
+
+        if (contextMenu2 is not null)
+        {
+            HRESULT hr = contextMenu2.HandleMenuMsg(message, (nuint)wParam, lParam);
+            if (!hr.Failed)
+                handled = true;
+        }
+
+        return 0;
     }
 
     private static unsafe bool TryGetContextMenu(
