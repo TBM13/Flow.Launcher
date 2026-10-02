@@ -116,9 +116,6 @@ public static class ShellContextMenu
                 ownerSource?.RemoveHook(menuMessageHook);
             }
 
-            PInvoke.DestroyMenu(menu);
-            menu = HMENU.Null;
-
             if (selectedCmd != 0)
                 InvokeCommand(contextMenu, selectedCmd, parentFolderPath!, screenPoint, ownerWindow);
         }
