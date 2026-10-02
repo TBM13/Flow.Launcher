@@ -18,6 +18,7 @@ public static class ShellContextMenu
     /// <summary>
     /// Shows the Windows Explorer shell context menu for the given files.
     /// </summary>
+    /// <remarks>It's recommended to call this from an STA thread.</remarks>
     /// <param name="files">Files to show context menu for (must be in the same directory)</param>
     /// <param name="screenPoint">Screen coordinates where to show the menu</param>
     /// <param name="showExtendedMenu">Whether to show the extended context menu</param>
@@ -32,6 +33,7 @@ public static class ShellContextMenu
     /// <summary>
     /// Shows the Windows Explorer shell context menu for the given directories.
     /// </summary>
+    /// <remarks>It's recommended to call this from an STA thread.</remarks>
     /// <param name="directories">Directories to show context menu for (must have the same parent)</param>
     /// <param name="screenPoint">Screen coordinates where to show the menu</param>
     /// <param name="showExtendedMenu">Whether to show the extended context menu</param>
@@ -46,6 +48,7 @@ public static class ShellContextMenu
     /// <summary>
     /// Shows the Windows Explorer shell context menu for the given drives.
     /// </summary>
+    /// <remarks>It's recommended to call this from an STA thread.</remarks>
     /// <param name="drives">Drives to show context menu for</param>
     /// <param name="screenPoint">Screen coordinates where to show the menu</param>
     /// <param name="showExtendedMenu">Whether to show the extended context menu</param>
@@ -210,6 +213,8 @@ public static class ShellContextMenu
                 lpVerb = new PCSTR((byte*)cmdOffset),
                 lpVerbW = new PCWSTR((char*)cmdOffset),
                 lpDirectoryW = pFolder,
+                // CMIC_MASK_UNICODE and SEE_MASK_UNICODE share the same SDK value (0x4000)
+                // cswin32 does not expose CMIC_MASK_UNICODE
                 fMask = PInvoke.SEE_MASK_UNICODE | PInvoke.CMIC_MASK_PTINVOKE |
                         (modifiers.HasFlag(ModifierKeys.Control) ? PInvoke.CMIC_MASK_CONTROL_DOWN : 0) |
                         (modifiers.HasFlag(ModifierKeys.Shift) ? PInvoke.CMIC_MASK_SHIFT_DOWN : 0),

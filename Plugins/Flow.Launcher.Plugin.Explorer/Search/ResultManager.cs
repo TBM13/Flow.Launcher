@@ -48,23 +48,26 @@ public static class ResultManager
     {
         System.Drawing.Point point = new((int)showPosition.X, (int)showPosition.Y);
 
-        switch (type)
+        Application.Current.Dispatcher.BeginInvoke(() =>
         {
-            case ResultType.File:
-                var fileInfo = new FileInfo[] { new(path) };
-                ShellContextMenu.ShowContextMenu(fileInfo, point, showExtendedmenu);
-                break;
+            switch (type)
+            {
+                case ResultType.File:
+                    var fileInfo = new FileInfo[] { new(path) };
+                    ShellContextMenu.ShowContextMenu(fileInfo, point, showExtendedmenu);
+                    break;
 
-            case ResultType.Folder:
-                var folderInfo = new System.IO.DirectoryInfo[] { new(path) };
-                ShellContextMenu.ShowContextMenu(folderInfo, point, showExtendedmenu);
-                break;
+                case ResultType.Folder:
+                    var folderInfo = new System.IO.DirectoryInfo[] { new(path) };
+                    ShellContextMenu.ShowContextMenu(folderInfo, point, showExtendedmenu);
+                    break;
 
-            case ResultType.Volume:
-                var driveInfo = new DriveInfo[] { new(path) };
-                ShellContextMenu.ShowContextMenu(driveInfo, point, showExtendedmenu);
-                break;
-        }
+                case ResultType.Volume:
+                    var driveInfo = new DriveInfo[] { new(path) };
+                    ShellContextMenu.ShowContextMenu(driveInfo, point, showExtendedmenu);
+                    break;
+            }
+        });
     }
 
     internal static Result CreateFolderResult(string title, string subtitle, string path, int score = 0)
