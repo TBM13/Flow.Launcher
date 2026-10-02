@@ -88,7 +88,8 @@ public sealed class ShellContextMenu : IDisposable
         if (drives is null || drives.Length == 0) return;
 
         ReleaseAll();
-        _pidls = GetDrivePIDLs(drives);
+        const string myComputerPath = "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}";
+        _pidls = GetPIDLs(myComputerPath, drives, static drive => drive.Name);
         ShowContextMenuCore(screenPoint);
     }
 
@@ -218,50 +219,6 @@ public sealed class ShellContextMenu : IDisposable
                     uint attrs = 0;
                     ITEMIDLIST* pidl = null;
                     _parentFolder!.ParseDisplayName(HWND.Null, null, pName, null, &pidl, ref attrs)
-                        .ThrowOnFailure();
-
-                    if (pidl == null)
-                    {
-                        FreePIDLs(pidls, allocatedCount);
-                        return null;
-                    }
-                    pidls[i] = (IntPtr)pidl;
-                    allocatedCount++;
-                }
-            }
-
-            return pidls;
-        }
-        catch
-        {
-            FreePIDLs(pidls, allocatedCount);
-            throw;
-        }
-    }
-
-    private unsafe IntPtr[]? GetDrivePIDLs(DriveInfo[] drives)
-    {
-        if (drives.Length == 0) return null;
-
-        // Get the "My Computer" virtual folder using its shell CLSID
-        const string myComputerPath = "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}";
-        if (!TryGetParentFolder(myComputerPath))
-            return null;
-
-        var pidls = new IntPtr[drives.Length];
-        int allocatedCount = 0;
-
-        try
-        {
-            for (int i = 0; i < drives.Length; i++)
-            {
-                // Use the drive root path (e.g., "C:\") for parsing
-                string drivePath = drives[i].Name;
-                fixed (char* pPath = drivePath)
-                {
-                    uint attrs = 0;
-                    ITEMIDLIST* pidl = null;
-                    _parentFolder!.ParseDisplayName(HWND.Null, null, pPath, null, &pidl, ref attrs)
                         .ThrowOnFailure();
 
                     if (pidl == null)
