@@ -14,6 +14,12 @@ public static class ShellContextMenu
 {
     private const uint CMD_FIRST = 1;
     private const uint CMD_LAST = 30000;
+    private static int _contextMenuInvocationActive;
+
+    /// <summary>
+    /// Indicates whether a native shell context menu is currently being displayed.
+    /// </summary>
+    public static bool IsContextMenuOpen { get; private set; }
 
     /// <summary>
     /// Shows the Windows Explorer shell context menu for the given files.
@@ -67,6 +73,10 @@ public static class ShellContextMenu
         if (items.Length == 0)
             return;
 
+        // Prevent multiple context menus from being opened simultaneously since it could cause issues
+        if (Interlocked.CompareExchange(ref _contextMenuInvocationActive, 1, 0) != 0)
+            return;
+
         IShellFolder? desktopFolder = null;
         IShellFolder? parentFolder = null;
         IContextMenu? contextMenu = null;
@@ -101,6 +111,7 @@ public static class ShellContextMenu
 
             ownerSource?.AddHook(menuMessageHook);
             uint selectedCmd;
+            IsContextMenuOpen = true;
             try
             {
                 selectedCmd = (uint)PInvoke.TrackPopupMenuEx(
@@ -113,6 +124,7 @@ public static class ShellContextMenu
             }
             finally
             {
+                IsContextMenuOpen = false;
                 ownerSource?.RemoveHook(menuMessageHook);
             }
 
@@ -121,11 +133,18 @@ public static class ShellContextMenu
         }
         finally
         {
-            if (menu != HMENU.Null)
-                PInvoke.DestroyMenu(menu);
+            try
+            {
+                if (menu != HMENU.Null)
+                    PInvoke.DestroyMenu(menu);
 
-            if (pidls is not null)
-                FreePIDLs(pidls, pidls.Length);
+                if (pidls is not null)
+                    FreePIDLs(pidls, pidls.Length);
+            }
+            finally
+            {
+                Interlocked.Exchange(ref _contextMenuInvocationActive, 0);
+            }
         }
     }
 
