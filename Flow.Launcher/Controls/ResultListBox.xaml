@@ -73,6 +73,7 @@
                 <StackPanel
                     Margin="6 0 10 0"
                     VerticalAlignment="Center"
+                    ToolTipOpening="OnResultToolTipOpening"
                     ToolTip="{Binding ToolTip}">
                     <!--  Title  -->
                     <TextBlock

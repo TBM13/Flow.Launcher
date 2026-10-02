@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Flow.Launcher.Interop.Shell;
 using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.ViewModel;
 
@@ -63,6 +64,14 @@ public partial class ResultListBox
 
             _lastpos = p;
         }
+    }
+
+    private void OnResultToolTipOpening(object sender, ToolTipEventArgs e)
+    {
+        // WPF tooltips use a topmost popup window. Don't let a result tooltip
+        // overtake the native shell menu while its modal message loop is active.
+        if (ShellContextMenu.IsContextMenuOpen)
+            e.Handled = true;
     }
 
     private void OnItemLoaded(object sender, RoutedEventArgs e)
