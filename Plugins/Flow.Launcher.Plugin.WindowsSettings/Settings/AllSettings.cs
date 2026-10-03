@@ -17,6 +17,7 @@ public static class AllSettings
                 Type = SettingType.SettingsApp,
                 Name = "System",
                 Command = ["ms-settings:system"],
+                Glyph = "\ue341",
 
                 Settings = [
 
@@ -64,6 +65,7 @@ public static class AllSettings
                                 Type = SettingType.SettingsApp,
                                 Name = "HDR",
                                 Command = ["ms-settings:display-hdr"],
+                                Glyph = "\uea7f",
                             },
                             new() {
                                 Type = SettingType.SettingsApp,
@@ -134,6 +136,7 @@ public static class AllSettings
                         Type = SettingType.SettingsApp,
                         Name = "Focus assist",
                         Command = ["ms-settings:quiethours"],
+                        Glyph = "\ue5c4",
                     },
 
                     // Energy & battery
@@ -286,6 +289,7 @@ public static class AllSettings
                         Type = SettingType.SettingsApp,
                         Name = "AI components",
                         Command = ["ms-settings:aicomponents"],
+                        Glyph = "\uf4a5"
                     },
 
                     // Optional features
@@ -613,6 +617,7 @@ public static class AllSettings
                         Type = SettingType.SettingsApp,
                         Name = "Dynamic lighting",
                         Command = ["ms-settings:personalization-lighting"],
+                        Glyph = "\uf431",
                     },
                     new() {
                         Type = SettingType.SettingsApp,
@@ -624,6 +629,7 @@ public static class AllSettings
                         Type = SettingType.SettingsApp,
                         Name = "Text input",
                         Command = ["ms-settings:personalization-textinput"],
+                        Glyph = "\ue765",
                     },
                     new() {
                         Type = SettingType.SettingsApp,
@@ -646,6 +652,51 @@ public static class AllSettings
                 ]
             },
 
+            // Applications
+            new SettingsPage() {
+                Type = SettingType.SettingsApp,
+                Name = "Apps",
+                // There is no URI for the main Apps page, so lets merge this option with "Installed Apps"
+                Command = ["ms-settings:appsfeatures"],
+                Glyph = "\ue71d",
+
+                AlternativeNames = ["Installed apps", "Applications"],
+                Settings = [
+                    new() {
+                        Type = SettingType.SettingsApp,
+                        Name = "Advanced app settings",
+                        Command = ["ms-settings:advanced-apps"],
+                        Glyph = "\uefdd"
+                    },
+                    new() {
+                        Type = SettingType.SettingsApp,
+                        Name = "Default apps",
+                        Command = ["ms-settings:defaultapps"],
+                        Glyph = "\ue42a"
+                    },
+                    new() {
+                        Type = SettingType.SettingsApp,
+                        Name = "Video playback",
+                        Command = ["ms-settings:videoplayback"],
+                        Glyph = "\ue714"
+                    },
+                    new() {
+                        Type = SettingType.SettingsApp,
+                        Name = "Startup apps",
+                        Command = ["ms-settings:startupapps"],
+                        Glyph = "\ue18c"
+                    },
+                ]
+            },
+
+            // Accounts
+            new Setting() {
+                Type = SettingType.SettingsApp,
+                Name = "Accounts",
+                Command = ["ms-settings:accounts"],
+                Glyph = "\ue13d"
+            },
+
             // Windows Update
             new SettingsPage() {
                 Type = SettingType.SettingsApp,
@@ -658,16 +709,19 @@ public static class AllSettings
                         Type = SettingType.SettingsApp,
                         Name = "Update history",
                         Command = ["ms-settings:windowsupdate-history"],
+                        Glyph = "\ue81c"
                     },
                     new() {
                         Type = SettingType.SettingsApp,
                         Name = "Optional updates",
                         Command = ["ms-settings:windowsupdate-optionalupdates"],
+                        Glyph = "\uecc8"
                     },
                     new() {
                         Type = SettingType.SettingsApp,
                         Name = "Windows Update advanced options",
                         Command = ["ms-settings:windowsupdate-options"],
+                        Glyph = "\ue9f5",
                     },
                 ]
             }
