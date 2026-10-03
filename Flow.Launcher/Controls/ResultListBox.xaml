@@ -63,7 +63,7 @@
                     Height="25"
                     Margin="5 0 0 0"
                     VerticalAlignment="Center"
-                    FontFamily="/Resources/SegoeFluentIcons.ttf#Segoe Fluent Icons"
+                    FontFamily="/Resources/SegoeFluentIconsMerged.ttf#Segoe Fluent Icons Merged"
                     FontSize="25"
                     Foreground="{DynamicResource Color05B}"
                     Text="{Binding Result.IconOrGlyph}"
@@ -73,8 +73,8 @@
                 <StackPanel
                     Margin="6 0 10 0"
                     VerticalAlignment="Center"
-                    ToolTipOpening="OnResultToolTipOpening"
-                    ToolTip="{Binding ToolTip}">
+                    ToolTip="{Binding ToolTip}"
+                    ToolTipOpening="OnResultToolTipOpening">
                     <!--  Title  -->
                     <TextBlock
                         FontSize="16"

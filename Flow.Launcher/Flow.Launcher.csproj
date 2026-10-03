@@ -34,7 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Resources\SegoeFluentIcons.ttf">
+    <Content Include="Resources\SegoeFluentIconsMerged.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
