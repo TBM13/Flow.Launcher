@@ -24,7 +24,11 @@ public static class ShellContextMenu
     /// <summary>
     /// Shows the Windows Explorer shell context menu for the given files.
     /// </summary>
-    /// <remarks>It's recommended to call this from an STA thread.</remarks>
+    /// <remarks>
+    /// It's recommended to call this from an STA thread.
+    /// <para/>
+    /// Note that Windows disables third-party extensions when the app is running as admin.
+    /// </remarks>
     /// <param name="files">Files to show context menu for (must be in the same directory)</param>
     /// <param name="screenPoint">Screen coordinates where to show the menu</param>
     /// <param name="showExtendedMenu">Whether to show the extended context menu</param>
@@ -39,7 +43,11 @@ public static class ShellContextMenu
     /// <summary>
     /// Shows the Windows Explorer shell context menu for the given directories.
     /// </summary>
-    /// <remarks>It's recommended to call this from an STA thread.</remarks>
+    /// <remarks>
+    /// It's recommended to call this from an STA thread.
+    /// <para/>
+    /// Note that Windows disables third-party extensions when the app is running as admin.
+    /// </remarks>
     /// <param name="directories">Directories to show context menu for (must have the same parent)</param>
     /// <param name="screenPoint">Screen coordinates where to show the menu</param>
     /// <param name="showExtendedMenu">Whether to show the extended context menu</param>
@@ -54,7 +62,11 @@ public static class ShellContextMenu
     /// <summary>
     /// Shows the Windows Explorer shell context menu for the given drives.
     /// </summary>
-    /// <remarks>It's recommended to call this from an STA thread.</remarks>
+    /// <remarks>
+    /// It's recommended to call this from an STA thread.
+    /// <para/>
+    /// Note that Windows disables third-party extensions when the app is running as admin.
+    /// </remarks>
     /// <param name="drives">Drives to show context menu for</param>
     /// <param name="screenPoint">Screen coordinates where to show the menu</param>
     /// <param name="showExtendedMenu">Whether to show the extended context menu</param>
