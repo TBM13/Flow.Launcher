@@ -31,8 +31,8 @@ namespace iNKORE.UI.WPF.Modern.Controls
 
         FrameworkElement m_standardIconTextBlock;
 
-        private const string c_closeButtonName ="CloseButton";
-        private const string c_iconTextBlockName ="StandardIcon";
+        private const string c_closeButtonName = "CloseButton";
+        private const string c_iconTextBlockName = "StandardIcon";
         private const string c_contentRootName = "ContentRoot";
 
         private static readonly ControlStrings ResourceAccessor = new ControlStrings(typeof(InfoBar), ModernControlCategory.Windows);
@@ -45,8 +45,16 @@ namespace iNKORE.UI.WPF.Modern.Controls
         public InfoBar()
         {
             SetValue(TemplateSettingsPropertyKey, new InfoBarTemplateSettings());
-            DependencyPropertyDescriptor descriptor = DependencyPropertyDescriptor.FromProperty(ForegroundProperty, typeof(InfoBar));
-            descriptor.AddValueChanged(this, (sender, e) => UpdateForeground());
+        }
+
+        protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+
+            if (e.Property == ForegroundProperty)
+            {
+                UpdateForeground();
+            }
         }
 
         protected override AutomationPeer OnCreateAutomationPeer()
@@ -57,7 +65,7 @@ namespace iNKORE.UI.WPF.Modern.Controls
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            
+
             m_applyTemplateCalled = true;
 
             IControlProtected controlProtected = this;
@@ -228,7 +236,7 @@ namespace iNKORE.UI.WPF.Modern.Controls
                 case InfoBarSeverity.Error:
                     severityState = "Error";
                     break;
-            };
+            }
 
             var iconTextblock = m_standardIconTextBlock;
             if (iconTextblock != null)
@@ -256,7 +264,7 @@ namespace iNKORE.UI.WPF.Modern.Controls
 
         public void UpdateIconVisibility()
         {
-            VisualStateManager.GoToState(this, IsIconVisible ? (IconSource!=null ? "UserIconVisible" : "StandardIconVisible") : "NoIconVisible", false);
+            VisualStateManager.GoToState(this, IsIconVisible ? (IconSource != null ? "UserIconVisible" : "StandardIconVisible") : "NoIconVisible", false);
         }
 
         public void UpdateCloseButton()
@@ -280,7 +288,7 @@ namespace iNKORE.UI.WPF.Modern.Controls
                     return SR_InfoBarSeverityWarningName;
                 case InfoBarSeverity.Error:
                     return SR_InfoBarSeverityErrorName;
-            };
+            }
             return SR_InfoBarSeverityInformationalName;
         }
 
@@ -294,7 +302,7 @@ namespace iNKORE.UI.WPF.Modern.Controls
                     return SR_InfoBarIconSeverityWarningName;
                 case InfoBarSeverity.Error:
                     return SR_InfoBarIconSeverityErrorName;
-            };
+            }
             return SR_InfoBarIconSeverityInformationalName;
         }
 

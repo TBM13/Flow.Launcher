@@ -230,63 +230,35 @@ public static class WindowHelper
     {
         bool isModern = DependencyPropertyHelper.GetValueSource(window, UseModernWindowStyleProperty).BaseValueSource != BaseValueSource.Default && GetUseModernWindowStyle(window);
 
-        void ApplyDarkMode()
-        {
-            var theme = ThemeManager.GetActualTheme(window);
-
-            bool IsDark(ElementTheme theme)
-            {
-                return theme == ElementTheme.Default
-                    ? ThemeManager.Current.ActualApplicationTheme == ApplicationTheme.Dark
-                    : theme == ElementTheme.Dark;
-            }
-
-            try
-            {
-                if (IsDark(theme))
-                {
-                    window.ApplyDarkMode();
-                }
-                else
-                {
-                    window.RemoveDarkMode();
-                }
-            }
-            catch { }
-        }
-
-        var handler = new RoutedEventHandler((sender, e) => ApplyDarkMode());
+        // These handlers are static methods on purpose: the delegates created from them compare equal
+        // across calls, so the -= below actually removes what a previous call added instead of
+        // silently piling up another subscription.
 
         WindowResizeModeDescriptor.RemoveValueChanged(window, OnWindowResizeModeDescriptorValueChanged);
-        ThemeManager.RemoveActualThemeChangedHandler(window, handler);
+        ThemeManager.RemoveActualThemeChangedHandler(window, OnModernWindowActualThemeChanged);
+        window.Closed -= OnModernWindowClosed;
 
         if (isModern)
         {
-            ApplyDarkMode();
-
-            void onLoaded(object sender, RoutedEventArgs e)
-            {
-                // This is needed to fix the issue with the window not being loaded correctly
-                WindowChrome.SetWindowChrome(window, (WindowChrome.GetWindowChrome(window)?.Clone() as WindowChrome) ?? WindowChrome.GetWindowChrome(window));
-
-                window.RemoveTitleBar();
-            }
-
+            UpdateDarkMode(window);
 
             if (window.IsLoaded)
             {
-                onLoaded(null, null);
+                OnModernWindowLoaded(window, null);
             }
             else
             {
-
-                window.Loaded -= onLoaded;
-                window.Loaded += onLoaded;
+                window.Loaded -= OnModernWindowLoaded;
+                window.Loaded += OnModernWindowLoaded;
             }
 
-            ThemeManager.AddActualThemeChangedHandler(window, handler);
+            ThemeManager.AddActualThemeChangedHandler(window, OnModernWindowActualThemeChanged);
 
             WindowResizeModeDescriptor.AddValueChanged(window, OnWindowResizeModeDescriptorValueChanged);
+
+            // WindowResizeModeDescriptor keeps a strong reference to every window given to AddValueChanged
+            // for the lifetime of the process, so it has to be released once the window  is gone.
+            window.Closed += OnModernWindowClosed;
 
             window.SetResourceReference(FrameworkElement.StyleProperty, TheWindowStyleKey);
         }
@@ -300,6 +272,61 @@ public static class WindowHelper
         UpdateShouldDisplayManualBorder(window);
     }
 
+    private static void UpdateDarkMode(Window window)
+    {
+        var theme = ThemeManager.GetActualTheme(window);
+
+        bool IsDark(ElementTheme value)
+        {
+            return value == ElementTheme.Default
+                ? ThemeManager.Current.ActualApplicationTheme == ApplicationTheme.Dark
+                : value == ElementTheme.Dark;
+        }
+
+        try
+        {
+            if (IsDark(theme))
+            {
+                window.ApplyDarkMode();
+            }
+            else
+            {
+                window.RemoveDarkMode();
+            }
+        }
+        catch { }
+    }
+
+    private static void OnModernWindowActualThemeChanged(object sender, RoutedEventArgs e)
+    {
+        if (sender is Window window)
+        {
+            UpdateDarkMode(window);
+        }
+    }
+
+    private static void OnModernWindowLoaded(object sender, RoutedEventArgs e)
+    {
+        if (sender is Window window)
+        {
+            // This is needed to fix the issue with the window not being loaded correctly
+            WindowChrome.SetWindowChrome(window, (WindowChrome.GetWindowChrome(window)?.Clone() as WindowChrome) ?? WindowChrome.GetWindowChrome(window));
+
+            window.RemoveTitleBar();
+        }
+    }
+
+    private static void OnModernWindowClosed(object sender, EventArgs e)
+    {
+        if (sender is Window window)
+        {
+            window.Closed -= OnModernWindowClosed;
+            window.Loaded -= OnModernWindowLoaded;
+
+            WindowResizeModeDescriptor.RemoveValueChanged(window, OnWindowResizeModeDescriptorValueChanged);
+            ThemeManager.RemoveActualThemeChangedHandler(window, OnModernWindowActualThemeChanged);
+        }
+    }
 
     #region Chrome Management
 

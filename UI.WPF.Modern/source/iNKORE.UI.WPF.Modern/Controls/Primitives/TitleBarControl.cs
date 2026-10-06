@@ -1,7 +1,4 @@
-﻿using iNKORE.UI.WPF.Helpers;
-using iNKORE.UI.WPF.Modern.Helpers;
-using iNKORE.UI.WPF.Modern.Helpers.Styles;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
@@ -12,6 +9,9 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using iNKORE.UI.WPF.Helpers;
+using iNKORE.UI.WPF.Modern.Helpers;
+using iNKORE.UI.WPF.Modern.Helpers.Styles;
 
 namespace iNKORE.UI.WPF.Modern.Controls.Primitives
 {
@@ -522,14 +522,7 @@ namespace iNKORE.UI.WPF.Modern.Controls.Primitives
         {
             if (_parentWindow != null)
             {
-                descriptor_ResizeMode.RemoveValueChanged(_parentWindow, _window_ButtonAvailabilityShouldUpdate);
-                descriptor_WindowStyle.RemoveValueChanged(_parentWindow, _window_ButtonAvailabilityShouldUpdate);
-
-                if (_altLeftBinding != null)
-                {
-                    _parentWindow.InputBindings.Remove(_altLeftBinding);
-                    _altLeftBinding = null;
-                }
+                DetachFromParentWindow();
             }
 
             base.OnVisualParentChanged(oldParent);
@@ -543,13 +536,38 @@ namespace iNKORE.UI.WPF.Modern.Controls.Primitives
                 descriptor_ResizeMode.AddValueChanged(_parentWindow, _window_ButtonAvailabilityShouldUpdate);
                 descriptor_WindowStyle.AddValueChanged(_parentWindow, _window_ButtonAvailabilityShouldUpdate);
 
+                // The descriptors above are cached for the lifetime of the process and keep a strong reference
+                // to the window, so they have to be released when it closes
+                _parentWindow.Closed += _window_Closed;
+
                 UpdateButtonActualAvailabilities();
+            }
+        }
+
+        private void DetachFromParentWindow()
+        {
+            descriptor_ResizeMode.RemoveValueChanged(_parentWindow, _window_ButtonAvailabilityShouldUpdate);
+            descriptor_WindowStyle.RemoveValueChanged(_parentWindow, _window_ButtonAvailabilityShouldUpdate);
+            _parentWindow.Closed -= _window_Closed;
+
+            if (_altLeftBinding != null)
+            {
+                _parentWindow.InputBindings.Remove(_altLeftBinding);
+                _altLeftBinding = null;
+            }
+        }
+
+        private void _window_Closed(object sender, EventArgs e)
+        {
+            if (sender == _parentWindow)
+            {
+                DetachFromParentWindow();
             }
         }
 
         private void _window_ButtonAvailabilityShouldUpdate(object sender, EventArgs e)
         {
-            if(sender == _parentWindow)
+            if (sender == _parentWindow)
             {
                 UpdateButtonActualAvailabilities();
             }
@@ -576,6 +594,10 @@ namespace iNKORE.UI.WPF.Modern.Controls.Primitives
 
         public void UpdateButtonActualAvailabilities()
         {
+            if (_parentWindow == null)
+            {
+                return;
+            }
 
             // Close button
             if (CloseButtonAvailability != TitleBarButtonAvailability.Auto)
@@ -601,7 +623,7 @@ namespace iNKORE.UI.WPF.Modern.Controls.Primitives
             }
             else
             {
-                if(_parentWindow.WindowStyle == WindowStyle.ToolWindow)
+                if (_parentWindow.WindowStyle == WindowStyle.ToolWindow)
                 {
                     MaximizeButtonActualAvailability = TitleBarButtonAvailability.Collapsed;
                 }
@@ -701,7 +723,7 @@ namespace iNKORE.UI.WPF.Modern.Controls.Primitives
 
         private void InitializeSnapLayout()
         {
-            if(MaximizeRestoreButton != null)
+            if (MaximizeRestoreButton != null)
             {
                 InitializeSnapLayout(MaximizeRestoreButton);
             }
@@ -713,7 +735,7 @@ namespace iNKORE.UI.WPF.Modern.Controls.Primitives
 
             if (maximizeButton.IsEnabled && maximizeButton.Visibility == Visibility.Visible)
             {
-                if(_snapLayout == null)
+                if (_snapLayout == null)
                 {
                     _snapLayout = new SnapLayout();
                     _snapLayout.Register(maximizeButton);
@@ -721,7 +743,7 @@ namespace iNKORE.UI.WPF.Modern.Controls.Primitives
             }
             else
             {
-                if(_snapLayout != null)
+                if (_snapLayout != null)
                 {
                     _snapLayout.Unregister();
                     _snapLayout = null;

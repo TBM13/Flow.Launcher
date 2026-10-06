@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -51,21 +51,22 @@ namespace iNKORE.UI.WPF.Modern.Controls
             DefaultStyleKeyProperty.OverrideMetadata(typeof(SettingsCard), new FrameworkPropertyMetadata(typeof(SettingsCard)));
         }
 
-        internal static readonly DependencyPropertyDescriptor IsPressedPropertyDescriptior = DependencyPropertyDescriptor.FromProperty(IsPressedProperty, typeof(SettingsCard));
-        internal static readonly DependencyPropertyDescriptor IsMouseOverPropertyDescriptior = DependencyPropertyDescriptor.FromProperty(IsMouseOverProperty, typeof(SettingsCard));
-
         /// <summary>
         /// Creates a new instance of the <see cref="SettingsCard"/> class.
         /// </summary>
         public SettingsCard()
         {
-            IsPressedPropertyDescriptior.AddValueChanged(this, PointerStateProperties_ValueChanged);
-            IsMouseOverPropertyDescriptior.AddValueChanged(this, PointerStateProperties_ValueChanged);
+
         }
 
-        private void PointerStateProperties_ValueChanged(object sender, EventArgs e)
+        protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
         {
-            this.UpdatePointerState();
+            base.OnPropertyChanged(e);
+
+            if (e.Property == IsPressedProperty || e.Property == IsMouseOverProperty)
+            {
+                this.UpdatePointerState();
+            }
         }
 
         /// <inheritdoc />
@@ -235,7 +236,7 @@ namespace iNKORE.UI.WPF.Modern.Controls
             else if (this.IsClickEnabled == false)
             {
                 state = NormalState;
-            }    
+            }
             else
             {
                 if (this.IsPressed)
@@ -298,7 +299,7 @@ namespace iNKORE.UI.WPF.Modern.Controls
         {
             // Manually go to states, adapted from:
             // https://github.com/CommunityToolkit/Windows/blob/main/components/SettingsControls/src/SettingsCard/SettingsCard.xaml#L369
-            
+
             var state = this.Content == null || this.Content as string == ""
                 ? nameof(Visibility.Collapsed)
                 : nameof(Visibility.Visible);

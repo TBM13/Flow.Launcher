@@ -1,8 +1,4 @@
-﻿using iNKORE.UI.WPF.Helpers;
-using iNKORE.UI.WPF.Modern.Common;
-using iNKORE.UI.WPF.Modern.Helpers;
-using iNKORE.UI.WPF.Modern.Themes.DesignTime;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -11,6 +7,10 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Threading;
+using iNKORE.UI.WPF.Helpers;
+using iNKORE.UI.WPF.Modern.Common;
+using iNKORE.UI.WPF.Modern.Helpers;
+using iNKORE.UI.WPF.Modern.Themes.DesignTime;
 
 namespace iNKORE.UI.WPF.Modern
 {
@@ -42,7 +42,6 @@ namespace iNKORE.UI.WPF.Modern
         }
 
         private static readonly Binding _highContrastBinding = new Binding("(SystemParameters.HighContrast)");
-        private static readonly RoutedEventArgs _actualThemeChangedEventArgs;
 
         private static readonly Dictionary<string, ResourceDictionary> _defaultThemeDictionaries = new Dictionary<string, ResourceDictionary>();
 
@@ -54,7 +53,6 @@ namespace iNKORE.UI.WPF.Modern
         {
             ThemeProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(OnThemeChanged));
 
-            _actualThemeChangedEventArgs = new RoutedEventArgs(ActualThemeChangedEvent);
             MenuDropAlignmentHelper.EnsureStandardPopupAlignment();
 
             if (DesignMode.DesignModeEnabled)
@@ -230,8 +228,8 @@ namespace iNKORE.UI.WPF.Modern
             {
                 ActualAccentColor = ColorsHelper.Current.SystemAccentColor;
             }
-            
-            if(!UsingSystemAccentColor || ActualAccentColor.A == 0d)
+
+            if (!UsingSystemAccentColor || ActualAccentColor.A == 0d)
             {
                 ActualAccentColor = AccentColor ?? ColorsHelper.DefaultAccentColor;
             }
@@ -252,7 +250,7 @@ namespace iNKORE.UI.WPF.Modern
                     set = false;
                 }
             }
-            if(!set)
+            if (!set)
             {
                 ColorsHelper.Current.SetAccent(ActualAccentColor);
             }
@@ -460,7 +458,10 @@ namespace iNKORE.UI.WPF.Modern
 
         private static void RaiseActualThemeChanged(FrameworkElement element)
         {
-            element.RaiseEvent(_actualThemeChangedEventArgs);
+            // A fresh instance each time on purpose: RoutedEventArgs records the first element it is raised on
+            // as OriginalSource and never clears it, and never resets Handled, so a shared instance would keep
+            // that element (and its window) alive forever and let one handler's Handled leak into every later raise.
+            element.RaiseEvent(new RoutedEventArgs(ActualThemeChangedEvent, element));
         }
 
         #endregion
@@ -886,12 +887,12 @@ namespace iNKORE.UI.WPF.Modern
 
             public event PropertyChangedEventHandler PropertyChanged;
 
-            private void RaisePropertyChanged([CallerMemberName]string propertyName = null)
+            private void RaisePropertyChanged([CallerMemberName] string propertyName = null)
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
 
-            private void Set<T>(ref T storage, T value, [CallerMemberName]string propertyName = null)
+            private void Set<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
             {
                 if (!Equals(storage, value))
                 {
@@ -899,7 +900,7 @@ namespace iNKORE.UI.WPF.Modern
                     RaisePropertyChanged(propertyName);
                 }
             }
-           
+
             private ApplicationTheme _actualApplicationTheme;
         }
     }
