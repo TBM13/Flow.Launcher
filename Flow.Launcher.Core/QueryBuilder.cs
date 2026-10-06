@@ -8,7 +8,7 @@ public static class QueryBuilder
 {
     public static Query Build(string originalQuery, bool isRequery, Dictionary<string, PluginMetadata> nonGlobalPlugins)
     {
-        ReadOnlySpan<char> trimmedQuery = originalQuery.Trim();
+        ReadOnlySpan<char> trimmedQuery = originalQuery.AsSpan().Trim();
 
         // Home query
         if (trimmedQuery.IsEmpty)
@@ -24,8 +24,9 @@ public static class QueryBuilder
         }
 
         // Tokenize query
-        Span<Range> tokens = stackalloc Range[TokenizedString.MaxTokens];
-        TokenizedString tokenizedQuery = TokenizedString.Tokenize(trimmedQuery, tokens);
+        const int maxTokens = 2;
+        Span<Range> tokens = stackalloc Range[maxTokens];
+        TokenizedString tokenizedQuery = TokenizedString.Tokenize(trimmedQuery, tokens, maxTokens: maxTokens);
 
         string actionKeyword, search;
         ReadOnlySpan<char> possibleActionKeyword = tokenizedQuery[0];
@@ -35,7 +36,6 @@ public static class QueryBuilder
         {
             // Query has the action keyword of a non-global plugin
             actionKeyword = possibleActionKeyword.ToString();
-            // TODO: Maybe generate search from the tokenizedQuery
             search = tokenizedQuery.TokenCount > 1
                 ? trimmedQuery[(actionKeyword.Length + 1)..].TrimStart().ToString()
                 : string.Empty;
@@ -47,14 +47,12 @@ public static class QueryBuilder
                 && !metadata.Disabled)
         {
             actionKeyword = possibleActionKeyword[..1].ToString();
-            // TODO: Maybe generate search from the tokenizedQuery
             search = trimmedQuery[1..].TrimStart().ToString();
         }
         else
         {
             // No valid action keyword (global query)
             actionKeyword = string.Empty;
-            // TODO: Maybe generate search from the tokenizedQuery
             search = trimmedQuery.ToString();
         }
 

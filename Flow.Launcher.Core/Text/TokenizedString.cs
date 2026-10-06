@@ -44,8 +44,16 @@ public readonly ref struct TokenizedString
     /// <summary>
     /// Splits the input string into tokens based on whitespace and stores their ranges in the provided span.
     /// </summary>
-    public static TokenizedString Tokenize(ReadOnlySpan<char> str, Span<Range> tokenRanges)
+    /// <param name="maxTokens">
+    /// The maximum number of tokens to extract.
+    /// When this amount is reached, the tokenization stops ignoring the rest of the string.
+    /// </param>
+    public static TokenizedString Tokenize(ReadOnlySpan<char> str, Span<Range> tokenRanges, int maxTokens = -1)
     {
+        int capacity = maxTokens >= 0 ? Math.Min(tokenRanges.Length, maxTokens) : tokenRanges.Length;
+        if (capacity == 0)
+            return new TokenizedString(str, []);
+
         int tokenCount = 0;
         int tokenStart = -1;
 
@@ -57,7 +65,7 @@ public readonly ref struct TokenizedString
                 {
                     tokenRanges[tokenCount++] = new Range(tokenStart, i);
                     tokenStart = -1;
-                    if (tokenCount >= tokenRanges.Length)
+                    if (tokenCount >= capacity)
                         break;
                 }
             }
@@ -65,7 +73,7 @@ public readonly ref struct TokenizedString
                 tokenStart = i;
         }
 
-        if (tokenStart != -1 && tokenCount < tokenRanges.Length)
+        if (tokenStart != -1 && tokenCount < capacity)
             tokenRanges[tokenCount++] = new Range(tokenStart, str.Length);
 
         return new TokenizedString(str, tokenRanges[..tokenCount]);
