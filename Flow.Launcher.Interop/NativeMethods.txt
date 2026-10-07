@@ -89,6 +89,7 @@ GetModuleHandle
 SendInput
 VIRTUAL_KEY
 GetMessage
+PeekMessage
 TranslateMessage
 DispatchMessage
 WM_KEYDOWN

@@ -66,26 +66,28 @@ public static class ShellImageHelper
     /// <summary>
     /// Obtains the icon or thumbnail for the specified file.
     /// </summary>
-    /// <remarks>Does not support Internet Shortcut files (returns generic file icon).</remarks>
     /// <param name="fullPath">The absolute path to the file.</param>
     /// <param name="width">Width in physical device pixels.</param>
     /// <param name="height">Height in physical device pixels.</param>
-    public static BitmapSource GetThumbnailOrIcon(
+    public static Task<BitmapSource> GetThumbnailOrIconAsync(
         string fullPath, int width, int height, ShellItemImageFlags options)
     {
-        HBITMAP hBitmap = GetHBitmap(fullPath, width, height, options);
-        try
+        return STADispatcher.InvokeAsync(() =>
         {
-            BitmapSource bitmap = Imaging.CreateBitmapSourceFromHBitmap(
-                hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+            HBITMAP hBitmap = GetHBitmap(fullPath, width, height, options);
+            try
+            {
+                BitmapSource bitmap = Imaging.CreateBitmapSourceFromHBitmap(
+                    hBitmap, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
 
-            bitmap.Freeze();
-            return bitmap;
-        }
-        finally
-        {
-            PInvoke.DeleteObject(hBitmap);
-        }
+                bitmap.Freeze();
+                return bitmap;
+            }
+            finally
+            {
+                PInvoke.DeleteObject(hBitmap);
+            }
+        });
     }
 
     /// <returns>An HBITMAP handle containing the image. Caller must free the handle when finished.</returns>
@@ -104,53 +106,41 @@ public static class ShellImageHelper
         };
 
         HBITMAP hBitmap = default;
-        for (int remainingAttempts = 3; remainingAttempts > 0; remainingAttempts--)
-        {
-            HRESULT res = imageFactory.GetImage(size, (SIIGBF)options, &hBitmap);
-            if (res == HRESULT.E_PENDING)
-            {
-                // This is a normal exception when the app was recently opened.
-                // Wait a few miliseconds and retry
-                Thread.Sleep(15);
-                continue;
-            }
-
-            res.ThrowOnFailure();
-            break;
-        }
-
+        imageFactory.GetImage(size, (SIIGBF)options, &hBitmap).ThrowOnFailure();
         return hBitmap;
     }
 
     /// <summary>
     /// Tries to get the icon index and overlay index of a file/directory.
     /// </summary>
-    /// <remarks>Does not support Internet Shortcut files (returns generic file index).</remarks>
     /// <returns>Null if the indexes could not be retrieved.</returns>
-    public static (int iconIndex, int overlayIndex)? GetIconIndex(string path)
+    public static Task<(int iconIndex, int overlayIndex)?> GetIconIndexAsync(string path)
     {
-        SHGFI_FLAGS flags = SHGFI_FLAGS.SHGFI_OVERLAYINDEX
-            // OverlayIndex requires Icon to be passed too
-            | SHGFI_FLAGS.SHGFI_ICON;
-
-        // Since we use SHGFI_ICON, we don't need SHGFI_SYSICONINDEX
-        // flags |= SHGFI_FLAGS.SHGFI_SYSICONINDEX;
-
-        SHFILEINFOW shfi = default;
-        try
+        return STADispatcher.InvokeAsync<(int iconIndex, int overlayIndex)?>(() =>
         {
-            nuint res = PInvoke.SHGetFileInfo(path, default, ref shfi, flags);
-            if (res == 0)
-                return null;
-        }
-        finally
-        {
-            if (!shfi.hIcon.IsNull)
-                PInvoke.DestroyIcon(shfi.hIcon);
-        }
+            SHGFI_FLAGS flags = SHGFI_FLAGS.SHGFI_OVERLAYINDEX
+                // OverlayIndex requires Icon to be passed too
+                | SHGFI_FLAGS.SHGFI_ICON;
 
-        int baseIndex = shfi.iIcon & 0x00FFFFFF;
-        int overlayIndex = (shfi.iIcon >> 24) & 0x000000FF;
-        return (baseIndex, overlayIndex);
+            // Since we use SHGFI_ICON, we don't need SHGFI_SYSICONINDEX
+            // flags |= SHGFI_FLAGS.SHGFI_SYSICONINDEX;
+
+            SHFILEINFOW shfi = default;
+            try
+            {
+                nuint res = PInvoke.SHGetFileInfo(path, default, ref shfi, flags);
+                if (res == 0)
+                    return null;
+            }
+            finally
+            {
+                if (!shfi.hIcon.IsNull)
+                    PInvoke.DestroyIcon(shfi.hIcon);
+            }
+
+            int baseIndex = shfi.iIcon & 0x00FFFFFF;
+            int overlayIndex = (shfi.iIcon >> 24) & 0x000000FF;
+            return (baseIndex, overlayIndex);
+        });
     }
 }

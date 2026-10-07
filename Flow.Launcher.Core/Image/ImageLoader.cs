@@ -65,31 +65,25 @@ public class ImageLoader : IImageLoader
         var key = (normalizedPath, loadFullImage);
         // Create a lazy task that will load the image
         // (or get the existing task if the image is already being loaded)
-        var lazyTask = _inFlightLoads.GetOrAdd(key, k => new(() =>
-            // Switch to background thread to avoid blocking the UI while loading the image
-            Task.Run(() =>
+        var lazyTask = _inFlightLoads.GetOrAdd(key, k => new(async () =>
+        {
+            try
             {
-                try
-                {
-                    ImageSource img = LoadFromDisk(k.Item1, k.Item2);
-
-                    // Cache image
-                    _pathCache[k.Item1, k.Item2] = img;
-                    return img;
-                }
-                finally
-                {
-                    // Image finished loading
-                    _inFlightLoads.TryRemove(k, out _);
-                }
-            })
-        ));
+                ImageSource img = await LoadImageAsync(k.Item1, k.Item2).ConfigureAwait(false);
+                _pathCache[k.Item1, k.Item2] = img;
+                return img;
+            }
+            finally
+            {
+                _inFlightLoads.TryRemove(k, out _);
+            }
+        }));
 
         // Load image or wait for it to load if it is already being loaded
         return await lazyTask.Value.ConfigureAwait(false);
     }
 
-    private ImageSource LoadFromDisk(string normalizedPath, bool loadFullImage = false)
+    private async Task<ImageSource> LoadImageAsync(string normalizedPath, bool loadFullImage = false)
     {
         ImageSource image;
         int iconSize = loadFullImage ? FullIconSize : SmallIconSize;
@@ -102,12 +96,11 @@ public class ImageLoader : IImageLoader
             {
                 // Load thumbnail instead of the full bitmap because even
                 // if we constrain the decoded dimensions, WPF still uses a lot of memory
-                // image = LoadFullBitmap(normalizedPath);
 
                 try
                 {
-                    image = ShellImageHelper.GetThumbnailOrIcon(
-                        normalizedPath, FullImageSize, FullImageSize, ShellItemImageFlags.ThumbnailOnly);
+                    image = await ShellImageHelper.GetThumbnailOrIconAsync(
+                        normalizedPath, FullImageSize, FullImageSize, ShellItemImageFlags.ThumbnailOnly).ConfigureAwait(false);
                 }
                 catch (Exception e)
                 {
@@ -119,8 +112,8 @@ public class ImageLoader : IImageLoader
             {
                 try
                 {
-                    image = ShellImageHelper.GetThumbnailOrIcon(
-                        normalizedPath, iconSize, iconSize, ShellItemImageFlags.Default);
+                    image = await ShellImageHelper.GetThumbnailOrIconAsync(
+                        normalizedPath, iconSize, iconSize, ShellItemImageFlags.Default).ConfigureAwait(false);
                 }
                 catch (Exception e)
                 {
@@ -147,12 +140,11 @@ public class ImageLoader : IImageLoader
                     _logger.LogError(e, $"Failed to get custom icon of internet shortcut '{normalizedPath}'");
                 }
 
-                // Fallback to normal icon loading. Seems like it fails and returns a generic file icon,
-                // likely because we are not in an STA thread
+                // Fallback to normal icon loading
             }
 
             // Get the icon index of the file and check if it is cached
-            var iconIndexes = ShellImageHelper.GetIconIndex(normalizedPath);
+            var iconIndexes = await ShellImageHelper.GetIconIndexAsync(normalizedPath).ConfigureAwait(false);
             if (iconIndexes is not (int iconIndex, int overlayIndex))
             {
                 // The path is likely invalid
@@ -171,8 +163,8 @@ public class ImageLoader : IImageLoader
             _logger.LogDebug($"Obtaining icon of '{normalizedPath}' (index {iconIndex}, overlay {overlayIndex})");
             try
             {
-                image = ShellImageHelper.GetThumbnailOrIcon(
-                    normalizedPath, iconSize, iconSize, ShellItemImageFlags.IconOnly);
+                image = await ShellImageHelper.GetThumbnailOrIconAsync(
+                    normalizedPath, iconSize, iconSize, ShellItemImageFlags.IconOnly).ConfigureAwait(false);
 
                 // Add icon to cache
                 _iconIndexCache[(iconIndex, overlayIndex), loadFullImage] = image;
