@@ -131,9 +131,12 @@ public class ImageLoader : IImageLoader
                 try
                 {
                     InternetShortcutInfo info = InternetShortcutHelper.Parse(normalizedPath);
-                    BitmapSource? customIcon = InternetShortcutHelper.GetCustomIcon(info, iconSize, iconSize);
-                    if (customIcon is not null)
-                        return customIcon;
+                    if (info.IconFile is not null)
+                    {
+                        BitmapSource? customIcon = await Task.Run(() => InternetShortcutHelper.GetCustomIcon(info, iconSize, iconSize));
+                        if (customIcon is not null)
+                            return customIcon;
+                    }
                 }
                 catch (Exception e)
                 {
