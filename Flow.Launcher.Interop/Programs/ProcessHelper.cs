@@ -316,4 +316,55 @@ public static class ProcessHelper
             PInvoke.CloseHandle(hProcess);
         }
     }
+
+    /// <summary>
+    /// Enables the specified security privilege for the specified process.
+    /// </summary>
+    /// <exception cref="Win32Exception"></exception>
+    public static unsafe void EnableSecurityPrivilege(IntPtr processHandle, string privilegeName)
+    {
+        HANDLE tokenHandle = default;
+        try
+        {
+            // Get the process token
+            if (!PInvoke.OpenProcessToken(
+                new HANDLE(processHandle),
+                TOKEN_ACCESS_MASK.TOKEN_ADJUST_PRIVILEGES | TOKEN_ACCESS_MASK.TOKEN_QUERY,
+                &tokenHandle))
+                throw new Win32Exception(Marshal.GetLastPInvokeError());
+
+            // Get the privilege
+            if (!PInvoke.LookupPrivilegeValue(null, privilegeName, out LUID luid))
+                throw new Win32Exception(Marshal.GetLastPInvokeError());
+
+            TOKEN_PRIVILEGES privileges = new()
+            {
+                PrivilegeCount = 1,
+                Privileges = new()
+                {
+                    e0 = new LUID_AND_ATTRIBUTES
+                    {
+                        Luid = luid,
+                        Attributes = TOKEN_PRIVILEGES_ATTRIBUTES.SE_PRIVILEGE_ENABLED
+                    }
+                }
+            };
+
+            Marshal.SetLastPInvokeError(0);
+            if (!PInvoke.AdjustTokenPrivileges(tokenHandle, false, &privileges, 0))
+                throw new Win32Exception(Marshal.GetLastPInvokeError());
+
+            // AdjustTokenPrivileges might return true even if the privilege was not enabled
+            int error = Marshal.GetLastPInvokeError();
+            if (error == (int)WIN32_ERROR.ERROR_NOT_ALL_ASSIGNED)
+                throw new Win32Exception(error, $"Privilege '{privilegeName}' is not present in the token");
+            if (error != 0)
+                throw new Win32Exception(error);
+        }
+        finally
+        {
+            if (!tokenHandle.IsNull)
+                PInvoke.CloseHandle(tokenHandle);
+        }
+    }
 }
