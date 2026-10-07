@@ -1,5 +1,4 @@
 ﻿using System.Runtime.InteropServices;
-using Windows.Win32;
 
 namespace Flow.Launcher.Interop;
 
@@ -35,70 +34,5 @@ public static partial class ApplicationHelper
         {
             _ = SetPreferredAppMode((int)mode);
         }
-    }
-
-    // Inspired by https://github.com/files-community/Files code on STA Thread handling.
-    public static Task StartSTATaskAsync(Action action)
-    {
-        var taskCompletionSource = new TaskCompletionSource();
-        Thread thread = new(() =>
-        {
-            PInvoke.OleInitialize();
-
-            try
-            {
-                action();
-                taskCompletionSource.SetResult();
-            }
-            catch (Exception ex)
-            {
-                taskCompletionSource.SetException(ex);
-            }
-            finally
-            {
-                PInvoke.OleUninitialize();
-            }
-        })
-        {
-            IsBackground = true,
-            Priority = ThreadPriority.Normal
-        };
-
-        thread.SetApartmentState(ApartmentState.STA);
-        thread.Start();
-
-        return taskCompletionSource.Task;
-    }
-
-    public static Task<T> StartSTATaskAsync<T>(Func<T> func)
-    {
-        var taskCompletionSource = new TaskCompletionSource<T>();
-
-        Thread thread = new(() =>
-        {
-            PInvoke.OleInitialize();
-
-            try
-            {
-                taskCompletionSource.SetResult(func());
-            }
-            catch (Exception ex)
-            {
-                taskCompletionSource.SetException(ex);
-            }
-            finally
-            {
-                PInvoke.OleUninitialize();
-            }
-        })
-        {
-            IsBackground = true,
-            Priority = ThreadPriority.Normal
-        };
-
-        thread.SetApartmentState(ApartmentState.STA);
-        thread.Start();
-
-        return taskCompletionSource.Task;
     }
 }

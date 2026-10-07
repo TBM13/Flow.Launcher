@@ -8,8 +8,6 @@ using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Core.Storage;
 using Flow.Launcher.Core.UserSettings;
-using Flow.Launcher.Interop;
-using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Plugins;
 using Flow.Launcher.Settings;
@@ -133,90 +131,70 @@ public class PublicAPIInstance : IPublicAPI, IDisposable
         });
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD100:Avoid async void methods", Justification = "<Pending>")]
-    public async void CopyToClipboard(string stringToCopy, bool directCopy = false, bool showDefaultNotification = true)
+    public void CopyToClipboard(string stringToCopy, bool directCopy = false, bool showDefaultNotification = true)
     {
         if (string.IsNullOrEmpty(stringToCopy))
+            return;
+
+        if (!Application.Current.Dispatcher.CheckAccess())
         {
+            Application.Current.Dispatcher.InvokeAsync(() =>
+            {
+                CopyToClipboard(stringToCopy, directCopy, showDefaultNotification);
+            });
             return;
         }
 
-        var isFile = File.Exists(stringToCopy);
+        // Sometimes the clipboard is locked and cannot be accessed,
+        // we need to retry a few times before giving up
+        int retries = 6;
+
+        bool isFile = File.Exists(stringToCopy);
         if (directCopy && (isFile || Directory.Exists(stringToCopy)))
         {
-            // Sometimes the clipboard is locked and cannot be accessed,
-            // we need to retry a few times before giving up
-            var exception = await RetryActionOnSTAThreadAsync(() =>
+            StringCollection paths = [stringToCopy];
+            while (retries-- > 0)
             {
-                var paths = new StringCollection
+                try
                 {
-                    stringToCopy
-                };
-
-                Clipboard.SetFileDropList(paths);
-            });
-
-            if (exception == null)
-            {
-                if (showDefaultNotification)
-                {
-                    ShowMsg(
-                        $"Copy {(isFile ? "File" : "Folder")}",
-                        "Completed successfully");
+                    Clipboard.SetFileDropList(paths);
+                    if (showDefaultNotification)
+                    {
+                        ShowMsg(
+                            $"Copy {(isFile ? "File" : "Folder")}",
+                            "Completed successfully");
+                    }
+                    return;
                 }
-            }
-            else
-            {
-                _logger.LogError(exception, $"Failed to copy file/folder to clipboard");
-                ShowMsgError("Failed to copy");
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"Failed to copy file/folder to clipboard, retries left: {retries}");
+                    Thread.Sleep(50);
+                }
             }
         }
         else
         {
-            // Sometimes the clipboard is locked and cannot be accessed,
-            // we need to retry a few times before giving up
-            var exception = await RetryActionOnSTAThreadAsync(() =>
+            while (retries-- > 0)
             {
-                // We should use SetText instead of SetDataObject to avoid the clipboard being locked by other applications
-                Clipboard.SetText(stringToCopy);
-            });
-
-            if (exception == null)
-            {
-                if (showDefaultNotification)
+                try
                 {
-                    ShowMsg(
-                        $"Copy Text",
-                        "Completed successfully");
+                    Clipboard.SetText(stringToCopy);
+                    if (showDefaultNotification)
+                        ShowMsg("Copy Text", "Completed successfully");
+
+                    return;
+
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"Failed to copy text to clipboard, retries left: {retries}");
+                    Thread.Sleep(100);
                 }
             }
-            else
-            {
-                _logger.LogError(exception, $"Failed to copy text to clipboard");
-                ShowMsgError("Failed to copy");
-            }
         }
-    }
 
-    private static async Task<Exception> RetryActionOnSTAThreadAsync(Action action, int retryCount = 6, int retryDelay = 150)
-    {
-        for (var i = 0; i < retryCount; i++)
-        {
-            try
-            {
-                await ApplicationHelper.StartSTATaskAsync(action).ConfigureAwait(false);
-                break;
-            }
-            catch (Exception e)
-            {
-                if (i == retryCount - 1)
-                {
-                    return e;
-                }
-                await Task.Delay(retryDelay);
-            }
-        }
-        return null;
+        ShowMsgError("Failed to copy");
     }
 
     public List<PluginMetadata> GetAllPlugins() => _pluginManager.GetAllLoadedPlugins();
