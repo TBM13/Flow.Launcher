@@ -318,10 +318,11 @@ public static class ProcessHelper
     }
 
     /// <summary>
-    /// Enables the specified security privilege for the specified process.
+    /// Enables or disables the specified security privilege for the specified process.
     /// </summary>
     /// <exception cref="Win32Exception"></exception>
-    public static unsafe void EnableSecurityPrivilege(IntPtr processHandle, string privilegeName)
+    private static unsafe void SetSecurityPrivilege(
+        IntPtr processHandle, string privilegeName, TOKEN_PRIVILEGES_ATTRIBUTES attributes)
     {
         HANDLE tokenHandle = default;
         try
@@ -333,7 +334,7 @@ public static class ProcessHelper
                 &tokenHandle))
                 throw new Win32Exception(Marshal.GetLastPInvokeError());
 
-            // Get the privilege
+            // Get the privilege LUID
             if (!PInvoke.LookupPrivilegeValue(null, privilegeName, out LUID luid))
                 throw new Win32Exception(Marshal.GetLastPInvokeError());
 
@@ -345,7 +346,7 @@ public static class ProcessHelper
                     e0 = new LUID_AND_ATTRIBUTES
                     {
                         Luid = luid,
-                        Attributes = TOKEN_PRIVILEGES_ATTRIBUTES.SE_PRIVILEGE_ENABLED
+                        Attributes = attributes
                     }
                 }
             };
@@ -354,7 +355,7 @@ public static class ProcessHelper
             if (!PInvoke.AdjustTokenPrivileges(tokenHandle, false, &privileges, 0))
                 throw new Win32Exception(Marshal.GetLastPInvokeError());
 
-            // AdjustTokenPrivileges might return true even if the privilege was not enabled
+            // AdjustTokenPrivileges might return true even if the privilege was not assigned
             int error = Marshal.GetLastPInvokeError();
             if (error == (int)WIN32_ERROR.ERROR_NOT_ALL_ASSIGNED)
                 throw new Win32Exception(error, $"Privilege '{privilegeName}' is not present in the token");
@@ -367,4 +368,26 @@ public static class ProcessHelper
                 PInvoke.CloseHandle(tokenHandle);
         }
     }
+
+    /// <summary>
+    /// Enables the specified security privilege for the specified process.
+    /// </summary>
+    /// <inheritdoc cref="SetSecurityPrivilege(nint, string, TOKEN_PRIVILEGES_ATTRIBUTES)" path="/exception"/>
+    public static void EnableSecurityPrivilege(IntPtr processHandle, string privilegeName) =>
+        SetSecurityPrivilege(processHandle, privilegeName, TOKEN_PRIVILEGES_ATTRIBUTES.SE_PRIVILEGE_ENABLED);
+
+    /// <summary>
+    /// Disables the specified security privilege for the specified process.
+    /// </summary>
+    /// <remarks>Only disables it. It can still be re-enabled later.</remarks>
+    /// <inheritdoc cref="SetSecurityPrivilege(nint, string, TOKEN_PRIVILEGES_ATTRIBUTES)" path="/exception"/>
+    public static void DisableSecurityPrivilege(IntPtr processHandle, string privilegeName) =>
+        SetSecurityPrivilege(processHandle, privilegeName, 0);
+
+    /// <summary>
+    /// Permanently removes the specified security privilege from the specified process.
+    /// </summary>
+    /// <inheritdoc cref="SetSecurityPrivilege(nint, string, TOKEN_PRIVILEGES_ATTRIBUTES)" path="/exception"/>
+    public static void RemoveSecurityPrivilege(IntPtr processHandle, string privilegeName) =>
+        SetSecurityPrivilege(processHandle, privilegeName, TOKEN_PRIVILEGES_ATTRIBUTES.SE_PRIVILEGE_REMOVED);
 }
