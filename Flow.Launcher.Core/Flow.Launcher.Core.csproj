@@ -21,6 +21,8 @@
     <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.WindowsServices\Flow.Launcher.Plugin.WindowsServices.csproj" />
     <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.WindowsSettings\Flow.Launcher.Plugin.WindowsSettings.csproj" />
     <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.WindowsTasks\Flow.Launcher.Plugin.WindowsTasks.csproj" />
+
+    <Compile Include="..\Flow.Launcher.AdminHelper\IPC\**\*.cs" Link="IPC\%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
 
   <ItemGroup>

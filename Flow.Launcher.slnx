@@ -23,12 +23,12 @@
     <File Path="Settings.XamlStyler" />
     <File Path="SolutionAssemblyInfo.cs" />
   </Folder>
-  <Project Path="Flow.Launcher.Command/Flow.Launcher.Command.csproj" />
+  <Project Path="Flow.Launcher.AdminHelper/Flow.Launcher.AdminHelper.csproj" Id="1bf6cb0c-6c66-4d4d-8aa3-e72bbdbd6686" />
   <Project Path="Flow.Launcher.Core/Flow.Launcher.Core.csproj" />
   <Project Path="Flow.Launcher.Interop/Flow.Launcher.Interop.csproj" />
   <Project Path="Flow.Launcher.PluginSDK/Flow.Launcher.PluginSDK.csproj" />
   <Project Path="Flow.Launcher/Flow.Launcher.csproj">
-    <BuildDependency Project="Flow.Launcher.Command/Flow.Launcher.Command.csproj" />
+    <BuildDependency Project="Flow.Launcher.AdminHelper/Flow.Launcher.AdminHelper.csproj" />
   </Project>
 
   <!-- UI.WPF.Modern -->

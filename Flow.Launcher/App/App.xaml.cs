@@ -1,14 +1,16 @@
 ﻿using System.Diagnostics;
+using System.IO;
+using System.Security.Principal;
 using System.Text;
 using System.Windows;
 using CommunityToolkit.Mvvm.DependencyInjection;
+using Flow.Launcher.AdminHelper.IPC;
 using Flow.Launcher.Core;
 using Flow.Launcher.Core.Hotkeys;
 using Flow.Launcher.Core.Image;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Core.Text;
-using Flow.Launcher.Helper;
 using Flow.Launcher.Interop;
 using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.Settings;
@@ -27,9 +29,11 @@ namespace Flow.Launcher.App;
 
 public partial class App : Application
 {
+    private static Process? _adminHelperProcess;
     private IHost? _host;
     private readonly ISettingsAPI _settings;
     private readonly PluginSDK.Logging.Logger<App>? _logger;
+    private readonly bool _initialized;
 
     public static readonly string RuntimeInfo = "\n\n" +
         $"Version: {Constant.Version}\n" +
@@ -37,19 +41,32 @@ public partial class App : Application
         $"x64: {Environment.Is64BitOperatingSystem}";
 
     [STAThread]
-    public static void Main()
+    public static int Main()
     {
+        if (Environment.IsPrivilegedProcess)
+        {
+            MessageBox.Show("Flow Launcher must run without administrator privileges.",
+                Constant.FlowLauncher, MessageBoxButton.OK, MessageBoxImage.Error);
+            return 1;
+        }
+
         bool isRestart = Environment.GetCommandLineArgs().Contains("--restart");
-        if (!SingleInstance.Initialize(waitIfOccupied: isRestart))
+
+        // Ensure only one instance of the app is running
+        if (!SingleInstance.TryAcquire(
+            @"Local\Flow.Launcher_UniqueAppMutex",
+            out var instance, isRestart ? TimeSpan.FromMilliseconds(5000) : TimeSpan.Zero))
         {
             MessageBox.Show("Another instance of Flow Launcher is already running.");
-            return;
+            return 1;
         }
 
         try
         {
+            // Setup early logger (the real one isn't available until after DI is configured)
             EarlyLoggerFactory earlyLoggerFactory = new();
 
+            // Load settings
             ISettingsAPI settings;
             try
             {
@@ -57,148 +74,204 @@ public partial class App : Application
             }
             catch (Exception e)
             {
-                ShowErrorMsgboxAndFailFast("Failed to load settings", e);
-                throw;
+                MessageBox.Show($"Failed to load settings:\n\n{e}",
+                    Constant.FlowLauncher, MessageBoxButton.OK, MessageBoxImage.Error);
+                return 1;
             }
 
-            // Restart as admin if needed
-            if (settings.AlwaysRunAsAdmin && !Environment.IsPrivilegedProcess)
+            // Start the admin helper so we can connect to it
+            try
             {
-                // Only restart when we are not debugging on Visual Studio
-                bool isDebugging = Debugger.IsAttached
-                    // Set when using Visual Studio's performance profiler
-                    || !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DIAGHUB_SESSION_ID"));
-                if (!isDebugging)
-                {
-                    RestartApp(true);
-                    return;
-                }
+                StartAdminHelper();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(
+                    $"Flow Launcher could not start AdminHelper with administrator privileges." +
+                    $" Global hotkeys require AdminHelper.\n\n{e.Message}",
+                    Constant.FlowLauncher, MessageBoxButton.OK, MessageBoxImage.Error);
+                return 1;
             }
 
-            App application = new(earlyLoggerFactory, settings);
+            // Setup DI container
+            IHost host;
+            try
+            {
+                host = BuildHost(settings);
+                // Handoff early logs to the real logger factory
+                earlyLoggerFactory.FlushAndHandoff(Ioc.Default.GetRequiredService<ILoggerFactory>());
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Failed to build DI container:\n\n{e}",
+                    Constant.FlowLauncher, MessageBoxButton.OK, MessageBoxImage.Error);
+                return 1;
+            }
+
+            // Create & initialize the app
+            App application;
+            try
+            {
+                application = new(host, settings);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Failed to initialize application:\n\n{e}",
+                    Constant.FlowLauncher, MessageBoxButton.OK, MessageBoxImage.Error);
+                return 1;
+            }
+
             application.InitializeComponent();
-            application.Run();
+            return application.Run();
         }
         finally
         {
-            SingleInstance.Cleanup();
+            StopAdminHelper();
+            instance.Dispose();
+        }
+    }
+
+    private static void StartAdminHelper()
+    {
+        string helperPath = AdminHelper.IPC.Const.AdminHelperExecutable;
+        if (!File.Exists(helperPath))
+            throw new FileNotFoundException("AdminHelper was not found next to Flow Launcher", helperPath);
+
+        using WindowsIdentity identity = WindowsIdentity.GetCurrent();
+        string userSid = identity.User?.Value
+            ?? throw new InvalidOperationException("Flow Launcher has no user SID");
+        using Process currentProcess = Process.GetCurrentProcess();
+
+        ProcessStartInfo startInfo = new()
+        {
+            FileName = helperPath,
+            UseShellExecute = true,
+            Verb = "runas",
+            WindowStyle = ProcessWindowStyle.Hidden
+        };
+        startInfo.ArgumentList.Add("--client-sid");
+        startInfo.ArgumentList.Add(userSid);
+        startInfo.ArgumentList.Add("--session-id");
+        startInfo.ArgumentList.Add(currentProcess.SessionId.ToString());
+
+        _adminHelperProcess = Process.Start(startInfo)
+            ?? throw new InvalidOperationException("Failed to launch AdminHelper");
+    }
+
+    private static void StopAdminHelper()
+    {
+        if (_adminHelperProcess is null)
+            return;
+
+        try
+        {
+            _adminHelperProcess.WaitForExit(3000);
+        }
+        catch { }
+        finally
+        {
+            _adminHelperProcess.Dispose();
+            _adminHelperProcess = null;
         }
     }
 
     /// <summary>
     /// Restarts the application.
     /// </summary>
-    /// <param name="forceAdmin"> If true, the app will be restarted as administrator.</param>
-    public static void RestartApp(bool forceAdmin = false)
+    public static void RestartApp()
     {
         ProcessStartInfo startInfo = new()
         {
             FileName = Environment.ProcessPath,
             Arguments = "--restart",
-            UseShellExecute = true,
-            Verb = Environment.IsPrivilegedProcess || forceAdmin ? "runas" : ""
+            UseShellExecute = true
         };
 
         Process.Start(startInfo);
-        // Application.Current is null when this is called from Main()
-        Current?.Shutdown();
+        Current.Shutdown();
     }
 
-    public App(EarlyLoggerFactory earlyLoggerFactory, ISettingsAPI settings)
+    /// <summary>
+    /// Creates and configures the DI container.
+    /// </summary>
+    private static IHost BuildHost(ISettingsAPI settings)
     {
-        SetupErrorHandling();
+        // Configure DI container
+        IHost host = Host.CreateDefaultBuilder()
+            .ConfigureLogging(logging =>
+            {
+                logging.ClearProviders();
+                // TODO: Log to file
+
+                if (Debugger.IsAttached)
+                {
+                    logging.AddDebug();
+#if DEBUG
+                    // TODO: Use a log level setting instead
+                    logging.SetMinimumLevel(LogLevel.Trace);
+#endif
+                }
+#if DEBUG
+                logging.AddZLoggerConsole();
+#endif
+            })
+            .UseContentRoot(AppContext.BaseDirectory)
+            .ConfigureServices(services => services
+                // Core services
+                .AddTransient(typeof(PluginSDK.Logging.Logger<>))
+                .AddSingleton<IPublicAPI, PublicAPIInstance>()
+                .AddSingleton(settings)
+                .AddSingleton<HotkeyManager>()
+                .AddSingleton<IImageLoader, ImageLoader>()
+                .AddSingleton<PluginManager>()
+                .AddSingleton<Notification>()
+                .AddSingleton<IStringMatcher, StringMatcher>()
+
+                // Main Window
+                .AddSingleton<MainWindow>()
+                .AddSingleton<MainViewModel>()
+
+                // Settings
+                .AddTransient<SettingWindow>()
+                .AddTransient<SettingViewModel>()
+                .AddTransient<SettingsGeneralViewModel>()
+                .AddTransient<SettingsThemeViewModel>()
+                .AddTransient<SettingsPluginsViewModel>()
+                .AddTransient<SettingsHotkeyViewModel>()
+                .AddTransient<SettingsAboutViewModel>()
+            ).Build();
+
+        Ioc.Default.ConfigureServices(host.Services);
+        return host;
+    }
+
+    public App(IHost host, ISettingsAPI settings)
+    {
+        _host = host;
         _settings = settings;
+        _logger = Ioc.Default.GetRequiredService<PluginSDK.Logging.Logger<App>>();
 
         // Do not use bitmap cache since it can cause WPF second window freezing issue
         ShadowAssist.UseBitmapCache = false;
 
-        // Configure DI container
-        try
-        {
-            _host = Host.CreateDefaultBuilder()
-                .ConfigureLogging(logging =>
-                {
-                    logging.ClearProviders();
-                    // TODO: Log to file
+        // Initialize the API and pretty much everything
+        // TODO: Check if this is needed
+        Ioc.Default.GetRequiredService<IPublicAPI>();
 
-                    if (Debugger.IsAttached)
-                    {
-                        logging.AddDebug();
-#if DEBUG
-                        // TODO: Use a log level setting instead
-                        logging.SetMinimumLevel(LogLevel.Trace);
-#endif
-                    }
+        // Now that everything is initialized we can be more relaxed with exception handling
+        SetupErrorHandling();
 
-#if DEBUG
-                    logging.AddZLoggerConsole();
-#endif
-                })
-                .UseContentRoot(AppContext.BaseDirectory)
-                .ConfigureServices(services => services
-                    // Core services
-                    .AddTransient(typeof(PluginSDK.Logging.Logger<>))
-                    .AddSingleton<IPublicAPI, PublicAPIInstance>()
-                    .AddSingleton(_settings)
-                    .AddSingleton<HotkeyManager>()
-                    .AddSingleton<IImageLoader, ImageLoader>()
-                    .AddSingleton<PluginManager>()
-                    .AddSingleton<Notification>()
-                    .AddSingleton<IStringMatcher, StringMatcher>()
-
-                    // Main Window
-                    .AddSingleton<MainWindow>()
-                    .AddSingleton<MainViewModel>()
-
-                    // Settings
-                    .AddTransient<SettingWindow>()
-                    .AddTransient<SettingViewModel>()
-                    .AddTransient<SettingsGeneralViewModel>()
-                    .AddTransient<SettingsThemeViewModel>()
-                    .AddTransient<SettingsPluginsViewModel>()
-                    .AddTransient<SettingsHotkeyViewModel>()
-                    .AddTransient<SettingsAboutViewModel>()
-                ).Build();
-
-            Ioc.Default.ConfigureServices(_host.Services);
-        }
-        catch (Exception e)
-        {
-            ShowErrorMsgboxAndFailFast("Failed to configure dependency injection container", e);
-            throw;
-        }
-
-        // Ensure logs are flushed even if OnExit is not called (e.g. Environment.Exit is used)
-        AppDomain.CurrentDomain.ProcessExit += (s, ev)
-            => CleanUpAndFlushAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-
-        try
-        {
-            _logger = Ioc.Default.GetRequiredService<PluginSDK.Logging.Logger<App>>();
-            earlyLoggerFactory.FlushAndHandoff(Ioc.Default.GetRequiredService<ILoggerFactory>());
-
-            // Initialize the API and Settings first
-            // TODO: Check if this is needed
-            Ioc.Default.GetRequiredService<IPublicAPI>();
-        }
-        catch (Exception e)
-        {
-            ShowErrorMsgboxAndFailFast("Failed to initialize basic services", e);
-            throw;
-        }
+        _initialized = true;
     }
 
-    private static void ShowErrorMsgboxAndFailFast(string message, Exception e)
-    {
-        MessageBox.Show(e.ToString(), message, MessageBoxButton.OK, MessageBoxImage.Error);
-        Environment.FailFast(message, e);
-    }
-
-#pragma warning disable VSTHRD100
     // TODO: Double-check whether async here is a good idea
     protected override async void OnStartup(StartupEventArgs e)
-#pragma warning restore VSTHRD100
     {
+        // Ensure the constructor has completed successfully
+        // since this method might still be called even if it threw an exception
+        if (!_initialized)
+            return;
+
         base.OnStartup(e);
 
         // Because new message box api uses MessageBoxEx window,

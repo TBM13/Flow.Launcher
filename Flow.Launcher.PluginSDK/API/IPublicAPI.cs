@@ -35,11 +35,6 @@ public interface IPublicAPI
     void RestartApp();
 
     /// <summary>
-    /// Restart Flow Launcher as administrator.
-    /// </summary>
-    void RestartAppAsAdmin();
-
-    /// <summary>
     /// Copies the passed in text and shows a message indicating whether the operation was completed successfully.
     /// When directCopy is set to true and passed in text is the path to a file or directory,
     /// the actual file/directory will be copied to clipboard. Otherwise the text itself will still be copied to clipboard.

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Pipes;
 using System.Runtime.InteropServices;
 using System.Text;
 using Windows.Win32;
@@ -114,9 +115,6 @@ public static class ProcessHelper
 
     /// <summary>
     /// Starts a process.
-    /// <para/>
-    /// It's highly recommended to use this instead of <see cref="Process"/> methods,
-    /// since we automatically handle de-escalating the process when Flow is running with admin privileges.
     /// </summary>
     /// <param name="fileName">The name of the application to start, or the name of a document that has an associated application.</param>
     /// <param name="workingDirectory">The working directory. If not specified, the current directory will be used.</param>
@@ -136,54 +134,31 @@ public static class ProcessHelper
         workingDirectory = string.IsNullOrEmpty(workingDirectory) ? Environment.CurrentDirectory : workingDirectory;
 
         if (Environment.IsPrivilegedProcess)
+            throw new InvalidOperationException("Cannot start a process from a privileged context");
+
+        string args = JoinArgumentList(arguments);
+        var info = new ProcessStartInfo
         {
-            // We need to use native methods to launch the process with lower privileges.
-            // However, these native methods only support launching Win32 executables.
-            // That's why we launch a de-escalated Flow.Launcher.Command process and
-            // let it handle launching the target process (Win32/UWP/URL/etc.)
+            FileName = fileName,
+            WorkingDirectory = workingDirectory,
+            Arguments = args,
+            UseShellExecute = useShellExecute,
+            Verb = verb,
+            CreateNoWindow = createNoWindow
+        };
 
-            arguments ??= [];
-            string commandArgs = JoinArgumentList([
-                "StartProcess",
-                "-FileName", fileName,
-                "-WorkingDir", workingDirectory,
-                "-UseShellExecute", useShellExecute.ToString(),
-                "-Verb", verb,
-                "-CreateNoWindow", createNoWindow.ToString(),
-                // Process args need to be added last
-                "-BeginArgs", ..arguments
-                ]);
-
-            RunAsDesktopUser(
-                Constant.CommandExecutablePath, Environment.CurrentDirectory, commandArgs,
-                loadProfile: false, createNoWindow: true);
-        }
-        else
-        {
-            string args = JoinArgumentList(arguments);
-            var info = new ProcessStartInfo
-            {
-                FileName = fileName,
-                WorkingDirectory = workingDirectory,
-                Arguments = args,
-                UseShellExecute = useShellExecute,
-                Verb = verb,
-                CreateNoWindow = createNoWindow
-            };
-
-            Process.Start(info)?.Dispose();
-        }
+        Process.Start(info)?.Dispose();
     }
 
     /// <summary>
-    /// Starts a process as the desktop user.
+    /// Starts a process as the desktop (shell) user.
     /// </summary>
     /// <remarks>
     /// Requires the SE_IMPERSONATE_NAME privilege, so only use this when the app is running as admin.
     /// </remarks>
     /// <exception cref="Win32Exception"></exception>
     /// <exception cref="InvalidOperationException"></exception>
-    private static unsafe void RunAsDesktopUser(string app, string currentDir, string cmdLine, bool loadProfile, bool createNoWindow)
+    public static unsafe void RunAsDesktopUser(string app, string currentDir, string cmdLine, bool loadProfile, bool createNoWindow)
     {
         // argv[0] should be the executable path
         app = app.Trim('"', ' ', '\t');
@@ -315,6 +290,15 @@ public static class ProcessHelper
         {
             PInvoke.CloseHandle(hProcess);
         }
+    }
+
+    /// <summary>
+    /// Tries to get the process ID of the client connected to the specified named pipe.
+    /// </summary>
+    public static bool GetProcessIdFromPipeClient(NamedPipeServerStream pipe, out uint processId)
+    {
+        return PInvoke.GetNamedPipeClientProcessId(pipe.SafePipeHandle, out processId)
+            && processId != 0;
     }
 
     /// <summary>

@@ -65,11 +65,6 @@ public interface ISettingsAPI : INotifyPropertyChanged, INotifyPropertyChanging
 
     #region General
     /// <summary>
-    /// When true, Flow Launcher will always run with administrator privileges.
-    /// </summary>
-    /// <remarks>Don't use this to determine whether we are running as admin or not.</remarks>
-    bool AlwaysRunAsAdmin { get; set; }
-    /// <summary>
     /// Indicates whether the Windows taskbar should be shown when Flow Launcher is shown.
     /// </summary>
     /// <remarks>Only has an effect when the taskbar is configured to auto-hide.</remarks>

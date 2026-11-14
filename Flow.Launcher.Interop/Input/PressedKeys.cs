@@ -209,6 +209,10 @@ public readonly struct PressedKeys : IPressedKeys, IEquatable<PressedKeys>
         };
     }
 
+    public ulong[] ToBits() => [_b0, _b1, _b2, _b3];
+
+    public static PressedKeys FromBits(ulong[] bits) => new(bits[0], bits[1], bits[2], bits[3]);
+
     public static bool operator ==(in PressedKeys left, in PressedKeys right) => left.Equals(right);
     public static bool operator !=(in PressedKeys left, in PressedKeys right) => !left.Equals(right);
 

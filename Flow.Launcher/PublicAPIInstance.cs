@@ -55,12 +55,10 @@ public class PublicAPIInstance : IPublicAPI, IDisposable
         _mainVM.ChangeQueryText(query, requery);
     }
 
-    public void RestartApp() => RestartApp(false);
-    public void RestartAppAsAdmin() => RestartApp(true);
-    private void RestartApp(bool runAsAdmin)
+    public void RestartApp()
     {
         _mainVM.Hide();
-        App.App.RestartApp(runAsAdmin);
+        App.App.RestartApp();
     }
 
     public void ShowMainWindow() => _mainVM.Show();

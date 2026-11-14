@@ -52,9 +52,9 @@
     <ProjectReference Include="..\UI.WPF.Modern\source\iNKORE.UI.WPF.Modern.Controls\iNKORE.UI.WPF.Modern.Controls.csproj" />
   </ItemGroup>
 
-  <!-- Build flow.launcher.command on dotnet publish -->
-  <Target Name="PublishFlowCommand" AfterTargets="Publish">
-    <Exec Command="dotnet publish ..\Flow.Launcher.Command -c $(Configuration) -r $(RuntimeIdentifier)" />
+  <!-- Build helpers on dotnet publish -->
+  <Target Name="PublishHelpers" AfterTargets="Publish">
+    <Exec Command="dotnet publish ..\Flow.Launcher.AdminHelper -c $(Configuration) -r $(RuntimeIdentifier)" />
   </Target>
  
 </Project>

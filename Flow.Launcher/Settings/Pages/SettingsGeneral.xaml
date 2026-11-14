@@ -25,17 +25,6 @@
             <ui:ToggleSwitch IsOn="{Binding Settings.HideOnStartup}" />
         </ui:SettingsCard>
 
-        <ui:SettingsCard
-            Margin="0 4 0 0"
-            Description="Run Flow Launcher as administrator on startup"
-            Header="Always run as administrator">
-            <ui:SettingsCard.HeaderIcon>
-                <ui:FontIcon Glyph="&#xE7EF;" />
-            </ui:SettingsCard.HeaderIcon>
-
-            <ui:ToggleSwitch IsOn="{Binding Settings.AlwaysRunAsAdmin}" Toggled="RunAsAdmin_Toggled" />
-        </ui:SettingsCard>
-
         <ui:SettingsCard Margin="0 12 0 0" Header="Hide Flow Launcher when focus is lost">
             <ui:ToggleSwitch IsOn="{Binding Settings.HideOnLostFocus}" />
         </ui:SettingsCard>
@@ -55,8 +44,8 @@
                 <ComboBox
                     MinWidth="220"
                     ItemsSource="{Binding DisplayItems}"
-                    SelectedValuePath="Value"
-                    SelectedValue="{Binding Settings.Display}" />
+                    SelectedValue="{Binding Settings.Display}"
+                    SelectedValuePath="Value" />
                 <ComboBox
                     MinWidth="100"
                     Margin="18 0 0 0"
@@ -78,8 +67,8 @@
                 <ComboBox
                     MinWidth="160"
                     ItemsSource="{Binding DisplayPositionItems}"
-                    SelectedValuePath="Value"
-                    SelectedValue="{Binding Settings.DisplayPosition}" />
+                    SelectedValue="{Binding Settings.DisplayPosition}"
+                    SelectedValuePath="Value" />
 
                 <StackPanel
                     Margin="18 0 0 0"
@@ -126,8 +115,8 @@
             <ComboBox
                 MaxWidth="200"
                 ItemsSource="{Binding SearchPrecisionItems}"
-                SelectedValuePath="Value"
-                SelectedValue="{Binding Settings.QuerySearchPrecision}" />
+                SelectedValue="{Binding Settings.QuerySearchPrecision}"
+                SelectedValuePath="Value" />
         </ui:SettingsCard>
 
         <ui:SettingsCard
@@ -137,8 +126,8 @@
             <ComboBox
                 MinWidth="210"
                 ItemsSource="{Binding LastQueryModeItems}"
-                SelectedValuePath="Value"
-                SelectedValue="{Binding Settings.LastQueryMode}" />
+                SelectedValue="{Binding Settings.LastQueryMode}"
+                SelectedValuePath="Value" />
         </ui:SettingsCard>
 
         <ui:SettingsCard

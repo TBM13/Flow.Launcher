@@ -8,10 +8,4 @@ public partial class SettingsGeneral
     {
         InitializeComponent();
     }
-
-    private void RunAsAdmin_Toggled(object sender, System.Windows.RoutedEventArgs e)
-    {
-        if (IsLoaded) // Ignore initial value change
-            _vm?.CheckAdminChangeAndAskForRestart();
-    }
 }

@@ -133,3 +133,4 @@ CMF_NORMAL
 CMF_EXPLORE
 CLSID_MyComputer
 WIN32_ERROR
+GetNamedPipeClientProcessId

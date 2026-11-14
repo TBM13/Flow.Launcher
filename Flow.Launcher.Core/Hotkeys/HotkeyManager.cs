@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using Flow.Launcher.AdminHelper.IPC;
 using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Interop;
 using Flow.Launcher.Interop.Input;
@@ -14,11 +15,11 @@ namespace Flow.Launcher.Core.Hotkeys;
 /// <summary>
 /// Manages and keeps track of all the registered hotkeys in Flow Launcher.
 /// </summary>
-public class HotkeyManager : IDisposable
+public sealed class HotkeyManager : IDisposable
 {
     private readonly Logger<HotkeyManager> _logger;
     private readonly ISettingsAPI _settings;
-    private readonly KeyboardManager _keyboardManager = new();
+    private readonly KeyboardIpcClient _keyboardClient = new();
 
     /// <summary>
     /// All the registered hotkeys. Key is hotkey ID.
@@ -58,8 +59,9 @@ public class HotkeyManager : IDisposable
             RegisterHotkey(hotkey, null);
 
         // Start listening for hotkeys
-        _keyboardManager.OnHotkeyTriggered += OnGlobalHotkeyTriggered;
-        _keyboardManager.Initialize();
+        _keyboardClient.OnHotkeyTriggered += OnGlobalHotkeyTriggered;
+        // TODO: Maybe make initialization async
+        _keyboardClient.InitializeAsync().GetAwaiter().GetResult();
     }
 
     private bool ShouldIgnoreHotkeys()
@@ -68,42 +70,26 @@ public class HotkeyManager : IDisposable
             && WindowHelper.IsWindowFullscreen(WindowHelper.GetForegroundWindow());
     }
 
-    private bool OnGlobalHotkeyTriggered(Hotkey hotkey)
+    private void OnGlobalHotkeyTriggered(Hotkey hotkey)
     {
-        LastGlobalHotkey = hotkey;
-
-        if (IgnoreGlobalHotkeys)
-            return false;
-        if (ShouldIgnoreHotkeys())
-            return false;
-        if (!_enabledGlobalHotkeys.TryGetValue(hotkey, out GlobalHotkeyInfo? hotkeyInfo))
-            return false;
-
-        bool isWindowsKey = hotkey.MainKey == Key.None && hotkey.Modifiers == ModifierKeys.Windows;
-        Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, () =>
+        try
         {
-            if (isWindowsKey)
+            LastGlobalHotkey = hotkey;
+
+            if (IgnoreGlobalHotkeys || ShouldIgnoreHotkeys())
+                return;
+            if (!_enabledGlobalHotkeys.TryGetValue(hotkey, out GlobalHotkeyInfo? hotkeyInfo))
+                return;
+
+            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, () =>
             {
-                // Since we blocked the Windows key's KEYUP event, the OS will think it's still being
-                // held down and will trigger respective shortcuts when another key is pressed.
-                // To prevent this, simulate Alt Key press to trigger Windows + Alt shortcut (which does nothing).
-                KeyboardManager.SimulateKeyEvent(Key.LeftAlt, isKeyUp: false);
-
-                // Simulate release of both the Windows and Alt keys
-                KeyboardManager.SimulateKeyEvent(Key.LWin, isKeyUp: true);
-                KeyboardManager.SimulateKeyEvent(Key.LeftAlt, isKeyUp: true);
-            }
-
-            hotkeyInfo.OnHotkeyTriggered.Invoke();
-        });
-
-        if (isWindowsKey)
-        {
-            // Block Windows key's KEYUP event
-            return true;
+                hotkeyInfo.OnHotkeyTriggered.Invoke();
+            });
         }
-
-        return false;
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Error while handling global hotkey {hotkey}");
+        }
     }
 
     /// <summary>
@@ -362,14 +348,14 @@ public class HotkeyManager : IDisposable
     }
 
     /// <inheritdoc cref="KeyboardManager.GetPressedKeys"/>
-    public PressedKeys GetPressedKeys()
+    public Task<PressedKeys> GetPressedKeysAsync(CancellationToken cancellationToken = default)
     {
-        return _keyboardManager.GetPressedKeys();
+        return _keyboardClient.GetPressedKeysAsync(cancellationToken);
     }
 
     public void Dispose()
     {
-        _keyboardManager.OnHotkeyTriggered -= OnGlobalHotkeyTriggered;
-        _keyboardManager.Dispose();
+        _keyboardClient.OnHotkeyTriggered -= OnGlobalHotkeyTriggered;
+        _keyboardClient.Dispose();
     }
 }

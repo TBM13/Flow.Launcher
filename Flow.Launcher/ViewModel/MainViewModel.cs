@@ -263,7 +263,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         var hideWindow = await result.ExecuteAsync(new ActionContext
         {
             // not null means pressing modifier key + number, should ignore the modifier key
-            PressedKeys = _hotkeyManager.GetPressedKeys(),
+            PressedKeys = await _hotkeyManager.GetPressedKeysAsync().ConfigureAwait(false),
             ResultPosition = position ?? throw new Exception("Failed to get result position")
         }).ConfigureAwait(false);
 
