@@ -14,7 +14,7 @@ namespace Flow.Launcher.Interop.Input;
 /// Manages global keyboard hooks to detect hotkeys, pressed keys, etc.
 /// </summary>
 /// <remarks>Only one instance of this class can be active at a time.</remarks>
-public class KeyboardManager : IDisposable
+public sealed class KeyboardManager : IDisposable
 {
     /// <summary>
     /// Invoked when a hotkey is triggered.
@@ -28,8 +28,7 @@ public class KeyboardManager : IDisposable
     public event Func<Hotkey, bool>? OnHotkeyTriggered;
 
     private static KeyboardManager? _activeInstance;
-    private UnhookWindowsHookExSafeHandle? _hookID;
-    private volatile uint _hookThreadId;
+    private uint _hookThreadId;
     private readonly ManualResetEventSlim _threadInitSignal = new();
     private Exception? _threadInitException;
     private const nuint SIMULATED_KEY_SIGNATURE = 0x4067AA5;
@@ -37,15 +36,21 @@ public class KeyboardManager : IDisposable
     private PressedKeys _pressedKeys, _lastHotkeyKeys;
     private bool _modifierPressedAfterKey;
     private readonly Lock _pressedKeysLock = new();
-    private bool _initialized, _isDisposed;
+    private ManagerState _state;
+
+    private enum ManagerState
+    {
+        Uninitialized,
+        Initializing,
+        Initialized,
+        Disposed
+    }
 
     public KeyboardManager()
     {
-        if (_activeInstance is not null)
+        if (Interlocked.CompareExchange(ref _activeInstance, this, null) is not null)
             throw new InvalidOperationException(
                 $"Only one instance of {nameof(KeyboardManager)} can be active at a time");
-
-        _activeInstance = this;
     }
 
     /// <summary>
@@ -56,11 +61,16 @@ public class KeyboardManager : IDisposable
     /// <exception cref="Win32Exception"/>
     public void Initialize()
     {
-        ObjectDisposedException.ThrowIf(_isDisposed, this);
-        if (_initialized)
-            throw new InvalidOperationException("Already initialized");
+        ManagerState prevState = Interlocked.CompareExchange(
+            ref _state, ManagerState.Initializing, ManagerState.Uninitialized);
 
-        _initialized = true;
+        if (prevState == ManagerState.Disposed)
+        {
+            Interlocked.CompareExchange(ref _activeInstance, null, this);
+            throw new ObjectDisposedException(nameof(KeyboardManager));
+        }
+        if (prevState != ManagerState.Uninitialized)
+            throw new InvalidOperationException("Already initialized");
 
         // Run the hook on a dedicated thread so we don't
         // miss any key events when the main thread is busy
@@ -69,40 +79,46 @@ public class KeyboardManager : IDisposable
             Name = "GlobalHotkeyHookThread",
             IsBackground = true
         };
-        hookThread.SetApartmentState(ApartmentState.STA);
         hookThread.Start();
 
         // Wait for the thread to initialize the hook so we can throw an error if it failed
         // and to prevent a race condition if Dispose() is called before the thread finishes starting
         _threadInitSignal.Wait();
-        _threadInitSignal.Dispose();
 
         if (_threadInitException is not null)
+        {
+            Dispose();
             throw _threadInitException;
+        }
+
+        // Transition to Initialized unless Dispose was called while we were waiting
+        if (Interlocked.CompareExchange(
+            ref _state, ManagerState.Initialized, ManagerState.Initializing) == ManagerState.Disposed)
+            StopHookThread();
     }
 
     private unsafe void HookThreadProc()
     {
+        UnhookWindowsHookExSafeHandle? hookId = null;
         try
         {
-            _hookThreadId = PInvoke.GetCurrentThreadId();
+            // Force creation of the thread's message queue before signaling completion
+            // so Dispose() cannot race and fail
+            _ = PInvoke.PeekMessage(out _, HWND.Null, 0, 0, PEEK_MESSAGE_REMOVE_TYPE.PM_NOREMOVE);
+            Volatile.Write(ref _hookThreadId, PInvoke.GetCurrentThreadId());
 
             // Low-level hooks such as WH_KEYBOARD_LL are guaranteed
             // to execute sequentially on the current thread
-            _hookID = PInvoke.SetWindowsHookEx(
+            hookId = PInvoke.SetWindowsHookEx(
                 WINDOWS_HOOK_ID.WH_KEYBOARD_LL, &StaticHookCallback, PInvoke.GetModuleHandle(null), 0);
 
-            if (_hookID.IsInvalid)
-            {
-                _hookThreadId = 0;
-                _hookID.Dispose();
-
-                _threadInitException = new Win32Exception(Marshal.GetLastPInvokeError());
-                return;
-            }
+            if (hookId.IsInvalid)
+                throw new Win32Exception(Marshal.GetLastPInvokeError());
         }
         catch (Exception ex)
         {
+            Volatile.Write(ref _hookThreadId, 0);
+            hookId?.Dispose();
             _threadInitException = ex;
             return;
         }
@@ -112,18 +128,32 @@ public class KeyboardManager : IDisposable
         }
 
         // The hook requires a message loop
-        while (PInvoke.GetMessage(out MSG msg, HWND.Null, 0, 0).Value > 0)
+        try
         {
-            PInvoke.TranslateMessage(in msg);
-            PInvoke.DispatchMessage(in msg);
+            while (PInvoke.GetMessage(out MSG msg, HWND.Null, 0, 0).Value > 0)
+            {
+                PInvoke.TranslateMessage(in msg);
+                PInvoke.DispatchMessage(in msg);
+            }
+        }
+        finally
+        {
+            // Unhook
+            hookId.Dispose();
         }
     }
 
     [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvStdcall) })]
     private static LRESULT StaticHookCallback(int nCode, WPARAM wParam, LPARAM lParam)
     {
-        if (nCode >= 0 && _activeInstance is not null)
-            return _activeInstance.HookCallback(nCode, wParam, lParam);
+        if (nCode >= 0 && Volatile.Read(ref _activeInstance) is { } instance)
+        {
+            try
+            {
+                return instance.HookCallback(nCode, wParam, lParam);
+            }
+            catch { }
+        }
 
         // Let the next hook in the chain receive the key event (OS, some other app, etc.)
         return PInvoke.CallNextHookEx(default, nCode, wParam, lParam);
@@ -285,15 +315,15 @@ public class KeyboardManager : IDisposable
 
     public void Dispose()
     {
-        if (_isDisposed) return;
-        _isDisposed = true;
+        if (Interlocked.Exchange(ref _state, ManagerState.Disposed) == ManagerState.Disposed)
+            return;
 
-        _activeInstance = null;
+        Interlocked.CompareExchange(ref _activeInstance, null, this);
+        StopHookThread();
+    }
 
-        // Unhook
-        _hookID?.Dispose();
-        _hookID = null;
-
+    private void StopHookThread()
+    {
         // Tell the hook thread's message loop to wake up and exit
         uint threadId = Interlocked.Exchange(ref _hookThreadId, 0);
         if (threadId != 0)
