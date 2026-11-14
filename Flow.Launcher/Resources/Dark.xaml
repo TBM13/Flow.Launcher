@@ -3,7 +3,7 @@
     <SolidColorBrush x:Key="SystemThemeBorder" Color="#3f3f3f" />
     <SolidColorBrush x:Key="SubTitleForeground" Color="#33FFFFFF" />
     <SolidColorBrush x:Key="SeparatorForeground" Color="#24FFFFFF" />
-    <Color x:Key="ItemSelectedBackgroundColorBrush">#198F8F8F</Color>
+    <SolidColorBrush x:Key="ItemSelectedBackgroundColor" Color="#198F8F8F" />
 
     <SolidColorBrush x:Key="Color00B" Color="#2b2b2b" />
     <SolidColorBrush x:Key="Color01B" Color="#202020" />
