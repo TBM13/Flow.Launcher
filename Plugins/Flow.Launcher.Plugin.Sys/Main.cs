@@ -179,7 +179,7 @@ public class Main : IPlugin
                 Action = c =>
                 {
                     _context.API.HideMainWindow();
-                    Application.Current.MainWindow.Close();
+                    Application.Current.Dispatcher.Invoke(() => Application.Current.MainWindow.Close());
                     return true;
                 }
             },
