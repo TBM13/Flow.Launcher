@@ -58,8 +58,8 @@
       },
       "Microsoft.Extensions.Caching.Memory": {
         "type": "Transitive",
-        "resolved": "11.0.0-rc.1.26425.128",
-        "contentHash": "vm0cIPeFy1TZWcr7xLY/aqvZmXZ63GvAuieN0Fec1Fz+P/vi1sPFdRTJEbJ/NrOP+DduYE/1Ba7Wv0V01g1hdQ=="
+        "resolved": "11.0.0",
+        "contentHash": "w0nn5qRLxZC2T3sSmXj5PhrBFpGFCSFxg7E/zBi4lne0wZcZPY8of3qQDowqGobMZ3PW5qJnM1Q8fmGjL2B6Iw=="
       },
       "Microsoft.Extensions.DependencyInjection": {
         "type": "Transitive",
@@ -81,8 +81,8 @@
       },
       "System.Diagnostics.EventLog": {
         "type": "Transitive",
-        "resolved": "11.0.0-rc.1.26425.128",
-        "contentHash": "ByF+R8H7CN2iMOE6aB4901+AoNftRMJ5hqU114YI99xG4rj89dlJx3F1+iprQEo1h2YFhDPnJtFfVOUabl0IiQ=="
+        "resolved": "11.0.0",
+        "contentHash": "lKore9DXE1q8o6ss6/M7++xBpn2FMS0axaAypBspYLqY5OT1ZRPLzFGwF18l61aXfXTPpwkx5tYh4zMUHoAv/g=="
       },
       "System.Drawing.Common": {
         "type": "Transitive",
@@ -99,10 +99,10 @@
       },
       "System.ServiceProcess.ServiceController": {
         "type": "Transitive",
-        "resolved": "11.0.0-rc.1.26425.128",
-        "contentHash": "vzlq0G7J2QLZE7EnQO60HuZ8KVqQCnKd1htoIOPUcV1+Z1f+uKq29S/ilmHG53gNKVkhC4Rj4TpnAkfh79q/Bg==",
+        "resolved": "11.0.0",
+        "contentHash": "i+z1zYbJ4zOkrsESalw2RzZ3gCPRT7+KxmTjsgKWPg0tX+20s7lq5oQ5zV3FdmXOWqFt0aiAo9cL/XjG1D5Gsw==",
         "dependencies": {
-          "System.Diagnostics.EventLog": "11.0.0-rc.1.26425.128"
+          "System.Diagnostics.EventLog": "11.0.0"
         }
       },
       "TaskScheduler": {
@@ -197,7 +197,7 @@
         "dependencies": {
           "Flow.Launcher.Interop": "[1.0.0, )",
           "Flow.Launcher.PluginSDK": "[1.0.0, )",
-          "Microsoft.Extensions.Caching.Memory": "[11.0.0-rc.1.26425.128, )"
+          "Microsoft.Extensions.Caching.Memory": "[11.0.0, )"
         }
       },
       "flow.launcher.plugin.sys": {
@@ -212,7 +212,7 @@
         "dependencies": {
           "Flow.Launcher.Interop": "[1.0.0, )",
           "Flow.Launcher.PluginSDK": "[1.0.0, )",
-          "System.ServiceProcess.ServiceController": "[11.0.0-rc.1.26425.128, )"
+          "System.ServiceProcess.ServiceController": "[11.0.0, )"
         }
       },
       "flow.launcher.plugin.windowssettings": {

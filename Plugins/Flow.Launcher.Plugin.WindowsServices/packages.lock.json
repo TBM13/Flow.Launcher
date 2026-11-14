@@ -4,9 +4,9 @@
     "net11.0-windows7.0": {
       "System.ServiceProcess.ServiceController": {
         "type": "Direct",
-        "requested": "[11.0.0-rc.1.26425.128, )",
-        "resolved": "11.0.0-rc.1.26425.128",
-        "contentHash": "vzlq0G7J2QLZE7EnQO60HuZ8KVqQCnKd1htoIOPUcV1+Z1f+uKq29S/ilmHG53gNKVkhC4Rj4TpnAkfh79q/Bg=="
+        "requested": "[11.0.0, )",
+        "resolved": "11.0.0",
+        "contentHash": "i+z1zYbJ4zOkrsESalw2RzZ3gCPRT7+KxmTjsgKWPg0tX+20s7lq5oQ5zV3FdmXOWqFt0aiAo9cL/XjG1D5Gsw=="
       },
       "CommunityToolkit.Mvvm": {
         "type": "Transitive",
