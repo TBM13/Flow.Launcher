@@ -21,6 +21,10 @@ public sealed class HotkeyManager : IDisposable
     private readonly ISettingsAPI _settings;
     private readonly KeyboardIpcClient _keyboardClient = new();
 
+    private static readonly Hotkey _startMenuHotkey = new(modifiers: ModifierKeys.Windows);
+    private Hotkey _lastGlobalHotkey;
+    private readonly Lock _lastGlobalHotkeyLock = new();
+
     /// <summary>
     /// All the registered hotkeys. Key is hotkey ID.
     /// <para/>
@@ -41,15 +45,12 @@ public sealed class HotkeyManager : IDisposable
     /// </summary>
     public bool IgnoreGlobalHotkeys { get; set; }
 
-    /// <summary>
-    /// The last global hotkey combination that was pressed, regardless of whether it is a registered hotkey or not.
-    /// </summary>
-    public Hotkey? LastGlobalHotkey { get; private set; }
-
     public HotkeyManager(Logger<HotkeyManager> logger, ISettingsAPI settings)
     {
         _logger = logger;
         _settings = settings;
+
+        _keyboardClient.InitializeAsync().GetAwaiter().GetResult();
 
         // Register global hotkeys
         foreach (GlobalHotkeyInfo hotkey in DefaultHotkeys.GlobalHotkeys)
@@ -60,8 +61,6 @@ public sealed class HotkeyManager : IDisposable
 
         // Start listening for hotkeys
         _keyboardClient.OnHotkeyTriggered += OnGlobalHotkeyTriggered;
-        // TODO: Maybe make initialization async
-        _keyboardClient.InitializeAsync().GetAwaiter().GetResult();
     }
 
     private bool ShouldIgnoreHotkeys()
@@ -74,16 +73,16 @@ public sealed class HotkeyManager : IDisposable
     {
         try
         {
-            LastGlobalHotkey = hotkey;
+            lock (_lastGlobalHotkeyLock)
+                _lastGlobalHotkey = hotkey;
 
             if (IgnoreGlobalHotkeys || ShouldIgnoreHotkeys())
                 return;
-            if (!_enabledGlobalHotkeys.TryGetValue(hotkey, out GlobalHotkeyInfo? hotkeyInfo))
-                return;
 
-            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Normal, () =>
+            Application.Current?.Dispatcher.BeginInvoke(DispatcherPriority.Normal, () =>
             {
-                hotkeyInfo.OnHotkeyTriggered.Invoke();
+                if (_enabledGlobalHotkeys.TryGetValue(hotkey, out GlobalHotkeyInfo? hotkeyInfo))
+                    hotkeyInfo.OnHotkeyTriggered.Invoke();
             });
         }
         catch (Exception ex)
@@ -223,15 +222,12 @@ public sealed class HotkeyManager : IDisposable
     public void RegisterHotkey(ResultHotkeyInfo hotkeyInfo, PluginMetadata plugin) => RegisterHotkeyInternal(hotkeyInfo, plugin);
     private void RegisterHotkeyInternal(HotkeyInfo hotkeyInfo, PluginMetadata? plugin)
     {
-        // Check there are no registered hotkeys with the same ID
-        if (_allHotkeys.ContainsKey(hotkeyInfo.Id))
+        // Register hotkey
+        if (!_allHotkeys.TryAdd(hotkeyInfo.Id, new(plugin?.ID, hotkeyInfo)))
         {
             _logger.LogError($"Failed to register hotkey {hotkeyInfo}: ID already registered");
             return;
         }
-
-        // Register hotkey
-        _allHotkeys[hotkeyInfo.Id] = new(plugin?.ID, hotkeyInfo);
 
         // Get the hotkey that should be used
         Hotkey hotkey = GetHotkey(hotkeyInfo);
@@ -252,12 +248,15 @@ public sealed class HotkeyManager : IDisposable
         }
 
         // Disable hotkey
-        UpdateHotkey(hotkeyId, default);
+        UpdateHotkey(hotkeyId, default, forceDisable: true);
         _allHotkeys.Remove(hotkeyId);
     }
 
-    public void UpdateHotkey(string hotkeyId, Hotkey newHotkey)
+    public void UpdateHotkey(string hotkeyId, Hotkey newHotkey) => UpdateHotkey(hotkeyId, newHotkey, forceDisable: false);
+    private void UpdateHotkey(string hotkeyId, Hotkey newHotkey, bool forceDisable)
     {
+        bool disabling = newHotkey == default;
+
         // Get registered hotkey
         if (!_allHotkeys.TryGetValue(hotkeyId, out var registeredHotkey))
         {
@@ -268,70 +267,82 @@ public sealed class HotkeyManager : IDisposable
         if (registeredHotkey.info.Hotkey == newHotkey)
             return;
 
-        // Handle disabling hotkey
-        bool disabling = newHotkey == default;
-        if (disabling)
+        // Ensure the new hotkey does not conflict with an existing one
+        if (!disabling)
         {
-            if (!registeredHotkey.info.CanBeDisabled)
-                _logger.LogError($"Tried to disable non-disablable hotkey '{registeredHotkey.info}'");
-            else
+            string? nonAvailabilityReason;
+            bool hotkeyAvailable = registeredHotkey.info switch
             {
-                registeredHotkey.info.Hotkey = default;
-                switch (registeredHotkey.info)
-                {
-                    case GlobalHotkeyInfo globalInfo:
-                        _enabledGlobalHotkeys.Remove(globalInfo.Hotkey);
-                        break;
-                    case AppHotkeyInfo appInfo:
-                        _enabledAppHotkeys.Remove(appInfo.Hotkey);
-                        break;
-                    case ResultHotkeyInfo resultInfo:
-                        _enabledResultHotkeys[registeredHotkey.pluginId!].Remove(resultInfo.Hotkey);
-                        break;
-                    default:
-                        throw new InvalidOperationException();
-                }
+                GlobalHotkeyInfo => IsGlobalHotkeyAvailable(newHotkey, out nonAvailabilityReason),
+                AppHotkeyInfo => IsAppHotkeyAvailable(newHotkey, out nonAvailabilityReason),
+                ResultHotkeyInfo => IsResultHotkeyAvailable(registeredHotkey.pluginId!, newHotkey, out nonAvailabilityReason),
+                _ => throw new InvalidOperationException()
+            };
+            if (!hotkeyAvailable)
+            {
+                _logger.LogError(
+                    $"Cannot update hotkey '{registeredHotkey.info}' to '{newHotkey}': {nonAvailabilityReason}");
+                return;
             }
-
-            return;
+        }
+        // Ensure the hotkey can be disabled
+        else
+        {
+            if (!registeredHotkey.info.CanBeDisabled && !forceDisable)
+            {
+                _logger.LogError($"Tried to disable non-disablable hotkey '{registeredHotkey.info}'");
+                return;
+            }
         }
 
-        // Ensure the hotkey does not conflict with an existing one
-        string? nonAvailabilityReason = null;
-        bool hotkeyAvailable = disabling || registeredHotkey.info switch
+        // Disable previous hotkey
+        if (registeredHotkey.info.Hotkey != default)
         {
-            GlobalHotkeyInfo => IsGlobalHotkeyAvailable(newHotkey, out nonAvailabilityReason),
-            AppHotkeyInfo => IsAppHotkeyAvailable(newHotkey, out nonAvailabilityReason),
-            ResultHotkeyInfo => IsResultHotkeyAvailable(registeredHotkey.pluginId!, newHotkey, out nonAvailabilityReason),
-            _ => throw new InvalidOperationException()
-        };
-        if (!hotkeyAvailable)
-        {
-            _logger.LogError(
-                $"Cannot update hotkey '{registeredHotkey.info}' to '{newHotkey}': {nonAvailabilityReason}");
-            return;
+            switch (registeredHotkey.info)
+            {
+                case GlobalHotkeyInfo globalInfo:
+                    _enabledGlobalHotkeys.Remove(globalInfo.Hotkey);
+
+                    if (globalInfo.Hotkey == _startMenuHotkey)
+                        _keyboardClient.SetBlockWindowsKey(false);
+                    break;
+                case AppHotkeyInfo appInfo:
+                    _enabledAppHotkeys.Remove(appInfo.Hotkey);
+                    break;
+                case ResultHotkeyInfo resultInfo:
+                    _enabledResultHotkeys[registeredHotkey.pluginId!].Remove(resultInfo.Hotkey);
+                    break;
+                default:
+                    throw new InvalidOperationException();
+            }
         }
 
-        // Update & enable hotkey
         registeredHotkey.info.Hotkey = newHotkey;
-        switch (registeredHotkey.info)
+        if (!disabling)
         {
-            case GlobalHotkeyInfo globalInfo:
-                _enabledGlobalHotkeys[newHotkey] = globalInfo;
-                break;
-            case AppHotkeyInfo appInfo:
-                _enabledAppHotkeys[newHotkey] = appInfo;
-                break;
-            case ResultHotkeyInfo resultInfo:
-                if (!_enabledResultHotkeys.TryGetValue(registeredHotkey.pluginId!, out var pluginResultHotkeys))
-                {
-                    pluginResultHotkeys = [];
-                    _enabledResultHotkeys[registeredHotkey.pluginId!] = pluginResultHotkeys;
-                }
-                pluginResultHotkeys[newHotkey] = resultInfo;
-                break;
-            default:
-                throw new InvalidOperationException();
+            // Update & enable new hotkey
+            switch (registeredHotkey.info)
+            {
+                case GlobalHotkeyInfo globalInfo:
+                    if (newHotkey == _startMenuHotkey)
+                        _keyboardClient.SetBlockWindowsKey(true);
+
+                    _enabledGlobalHotkeys[newHotkey] = globalInfo;
+                    break;
+                case AppHotkeyInfo appInfo:
+                    _enabledAppHotkeys[newHotkey] = appInfo;
+                    break;
+                case ResultHotkeyInfo resultInfo:
+                    if (!_enabledResultHotkeys.TryGetValue(registeredHotkey.pluginId!, out var pluginResultHotkeys))
+                    {
+                        pluginResultHotkeys = [];
+                        _enabledResultHotkeys[registeredHotkey.pluginId!] = pluginResultHotkeys;
+                    }
+                    pluginResultHotkeys[newHotkey] = resultInfo;
+                    break;
+                default:
+                    throw new InvalidOperationException();
+            }
         }
     }
 
@@ -351,6 +362,16 @@ public sealed class HotkeyManager : IDisposable
     public Task<PressedKeys> GetPressedKeysAsync(CancellationToken cancellationToken = default)
     {
         return _keyboardClient.GetPressedKeysAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Returns the last global hotkey combination that was pressed, regardless of whether it is registered or not.
+    /// </summary>
+    /// <remarks>If no global hotkey was triggered yet, returns <see langword="default"/>.</remarks>
+    public Hotkey GetLastGlobalHotkey()
+    {
+        lock (_lastGlobalHotkeyLock)
+            return _lastGlobalHotkey;
     }
 
     public void Dispose()

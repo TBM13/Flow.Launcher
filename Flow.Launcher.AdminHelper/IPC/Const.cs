@@ -2,6 +2,6 @@
 
 public static class Const
 {
-    public static string AdminHelperExecutable =
+    public static readonly string AdminHelperExecutable =
         Path.Combine(AppContext.BaseDirectory, "Helper", "Flow.Launcher.AdminHelper.exe");
 }

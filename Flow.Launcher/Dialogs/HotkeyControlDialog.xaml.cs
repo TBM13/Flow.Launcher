@@ -36,9 +36,10 @@ public partial class HotkeyControlDialog : ContentDialog
         {
             // TODO: This is fine for global hotkeys, but WPF hotkeys should use the future wpf hotkey manager
             // Also we should probably make LastGlobalHotkey an observable property and subscribe to its changes
-            if (_hotkeyManager.LastGlobalHotkey.HasValue)
+            Hotkey lastHotkey = _hotkeyManager.GetLastGlobalHotkey();
+            if (lastHotkey != default)
             {
-                _newHotkey = _hotkeyManager.LastGlobalHotkey.Value;
+                _newHotkey = lastHotkey;
                 UpdateUI();
 
                 e.Handled = true;
