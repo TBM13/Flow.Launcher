@@ -3,12 +3,14 @@ using System.Text.Json;
 using System.Threading.Channels;
 using System.Windows.Input;
 using Flow.Launcher.Interop.Input;
+using Flow.Launcher.Interop.Programs;
 using Flow.Launcher.PluginSDK.Hotkeys;
 
 namespace Flow.Launcher.AdminHelper.IPC;
 
 public sealed class KeyboardIpcServer : IDisposable
 {
+    private readonly uint _clientProcessId;
     private readonly StreamReader _reader;
     private readonly StreamWriter _writer;
     private readonly KeyboardManager _keyboardManager = new();
@@ -18,8 +20,9 @@ public sealed class KeyboardIpcServer : IDisposable
     private int _nextRequestId;
     private volatile bool _blockWindowsKey;
 
-    public KeyboardIpcServer(NamedPipeServerStream pipe)
+    public KeyboardIpcServer(NamedPipeServerStream pipe, uint clientProcessId)
     {
+        _clientProcessId = clientProcessId;
         _reader = new StreamReader(pipe, leaveOpen: true);
         _writer = new StreamWriter(pipe, leaveOpen: true) { AutoFlush = true };
         _keyboardManager.OnHotkeyTriggered += OnHotkeyTriggered;
@@ -97,6 +100,27 @@ public sealed class KeyboardIpcServer : IDisposable
 
     private bool OnHotkeyTriggered(Hotkey hotkey)
     {
+        bool isWindowsKey = _blockWindowsKey
+            && hotkey.MainKey == Key.None
+            && hotkey.Modifiers == ModifierKeys.Windows;
+
+        if (isWindowsKey)
+        {
+            // Since we will block the KEYUP event, the OS will think it's still being
+            // held down and will trigger respective shortcuts when another key is pressed.
+            // To prevent this, simulate Alt Key press to trigger Windows + Alt shortcut (which does nothing).
+            KeyboardManager.SimulateKeyEvent(Key.LeftAlt, isKeyUp: false);
+
+            // Simulate release of both the Windows and Alt keys
+            // TODO: Support right windows key
+            KeyboardManager.SimulateKeyEvent(Key.LWin, isKeyUp: true);
+            KeyboardManager.SimulateKeyEvent(Key.LeftAlt, isKeyUp: true);
+        }
+
+        // Grant the client the ability to set the foreground window in case
+        // it wants to bring its own window to the front in response to the hotkey.
+        ProcessHelper.AllowSetForegroundWindow(_clientProcessId);
+
         int requestId = Interlocked.Increment(ref _nextRequestId);
         EnqueueMessage(new KeyboardIpcMessage
         {
@@ -106,22 +130,8 @@ public sealed class KeyboardIpcServer : IDisposable
             Modifiers = (int)hotkey.Modifiers
         });
 
-        // Block the start menu from opening
-        if (_blockWindowsKey && hotkey.MainKey == Key.None && hotkey.Modifiers == ModifierKeys.Windows)
-        {
-            // Since we blocked the Windows key's KEYUP event, the OS will think it's still being
-            // held down and will trigger respective shortcuts when another key is pressed.
-            // To prevent this, simulate Alt Key press to trigger Windows + Alt shortcut (which does nothing).
-            KeyboardManager.SimulateKeyEvent(Key.LeftAlt, isKeyUp: false);
-
-            // Simulate release of both the Windows and Alt keys
-            // TODO: Support right windows key
-            KeyboardManager.SimulateKeyEvent(Key.LWin, isKeyUp: true);
-            KeyboardManager.SimulateKeyEvent(Key.LeftAlt, isKeyUp: true);
-            return true;
-        }
-
-        return false;
+        // Block the Windows key's KEYUP event so the start menu doesn't open
+        return isWindowsKey;
     }
 
     private void EnqueueMessage(KeyboardIpcMessage message)

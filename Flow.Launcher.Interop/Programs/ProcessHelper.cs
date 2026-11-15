@@ -374,4 +374,12 @@ public static class ProcessHelper
     /// <inheritdoc cref="SetSecurityPrivilege(nint, string, TOKEN_PRIVILEGES_ATTRIBUTES)" path="/exception"/>
     public static void RemoveSecurityPrivilege(IntPtr processHandle, string privilegeName) =>
         SetSecurityPrivilege(processHandle, privilegeName, TOKEN_PRIVILEGES_ATTRIBUTES.SE_PRIVILEGE_REMOVED);
+
+    /// <summary>
+    /// Enables the specified process to set the foreground window.
+    /// </summary>
+    /// <remarks>The calling process must already be able to set the foreground window.</remarks>
+    /// <returns>True if successful.</returns>
+    public static bool AllowSetForegroundWindow(uint processId)
+        => PInvoke.AllowSetForegroundWindow(processId);
 }

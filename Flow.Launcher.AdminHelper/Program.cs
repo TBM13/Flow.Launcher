@@ -59,10 +59,12 @@ internal static class Program
             }
 
             // Ensure the connected client is actually Flow Launcher
-            if (!ValidateClient(pipe))
+            if (!ProcessHelper.GetProcessIdFromPipeClient(pipe, out uint clientProcessId))
+                return ExitUnauthorizedClient;
+            if (!ValidateClient(clientProcessId))
                 return ExitUnauthorizedClient;
 
-            using KeyboardIpcServer server = new(pipe);
+            using KeyboardIpcServer server = new(pipe, clientProcessId);
             await server.RunAsync(CancellationToken.None);
             return ExitSuccess;
         }
@@ -113,11 +115,9 @@ internal static class Program
     }
 
     /// <returns>True if the connected client is Flow Launcher</returns>
-    private static bool ValidateClient(NamedPipeServerStream pipe)
+    private static bool ValidateClient(uint clientProcessId)
     {
         string expectedClientPath = Path.Combine(AppContext.BaseDirectory, "..", "Flow.Launcher.exe");
-        if (!ProcessHelper.GetProcessIdFromPipeClient(pipe, out uint clientProcessId))
-            return false;
 
         string processFileName = ProcessHelper.GetProcessFileName(clientProcessId);
         if (string.IsNullOrEmpty(processFileName))
