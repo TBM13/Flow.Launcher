@@ -1,4 +1,7 @@
-﻿using Flow.Launcher.Plugin.Calculator.Engine;
+﻿using System.Globalization;
+using System.Windows.Controls;
+using Flow.Launcher.Plugin.Calculator.Engine;
+using Flow.Launcher.Plugin.Calculator.Preview;
 using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.Plugins;
 using Flow.Launcher.PluginSDK.Plugins.Interfaces;
@@ -23,9 +26,11 @@ public static class PluginMetadataDefinition
 
 public class Main : IPlugin
 {
+    private PluginInitContext? _context;
+
     public void Init(PluginInitContext context)
     {
-
+        _context = context;
     }
 
     public List<Result>? Query(Query query)
@@ -54,7 +59,7 @@ public class Main : IPlugin
         if (value is not { } v)
             return null;
 
-        string valueString = v.ToString();
+        string valueString = v.ToString(CultureInfo.InvariantCulture);
         Result res = new()
         {
             Title = valueString,
@@ -62,10 +67,23 @@ public class Main : IPlugin
             SubTitle = v.IsDecimal ? string.Empty : $"0x{v.AsInt128():X}",
             IconOrGlyph = PluginMetadataDefinition.Metadata.IcoPath,
             Score = 300,
-            CopyText = valueString
+            CopyText = valueString,
+            PreviewPanel = new Lazy<UserControl>(() => new CalculatorPreviewPanel(
+                    v,
+                    newValue => _context?.API.ChangeQuery(ToQueryText(newValue)),
+                    text => _context?.API.CopyToClipboard(text)))
         };
 
         return [res];
+    }
+
+    private static string ToQueryText(Int128 value)
+    {
+        string text = value.ToString(CultureInfo.InvariantCulture);
+
+        // Queries shorter than two characters are ignored by us,
+        // so prefix single-digit values with a unary plus (e.g. "+8").
+        return text.Length < 2 ? "+" + text : text;
     }
 
     public ValueTask DisposeAsync() => ValueTask.CompletedTask;

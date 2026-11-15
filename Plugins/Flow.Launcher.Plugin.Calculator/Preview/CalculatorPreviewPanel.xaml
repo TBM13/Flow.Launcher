@@ -1,0 +1,190 @@
+<UserControl
+    x:Class="Flow.Launcher.Plugin.Calculator.Preview.CalculatorPreviewPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Flow.Launcher.Plugin.Calculator.Preview"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
+    Margin="0 3 3 0"
+    d:DesignHeight="380"
+    d:DesignWidth="300"
+    Focusable="False"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <Style x:Key="BitButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="MinWidth" Value="15" />
+            <Setter Property="Padding" Value="1 2" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border
+                            x:Name="BitBackground"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="3">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="BitBackground" Property="Background" Value="{DynamicResource ItemSelectedBackgroundColor}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="BitBackground" Property="Opacity" Value="0.6" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="BitTextStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="FontFamily" Value="Consolas" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource Color15B}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsSet, Mode=OneTime}" Value="True">
+                    <Setter Property="Foreground" Value="{DynamicResource Color05B}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsSignBit, Mode=OneTime}" Value="True">
+                    <Setter Property="Foreground" Value="#FFF97316" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsPadding, Mode=OneTime}" Value="True">
+                    <Setter Property="Opacity" Value="0.3" />
+                </DataTrigger>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding IsSignBit, Mode=OneTime}" Value="True" />
+                        <Condition Binding="{Binding IsSet, Mode=OneTime}" Value="False" />
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="Opacity" Value="0.45" />
+                </MultiDataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style
+            x:Key="SectionLabelStyle"
+            BasedOn="{StaticResource PreviewItemSubTitleStyle}"
+            TargetType="{x:Type TextBlock}">
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="TextAlignment" Value="Center" />
+        </Style>
+
+        <Style
+            x:Key="SectionValueStyle"
+            BasedOn="{StaticResource PreviewItemTitleStyle}"
+            TargetType="{x:Type TextBlock}">
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="FontFamily" Value="Consolas" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <Style
+            x:Key="CopyButtonStyle"
+            BasedOn="{StaticResource BitButtonStyle}"
+            TargetType="{x:Type Button}">
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="Padding" Value="4 1" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="ToolTip" Value="Click to copy" />
+        </Style>
+
+        <DataTemplate x:Key="BitTemplate">
+            <Button
+                Click="Bit_Click"
+                Style="{StaticResource BitButtonStyle}"
+                Tag="{Binding Index}"
+                ToolTip="{Binding ToolTip}">
+                <TextBlock Style="{StaticResource BitTextStyle}" Text="{Binding Text}" />
+            </Button>
+        </DataTemplate>
+
+        <DataTemplate x:Key="BitGroupTemplate">
+            <ItemsControl
+                Margin="5 0 5 4"
+                ItemTemplate="{StaticResource BitTemplate}"
+                ItemsSource="{Binding Bits}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <ui:ScrollViewerEx
+        Grid.Row="0"
+        Focusable="False"
+        HorizontalScrollBarVisibility="Disabled"
+        VerticalScrollBarVisibility="Auto">
+        <Grid MinHeight="{Binding ViewportHeight, RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}}">
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Decimal" />
+                <Button Click="Decimal_Click" Style="{StaticResource CopyButtonStyle}">
+                    <TextBlock
+                        x:Name="DecimalTextBlock"
+                        Style="{StaticResource SectionValueStyle}"
+                        Text="0" />
+                </Button>
+                <TextBlock
+                    Margin="0 12 0 0"
+                    Style="{StaticResource SectionLabelStyle}"
+                    Text="Formatted" />
+                <Button Click="Formatted_Click" Style="{StaticResource CopyButtonStyle}">
+                    <TextBlock
+                        x:Name="FormattedTextBlock"
+                        Style="{StaticResource SectionValueStyle}"
+                        Text="0" />
+                </Button>
+                <StackPanel x:Name="IntegerOnlyPanel">
+                    <TextBlock
+                        Margin="0 12 0 0"
+                        Style="{StaticResource SectionLabelStyle}"
+                        Text="Hex" />
+                    <Button Click="Hex_Click" Style="{StaticResource CopyButtonStyle}">
+                        <TextBlock
+                            x:Name="HexTextBlock"
+                            Style="{StaticResource SectionValueStyle}"
+                            Text="0x0" />
+                    </Button>
+                    <TextBlock
+                        Margin="0 12 0 4"
+                        Style="{StaticResource SectionLabelStyle}"
+                        Text="Binary" />
+                    <Grid HorizontalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <ContentPresenter
+                            x:Name="SignBitPresenter"
+                            Grid.Column="0"
+                            Margin="0 0 8 0"
+                            VerticalAlignment="Top"
+                            ContentTemplate="{StaticResource BitTemplate}"
+                            Visibility="Collapsed" />
+                        <ItemsControl
+                            x:Name="BitGroupsItemsControl"
+                            Grid.Column="1"
+                            ItemTemplate="{StaticResource BitGroupTemplate}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <local:BinaryGroupsPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </Grid>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </ui:ScrollViewerEx>
+</UserControl>

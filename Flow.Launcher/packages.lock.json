@@ -310,7 +310,9 @@
       "flow.launcher.plugin.calculator": {
         "type": "Project",
         "dependencies": {
-          "Flow.Launcher.PluginSDK": "[1.0.0, )"
+          "Flow.Launcher.PluginSDK": "[1.0.0, )",
+          "iNKORE.UI.WPF.Modern": "[1.0.0, )",
+          "iNKORE.UI.WPF.Modern.Controls": "[1.0.0, )"
         }
       },
       "flow.launcher.plugin.explorer": {

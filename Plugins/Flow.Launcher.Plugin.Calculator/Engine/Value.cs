@@ -62,6 +62,7 @@ public readonly struct Value
     }
 
     public override string ToString() => IsDecimal ? _decimalValue.ToString() : _integerValue.ToString();
+    public string ToString(IFormatProvider provider) => IsDecimal ? _decimalValue.ToString(provider) : _integerValue.ToString(provider);
 
     /// <exception cref="ArgumentException"></exception>
     public Value Factorial()

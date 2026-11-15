@@ -1,11 +1,16 @@
 {
   "version": 1,
   "dependencies": {
-    "net11.0-windows7.0": {
+    "net11.0-windows10.0.19041": {
       "CommunityToolkit.Mvvm": {
         "type": "Transitive",
         "resolved": "8.4.2",
         "contentHash": "WadCzGEc2U+3e20avRLng4qNtt4zoOGWrdUISqJWrHe3/FSnrYjuM5Sb4yQb09LhkBXrrI4Zt3dLKgRMbItsrg=="
+      },
+      "iNKORE.UI.WPF": {
+        "type": "Transitive",
+        "resolved": "1.2.8",
+        "contentHash": "7b+z25JFdhGAfyJqlVIF0vLbmgsRvqDZMvhGPTz20gzQigDPMqVUOoCCKB5824GtYsjFCYNilmaowb+4yWATkQ=="
       },
       "MemoryPack": {
         "type": "Transitive",
@@ -65,6 +70,19 @@
           "CommunityToolkit.Mvvm": "[8.4.2, )",
           "MemoryPack": "[1.21.4, )",
           "ZLogger": "[2.5.10, )"
+        }
+      },
+      "inkore.ui.wpf.modern": {
+        "type": "Project",
+        "dependencies": {
+          "iNKORE.UI.WPF": "[1.2.8, )"
+        }
+      },
+      "inkore.ui.wpf.modern.controls": {
+        "type": "Project",
+        "dependencies": {
+          "iNKORE.UI.WPF": "[1.2.8, )",
+          "iNKORE.UI.WPF.Modern": "[1.0.0, )"
         }
       }
     }
