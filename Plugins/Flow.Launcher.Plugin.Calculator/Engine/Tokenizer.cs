@@ -12,9 +12,6 @@ public ref struct Tokenizer(ReadOnlySpan<char> input)
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool IsWhitespace(char c) => c is ' ' or '\t';
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool IsHexChar(char c) => c is >= 'a' and <= 'f' or >= 'A' and <= 'F';
-
     /// <returns>True if there are more valid tokens to read.</returns>
     public bool MoveNext()
     {
@@ -121,56 +118,63 @@ public ref struct Tokenizer(ReadOnlySpan<char> input)
 
     private bool ReadNumber()
     {
-        bool isDecimal = false;
-        bool isHex = _input[_index] == '0' && _index + 1 < _input.Length
-                       && _input[_index + 1] is 'x' or 'X';
+        bool isHex = false;
+        bool isBinary = false;
+        if (_input[_index] == '0' && _index + 1 < _input.Length)
+        {
+            char prefix = _input[_index + 1];
+            isHex = prefix is 'x' or 'X';
+            isBinary = prefix is 'b' or 'B';
+        }
 
         int start;
-        if (isHex)
+        TokenType type;
+        if (isBinary)
         {
             start = _index + 2;
             _index += 2;
+            type = TokenType.Binary;
+
+            while (_index < _input.Length && _input[_index] is '0' or '1')
+                _index++;
+        }
+        else if (isHex)
+        {
+            start = _index + 2;
+            _index += 2;
+            type = TokenType.Hexadecimal;
+
+            while (_index < _input.Length && char.IsAsciiHexDigit(_input[_index]))
+                _index++;
         }
         else
         {
             start = _index;
-            _index++;
-        }
+            type = TokenType.Integer;
 
-        while (_index < _input.Length)
-        {
-            char next = _input[_index];
-            if (char.IsAsciiDigit(next) || (isHex && IsHexChar(next)))
-                _index++;
-            else if (next == '.')
+            while (_index < _input.Length)
             {
-                if (isDecimal || isHex)
+                char next = _input[_index];
+                if (char.IsAsciiDigit(next))
+                    _index++;
+                else if (type == TokenType.Integer && next == '.')
                 {
-                    // Multiple dots or an hex number with a dot. Abort
-                    Current = default;
-                    _index = -1;
-                    return false;
+                    type = TokenType.Decimal;
+                    _index++;
                 }
-
-                isDecimal = true;
-                _index++;
+                else
+                    break;
             }
-            else
-                break;
         }
 
         ReadOnlySpan<char> number = _input[start.._index];
-        if (number.Length == 0 || (isDecimal && number[^1] == '.'))
+        if (number.Length == 0 || (type == TokenType.Decimal && number[^1] == '.'))
         {
             // Not a valid number. Abort tokenization
             Current = default;
             _index = -1;
             return false;
         }
-
-        TokenType type = isHex
-            ? TokenType.Hexadecimal
-            : isDecimal ? TokenType.Decimal : TokenType.Integer;
 
         Current = new Token(type, default, number);
         return true;

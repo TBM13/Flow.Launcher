@@ -96,11 +96,19 @@ public class EvaluatorTests
     [InlineData("(2^3)!", "40320")]   // 8!
     [InlineData("33!", "8683317618811886495518194401280000000")] // Max supported factorial
 
-    // --- Hexadecimal & Bitwise Operations ---
+    // --- Hexadecimal, Binary & Bitwise Operations ---
     [InlineData("0x0", "0")]
     [InlineData("0xFF", "255")]
     [InlineData("0Xff", "255")]
     [InlineData("0xdeadBEEF", "3735928559")]
+    [InlineData("0b0", "0")]
+    [InlineData("0b1", "1")]
+    [InlineData("0b01101", "13")]
+    [InlineData("0B101010", "42")]
+    [InlineData("0b101 + 0b010", "7")]
+    [InlineData("0b1111 & 0x0F", "15")]
+    [InlineData("-0b101", "-5")]
+    [InlineData("0b1010 << 1", "20")]
     [InlineData("6 & 3", "2")]
     [InlineData("6 | 3", "7")]
     [InlineData("6 ^^ 3", "5")]
@@ -161,6 +169,12 @@ public class EvaluatorTests
     [InlineData("0X")]
     [InlineData("0xG")]         // Invalid hex digit
     [InlineData("0x1.5")]       // Hex with decimal point
+    [InlineData("0b")]          // Binary prefix with no digits
+    [InlineData("0B")]
+    [InlineData("0b2")]         // Invalid binary digit
+    [InlineData("0b012")]
+    [InlineData("0b1.0")]       // Binary with decimal point
+    [InlineData("0b1a")]        // Trailing letters on binary number
     [InlineData("123a")]        // Trailing letters on decimal integer
     // Invalid operators
     [InlineData("1 < 2")]       // Single '<'

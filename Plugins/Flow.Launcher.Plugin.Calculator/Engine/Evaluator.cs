@@ -73,6 +73,10 @@ public static class Evaluator
                     Int128 h = Int128.Parse(token.Value, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
                     values[valueCount++] = new Value(h);
                     break;
+                case TokenType.Binary:
+                    Int128 b = Int128.Parse(token.Value, NumberStyles.BinaryNumber, CultureInfo.InvariantCulture);
+                    values[valueCount++] = new Value(b);
+                    break;
 
                 // Operators
                 case TokenType.Operator:
