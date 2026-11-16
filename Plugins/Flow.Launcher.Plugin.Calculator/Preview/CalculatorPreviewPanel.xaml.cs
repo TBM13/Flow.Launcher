@@ -7,6 +7,33 @@ namespace Flow.Launcher.Plugin.Calculator.Preview;
 
 public partial class CalculatorPreviewPanel : UserControl
 {
+    private sealed record OperatorHelpItem(string Syntax, string Description);
+    private sealed record OperatorHelpSection(string Title, IReadOnlyList<OperatorHelpItem> Items);
+
+    private static readonly IReadOnlyList<OperatorHelpSection> OperatorHelpSections =
+    [
+        new("Number Formats", [
+            new("123, 3.14", "Decimal / integer"),
+            new("0xFF", "Hexadecimal"),
+            new("0b1010", "Binary"),
+        ]),
+        new("Arithmetic", [
+            new("+, -", "Add, subtract, or unary sign"),
+            new("*, /", "Multiply, divide"),
+            new("//", "Floor divide"),
+            new("%", "Remainder (a % b) or percentage (50%, 100 - 30%)"),
+            new("^", "Power (a ^ b)"),
+            new("!", "Factorial (n!)"),
+            new("( )", "Grouping"),
+        ]),
+        new("Bitwise (Integers)", [
+            new("&, |, ^^", "AND, OR, XOR"),
+            new("~", "Bitwise NOT (~a)"),
+            new("<<", "Left shift"),
+            new(">>, >>>", "Arithmetic, logical right shift"),
+        ]),
+    ];
+
     private readonly Int128 _integerValue;
     private readonly Action<Int128> _changeValue;
     private readonly Action<string> _copyText;
@@ -19,6 +46,7 @@ public partial class CalculatorPreviewPanel : UserControl
         _copyText = copyText;
 
         InitializeComponent();
+        HelpSectionsItemsControl.ItemsSource = OperatorHelpSections;
 
         if (value.IsDecimal)
         {

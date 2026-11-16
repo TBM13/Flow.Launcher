@@ -119,86 +119,155 @@
                 </ItemsControl.ItemsPanel>
             </ItemsControl>
         </DataTemplate>
+
+        <DataTemplate x:Key="HelpItemTemplate">
+            <Grid Margin="0 2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Syntax" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    Grid.Column="0"
+                    Margin="0 0 12 0"
+                    VerticalAlignment="Top"
+                    FontFamily="Consolas"
+                    FontSize="12"
+                    FontWeight="SemiBold"
+                    Foreground="{DynamicResource Color05B}"
+                    Text="{Binding Syntax, Mode=OneTime}" />
+                <TextBlock
+                    Grid.Column="1"
+                    FontSize="12"
+                    Text="{Binding Description, Mode=OneTime}"
+                    TextWrapping="Wrap" />
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="HelpSectionTemplate">
+            <StackPanel Margin="0 0 0 8">
+                <TextBlock
+                    Margin="0 0 0 3"
+                    FontSize="12"
+                    FontWeight="SemiBold"
+                    Opacity="0.7"
+                    Text="{Binding Title, Mode=OneTime}" />
+                <ItemsControl
+                    Focusable="False"
+                    ItemTemplate="{StaticResource HelpItemTemplate}"
+                    ItemsSource="{Binding Items, Mode=OneTime}" />
+            </StackPanel>
+        </DataTemplate>
     </UserControl.Resources>
 
-    <ui:ScrollViewerEx
-        Grid.Row="0"
-        Focusable="False"
-        HorizontalScrollBarVisibility="Disabled"
-        VerticalScrollBarVisibility="Auto">
-        <Grid MinHeight="{Binding ViewportHeight, RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}}">
-            <StackPanel VerticalAlignment="Center">
-                <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Decimal" />
-                <Button Click="Decimal_Click" Style="{StaticResource CopyButtonStyle}">
-                    <TextBlock
-                        x:Name="DecimalTextBlock"
-                        Style="{StaticResource SectionValueStyle}"
-                        Text="0" />
-                </Button>
-                <TextBlock
-                    Margin="0 12 0 0"
-                    Style="{StaticResource SectionLabelStyle}"
-                    Text="Formatted" />
-                <Button Click="Formatted_Click" Style="{StaticResource CopyButtonStyle}">
-                    <TextBlock
-                        x:Name="FormattedTextBlock"
-                        Style="{StaticResource SectionValueStyle}"
-                        Text="0" />
-                </Button>
-                <StackPanel x:Name="IntegerOnlyPanel">
+    <Grid>
+        <ui:ScrollViewerEx
+            Focusable="False"
+            HorizontalScrollBarVisibility="Disabled"
+            VerticalScrollBarVisibility="Auto">
+            <Grid MinHeight="{Binding ViewportHeight, RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}}}">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Style="{StaticResource SectionLabelStyle}" Text="Decimal" />
+                    <Button Click="Decimal_Click" Style="{StaticResource CopyButtonStyle}">
+                        <TextBlock
+                            x:Name="DecimalTextBlock"
+                            Style="{StaticResource SectionValueStyle}"
+                            Text="0" />
+                    </Button>
                     <TextBlock
                         Margin="0 12 0 0"
                         Style="{StaticResource SectionLabelStyle}"
-                        Text="Hex" />
-                    <Button Click="Hex_Click" Style="{StaticResource CopyButtonStyle}">
+                        Text="Formatted" />
+                    <Button Click="Formatted_Click" Style="{StaticResource CopyButtonStyle}">
                         <TextBlock
-                            x:Name="HexTextBlock"
+                            x:Name="FormattedTextBlock"
                             Style="{StaticResource SectionValueStyle}"
-                            Text="0x0" />
+                            Text="0" />
                     </Button>
-                    <TextBlock
-                        Margin="0 12 0 4"
-                        Style="{StaticResource SectionLabelStyle}"
-                        Text="Binary" />
-                    <Grid HorizontalAlignment="Center">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <ContentPresenter
-                            x:Name="SignBitPresenter"
-                            Grid.Column="0"
-                            Margin="0 0 8 0"
-                            VerticalAlignment="Top"
-                            ContentTemplate="{StaticResource BitTemplate}"
-                            Visibility="Collapsed" />
-                        <ItemsControl
-                            x:Name="BitGroupsItemsControl"
-                            Grid.Column="1"
-                            ItemTemplate="{StaticResource BitGroupTemplate}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <local:BinaryGroupsPanel />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                        </ItemsControl>
-                        <Button
-                            Grid.Column="2"
-                            Margin="3 0 0 0"
-                            Padding="5 4"
-                            VerticalAlignment="Top"
-                            Click="Binary_Click"
-                            Style="{StaticResource CopyButtonStyle}">
+                    <StackPanel x:Name="IntegerOnlyPanel">
+                        <TextBlock
+                            Margin="0 12 0 0"
+                            Style="{StaticResource SectionLabelStyle}"
+                            Text="Hex" />
+                        <Button Click="Hex_Click" Style="{StaticResource CopyButtonStyle}">
                             <TextBlock
-                                FontFamily="Segoe Fluent Icons"
-                                FontSize="14"
-                                Foreground="{DynamicResource Color05B}"
-                                Text="&#xE8C8;" />
+                                x:Name="HexTextBlock"
+                                Style="{StaticResource SectionValueStyle}"
+                                Text="0x0" />
                         </Button>
-                    </Grid>
+                        <TextBlock
+                            Margin="0 12 0 4"
+                            Style="{StaticResource SectionLabelStyle}"
+                            Text="Binary" />
+                        <Grid HorizontalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <ContentPresenter
+                                x:Name="SignBitPresenter"
+                                Grid.Column="0"
+                                Margin="0 0 8 0"
+                                VerticalAlignment="Top"
+                                ContentTemplate="{StaticResource BitTemplate}"
+                                Visibility="Collapsed" />
+                            <ItemsControl
+                                x:Name="BitGroupsItemsControl"
+                                Grid.Column="1"
+                                ItemTemplate="{StaticResource BitGroupTemplate}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <local:BinaryGroupsPanel />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                            <Button
+                                Grid.Column="2"
+                                Margin="3 0 0 0"
+                                Padding="5 4"
+                                VerticalAlignment="Top"
+                                Click="Binary_Click"
+                                Style="{StaticResource CopyButtonStyle}">
+                                <TextBlock
+                                    FontFamily="Segoe Fluent Icons"
+                                    FontSize="14"
+                                    Foreground="{DynamicResource Color05B}"
+                                    Text="&#xE8C8;" />
+                            </Button>
+                        </Grid>
+                    </StackPanel>
                 </StackPanel>
-            </StackPanel>
-        </Grid>
-    </ui:ScrollViewerEx>
+            </Grid>
+        </ui:ScrollViewerEx>
+
+        <Button
+            Width="26"
+            Height="26"
+            Margin="0 4 4 0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Style="{StaticResource BitButtonStyle}"
+            ToolTip="Help">
+            <TextBlock
+                FontFamily="Segoe Fluent Icons"
+                FontSize="14"
+                Foreground="{DynamicResource Color05B}"
+                Text="&#xE897;" />
+            <ui:FlyoutService.Flyout>
+                <ui:Flyout Placement="BottomEdgeAlignedRight">
+                    <StackPanel MaxWidth="320" Grid.IsSharedSizeScope="True">
+                        <TextBlock
+                            Margin="0 0 0 8"
+                            FontSize="14"
+                            FontWeight="SemiBold"
+                            Text="Help" />
+                        <ItemsControl
+                            x:Name="HelpSectionsItemsControl"
+                            Focusable="False"
+                            ItemTemplate="{StaticResource HelpSectionTemplate}" />
+                    </StackPanel>
+                </ui:Flyout>
+            </ui:FlyoutService.Flyout>
+        </Button>
+    </Grid>
 </UserControl>
