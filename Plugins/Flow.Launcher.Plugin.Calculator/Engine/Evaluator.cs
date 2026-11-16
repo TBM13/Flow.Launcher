@@ -97,20 +97,22 @@ public static class Evaluator
                             break;
 
                         default:
-                            int opPrecedence = GetPrecedence(op);
-                            bool isRightAssociative = op.IsUnaryPrefixOperator();
-
-                            // While the top operator on the stack has higher or equal precedence, run it first
-                            while (opCount > 0)
+                            if (!op.IsUnaryPrefixOperator())
                             {
-                                int topPrecedence = GetPrecedence(operators[opCount - 1]);
-                                if (topPrecedence > opPrecedence || (topPrecedence == opPrecedence && !isRightAssociative))
+                                int opPrecedence = GetPrecedence(op);
+                                bool isRightAssociative = op == OperatorType.Power;
+
+                                while (opCount > 0)
                                 {
-                                    if (!ExecuteTopOperator(values, operators, ref valueCount, ref opCount))
-                                        return null;
+                                    int topPrecedence = GetPrecedence(operators[opCount - 1]);
+                                    if (topPrecedence > opPrecedence || (topPrecedence == opPrecedence && !isRightAssociative))
+                                    {
+                                        if (!ExecuteTopOperator(values, operators, ref valueCount, ref opCount, op))
+                                            return null;
+                                    }
+                                    else
+                                        break;
                                 }
-                                else
-                                    break;
                             }
 
                             operators[opCount++] = op;
@@ -144,7 +146,9 @@ public static class Evaluator
     }
 
     private static bool ExecuteTopOperator(
-        Span<Value> values, Span<OperatorType> operators, ref int valueCount, ref int opCount)
+        Span<Value> values, ReadOnlySpan<OperatorType> operators,
+        ref int valueCount, ref int opCount,
+        OperatorType nextOp = OperatorType.Invalid)
     {
         OperatorType op = operators[--opCount];
         bool isUnary = op.IsUnaryOperator();
@@ -159,115 +163,58 @@ public static class Evaluator
             Value val = values[--valueCount];
 
             if (op != OperatorType.UnaryPercentage)
-                res = ExecuteUnaryOperator(op, val);
+                res = op switch
+                {
+                    // Unary prefix operators
+                    OperatorType.UnaryPlus => +val,
+                    OperatorType.UnaryMinus => -val,
+                    OperatorType.UnaryBitwiseNot => ~val,
+
+                    // Unary postfix operators
+                    OperatorType.UnaryFactorial => val.Factorial(),
+
+                    _ => throw new NotSupportedException($"Unary operator {op} not implemented")
+                };
             else
-                res = ExecuteUnaryPercentage(val, values, operators, valueCount, opCount);
+                res = ExecuteUnaryPercentage(
+                    val, values, operators, valueCount, opCount, nextOp);
         }
         else
         {
             Value right = values[--valueCount];
             Value left = values[--valueCount];
-            res = ExecuteBinaryOperator(op, left, right);
+            res = op switch
+            {
+                // Basic operations
+                OperatorType.Add => left + right,
+                OperatorType.Subtract => left - right,
+                OperatorType.Multiply => left * right,
+                OperatorType.Divide => left / right,
+                OperatorType.FloorDivide => left.FloorDivide(right),
+                OperatorType.Remainder => left % right,
+                OperatorType.Power => left.Pow(right),
+
+                // Bitwise operations
+                OperatorType.BitwiseAnd => left & right,
+                OperatorType.BitwiseOr => left | right,
+                OperatorType.BitwiseXor => left ^ right,
+                OperatorType.LeftShift => left << right,
+                OperatorType.ArithmeticRightShift => left >> right,
+                OperatorType.LogicalRightShift => left >>> right,
+
+                _ => throw new NotSupportedException($"Binary operator {op} not implemented")
+            };
         }
 
         values[valueCount++] = res;
         return true;
     }
 
-    private static Value ExecuteUnaryOperator(OperatorType op, in Value val)
-    {
-        checked
-        {
-            Value res = op switch
-            {
-                // Unary prefix operators
-                OperatorType.UnaryPlus => val,
-                OperatorType.UnaryMinus => val.IsDecimal
-                    ? new Value(-val.AsDecimal())
-                    : new Value(-val.AsInt128()),
-                OperatorType.UnaryBitwiseNot => !val.IsDecimal
-                    ? new Value(~val.AsInt128())
-                    : throw new InvalidOperationException("Bitwise operations not supported on decimal values"),
-
-                // Unary postfix operators
-                OperatorType.UnaryFactorial => val.Factorial(),
-
-                _ => throw new NotSupportedException($"Unary operator {op} not implemented")
-            };
-
-            // Convert decimal to int128 if there's no fractional part to maximize capacity
-            if (res.IsDecimal && decimal.IsInteger(res.AsDecimal()))
-                res = new Value(res.AsInt128());
-
-            return res;
-        }
-    }
-
-    private static Value ExecuteBinaryOperator(OperatorType op, in Value left, in Value right)
-    {
-        bool useDecimalMath = left.IsDecimal || right.IsDecimal;
-
-        checked
-        {
-            Value res = op switch
-            {
-                // Basic operations
-                OperatorType.Add => useDecimalMath
-                    ? new Value(left.AsDecimal() + right.AsDecimal())
-                    : new Value(left.AsInt128() + right.AsInt128()),
-                OperatorType.Subtract => useDecimalMath
-                    ? new Value(left.AsDecimal() - right.AsDecimal())
-                    : new Value(left.AsInt128() - right.AsInt128()),
-                OperatorType.Multiply => useDecimalMath
-                    ? new Value(left.AsDecimal() * right.AsDecimal())
-                    : new Value(left.AsInt128() * right.AsInt128()),
-                // For normal division, always use decimal math to preserve fractional results
-                OperatorType.Divide => new Value(left.AsDecimal() / right.AsDecimal()),
-                OperatorType.FloorDivide => useDecimalMath
-                    ? new Value(Math.Floor(left.AsDecimal() / right.AsDecimal()))
-                    : new Value((left.AsInt128() / right.AsInt128()) -
-                        ((left.AsInt128() % right.AsInt128() != 0 && (left.AsInt128() ^ right.AsInt128()) < 0) ? 1 : 0)),
-                OperatorType.Remainder => useDecimalMath
-                    ? new Value(left.AsDecimal() % right.AsDecimal())
-                    : new Value(left.AsInt128() % right.AsInt128()),
-                OperatorType.Power => left.Pow(right),
-
-                // Bitwise operations
-                OperatorType.BitwiseAnd => !useDecimalMath
-                    ? new Value(left.AsInt128() & right.AsInt128())
-                    : throw new InvalidOperationException("Bitwise operations not supported on decimal values"),
-                OperatorType.BitwiseOr => !useDecimalMath
-                    ? new Value(left.AsInt128() | right.AsInt128())
-                    : throw new InvalidOperationException("Bitwise operations not supported on decimal values"),
-                OperatorType.BitwiseXor => !useDecimalMath
-                    ? new Value(left.AsInt128() ^ right.AsInt128())
-                    : throw new InvalidOperationException("Bitwise operations not supported on decimal values"),
-                OperatorType.LeftShift => !useDecimalMath
-                    ? new Value(left.AsInt128() << right.AsInt32())
-                    : throw new InvalidOperationException("Bitwise operations not supported on decimal values"),
-                OperatorType.ArithmeticRightShift => !useDecimalMath
-                    ? new Value(left.AsInt128() >> right.AsInt32())
-                    : throw new InvalidOperationException("Bitwise operations not supported on decimal values"),
-                OperatorType.LogicalRightShift => !useDecimalMath
-                    ? new Value(left.AsInt128() >>> right.AsInt32())
-                    : throw new InvalidOperationException("Bitwise operations not supported on decimal values"),
-
-                _ => throw new NotSupportedException($"Binary operator {op} not implemented")
-            };
-
-            // Convert decimal to int128 if there's no fractional part to maximize capacity
-            if (res.IsDecimal && decimal.IsInteger(res.AsDecimal()))
-                res = new Value(res.AsInt128());
-
-            return res;
-        }
-    }
-
     private static Value ExecuteUnaryPercentage(in Value value,
-        Span<Value> values, Span<OperatorType> operators, int valueCount, int opCount)
+        ReadOnlySpan<Value> values, ReadOnlySpan<OperatorType> operators,
+        int valueCount, int opCount,
+        OperatorType nextOp)
     {
-        Value res;
-
         // Find the closest binary operator in the same context
         OperatorType contextOp = OperatorType.Invalid;
         for (int i = opCount - 1; i >= 0; i--)
@@ -281,29 +228,20 @@ public static class Evaluator
         }
 
         // Contextual percentage applies if the binary operator is Add or Subtract
-        // E.g: "100 - 30%" = 70     "50 + 10%" = 55
-        bool isContextual = valueCount > 0 && contextOp is OperatorType.Add or OperatorType.Subtract;
-        // TODO: The next token might have higher precedence than the binary operator
-        // E.g.: "100 - 30% * 2" should ideally be evaluated as "100 - (30% * 2)"
-        // but is currently evaluated as "100 - (30 * 2)%"
+        // and no higher-precedence operator follows the percentage
+        // E.g: "100 - 30%" = 70,     "50 + 10%" = 55,   "100 - 30% * 2" = 99.4
+        bool isContextual = valueCount > 0
+            && contextOp is OperatorType.Add or OperatorType.Subtract
+            && (nextOp == OperatorType.Invalid || GetPrecedence(nextOp) <= GetPrecedence(contextOp));
 
-        checked
+        Value percentageFactor = value / new Value(100m);
+        if (isContextual)
         {
-            decimal percentageFactor = value.AsDecimal() / 100m;
-            if (isContextual)
-            {
-                // Left operand of the binary operator
-                Value baseVal = values[valueCount - 1];
-                res = new Value(baseVal.AsDecimal() * percentageFactor);
-            }
-            else
-                res = new Value(percentageFactor);
+            // Left operand of the binary operator
+            Value baseVal = values[valueCount - 1];
+            return baseVal * percentageFactor;
         }
 
-        // Convert decimal to int128 if there's no fractional part to maximize capacity
-        if (res.IsDecimal && decimal.IsInteger(res.AsDecimal()))
-            res = new Value(res.AsInt128());
-
-        return res;
+        return percentageFactor;
     }
 }

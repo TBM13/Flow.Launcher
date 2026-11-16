@@ -27,6 +27,7 @@
   <Project Path="Flow.Launcher.Core/Flow.Launcher.Core.csproj" />
   <Project Path="Flow.Launcher.Interop/Flow.Launcher.Interop.csproj" />
   <Project Path="Flow.Launcher.PluginSDK/Flow.Launcher.PluginSDK.csproj" />
+  <Project Path="Flow.Launcher.Tests/Flow.Launcher.Tests.csproj" Id="9a125f01-afda-440c-884a-ed4ed3fe97c6" />
   <Project Path="Flow.Launcher/Flow.Launcher.csproj">
     <BuildDependency Project="Flow.Launcher.AdminHelper/Flow.Launcher.AdminHelper.csproj" />
   </Project>

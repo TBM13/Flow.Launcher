@@ -62,7 +62,55 @@ public readonly struct Value
     }
 
     public override string ToString() => IsDecimal ? _decimalValue.ToString() : _integerValue.ToString();
-    public string ToString(IFormatProvider provider) => IsDecimal ? _decimalValue.ToString(provider) : _integerValue.ToString(provider);
+    public string ToString(IFormatProvider provider) =>
+        IsDecimal ? _decimalValue.ToString(provider) : _integerValue.ToString(provider);
+
+    /// <summary>
+    /// Converts the decimal to a <see cref="Value"/> backed by an <see cref="Int128"/> when possible.
+    /// </summary>
+    private static Value FromDecimal(decimal value)
+        => decimal.IsInteger(value) ? new Value((Int128)value) : new Value(value);
+
+    private static (Int128 Left, Int128 Right) AsBitwiseOperands(Value left, Value right)
+    {
+        if (left.IsDecimal || right.IsDecimal)
+            throw new ArgumentException("Bitwise operations not supported on decimal values");
+
+        return (left.AsInt128(), right.AsInt128());
+    }
+
+    private static (Int128 Value, int Shift) AsShiftOperands(Value left, Value right)
+    {
+        if (left.IsDecimal || right.IsDecimal)
+            throw new ArgumentException("Bitwise operations not supported on decimal values");
+
+        int shift = right.AsInt32();
+        if (shift < 0)
+            throw new ArgumentException($"Shift amount cannot be negative: {shift}");
+        if (shift >= 128)
+            throw new ArgumentException($"Shift amount is too large: {shift}");
+
+        return (left.AsInt128(), shift);
+    }
+
+    public static Value operator +(Value value) => value;
+    public static Value operator -(Value value)
+    {
+        checked
+        {
+            return value.IsDecimal
+                ? FromDecimal(-value.AsDecimal())
+                : new Value(-value.AsInt128());
+        }
+    }
+
+    public static Value operator ~(Value value)
+    {
+        if (value.IsDecimal)
+            throw new ArgumentException("Bitwise operations not supported on decimal values");
+
+        return new Value(~value.AsInt128());
+    }
 
     /// <exception cref="ArgumentException"></exception>
     public Value Factorial()
@@ -79,6 +127,68 @@ public readonly struct Value
             result *= i;
 
         return new Value(result);
+    }
+
+    public static Value operator +(Value left, Value right)
+    {
+        checked
+        {
+            return left.IsDecimal || right.IsDecimal
+                ? FromDecimal(left.AsDecimal() + right.AsDecimal())
+                : new Value(left.AsInt128() + right.AsInt128());
+        }
+    }
+
+    public static Value operator -(Value left, Value right)
+    {
+        checked
+        {
+            return left.IsDecimal || right.IsDecimal
+                ? FromDecimal(left.AsDecimal() - right.AsDecimal())
+                : new Value(left.AsInt128() - right.AsInt128());
+        }
+    }
+
+    public static Value operator *(Value left, Value right)
+    {
+        checked
+        {
+            return left.IsDecimal || right.IsDecimal
+                ? FromDecimal(left.AsDecimal() * right.AsDecimal())
+                : new Value(left.AsInt128() * right.AsInt128());
+        }
+    }
+
+    public static Value operator /(Value left, Value right)
+    {
+        checked
+        {
+            // For normal division, always use decimal math to preserve fractional results
+            return FromDecimal(left.AsDecimal() / right.AsDecimal());
+        }
+    }
+
+    public Value FloorDivide(Value right)
+    {
+        checked
+        {
+            if (IsDecimal || right.IsDecimal)
+                return FromDecimal(Math.Floor(AsDecimal() / right.AsDecimal()));
+
+            Int128 l = AsInt128();
+            Int128 r = right.AsInt128();
+            return new Value((l / r) - ((l % r != 0 && (l ^ r) < 0) ? 1 : 0));
+        }
+    }
+
+    public static Value operator %(Value left, Value right)
+    {
+        checked
+        {
+            return left.IsDecimal || right.IsDecimal
+                ? FromDecimal(left.AsDecimal() % right.AsDecimal())
+                : new Value(left.AsInt128() % right.AsInt128());
+        }
     }
 
     /// <exception cref="ArgumentException"></exception>
@@ -135,8 +245,44 @@ public readonly struct Value
                     // on large negative numbers, but would also make the result less accurate
                     result = 1m / result;
 
-                return new(result);
+                return FromDecimal(result);
             }
         }
+    }
+
+    public static Value operator &(Value left, Value right)
+    {
+        (Int128 l, Int128 r) = AsBitwiseOperands(left, right);
+        return new Value(l & r);
+    }
+
+    public static Value operator |(Value left, Value right)
+    {
+        (Int128 l, Int128 r) = AsBitwiseOperands(left, right);
+        return new Value(l | r);
+    }
+
+    public static Value operator ^(Value left, Value right)
+    {
+        (Int128 l, Int128 r) = AsBitwiseOperands(left, right);
+        return new Value(l ^ r);
+    }
+
+    public static Value operator <<(Value left, Value right)
+    {
+        (Int128 value, int shift) = AsShiftOperands(left, right);
+        return new Value(value << shift);
+    }
+
+    public static Value operator >>(Value left, Value right)
+    {
+        (Int128 value, int shift) = AsShiftOperands(left, right);
+        return new Value(value >> shift);
+    }
+
+    public static Value operator >>>(Value left, Value right)
+    {
+        (Int128 value, int shift) = AsShiftOperands(left, right);
+        return new Value(value >>> shift);
     }
 }
