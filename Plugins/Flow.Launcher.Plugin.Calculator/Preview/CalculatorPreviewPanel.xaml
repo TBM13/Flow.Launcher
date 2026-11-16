@@ -164,6 +164,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <ContentPresenter
                             x:Name="SignBitPresenter"
@@ -182,6 +183,19 @@
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                         </ItemsControl>
+                        <Button
+                            Grid.Column="2"
+                            Margin="3 0 0 0"
+                            Padding="5 4"
+                            VerticalAlignment="Top"
+                            Click="Binary_Click"
+                            Style="{StaticResource CopyButtonStyle}">
+                            <TextBlock
+                                FontFamily="Segoe Fluent Icons"
+                                FontSize="14"
+                                Foreground="{DynamicResource Color05B}"
+                                Text="&#xE8C8;" />
+                        </Button>
                     </Grid>
                 </StackPanel>
             </StackPanel>

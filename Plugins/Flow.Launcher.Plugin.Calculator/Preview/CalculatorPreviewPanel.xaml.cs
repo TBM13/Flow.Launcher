@@ -63,6 +63,11 @@ public partial class CalculatorPreviewPanel : UserControl
         _copyText(HexTextBlock.Text);
     }
 
+    private void Binary_Click(object sender, RoutedEventArgs e)
+    {
+        _copyText($"0b{_integerValue.ToString("B", CultureInfo.InvariantCulture)}");
+    }
+
     private void Bit_Click(object sender, RoutedEventArgs e)
     {
         if (sender is not FrameworkElement { Tag: int bitIndex })
