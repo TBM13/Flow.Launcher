@@ -43,7 +43,7 @@ public ref struct Tokenizer(ReadOnlySpan<char> input)
                             // "4%" is unary percentage but "4 % 2" is binary remainder
                             _index > 0 && !IsWhitespace(_input[_index - 1]) &&
                             // "4%2" and "4%(2)" are binary remainder
-                            (_index + 1 == _input.Length || _input[_index + 1] is not (>= '0' and <= '9' or '('))
+                            (_index + 1 == _input.Length || _input[_index + 1] is not (>= '0' and <= '9' or '(' or 'e' or 'E' or 'p' or 'P' or 'π'))
                         => new Token(TokenType.Operator, OperatorType.UnaryPercentage, default),
 
                     // Basic operations
@@ -80,6 +80,12 @@ public ref struct Tokenizer(ReadOnlySpan<char> input)
 
                 Current = c switch
                 {
+                    // Constants
+                    'e' or 'E' => new Token(TokenType.Euler, default, default),
+                    'π' => new Token(TokenType.Pi, default, default),
+                    'p' or 'P' when _index + 1 < _input.Length && _input[_index + 1] is 'i' or 'I' =>
+                        new Token(TokenType.Pi, default, default),
+
                     // Unary prefix operators
                     '(' => new Token(TokenType.Operator, OperatorType.OpenParentheses, default),
                     '+' => new Token(TokenType.Operator, OperatorType.UnaryPlus, default),
@@ -106,6 +112,9 @@ public ref struct Tokenizer(ReadOnlySpan<char> input)
                 OperatorType.BitwiseXor => 2,
                 OperatorType.LogicalRightShift => 3,
                 OperatorType.ArithmeticRightShift or OperatorType.LeftShift => 2,
+
+                // Multi-char constants
+                _ when Current.Type == TokenType.Pi && c is 'p' or 'P' => 2,
 
                 _ => 1
             };

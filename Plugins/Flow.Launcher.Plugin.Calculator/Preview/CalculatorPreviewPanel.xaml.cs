@@ -16,6 +16,7 @@ public partial class CalculatorPreviewPanel : UserControl
             new("123, 3.14", "Decimal / integer"),
             new("0xFF", "Hexadecimal"),
             new("0b1010", "Binary"),
+            new("pi, π, e", "Pi and Euler's number"),
         ]),
         new("Arithmetic", [
             new("+, -", "Add, subtract, or unary sign"),

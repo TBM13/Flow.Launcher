@@ -129,6 +129,20 @@ public class EvaluatorTests
     [InlineData("2^100", "1267650600228229401496703205376")]
     [InlineData("2^126", "85070591730234615865843651857942052864")]
     [InlineData("0x7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF", "170141183460469231731687303715884105727")] // Int128.MaxValue
+
+    // --- Constants (e, pi, π) ---
+    [InlineData("e", "2.7182818284590452353602874714")]
+    [InlineData("E", "2.7182818284590452353602874714")]
+    [InlineData("pi", "3.1415926535897932384626433833")]
+    [InlineData("PI", "3.1415926535897932384626433833")]
+    [InlineData("Pi", "3.1415926535897932384626433833")]
+    [InlineData("π", "3.1415926535897932384626433833")]
+    [InlineData("-pi", "-3.1415926535897932384626433833")]
+    [InlineData("+e", "2.7182818284590452353602874714")]
+    [InlineData("2 * pi", "6.2831853071795864769252867666")]
+    [InlineData("e ^ 0", "1")]
+    [InlineData("pi // 1", "3")]
+    [InlineData("10%pi", "0.5752220392306202846120698501")]
     public void Evaluate_ValidExpressions_ReturnsExpectedValue(string expression, string expected)
     {
         Value? result = Evaluator.Evaluate(expression);
@@ -186,6 +200,14 @@ public class EvaluatorTests
     [InlineData("1 || 2")]      // Logical OR not supported
     [InlineData("5 ! 2")]       // '!' is not a binary operator
     [InlineData("5 ~ 2")]       // '~' is not a binary operator
+    // Invalid constants & implicit multiplication
+    [InlineData("p")]
+    [InlineData("pia")]
+    [InlineData("euler")]
+    [InlineData("2pi")]
+    [InlineData("2e")]
+    [InlineData("pi2")]
+    [InlineData("e2")]
     public void Evaluate_InvalidSyntax_ReturnsNull(string expression)
     {
         Value? result = Evaluator.Evaluate(expression);
@@ -237,6 +259,10 @@ public class EvaluatorTests
     [InlineData("2^100 / 2", typeof(OverflowException))]      // Divide converts operands to decimal
     [InlineData("(2^100)%", typeof(OverflowException))]       // Percentage converts operand to decimal
     [InlineData("10.1^100", typeof(OverflowException))]       // Decimal power overflow
+    // Constant domain errors
+    [InlineData("pi!", typeof(InvalidOperationException))]
+    [InlineData("2^pi", typeof(ArgumentException))]
+    [InlineData("pi & 1", typeof(ArgumentException))]
     public void Evaluate_MathAndOverflowErrors_ThrowsExpectedException(string expression, Type exceptionType)
     {
         Assert.Throws(exceptionType, () => Evaluator.Evaluate(expression));

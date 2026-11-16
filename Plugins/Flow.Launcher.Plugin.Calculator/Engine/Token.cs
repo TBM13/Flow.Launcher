@@ -10,6 +10,8 @@ public enum TokenType : byte
     Decimal,
     Hexadecimal,
     Binary,
+    Euler,
+    Pi,
     Operator,
 }
 
@@ -49,7 +51,8 @@ public static class TokenTypeExtensions
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsNumber(this TokenType type)
-        => type is TokenType.Integer or TokenType.Decimal or TokenType.Hexadecimal or TokenType.Binary;
+        => type is TokenType.Integer or TokenType.Decimal or TokenType.Hexadecimal or TokenType.Binary
+            or TokenType.Euler or TokenType.Pi;
 }
 
 public static class OperatorTypeExtensions

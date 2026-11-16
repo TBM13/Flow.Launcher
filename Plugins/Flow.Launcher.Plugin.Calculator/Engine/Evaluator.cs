@@ -78,6 +78,14 @@ public static class Evaluator
                     values[valueCount++] = new Value(b);
                     break;
 
+                // Constants
+                case TokenType.Euler:
+                    values[valueCount++] = new Value(2.7182818284590452353602874714m);
+                    break;
+                case TokenType.Pi:
+                    values[valueCount++] = new Value(3.1415926535897932384626433833m);
+                    break;
+
                 // Operators
                 case TokenType.Operator:
                     OperatorType op = token.Operator;
