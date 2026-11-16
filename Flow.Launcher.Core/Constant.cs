@@ -11,7 +11,6 @@ public static class Constant
     private static readonly Assembly Assembly = Assembly.GetExecutingAssembly();
     public static readonly string ProgramDirectory = AppContext.BaseDirectory;
 
-    public const string IssuesUrl = "https://github.com/TBM13/Flow.Launcher/issues";
     public static readonly string Version = FileVersionInfo.GetVersionInfo(Assembly.Location).ProductVersion ?? "<Unknown>";
 
     private static readonly string ImagesDirectory = Path.Combine(ProgramDirectory, "Images");

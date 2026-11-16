@@ -338,20 +338,6 @@ public partial class App : Application
             }
 
             Exception exceptionToReport = ex ?? new($"{message} (No exception provided)");
-            try
-            {
-                if (Current?.Dispatcher?.CheckAccess() == true)
-                {
-                    ReportWindow reportWindow = new(exceptionToReport);
-                    reportWindow.ShowDialog();
-                    return;
-                }
-            }
-            catch
-            {
-                // Fallback to messagebox
-            }
-
             MessageBox.Show($"{message}\n\n{exceptionToReport}", Constant.FlowLauncher,
                 MessageBoxButton.OK, MessageBoxImage.Error);
         }
