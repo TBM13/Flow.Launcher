@@ -36,6 +36,11 @@ public sealed class Main : IAsyncPlugin, ISettingProvider
     private const string KeyGlyph = "\uF12B";
     private const int MaxBinaryPreviewBytes = 32;
 
+    private const string StringValueIcon = "Images\\String.png";
+    private const string DWordValueIcon = "Images\\DWord.png";
+    private const string QWordValueIcon = "Images\\QWord.png";
+    private const string BinaryValueIcon = "Images\\Binary.png";
+
     private sealed record RegistryHiveInfo(string FullName, string ShortName, RegistryKey Key);
 
     private static readonly RegistryHiveInfo[] RootHives =
@@ -315,7 +320,8 @@ public sealed class Main : IAsyncPlugin, ISettingProvider
         string displayName = GetDisplayValueName(valueName);
         string parentPath = parentKey.Name;
         string fullPath = $"{parentPath}\\{displayName}";
-        string valueData = FormatValueData(parentKey, valueName);
+        RegistryValueKind kind = GetValueKind(parentKey, valueName);
+        string valueData = FormatValueData(parentKey, valueName, kind);
 
         return new Result
         {
@@ -324,7 +330,7 @@ public sealed class Main : IAsyncPlugin, ISettingProvider
             AutocompleteText = (true, fullPath),
             CopyText = fullPath,
             ToolTip = string.IsNullOrEmpty(valueData) ? fullPath : $"{fullPath}\n\n{valueData}",
-            IconOrGlyph = PluginMetadataDefinition.Metadata.IcoPath,
+            IconOrGlyph = GetValueIcon(kind),
             Score = score,
             AddSelectedCount = addSelectedCount,
             Action = _ => OpenInRegJump(parentPath)
@@ -405,7 +411,27 @@ public sealed class Main : IAsyncPlugin, ISettingProvider
         }
     }
 
-    private static string FormatValueData(RegistryKey key, string valueName)
+    private static RegistryValueKind GetValueKind(RegistryKey key, string valueName)
+    {
+        try
+        {
+            return key.GetValueKind(valueName);
+        }
+        catch (Exception ex) when (ex is SecurityException or UnauthorizedAccessException or IOException)
+        {
+            return RegistryValueKind.Unknown;
+        }
+    }
+
+    private static string GetValueIcon(RegistryValueKind kind) => kind switch
+    {
+        RegistryValueKind.String or RegistryValueKind.ExpandString or RegistryValueKind.MultiString => StringValueIcon,
+        RegistryValueKind.DWord => DWordValueIcon,
+        RegistryValueKind.QWord => QWordValueIcon,
+        _ => BinaryValueIcon
+    };
+
+    private static string FormatValueData(RegistryKey key, string valueName, RegistryValueKind kind)
     {
         try
         {
@@ -413,7 +439,6 @@ public sealed class Main : IAsyncPlugin, ISettingProvider
             if (value is null)
                 return string.Empty;
 
-            RegistryValueKind kind = key.GetValueKind(valueName);
             return kind switch
             {
                 RegistryValueKind.String or RegistryValueKind.ExpandString => value.ToString() ?? string.Empty,
