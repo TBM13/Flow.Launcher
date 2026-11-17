@@ -18,6 +18,7 @@ public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger) : IAs
         Launcher.Plugin.PluginIndicator.PluginMetadataDefinition.Metadata,
         Launcher.Plugin.ProcessKiller.PluginMetadataDefinition.Metadata,
         Launcher.Plugin.Sys.PluginMetadataDefinition.Metadata,
+        Launcher.Plugin.WindowsRegistry.PluginMetadataDefinition.Metadata,
         Launcher.Plugin.WindowsServices.PluginMetadataDefinition.Metadata,
         Launcher.Plugin.WindowsSettings.PluginMetadataDefinition.Metadata,
         Launcher.Plugin.WindowsTasks.PluginMetadataDefinition.Metadata,

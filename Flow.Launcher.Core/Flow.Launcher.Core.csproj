@@ -18,6 +18,7 @@
     <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.ProcessKiller\Flow.Launcher.Plugin.ProcessKiller.csproj" />
     <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.Program\Flow.Launcher.Plugin.Program.csproj" />
     <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.Sys\Flow.Launcher.Plugin.Sys.csproj" />
+    <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.WindowsRegistry\Flow.Launcher.Plugin.WindowsRegistry.csproj" />
     <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.WindowsServices\Flow.Launcher.Plugin.WindowsServices.csproj" />
     <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.WindowsSettings\Flow.Launcher.Plugin.WindowsSettings.csproj" />
     <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.WindowsTasks\Flow.Launcher.Plugin.WindowsTasks.csproj" />
