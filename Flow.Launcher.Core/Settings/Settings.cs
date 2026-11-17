@@ -43,8 +43,6 @@ internal partial class Settings : ObservableObject, ISettingsAPI
     public partial double CustomDisplayPositionTop { get; set; } = 0;
 
     [ObservableProperty]
-    public partial bool HideOnStartup { get; set; } = true;
-    [ObservableProperty]
     public partial bool HideOnLostFocus { get; set; } = true;
     #endregion
 

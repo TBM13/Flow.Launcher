@@ -112,13 +112,6 @@ public interface ISettingsAPI : INotifyPropertyChanged, INotifyPropertyChanging
     double CustomDisplayPositionTop { get; set; }
 
     /// <summary>
-    /// When true, Flow Launcher will not show itself on startup.
-    /// </summary>
-    /// <remarks>
-    /// Useful when Flow Launcher is configured to start on system startup.
-    /// </remarks>
-    bool HideOnStartup { get; set; }
-    /// <summary>
     /// Indicates whether Flow Launcher should hide when it loses focus.
     /// </summary>
     bool HideOnLostFocus { get; set; }

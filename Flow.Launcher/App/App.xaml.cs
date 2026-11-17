@@ -32,6 +32,11 @@ public partial class App : Application
 {
     private const string StartupRegistryKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Run";
     private const string StartupRegistryValueName = "Flow Launcher";
+    private const string AutostartArg = "--autostart";
+    private const string RestartArg = "--restart";
+
+    public static bool IsAutostart { get; } =
+        Environment.GetCommandLineArgs().Skip(1).Contains(AutostartArg, StringComparer.OrdinalIgnoreCase);
 
     private static Process? _adminHelperProcess;
     private IHost? _host;
@@ -54,7 +59,7 @@ public partial class App : Application
             return 1;
         }
 
-        bool isRestart = Environment.GetCommandLineArgs().Contains("--restart");
+        bool isRestart = Environment.GetCommandLineArgs().Skip(1).Contains(RestartArg, StringComparer.OrdinalIgnoreCase);
 
         // Ensure only one instance of the app is running
         if (!SingleInstance.TryAcquire(
@@ -196,7 +201,7 @@ public partial class App : Application
         ProcessStartInfo startInfo = new()
         {
             FileName = Environment.ProcessPath,
-            Arguments = "--restart",
+            Arguments = RestartArg,
             UseShellExecute = true
         };
 
@@ -355,28 +360,18 @@ public partial class App : Application
             string? processPath = Environment.ProcessPath;
             if (!string.IsNullOrEmpty(processPath))
             {
-                string expectedValue = $"\"{processPath}\"";
+                string expectedValue = $"\"{processPath}\" {AutostartArg}";
                 using RegistryKey? key = Registry.CurrentUser.OpenSubKey(StartupRegistryKeyPath, writable: true);
                 if (key is not null)
                 {
+                    string? currentValue = key.GetValue(StartupRegistryValueName) as string;
                     if (_settings.StartOnSystemStartup)
                     {
-                        if (!string.Equals(
-                            key.GetValue(StartupRegistryValueName) as string,
-                            expectedValue,
-                            StringComparison.OrdinalIgnoreCase))
-                        {
+                        if (!string.Equals(currentValue, expectedValue, StringComparison.OrdinalIgnoreCase))
                             key.SetValue(StartupRegistryValueName, expectedValue, RegistryValueKind.String);
-                        }
                     }
-                    else if (!isInitialStartup
-                        || string.Equals(
-                            key.GetValue(StartupRegistryValueName) as string,
-                            expectedValue,
-                            StringComparison.OrdinalIgnoreCase))
-                    {
+                    else
                         key.DeleteValue(StartupRegistryValueName, throwOnMissingValue: false);
-                    }
                 }
             }
 

@@ -516,7 +516,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     // This is to be used for determining the visibility status of the main window instead of MainWindowVisibility
     // because it is more accurate and reliable representation than using Visibility as a condition check
     [ObservableProperty]
-    public partial bool MainWindowVisibilityStatus { get; set; } = true;
+    public partial bool MainWindowVisibilityStatus { get; set; } = false;
 
     public double MainWindowWidth
     {

@@ -51,9 +51,12 @@ public partial class MainWindow : Window
         WindowHelper.HideFromAltTab(handle);
         WindowHelper.DisableControlBox(handle);
 
-        // Cloak window to prevent visual artifact at startup
-        WindowHelper.DWMSetCloakForWindow(handle, true);
-        _cloaked = true;
+        // Cloak window to prevent visual artifact at startup if it isn't meant to be visible yet
+        if (!_vm.MainWindowVisibilityStatus)
+        {
+            WindowHelper.DWMSetCloakForWindow(handle, true);
+            _cloaked = true;
+        }
     }
 
     private void OnLoaded(object sender, RoutedEventArgs _)
@@ -63,11 +66,6 @@ public partial class MainWindow : Window
             ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
         else if (_settings.ColorScheme == ColorScheme.Dark)
             ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
-
-        if (_settings.HideOnStartup)
-            _vm.Hide();
-        else
-            _vm.Show();
 
         _settings.PropertyChanged += (o, e) =>
         {
@@ -84,9 +82,6 @@ public partial class MainWindow : Window
 
         // Reset preview
         _vm.ResetPreview();
-
-        // Since the default main window visibility is visible, so we need set focus during startup
-        QueryTextBox.Focus();
 
         // Set the initial state of the QueryTextBoxCursorMovedToEnd property
         // Without this part, when shown for the first time, switching the context menu does not move the cursor to the end.
@@ -162,6 +157,11 @@ public partial class MainWindow : Window
                     break;
             }
         };
+
+        if (App.App.IsAutostart)
+            _vm.Hide();
+        else
+            _vm.Show();
 
         // Initialize query state
         if (_settings.ShowHomePage && string.IsNullOrEmpty(_vm.QueryText))
