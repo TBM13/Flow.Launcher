@@ -6,41 +6,44 @@ using Flow.Launcher.Interop.Input;
 
 namespace Flow.Launcher.AdminHelper.IPC;
 
-public enum KeyboardIpcMessageType
+public enum AdminHelperMessageType
 {
     HotkeyTriggered,
     GetPressedKeys,
     PressedKeysResult,
 
     BlockWindowsKey,
-    DontBlockWindowsKey
+    DontBlockWindowsKey,
+
+    RegisterScheduledTask,
+    UnregisterScheduledTask
 }
 
-public sealed record KeyboardIpcMessage
+public sealed record AdminHelperMessage
 {
-    public KeyboardIpcMessageType Type { get; init; }
+    public AdminHelperMessageType Type { get; init; }
     public int RequestId { get; init; }
     public int MainKey { get; init; }
     public int Modifiers { get; init; }
     public ulong[]? PressedKeys { get; init; }
 }
 
-public static class KeyboardIpcProtocol
+public static class AdminHelperProtocol
 {
-    public static string Serialize(KeyboardIpcMessage message) =>
-        JsonSerializer.Serialize(message, KeyboardIpcJsonContext.Default.KeyboardIpcMessage);
+    public static string Serialize(AdminHelperMessage message) =>
+        JsonSerializer.Serialize(message, AdminHelperJsonContext.Default.AdminHelperMessage);
 
-    public static KeyboardIpcMessage? Deserialize(string json) =>
-        JsonSerializer.Deserialize(json, KeyboardIpcJsonContext.Default.KeyboardIpcMessage);
+    public static AdminHelperMessage? Deserialize(string json) =>
+        JsonSerializer.Deserialize(json, AdminHelperJsonContext.Default.AdminHelperMessage);
 
-    public static KeyboardIpcMessage CreatePressedKeysResult(int requestId, PressedKeys pressedKeys) => new()
+    public static AdminHelperMessage CreatePressedKeysResult(int requestId, PressedKeys pressedKeys) => new()
     {
-        Type = KeyboardIpcMessageType.PressedKeysResult,
+        Type = AdminHelperMessageType.PressedKeysResult,
         RequestId = requestId,
         PressedKeys = pressedKeys.ToBits()
     };
 
-    public static PressedKeys GetPressedKeys(KeyboardIpcMessage message)
+    public static PressedKeys GetPressedKeys(AdminHelperMessage message)
     {
         ulong[] bits = message.PressedKeys ?? throw new InvalidDataException("Pressed-key state is missing");
         if (bits.Length != 4)
@@ -61,8 +64,8 @@ public static class KeyboardIpcProtocol
         $"Flow.Launcher.AdminHelper.{sessionId}.{userSid}";
 }
 
-[JsonSerializable(typeof(KeyboardIpcMessage))]
+[JsonSerializable(typeof(AdminHelperMessage))]
 [JsonSourceGenerationOptions(DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault)]
-internal partial class KeyboardIpcJsonContext : JsonSerializerContext
+internal partial class AdminHelperJsonContext : JsonSerializerContext
 {
 }

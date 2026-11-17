@@ -15,30 +15,71 @@ internal static class Program
     private const int ExitAlreadyRunning = 3;
     private const int ExitConnectionTimeout = 4;
     private const int ExitUnauthorizedClient = 5;
+    private const int ExitNotPrivileged = 6;
 
     private static async Task<int> Main(string[] args)
     {
-        if (args.Length != 4 || args[0] != "--client-sid" || args[2] != "--session-id")
+        if (!Environment.IsPrivilegedProcess)
+            return ExitNotPrivileged;
+
+        string? clientSidArg = null;
+        int? expectedSessionId = null;
+        bool registerTask = false;
+        bool unregisterTask = false;
+
+        for (int i = 0; i < args.Length; i++)
+        {
+            switch (args[i])
+            {
+                case "--client-sid":
+                    if (clientSidArg is not null || ++i >= args.Length)
+                        return ExitInvalidArgs;
+                    clientSidArg = args[i];
+                    break;
+
+                case "--session-id":
+                    if (expectedSessionId is not null || ++i >= args.Length
+                        || !int.TryParse(args[i], out int parsedSessionId) || parsedSessionId < 0)
+                        return ExitInvalidArgs;
+                    expectedSessionId = parsedSessionId;
+                    break;
+
+                case "--register-task":
+                    if (registerTask || unregisterTask)
+                        return ExitInvalidArgs;
+                    registerTask = true;
+                    break;
+
+                case "--unregister-task":
+                    if (unregisterTask || registerTask)
+                        return ExitInvalidArgs;
+                    unregisterTask = true;
+                    break;
+
+                default:
+                    return ExitInvalidArgs;
+            }
+        }
+
+        if (string.IsNullOrEmpty(clientSidArg))
             return ExitInvalidArgs;
 
         SecurityIdentifier clientSid;
         try
         {
-            clientSid = new SecurityIdentifier(args[1]);
+            clientSid = new SecurityIdentifier(clientSidArg);
         }
         catch (ArgumentException)
         {
             return ExitInvalidArgs;
         }
 
-        if (!int.TryParse(args[3], out int clientSessionId) || clientSessionId < 0)
-            return ExitInvalidArgs;
-
         using Process currentProcess = Process.GetCurrentProcess();
-        if (currentProcess.SessionId != clientSessionId)
+        int clientSessionId = expectedSessionId ?? currentProcess.SessionId;
+        if (currentProcess.SessionId <= 0 || currentProcess.SessionId != clientSessionId)
             return ExitSessionMismatch;
 
-        string pipeName = KeyboardIpcProtocol.GetPipeName(clientSessionId, clientSid.Value);
+        string pipeName = AdminHelperProtocol.GetPipeName(clientSessionId, clientSid.Value);
         if (!SingleInstance.TryAcquire(
             $"Local\\{pipeName}",
             out var instance, TimeSpan.FromMilliseconds(5000)))
@@ -64,7 +105,19 @@ internal static class Program
             if (!ValidateClient(clientProcessId))
                 return ExitUnauthorizedClient;
 
-            using KeyboardIpcServer server = new(pipe, clientProcessId);
+            // Register or unregister task to start AdminHelper without UAC prompt
+            if (registerTask)
+            {
+                using WindowsIdentity currentIdentity = WindowsIdentity.GetCurrent();
+                if (currentIdentity.User == clientSid)
+                    AdminHelperTask.TryRegister(clientSid);
+            }
+            else if (unregisterTask)
+            {
+                AdminHelperTask.TryDelete(clientSid);
+            }
+
+            using AdminHelperServer server = new(pipe, clientProcessId, clientSid);
             await server.RunAsync(CancellationToken.None);
             return ExitSuccess;
         }

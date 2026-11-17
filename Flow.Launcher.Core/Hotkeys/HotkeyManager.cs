@@ -19,7 +19,7 @@ public sealed class HotkeyManager : IDisposable
 {
     private readonly Logger<HotkeyManager> _logger;
     private readonly ISettingsAPI _settings;
-    private readonly KeyboardIpcClient _keyboardClient = new();
+    private readonly AdminHelperClient _adminHelperClient;
 
     private static readonly Hotkey _startMenuHotkey = new(modifiers: ModifierKeys.Windows);
     private Hotkey _lastGlobalHotkey;
@@ -45,12 +45,13 @@ public sealed class HotkeyManager : IDisposable
     /// </summary>
     public bool IgnoreGlobalHotkeys { get; set; }
 
-    public HotkeyManager(Logger<HotkeyManager> logger, ISettingsAPI settings)
+    public HotkeyManager(Logger<HotkeyManager> logger, ISettingsAPI settings, AdminHelperClient adminHelperClient)
     {
         _logger = logger;
         _settings = settings;
+        _adminHelperClient = adminHelperClient;
 
-        _keyboardClient.InitializeAsync().GetAwaiter().GetResult();
+        _adminHelperClient.InitializeAsync().GetAwaiter().GetResult();
 
         // Register global hotkeys
         foreach (GlobalHotkeyInfo hotkey in DefaultHotkeys.GlobalHotkeys)
@@ -60,7 +61,7 @@ public sealed class HotkeyManager : IDisposable
             RegisterHotkey(hotkey, null);
 
         // Start listening for hotkeys
-        _keyboardClient.OnHotkeyTriggered += OnGlobalHotkeyTriggered;
+        _adminHelperClient.OnHotkeyTriggered += OnGlobalHotkeyTriggered;
     }
 
     private bool ShouldIgnoreHotkeys()
@@ -304,7 +305,7 @@ public sealed class HotkeyManager : IDisposable
                     _enabledGlobalHotkeys.Remove(globalInfo.Hotkey);
 
                     if (globalInfo.Hotkey == _startMenuHotkey)
-                        _keyboardClient.SetBlockWindowsKey(false);
+                        _adminHelperClient.SetBlockWindowsKey(false);
                     break;
                 case AppHotkeyInfo appInfo:
                     _enabledAppHotkeys.Remove(appInfo.Hotkey);
@@ -325,7 +326,7 @@ public sealed class HotkeyManager : IDisposable
             {
                 case GlobalHotkeyInfo globalInfo:
                     if (newHotkey == _startMenuHotkey)
-                        _keyboardClient.SetBlockWindowsKey(true);
+                        _adminHelperClient.SetBlockWindowsKey(true);
 
                     _enabledGlobalHotkeys[newHotkey] = globalInfo;
                     break;
@@ -361,7 +362,7 @@ public sealed class HotkeyManager : IDisposable
     /// <inheritdoc cref="KeyboardManager.GetPressedKeys"/>
     public Task<PressedKeys> GetPressedKeysAsync(CancellationToken cancellationToken = default)
     {
-        return _keyboardClient.GetPressedKeysAsync(cancellationToken);
+        return _adminHelperClient.GetPressedKeysAsync(cancellationToken);
     }
 
     /// <summary>
@@ -376,7 +377,7 @@ public sealed class HotkeyManager : IDisposable
 
     public void Dispose()
     {
-        _keyboardClient.OnHotkeyTriggered -= OnGlobalHotkeyTriggered;
-        _keyboardClient.Dispose();
+        _adminHelperClient.OnHotkeyTriggered -= OnGlobalHotkeyTriggered;
+        _adminHelperClient.Dispose();
     }
 }

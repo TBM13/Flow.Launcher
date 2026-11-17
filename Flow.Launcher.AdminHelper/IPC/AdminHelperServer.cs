@@ -1,4 +1,5 @@
 ﻿using System.IO.Pipes;
+using System.Security.Principal;
 using System.Text.Json;
 using System.Threading.Channels;
 using System.Windows.Input;
@@ -8,9 +9,10 @@ using Flow.Launcher.PluginSDK.Hotkeys;
 
 namespace Flow.Launcher.AdminHelper.IPC;
 
-public sealed class KeyboardIpcServer : IDisposable
+public sealed class AdminHelperServer : IDisposable
 {
     private readonly uint _clientProcessId;
+    private readonly SecurityIdentifier _clientSid;
     private readonly StreamReader _reader;
     private readonly StreamWriter _writer;
     private readonly KeyboardManager _keyboardManager = new();
@@ -20,9 +22,10 @@ public sealed class KeyboardIpcServer : IDisposable
     private int _nextRequestId;
     private volatile bool _blockWindowsKey;
 
-    public KeyboardIpcServer(NamedPipeServerStream pipe, uint clientProcessId)
+    public AdminHelperServer(NamedPipeServerStream pipe, uint clientProcessId, SecurityIdentifier clientSid)
     {
         _clientProcessId = clientProcessId;
+        _clientSid = clientSid;
         _reader = new StreamReader(pipe, leaveOpen: true);
         _writer = new StreamWriter(pipe, leaveOpen: true) { AutoFlush = true };
         _keyboardManager.OnHotkeyTriggered += OnHotkeyTriggered;
@@ -39,10 +42,10 @@ public sealed class KeyboardIpcServer : IDisposable
         {
             while (await _reader.ReadLineAsync(cancellationToken).ConfigureAwait(false) is { } line)
             {
-                KeyboardIpcMessage? message;
+                AdminHelperMessage? message;
                 try
                 {
-                    message = KeyboardIpcProtocol.Deserialize(line);
+                    message = AdminHelperProtocol.Deserialize(line);
                 }
                 catch (JsonException)
                 {
@@ -54,16 +57,27 @@ public sealed class KeyboardIpcServer : IDisposable
 
                 switch (message.Type)
                 {
-                    case KeyboardIpcMessageType.GetPressedKeys:
-                        EnqueueMessage(KeyboardIpcProtocol.CreatePressedKeysResult(
+                    case AdminHelperMessageType.GetPressedKeys:
+                        EnqueueMessage(AdminHelperProtocol.CreatePressedKeysResult(
                             message.RequestId, _keyboardManager.GetPressedKeys()));
                         break;
 
-                    case KeyboardIpcMessageType.BlockWindowsKey:
+                    case AdminHelperMessageType.BlockWindowsKey:
                         _blockWindowsKey = true;
                         break;
-                    case KeyboardIpcMessageType.DontBlockWindowsKey:
+                    case AdminHelperMessageType.DontBlockWindowsKey:
                         _blockWindowsKey = false;
+                        break;
+
+                    case AdminHelperMessageType.RegisterScheduledTask:
+                        using (WindowsIdentity currentIdentity = WindowsIdentity.GetCurrent())
+                        {
+                            if (currentIdentity.User == _clientSid)
+                                AdminHelperTask.TryRegister(_clientSid);
+                        }
+                        break;
+                    case AdminHelperMessageType.UnregisterScheduledTask:
+                        AdminHelperTask.TryDelete(_clientSid);
                         break;
                 }
             }
@@ -122,9 +136,9 @@ public sealed class KeyboardIpcServer : IDisposable
         ProcessHelper.AllowSetForegroundWindow(_clientProcessId);
 
         int requestId = Interlocked.Increment(ref _nextRequestId);
-        EnqueueMessage(new KeyboardIpcMessage
+        EnqueueMessage(new AdminHelperMessage
         {
-            Type = KeyboardIpcMessageType.HotkeyTriggered,
+            Type = AdminHelperMessageType.HotkeyTriggered,
             RequestId = requestId,
             MainKey = (int)hotkey.MainKey,
             Modifiers = (int)hotkey.Modifiers
@@ -134,9 +148,9 @@ public sealed class KeyboardIpcServer : IDisposable
         return isWindowsKey;
     }
 
-    private void EnqueueMessage(KeyboardIpcMessage message)
+    private void EnqueueMessage(AdminHelperMessage message)
     {
-        string json = KeyboardIpcProtocol.Serialize(message);
+        string json = AdminHelperProtocol.Serialize(message);
         _outboundChannel.Writer.TryWrite(json);
     }
 

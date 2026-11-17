@@ -21,6 +21,7 @@ using iNKORE.UI.WPF.Modern.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Win32;
 #if DEBUG
 using ZLogger;
 #endif
@@ -29,6 +30,9 @@ namespace Flow.Launcher.App;
 
 public partial class App : Application
 {
+    private const string StartupRegistryKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Run";
+    private const string StartupRegistryValueName = "Flow Launcher";
+
     private static Process? _adminHelperProcess;
     private IHost? _host;
     private readonly ISettingsAPI _settings;
@@ -82,7 +86,7 @@ public partial class App : Application
             // Start the admin helper so we can connect to it
             try
             {
-                StartAdminHelper();
+                StartAdminHelper(settings.StartOnSystemStartup);
             }
             catch (Exception e)
             {
@@ -131,17 +135,22 @@ public partial class App : Application
         }
     }
 
-    private static void StartAdminHelper()
+    private static void StartAdminHelper(bool startOnSystemStartup)
     {
         string helperPath = AdminHelper.IPC.Const.AdminHelperExecutable;
         if (!File.Exists(helperPath))
             throw new FileNotFoundException("AdminHelper was not found next to Flow Launcher", helperPath);
 
         using WindowsIdentity identity = WindowsIdentity.GetCurrent();
-        string userSid = identity.User?.Value
+        SecurityIdentifier userSid = identity.User
             ?? throw new InvalidOperationException("Flow Launcher has no user SID");
-        using Process currentProcess = Process.GetCurrentProcess();
 
+        // If possible, try start AdminHelper through a scheduled task so it can run elevated without UAC prompt
+        if (startOnSystemStartup && AdminHelperTask.TryStart(userSid, helperPath))
+            return;
+
+        // Fallback to starting AdminHelper directly with UAC prompt
+        using Process currentProcess = Process.GetCurrentProcess();
         ProcessStartInfo startInfo = new()
         {
             FileName = helperPath,
@@ -150,9 +159,13 @@ public partial class App : Application
             WindowStyle = ProcessWindowStyle.Hidden
         };
         startInfo.ArgumentList.Add("--client-sid");
-        startInfo.ArgumentList.Add(userSid);
+        startInfo.ArgumentList.Add(userSid.Value);
         startInfo.ArgumentList.Add("--session-id");
         startInfo.ArgumentList.Add(currentProcess.SessionId.ToString());
+        if (startOnSystemStartup)
+            startInfo.ArgumentList.Add("--register-task");
+        else if (AdminHelperTask.IsRegisteredAndValid(userSid, helperPath))
+            startInfo.ArgumentList.Add("--unregister-task");
 
         _adminHelperProcess = Process.Start(startInfo)
             ?? throw new InvalidOperationException("Failed to launch AdminHelper");
@@ -221,6 +234,7 @@ public partial class App : Application
                 .AddTransient(typeof(PluginSDK.Logging.Logger<>))
                 .AddSingleton<IPublicAPI, PublicAPIInstance>()
                 .AddSingleton(settings)
+                .AddSingleton<AdminHelperClient>()
                 .AddSingleton<HotkeyManager>()
                 .AddSingleton<IImageLoader, ImageLoader>()
                 .AddSingleton<PluginManager>()
@@ -291,6 +305,17 @@ public partial class App : Application
         _logger!.LogInfo($"Begin Flow Launcher startup ----------------------------------------------------");
         _logger.LogInfo($"Runtime info:{RuntimeInfo}");
 
+        // Sync startup run registry entry and react to setting changes
+        SyncStartupRegistration(isInitialStartup: true);
+        _settings.PropertyChanged += (_, args) =>
+        {
+            if (args.PropertyName == nameof(ISettingsAPI.StartOnSystemStartup))
+            {
+                SyncStartupRegistration(isInitialStartup: false);
+                _settings.Save();
+            }
+        };
+
         // Initialize MainWindow and HotkeyManager
         Ioc.Default.GetRequiredService<MainWindow>();
         Ioc.Default.GetRequiredService<HotkeyManager>();
@@ -318,6 +343,52 @@ public partial class App : Application
         IPublicAPI.Instance.SaveAppAllSettings();
 
         _logger.LogInfo($"End plugin initialization ------------------------------------------------------");
+    }
+
+    /// <summary>
+    /// Synchronizes the startup registry entry and AdminHelper scheduled task with the user's startup setting.
+    /// </summary>
+    private void SyncStartupRegistration(bool isInitialStartup)
+    {
+        try
+        {
+            string? processPath = Environment.ProcessPath;
+            if (!string.IsNullOrEmpty(processPath))
+            {
+                string expectedValue = $"\"{processPath}\"";
+                using RegistryKey? key = Registry.CurrentUser.OpenSubKey(StartupRegistryKeyPath, writable: true);
+                if (key is not null)
+                {
+                    if (_settings.StartOnSystemStartup)
+                    {
+                        if (!string.Equals(
+                            key.GetValue(StartupRegistryValueName) as string,
+                            expectedValue,
+                            StringComparison.OrdinalIgnoreCase))
+                        {
+                            key.SetValue(StartupRegistryValueName, expectedValue, RegistryValueKind.String);
+                        }
+                    }
+                    else if (!isInitialStartup
+                        || string.Equals(
+                            key.GetValue(StartupRegistryValueName) as string,
+                            expectedValue,
+                            StringComparison.OrdinalIgnoreCase))
+                    {
+                        key.DeleteValue(StartupRegistryValueName, throwOnMissingValue: false);
+                    }
+                }
+            }
+
+            if (!isInitialStartup)
+            {
+                Ioc.Default.GetRequiredService<AdminHelperClient>().SetScheduledTask(_settings.StartOnSystemStartup);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, $"Failed to synchronize startup registration");
+        }
     }
 
     private void SetupErrorHandling()

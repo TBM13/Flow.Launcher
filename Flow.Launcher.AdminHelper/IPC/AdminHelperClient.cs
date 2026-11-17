@@ -7,7 +7,7 @@ using Flow.Launcher.PluginSDK.Hotkeys;
 
 namespace Flow.Launcher.AdminHelper.IPC;
 
-public sealed class KeyboardIpcClient : IDisposable
+public sealed class AdminHelperClient : IDisposable
 {
     private readonly ConcurrentDictionary<int, TaskCompletionSource<PressedKeys>> _pendingPressedKeys = new();
     private readonly Lock _writeLock = new();
@@ -32,7 +32,7 @@ public sealed class KeyboardIpcClient : IDisposable
             throw new InvalidOperationException("Already initialized");
 
         NamedPipeClientStream pipe = new(
-            ".", KeyboardIpcProtocol.GetCurrentUserPipeName(), PipeDirection.InOut, PipeOptions.Asynchronous);
+            ".", AdminHelperProtocol.GetCurrentUserPipeName(), PipeDirection.InOut, PipeOptions.Asynchronous);
         try
         {
             await pipe.ConnectAsync(TimeSpan.FromSeconds(7), cancellationToken);
@@ -56,10 +56,10 @@ public sealed class KeyboardIpcClient : IDisposable
         {
             while (await _reader!.ReadLineAsync(_cancellationTokenSource.Token).ConfigureAwait(false) is { } line)
             {
-                KeyboardIpcMessage? message;
+                AdminHelperMessage? message;
                 try
                 {
-                    message = KeyboardIpcProtocol.Deserialize(line);
+                    message = AdminHelperProtocol.Deserialize(line);
                 }
                 catch (JsonException)
                 {
@@ -71,18 +71,18 @@ public sealed class KeyboardIpcClient : IDisposable
 
                 switch (message.Type)
                 {
-                    case KeyboardIpcMessageType.HotkeyTriggered:
+                    case AdminHelperMessageType.HotkeyTriggered:
                         Hotkey hotkey = new((Key)message.MainKey, (ModifierKeys)message.Modifiers);
                         OnHotkeyTriggered?.Invoke(hotkey);
                         break;
 
-                    case KeyboardIpcMessageType.PressedKeysResult:
+                    case AdminHelperMessageType.PressedKeysResult:
                         if (_pendingPressedKeys.TryRemove(message.RequestId, out TaskCompletionSource<PressedKeys>? result))
                         {
                             PressedKeys pressedKeys;
                             try
                             {
-                                pressedKeys = KeyboardIpcProtocol.GetPressedKeys(message);
+                                pressedKeys = AdminHelperProtocol.GetPressedKeys(message);
                             }
                             catch (InvalidDataException ex)
                             {
@@ -123,9 +123,9 @@ public sealed class KeyboardIpcClient : IDisposable
 
         try
         {
-            SendMessage(new KeyboardIpcMessage
+            SendMessage(new AdminHelperMessage
             {
-                Type = KeyboardIpcMessageType.GetPressedKeys,
+                Type = AdminHelperMessageType.GetPressedKeys,
                 RequestId = requestId
             });
 
@@ -148,15 +148,30 @@ public sealed class KeyboardIpcClient : IDisposable
         if (!_initialized)
             throw new InvalidOperationException("Not initialized");
 
-        SendMessage(new KeyboardIpcMessage
+        SendMessage(new AdminHelperMessage
         {
-            Type = block ? KeyboardIpcMessageType.BlockWindowsKey : KeyboardIpcMessageType.DontBlockWindowsKey
+            Type = block ? AdminHelperMessageType.BlockWindowsKey : AdminHelperMessageType.DontBlockWindowsKey
         });
     }
 
-    private void SendMessage(KeyboardIpcMessage message)
+    /// <summary>
+    /// Registers or unregisters the AdminHelper scheduled task.
+    /// </summary>
+    public void SetScheduledTask(bool enabled)
     {
-        string json = KeyboardIpcProtocol.Serialize(message);
+        ObjectDisposedException.ThrowIf(_isDisposed, this);
+        if (!_initialized)
+            throw new InvalidOperationException("Not initialized");
+
+        SendMessage(new AdminHelperMessage
+        {
+            Type = enabled ? AdminHelperMessageType.RegisterScheduledTask : AdminHelperMessageType.UnregisterScheduledTask
+        });
+    }
+
+    private void SendMessage(AdminHelperMessage message)
+    {
+        string json = AdminHelperProtocol.Serialize(message);
         lock (_writeLock)
         {
             ObjectDisposedException.ThrowIf(_isDisposed, this);

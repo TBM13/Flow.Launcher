@@ -17,7 +17,18 @@
             FontSize="30"
             Text="General" />
 
-        <ui:SettingsCard Description="Flow Launcher search window is hidden in the tray after starting up." Header="Hide Flow Launcher on startup">
+        <ui:SettingsCard Description="Automatically launch Flow Launcher when Windows starts." Header="Start Flow Launcher on system startup">
+            <ui:SettingsCard.HeaderIcon>
+                <ui:FontIcon Glyph="&#xe7e8;" />
+            </ui:SettingsCard.HeaderIcon>
+
+            <ui:ToggleSwitch IsOn="{Binding Settings.StartOnSystemStartup}" />
+        </ui:SettingsCard>
+
+        <ui:SettingsCard
+            Margin="0 4 0 0"
+            Description="Flow Launcher search window is hidden in the tray after starting up."
+            Header="Hide Flow Launcher on startup">
             <ui:SettingsCard.HeaderIcon>
                 <ui:FontIcon Glyph="&#xed1a;" />
             </ui:SettingsCard.HeaderIcon>

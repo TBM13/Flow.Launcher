@@ -18,6 +18,9 @@ internal partial class Settings : ObservableObject, ISettingsAPI
 
     #region General
     [ObservableProperty]
+    public partial bool StartOnSystemStartup { get; set; } = false;
+
+    [ObservableProperty]
     public partial bool ShowTaskbarWhenOpened { get; set; } = false;
 
     #region Display
