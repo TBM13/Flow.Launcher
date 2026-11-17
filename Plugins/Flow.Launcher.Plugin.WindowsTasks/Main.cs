@@ -1,4 +1,7 @@
-﻿using System.Globalization;
+﻿using System.ComponentModel;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Text;
 using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.Plugins;
@@ -29,11 +32,11 @@ public class Main : IPlugin, IContextMenu
     public static readonly string PLUGIN_ICON = PluginMetadataDefinition.Metadata.IcoPath;
     public const string TASK_DISABLED_ICON = "Images\\Plugin.WindowsTasks.TaskDisabled.png";
 
-    internal static PluginInitContext Context { get; private set; } = null!;
+    private PluginInitContext _context = null!;
 
     public void Init(PluginInitContext context)
     {
-        Context = context;
+        _context = context;
     }
 
     public List<Result>? Query(Query query)
@@ -111,11 +114,7 @@ public class Main : IPlugin, IContextMenu
                 {
                     Title = "Disable",
                     IconOrGlyph = "\xEB4A",
-                    Action = c =>
-                    {
-                        task.Enabled = false;
-                        return true;
-                    }
+                    Action = c => SetTaskEnabled(task.Path, enabled: false)
                 });
             }
             else
@@ -124,11 +123,7 @@ public class Main : IPlugin, IContextMenu
                 {
                     Title = "Enable",
                     IconOrGlyph = "\xEB49",
-                    Action = c =>
-                    {
-                        task.Enabled = true;
-                        return true;
-                    }
+                    Action = c => SetTaskEnabled(task.Path, enabled: true)
                 });
             }
         }
@@ -166,6 +161,53 @@ public class Main : IPlugin, IContextMenu
             CopyText = task.Path,
             AddSelectedCount = addSelectedCount
         };
+    }
+
+    private bool SetTaskEnabled(string taskPath, bool enabled)
+    {
+        string actionName = enabled ? "enable" : "disable";
+        ProcessStartInfo startInfo = new()
+        {
+            FileName = Path.Combine(Environment.SystemDirectory, "schtasks.exe"),
+            UseShellExecute = true,
+            Verb = "runas",
+            WindowStyle = ProcessWindowStyle.Hidden
+        };
+        startInfo.ArgumentList.Add("/Change");
+        startInfo.ArgumentList.Add("/TN");
+        startInfo.ArgumentList.Add(taskPath);
+        startInfo.ArgumentList.Add(enabled ? "/Enable" : "/Disable");
+
+        try
+        {
+            using Process? process = Process.Start(startInfo);
+            if (process is null)
+            {
+                _context.API.ShowMsgError($"Failed to {actionName} task", "Failed to start schtasks process.");
+                return false;
+            }
+
+            process.WaitForExit();
+            if (process.ExitCode != 0)
+            {
+                _context.Logger.LogError($"schtasks exited with code {process.ExitCode} while trying to {actionName} task '{taskPath}'");
+                _context.API.ShowMsgError($"Failed to {actionName} task", $"schtasks returned exit code {process.ExitCode}.");
+                return false;
+            }
+        }
+        catch (Win32Exception ex)
+        {
+            // User cancelled the UAC prompt (ERROR_CANCELLED = 1223)
+            if (ex.NativeErrorCode == 1223)
+                return false;
+
+            _context.Logger.LogError(ex, $"Failed to {actionName} task '{taskPath}'");
+            _context.API.ShowMsgError($"Failed to {actionName} task", ex.Message);
+            return false;
+        }
+
+        _context.API.ReQuery();
+        return true;
     }
 
     private static string GetLocalizedSubtitle(Task task)
