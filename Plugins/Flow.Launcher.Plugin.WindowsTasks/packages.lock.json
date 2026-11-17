@@ -8,33 +8,10 @@
         "resolved": "2.12.2",
         "contentHash": "glpAb3VrwfdAofp6PIyAzL0ZeTV7XUJ8muu0oZoTeyU5jtk2sMJ6QAMRRuFbovcaj+SBJiEUGklxIWOqQoxshA=="
       },
-      "TaskSchedulerEditor": {
-        "type": "Direct",
-        "requested": "[2.12.2, )",
-        "resolved": "2.12.2",
-        "contentHash": "77XclLGsJwhd7FoGgu2SAEgYXYxR0DkrCshpxKI9bnUBGLYognTn9C12QPMeQxh9UIpKUE6PBj2LxzBkrOtoLw==",
-        "dependencies": {
-          "AeroWizard": "2.3.1",
-          "GroupControls": "1.9.0",
-          "TaskScheduler": "2.12.2",
-          "TimeSpan2": "2.4.3",
-          "Tulpep.ActiveDirectoryObjectPicker": "3.0.11"
-        }
-      },
-      "AeroWizard": {
-        "type": "Transitive",
-        "resolved": "2.3.1",
-        "contentHash": "z0UBaPIvYdJPzEzk08tmUBWIfgnB2ehQXolqH7OmGl5UR3qCe06uGPuIo666Pamomzmqmh32CZSBbkpNE3DvUQ=="
-      },
       "CommunityToolkit.Mvvm": {
         "type": "Transitive",
         "resolved": "8.4.2",
         "contentHash": "WadCzGEc2U+3e20avRLng4qNtt4zoOGWrdUISqJWrHe3/FSnrYjuM5Sb4yQb09LhkBXrrI4Zt3dLKgRMbItsrg=="
-      },
-      "GroupControls": {
-        "type": "Transitive",
-        "resolved": "1.9.0",
-        "contentHash": "8a8+Vlh0d3lTIvTtYQxS1gy4/gkOnAXW8s93qt08Z1k0mXF+hDatOsfgtxiyhR7JG9xmtZUy2r7M8rrEZf0imA=="
       },
       "MemoryPack": {
         "type": "Transitive",
@@ -72,24 +49,6 @@
         "type": "Transitive",
         "resolved": "8.0.0",
         "contentHash": "ne1843evDugl0md7Fjzy6QjJrzsjh46ZKbhf8GwBXb5f/gw97J4bxMs0NQKifDuThh/f0bZ0e62NPl1jzTuRqA=="
-      },
-      "TimeSpan2": {
-        "type": "Transitive",
-        "resolved": "2.4.3",
-        "contentHash": "KRcICqE77lSHi77oXptKhGiiQDzMyferaE7DPvFl4nlwvFhTml9tOisO/cG/912nmGIPJcaHQQKtfzas2nkOwg==",
-        "dependencies": {
-          "TimeSpan2.Core": "2.4.3"
-        }
-      },
-      "TimeSpan2.Core": {
-        "type": "Transitive",
-        "resolved": "2.4.3",
-        "contentHash": "CZKek+7SErrApgIbjW5nnB5Y5uznEoc9Z/DJRg9z3mPKh2GcxWyAjdLunol5m2Af0h+gJRt5rTS3VF1Z9NKpfw=="
-      },
-      "Tulpep.ActiveDirectoryObjectPicker": {
-        "type": "Transitive",
-        "resolved": "3.0.11",
-        "contentHash": "Y4/Og+3Q2cdUOSOX0IO3krRXrq6DzYy9m56CpqutJ7TK8NWgwDKscINesbOxzcJlWr6VCmDzV/DkDu6NAdwJvA=="
       },
       "Utf8StringInterpolation": {
         "type": "Transitive",

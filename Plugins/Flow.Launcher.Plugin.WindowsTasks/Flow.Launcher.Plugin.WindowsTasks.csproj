@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <PackageReference Include="TaskScheduler" Version="2.12.2" />
-    <PackageReference Include="TaskSchedulerEditor" Version="2.12.2" />
   </ItemGroup>
 
   <ItemGroup>

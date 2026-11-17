@@ -164,23 +164,7 @@ public class Main : IPlugin, IContextMenu
             IconOrGlyph = task.Enabled ? PLUGIN_ICON : TASK_DISABLED_ICON,
             ContextData = task,
             CopyText = task.Path,
-            AddSelectedCount = addSelectedCount,
-            Action = c =>
-            {
-                Thread staThread = new Thread(() =>
-                {
-                    // Re-fetch task since we are on a different thread
-                    Task refetchedTask = TaskService.Instance.GetTask(task.Path);
-
-                    using TaskEditDialog dialog = new TaskEditDialog(refetchedTask);
-                    dialog.ShowDialog();
-                });
-
-                // TaskEditDialog needs to be run in STA
-                staThread.SetApartmentState(ApartmentState.STA);
-                staThread.Start();
-                return true;
-            }
+            AddSelectedCount = addSelectedCount
         };
     }
 
