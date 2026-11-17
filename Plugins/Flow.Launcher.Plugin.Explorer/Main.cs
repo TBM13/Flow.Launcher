@@ -33,7 +33,6 @@ public class Main : ISettingProvider, IAsyncPlugin, IContextMenu, IMagicQueryPro
     internal static Settings Settings { get; private set; } = null!;
 
     private SettingsViewModel _viewModel = null!;
-    private ContextMenu _contextMenu = null!;
     private SearchManager _searchManager = null!;
 
     public Control CreateSettingPanel()
@@ -47,7 +46,6 @@ public class Main : ISettingProvider, IAsyncPlugin, IContextMenu, IMagicQueryPro
         Settings = context.API.LoadSettingJsonStorage<Settings>();
 
         _viewModel = new SettingsViewModel(context, Settings);
-        _contextMenu = new ContextMenu(Context, Settings);
         _searchManager = new SearchManager(Settings, Context);
 
         return Task.CompletedTask;
@@ -55,7 +53,15 @@ public class Main : ISettingProvider, IAsyncPlugin, IContextMenu, IMagicQueryPro
 
     public List<Result>? LoadContextMenus(Result selectedResult, ActionContext context)
     {
-        return _contextMenu.LoadContextMenus(selectedResult);
+        // Show explorer's native context menu
+        if (selectedResult.ContextData is SearchResult record)
+        {
+            ResultManager.ShowNativeContextMenu(
+                record.FullPath, record.Type, context.ResultPosition,
+                showExtendedmenu: context.PressedKeys.ShiftPressed);
+        }
+
+        return null;
     }
 
     public async Task<List<Result>?> QueryAsync(Query query, CancellationToken token)
