@@ -16,6 +16,7 @@ using Flow.Launcher.Interop.Shell;
 using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Plugins;
+using Flow.Launcher.PluginSDK.Plugins.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace Flow.Launcher.ViewModel;
@@ -190,14 +191,23 @@ public partial class MainViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
-    private void LoadContextMenu()
+    private async Task LoadContextMenuAsync()
     {
         if (!ContextMenuSelected)
         {
             // When switch to ContextMenu from QueryResults, but no item being chosen or it has no context menu, should do nothing
             // i.e. Shift+Enter/Ctrl+O right after Alt + Space, or Right arrow on a result without context menu, should do nothing
-            var results = GetContextMenusForSelectedResult();
-            if (results.Count == 0)
+            var selected = _results.SelectedItem;
+            if (selected?.PluginID is null
+                || _pluginManager.GetPluginForId(selected.PluginID)?.Plugin is not IContextMenu)
+                return;
+
+            var context = await CreateActionContextAsync(selected);
+            if (ContextMenuSelected || _results.SelectedItem != selected)
+                return;
+
+            var results = _pluginManager.GetContextMenusForPlugin(selected.PluginID, selected.Result, context);
+            if (results is null || results.Count == 0)
                 return;
 
             _contextMenuItems = results;
@@ -261,22 +271,28 @@ public partial class MainViewModel : ObservableObject, IDisposable
             return;
 
         var result = selectedItem.Result;
-        var positionFunc = selectedItem.GetScreenCenterPoint
-            ?? throw new NullReferenceException(nameof(selectedItem.GetScreenCenterPoint));
-        var position = positionFunc();
-
-        var hideWindow = await result.ExecuteAsync(new ActionContext
-        {
-            // not null means pressing modifier key + number, should ignore the modifier key
-            PressedKeys = await _hotkeyManager.GetPressedKeysAsync().ConfigureAwait(false),
-            ResultPosition = position ?? throw new Exception("Failed to get result position")
-        }).ConfigureAwait(false);
+        var context = await CreateActionContextAsync(selectedItem).ConfigureAwait(false);
+        var hideWindow = await result.ExecuteAsync(context).ConfigureAwait(false);
 
         if (hideWindow)
             Hide();
 
         // Record user selected result for result ranking
         _userSelectedRecord.Add(result, _lastQuery);
+    }
+
+    private async Task<ActionContext> CreateActionContextAsync(ResultViewModel selectedItem)
+    {
+        var positionFunc = selectedItem.GetScreenCenterPoint
+            ?? throw new NullReferenceException(nameof(selectedItem.GetScreenCenterPoint));
+        var position = positionFunc() ?? throw new Exception("Failed to get result position");
+
+        return new ActionContext
+        {
+            // not null means pressing modifier key + number, should ignore the modifier key
+            PressedKeys = await _hotkeyManager.GetPressedKeysAsync(),
+            ResultPosition = position
+        };
     }
 
     private static List<Result> DeepCloneResults(IReadOnlyList<Result> results, CancellationToken token = default)
@@ -645,27 +661,17 @@ public partial class MainViewModel : ObservableObject, IDisposable
             QueryContextMenu();
     }
 
-    private List<Result> GetContextMenusForSelectedResult()
-    {
-        var selected = _results.SelectedItem;
-        if (selected?.PluginID is null) // Null when selection is empty or item is from history in home page.
-            return [];
-
-        return _pluginManager.GetContextMenusForPlugin(selected.PluginID, selected.Result) ?? [];
-    }
-
     private void QueryContextMenu()
     {
         var query = QueryText.ToLower().Trim();
         _contextMenu.Clear();
 
-        var results = _contextMenuItems ?? GetContextMenusForSelectedResult();
-        if (results.Count == 0)
+        if (_contextMenuItems is null || _contextMenuItems.Count == 0)
             return;
 
         if (!string.IsNullOrEmpty(query))
         {
-            var filtered = results.Select(x => x with { }).Where
+            var filtered = _contextMenuItems.Select(x => x with { }).Where
             (
                 r =>
                 {
@@ -680,7 +686,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         }
         else
         {
-            _contextMenu.AddResults(results);
+            _contextMenu.AddResults(_contextMenuItems);
         }
     }
 

@@ -124,7 +124,7 @@ public class Main : IPlugin, IContextMenu, ISettingProvider
         return results;
     }
 
-    public List<Result>? LoadContextMenus(Result result)
+    public List<Result>? LoadContextMenus(Result result, ActionContext ctx)
     {
         string processPath = (string)result.ContextData!;
 

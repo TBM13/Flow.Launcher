@@ -100,7 +100,7 @@ public class Main : IPlugin, IContextMenu
         return [.. matchedFolders, .. matchedTasks];
     }
 
-    public List<Result> LoadContextMenus(Result result)
+    public List<Result> LoadContextMenus(Result result, ActionContext ctx)
     {
         List<Result> res = [];
         if (result.ContextData is Task task)

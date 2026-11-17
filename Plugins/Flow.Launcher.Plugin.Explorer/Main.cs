@@ -53,7 +53,7 @@ public class Main : ISettingProvider, IAsyncPlugin, IContextMenu, IMagicQueryPro
         return Task.CompletedTask;
     }
 
-    public List<Result> LoadContextMenus(Result selectedResult)
+    public List<Result>? LoadContextMenus(Result selectedResult, ActionContext context)
     {
         return _contextMenu.LoadContextMenus(selectedResult);
     }

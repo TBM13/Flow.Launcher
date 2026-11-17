@@ -248,7 +248,7 @@ public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger) : IAs
         return plugin;
     }
 
-    public List<Result>? GetContextMenusForPlugin(string pluginId, Result result)
+    public List<Result>? GetContextMenusForPlugin(string pluginId, Result result, ActionContext context)
     {
         if (!_allInitializedPlugins.TryGetValue(pluginId, out var entry)
             || entry.Metadata.Plugin is not IContextMenu plugin)
@@ -260,7 +260,7 @@ public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger) : IAs
 
         try
         {
-            List<Result>? results = plugin.LoadContextMenus(result);
+            List<Result>? results = plugin.LoadContextMenus(result, context);
             if (results is null)
                 return null;
 

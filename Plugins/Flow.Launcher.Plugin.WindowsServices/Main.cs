@@ -96,7 +96,7 @@ public class Main : IPlugin, IContextMenu
         return true;
     }
 
-    public List<Result> LoadContextMenus(Result result)
+    public List<Result> LoadContextMenus(Result result, ActionContext ctx)
     {
         if (result.ContextData is not ServiceResult service)
             throw new InvalidOperationException("Unexpected context data type");

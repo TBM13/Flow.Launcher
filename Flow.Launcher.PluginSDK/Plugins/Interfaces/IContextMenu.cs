@@ -6,10 +6,7 @@
 public interface IContextMenu
 {
     /// <summary>
-    /// Load context menu items for the given result.
+    /// Gets the context menu items for the given result.
     /// </summary>
-    /// <param name="selectedResult">
-    /// The <see cref="Result"/> for which the user has activated the context menu.
-    /// </param>
-    List<Result>? LoadContextMenus(Result selectedResult);
+    List<Result>? LoadContextMenus(Result selectedResult, ActionContext context);
 }

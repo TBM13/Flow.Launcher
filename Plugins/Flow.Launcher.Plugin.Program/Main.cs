@@ -439,7 +439,7 @@ namespace Flow.Launcher.Plugin.Program
             return new ProgramSetting(Context, _settings);
         }
 
-        public List<Result> LoadContextMenus(Result selectedResult)
+        public List<Result> LoadContextMenus(Result selectedResult, ActionContext ctx)
         {
             var menuOptions = new List<Result>();
             var program = selectedResult.ContextData as IProgram;
