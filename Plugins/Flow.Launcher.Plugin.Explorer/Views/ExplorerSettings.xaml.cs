@@ -10,9 +10,4 @@ public partial class ExplorerSettings
         InitializeComponent();
         DataContext = viewModel;
     }
-
-    private void AllowOnlyNumericInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
-    {
-        e.Handled = e.Text.ToCharArray().Any(c => !char.IsDigit(c));
-    }
 }

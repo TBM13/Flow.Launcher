@@ -12,71 +12,29 @@
     mc:Ignorable="d">
 
     <StackPanel>
-        <!--  General Settings Expander  -->
-        <ui:SettingsExpander Header="General Settings" IsExpanded="False">
-            <ui:SettingsExpander.Items>
-                <ui:SettingsCard Header="Use search result's location as the working directory of the executable">
-                    <CheckBox IsChecked="{Binding Settings.UseLocationAsWorkingDir, Mode=TwoWay}" />
-                </ui:SettingsCard>
+        <ui:SettingsCard Header="Use search result's location as the working directory of the executable">
+            <CheckBox IsChecked="{Binding Settings.UseLocationAsWorkingDir, Mode=TwoWay}" />
+        </ui:SettingsCard>
 
-                <ui:SettingsCard Header="Shell Path">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBox
-                            Width="240"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Center"
-                            Text="{Binding Settings.ShellPath, UpdateSourceTrigger=PropertyChanged}"
-                            TextWrapping="NoWrap" />
-                        <Button
-                            Margin="5 0 0 0"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Center"
-                            Command="{Binding OpenShellPathCommand}"
-                            Content="Select" />
-                    </StackPanel>
-                </ui:SettingsCard>
+        <ui:SettingsCard Header="Display File Info">
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                <CheckBox Content="Size" IsChecked="{Binding Settings.ShowFileSizeInPreviewPanel, Mode=TwoWay}" />
+                <CheckBox Content="Date Created" IsChecked="{Binding Settings.ShowCreatedDateInPreviewPanel, Mode=TwoWay}" />
+                <CheckBox Content="Date Modified" IsChecked="{Binding Settings.ShowModifiedDateInPreviewPanel, Mode=TwoWay}" />
+                <CheckBox Content="File Age" IsChecked="{Binding Settings.ShowFileAgeInPreviewPanel, Mode=TwoWay}" />
+            </StackPanel>
+        </ui:SettingsCard>
 
-                <ui:SettingsCard Header="Excluded File Types (comma separated)">
-                    <TextBox
-                        MinWidth="180"
-                        Text="{Binding Settings.ExcludedFileTypes, UpdateSourceTrigger=PropertyChanged}"
-                        ToolTip="Example: exe,jpg,png" />
-                </ui:SettingsCard>
-
-                <ui:SettingsCard Header="Maximum number of results">
-                    <TextBox
-                        MinWidth="180"
-                        MaxLength="6"
-                        PreviewTextInput="AllowOnlyNumericInput"
-                        Text="{Binding Settings.MaxResult, UpdateSourceTrigger=PropertyChanged}" />
-                </ui:SettingsCard>
-            </ui:SettingsExpander.Items>
-        </ui:SettingsExpander>
-
-        <!--  Preview Panel Settings Expander  -->
-        <ui:SettingsExpander Header="Preview Panel" IsExpanded="False">
-            <ui:SettingsExpander.Items>
-                <ui:SettingsCard Header="Display File Info">
-                    <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                        <CheckBox Content="Size" IsChecked="{Binding Settings.ShowFileSizeInPreviewPanel, Mode=TwoWay}" />
-                        <CheckBox Content="Date Created" IsChecked="{Binding Settings.ShowCreatedDateInPreviewPanel, Mode=TwoWay}" />
-                        <CheckBox Content="Date Modified" IsChecked="{Binding Settings.ShowModifiedDateInPreviewPanel, Mode=TwoWay}" />
-                        <CheckBox Content="File Age" IsChecked="{Binding Settings.ShowFileAgeInPreviewPanel, Mode=TwoWay}" />
-                    </StackPanel>
-                </ui:SettingsCard>
-
-                <ui:SettingsCard
-                    Header="Date and time format"
-                    IsEnabled="{Binding ShowPreviewPanelDateTimeChoices}"
-                    Visibility="{Binding PreviewPanelDateTimeChoicesVisibility}">
-                    <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                        <ComboBox ItemsSource="{Binding DateFormatList}" SelectedItem="{Binding Settings.PreviewPanelDateFormat}" />
-                        <TextBlock VerticalAlignment="Center" Text="{Binding PreviewPanelDateFormatDemo}" />
-                        <ComboBox ItemsSource="{Binding TimeFormatList}" SelectedItem="{Binding Settings.PreviewPanelTimeFormat}" />
-                        <TextBlock VerticalAlignment="Center" Text="{Binding PreviewPanelTimeFormatDemo}" />
-                    </StackPanel>
-                </ui:SettingsCard>
-            </ui:SettingsExpander.Items>
-        </ui:SettingsExpander>
+        <ui:SettingsCard
+            Header="Date and time format"
+            IsEnabled="{Binding ShowPreviewPanelDateTimeChoices}"
+            Visibility="{Binding PreviewPanelDateTimeChoicesVisibility}">
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                <ComboBox ItemsSource="{Binding DateFormatList}" SelectedItem="{Binding Settings.PreviewPanelDateFormat}" />
+                <TextBlock VerticalAlignment="Center" Text="{Binding PreviewPanelDateFormatDemo}" />
+                <ComboBox ItemsSource="{Binding TimeFormatList}" SelectedItem="{Binding Settings.PreviewPanelTimeFormat}" />
+                <TextBlock VerticalAlignment="Center" Text="{Binding PreviewPanelTimeFormatDemo}" />
+            </StackPanel>
+        </ui:SettingsCard>
     </StackPanel>
 </UserControl>

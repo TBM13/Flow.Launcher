@@ -1,11 +1,7 @@
 ﻿using System.Globalization;
-using System.IO;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using Flow.Launcher.Plugin.Explorer.Search;
 using Flow.Launcher.PluginSDK.Plugins;
-using Microsoft.Win32;
 
 namespace Flow.Launcher.Plugin.Explorer.ViewModels;
 
@@ -108,44 +104,4 @@ public partial class SettingsViewModel : ObservableObject
         "yyyy-MMM-dd, dddd",
     ];
     #endregion
-
-    private static string? PromptUserSelectPath(ResultType type, string? initialDirectory = null)
-    {
-        string? path = null;
-
-        if (type is ResultType.Folder)
-        {
-            var folderBrowserDialog = new OpenFolderDialog();
-
-            if (initialDirectory is not null)
-                folderBrowserDialog.InitialDirectory = initialDirectory;
-
-            if (folderBrowserDialog.ShowDialog() != true)
-                return path;
-
-            path = folderBrowserDialog.FolderName;
-        }
-        else if (type is ResultType.File)
-        {
-            var openFileDialog = new OpenFileDialog();
-            if (initialDirectory is not null)
-                openFileDialog.InitialDirectory = initialDirectory;
-
-            if (openFileDialog.ShowDialog() != true)
-                return path;
-
-            path = openFileDialog.FileName;
-        }
-        return path;
-    }
-
-    [RelayCommand]
-    private void OpenShellPath()
-    {
-        var path = PromptUserSelectPath(ResultType.File, Settings.ShellPath != null ? Path.GetDirectoryName(Settings.ShellPath) : null);
-        if (path is null)
-            return;
-
-        Settings.ShellPath = path;
-    }
 }
