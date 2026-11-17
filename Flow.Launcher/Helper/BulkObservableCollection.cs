@@ -22,26 +22,21 @@ public class BulkObservableCollection<T> : ObservableCollection<T>
     {
         CheckReentrancy();
 
+        // Materialize before clearing Items so deferred queries referencing this collection don't read an empty list
+        ICollection<T> materialized = newItems as ICollection<T> ?? [.. newItems];
+        if (ReferenceEquals(materialized, this) || ReferenceEquals(materialized, Items))
+            materialized = [.. materialized];
+
         if (Items is List<T> list)
         {
             list.Clear();
 
             // If the amount of new items is low and the list has a large capacity,
             // trim the excess to avoid memory bloat
-            bool trimmedExcess = false;
-            if (newItems.TryGetNonEnumeratedCount(out int newCount))
-            {
-                if (list.Capacity > 4000 && newCount < 1000)
-                    list.Capacity = newCount;
+            if (list.Capacity > 4000 && materialized.Count < 1000)
+                list.Capacity = materialized.Count;
 
-                trimmedExcess = true;
-            }
-
-            list.AddRange(newItems);
-
-            // If we failed to trim the excess capacity earlier, do it now
-            if (!trimmedExcess && list.Capacity > 4000 && list.Count < 1000)
-                list.TrimExcess();
+            list.AddRange(materialized);
         }
         else
             throw new InvalidOperationException("Expected Items to be of type List<T>");

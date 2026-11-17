@@ -682,17 +682,22 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     private async Task QueryResultsAsync(bool isReQuery = false, bool reSelect = true)
     {
-        if (_updateSource is not null)
-            await _updateSource.CancelAsync();
+        var previousUpdateSource = _updateSource;
+        var currentUpdateSource = new CancellationTokenSource();
+        _updateSource = currentUpdateSource;
+        var currentCancellationToken = currentUpdateSource.Token;
+
+        if (previousUpdateSource is not null)
+        {
+            await previousUpdateSource.CancelAsync();
+            previousUpdateSource.Dispose();
+        }
+
+        if (currentCancellationToken.IsCancellationRequested)
+            return;
 
         Query query = QueryBuilder.Build(QueryText, isReQuery, _pluginManager.GetNonGlobalPlugins());
         _logger.LogDebug($"Start query with text: <{QueryText}> & ActionKeyword <{query.ActionKeyword}> and query <{query.OriginalQuery}>");
-
-        _updateSource?.Dispose();
-
-        var currentUpdateSource = new CancellationTokenSource();
-        _updateSource = currentUpdateSource;
-        var currentCancellationToken = _updateSource.Token;
 
         // Switch to ThreadPool thread
         await Task.Run(async () =>
