@@ -52,8 +52,8 @@ public class Main : IPlugin, IContextMenu
         {
             TaskFolder folder = TaskService.Instance.RootFolder;
 
-            IEnumerable<Result> folders = folder.EnumerateFolders().Select(CreateResult);
-            IEnumerable<Result> tasks = folder.EnumerateTasks().Select(CreateResult);
+            IEnumerable<Result> folders = folder.EnumerateFolders().Select(f => CreateResult(f, addSelectedCount: false));
+            IEnumerable<Result> tasks = folder.EnumerateTasks().Select(t => CreateResult(t, addSelectedCount: false));
 
             return [.. folders, .. tasks];
         }
@@ -65,8 +65,8 @@ public class Main : IPlugin, IContextMenu
             if (folder is null)
                 return [];
 
-            IEnumerable<Result> folders = folder.EnumerateFolders().Select(CreateResult);
-            IEnumerable<Result> tasks = folder.EnumerateTasks().Select(CreateResult);
+            IEnumerable<Result> folders = folder.EnumerateFolders().Select(f => CreateResult(f, addSelectedCount: false));
+            IEnumerable<Result> tasks = folder.EnumerateTasks().Select(t => CreateResult(t, addSelectedCount: false));
 
             return [.. folders, .. tasks];
         }
@@ -91,11 +91,11 @@ public class Main : IPlugin, IContextMenu
         IEnumerable<Result> matchedFolders = searchFolder
             .EnumerateFolders()
             .Where(f => f.Name.StartsWith(mustStartWith, StringComparison.CurrentCultureIgnoreCase))
-            .Select(CreateResult);
+            .Select(f => CreateResult(f, addSelectedCount: true));
         IEnumerable<Result> matchedTasks = searchFolder
             .EnumerateTasks()
             .Where(t => t.Name.StartsWith(mustStartWith, StringComparison.CurrentCultureIgnoreCase))
-            .Select(CreateResult);
+            .Select(t => CreateResult(t, addSelectedCount: true));
 
         return [.. matchedFolders, .. matchedTasks];
     }
@@ -136,7 +136,7 @@ public class Main : IPlugin, IContextMenu
         return res;
     }
 
-    private static Result CreateResult(TaskFolder folder)
+    private static Result CreateResult(TaskFolder folder, bool addSelectedCount)
     {
         return new Result
         {
@@ -145,6 +145,7 @@ public class Main : IPlugin, IContextMenu
             IconOrGlyph = "\uF12B",
             ContextData = folder,
             CopyText = folder.Path,
+            AddSelectedCount = addSelectedCount,
             Action = c =>
             {
                 // Context.API.ChangeQuery(navigateQuery);
@@ -153,7 +154,7 @@ public class Main : IPlugin, IContextMenu
         };
     }
 
-    private static Result CreateResult(Task task)
+    private static Result CreateResult(Task task, bool addSelectedCount)
     {
         return new Result
         {
@@ -163,6 +164,7 @@ public class Main : IPlugin, IContextMenu
             IconOrGlyph = task.Enabled ? PLUGIN_ICON : TASK_DISABLED_ICON,
             ContextData = task,
             CopyText = task.Path,
+            AddSelectedCount = addSelectedCount,
             Action = c =>
             {
                 Thread staThread = new Thread(() =>

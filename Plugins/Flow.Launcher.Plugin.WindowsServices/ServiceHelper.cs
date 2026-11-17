@@ -167,6 +167,7 @@ public static class ServiceHelper
         ServiceController[] services = ServiceController.GetServices();
 
         int failed = 0;
+        bool isSearch = !string.IsNullOrWhiteSpace(search);
         IEnumerable<Result?> results = services.Select(svc =>
         {
             ServiceResult? svcResult = ServiceResult.CreateServiceResult(svc);
@@ -177,7 +178,7 @@ public static class ServiceHelper
             }
 
             int score = 0;
-            if (!string.IsNullOrWhiteSpace(search))
+            if (isSearch)
             {
                 (MatchResult match, bool isHighPriority)[] matches = [
                     (Main.Context.API.StringMatcher.FuzzySearch(search, svcResult.DisplayName), true),
@@ -201,6 +202,7 @@ public static class ServiceHelper
                 ContextData = svcResult,
                 CopyText = svcResult.ServiceName,
                 Score = score,
+                AddSelectedCount = isSearch,
                 Action = c =>
                 {
                     Main.Context.API.CopyToClipboard(svcResult.ServiceName);
@@ -217,7 +219,7 @@ public static class ServiceHelper
             Main.Context.API.ShowMsgError($"Failed to get information from {failed} service(s)");
         }
 
-        return results.Where(r => r is not null)!;
+        return results.Where(r => r is not null).OrderBy(r => r!.Title, StringComparer.CurrentCultureIgnoreCase)!;
     }
 
     public static void ChangeStatus(ServiceResult serviceResult, Action action)

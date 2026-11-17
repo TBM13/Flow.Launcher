@@ -32,6 +32,7 @@ public record Setting
         {
             Title = Name,
             IconOrGlyph = Glyph ?? iconPath,
+            AddSelectedCount = false,
 
             ToolTip = tooltip,
             CopyText = string.Join(" ", Command),

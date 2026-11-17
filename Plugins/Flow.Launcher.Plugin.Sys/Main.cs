@@ -45,6 +45,7 @@ public class Main : IPlugin
                 Title = "Shutdown",
                 SubTitle = "Shutdown Computer",
                 IconOrGlyph = "\xe7e8",
+                AddSelectedCount = false,
                 Action = c =>
                 {
                     var result = MessageBox.Show(
@@ -68,6 +69,7 @@ public class Main : IPlugin
                 Title = "Restart",
                 SubTitle = "Restart Computer",
                 IconOrGlyph = "\xe777",
+                AddSelectedCount = false,
                 Action = c =>
                 {
                     var result = MessageBox.Show(
@@ -91,6 +93,7 @@ public class Main : IPlugin
                 Title = "Restart With Advanced Boot Options",
                 SubTitle = "Restart the computer with Advanced Boot Options for Safe and Debugging modes, as well as other options",
                 IconOrGlyph = "\xecc5",
+                AddSelectedCount = false,
                 Action = c =>
                 {
                     var result = MessageBox.Show(
@@ -114,6 +117,7 @@ public class Main : IPlugin
                 Title = "Log Off/Sign Out",
                 SubTitle = "Log off",
                 IconOrGlyph = "\xe77b",
+                AddSelectedCount = false,
                 Action = c =>
                 {
                     var result = MessageBox.Show(
@@ -131,6 +135,7 @@ public class Main : IPlugin
                 Title = "Lock",
                 SubTitle = "Lock this computer",
                 IconOrGlyph = "\xe72e",
+                AddSelectedCount = false,
                 Action = c =>
                 {
                     OSHelper.Lock();
@@ -142,6 +147,7 @@ public class Main : IPlugin
                 Title = "Sleep",
                 SubTitle = "Put computer to sleep",
                 IconOrGlyph = "\xec46",
+                AddSelectedCount = false,
                 Action = c =>
                 {
                     OSHelper.Suspend();
@@ -153,6 +159,7 @@ public class Main : IPlugin
                 Title = "Hibernate",
                 SubTitle = "Hibernate computer",
                 IconOrGlyph = "\xe8be",
+                AddSelectedCount = false,
                 Action= c =>
                 {
                     OSHelper.Suspend(hibernate: true);
@@ -164,6 +171,7 @@ public class Main : IPlugin
                 Title = "Open Recycle Bin",
                 IconOrGlyph = "\xe74d",
                 CopyText = recycleBinFolder,
+                AddSelectedCount = false,
                 Action = c =>
                 {
                     // No need to de-elevate since we are file explorer which cannot bring security risks
@@ -176,6 +184,7 @@ public class Main : IPlugin
                 Title = "Exit",
                 SubTitle = "Exit Flow Launcher",
                 IconOrGlyph = "\xe89f",
+                AddSelectedCount = false,
                 Action = c =>
                 {
                     _context.API.HideMainWindow();
@@ -188,6 +197,7 @@ public class Main : IPlugin
                 Title = "Settings",
                 SubTitle = "Open Flow Launcher Settings",
                 IconOrGlyph = "\xf210",
+                AddSelectedCount = false,
                 Action = c =>
                 {
                     _context.API.OpenSettingDialog();
@@ -233,6 +243,7 @@ public class Main : IPlugin
             new Result {
                 Title = "Garbage Collection",
                 IconOrGlyph = "\xE74D",
+                AddSelectedCount = false,
                 Action = c => {
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
@@ -241,6 +252,8 @@ public class Main : IPlugin
                 }
             }
         ]);
+
+        _commands.Sort((a, b) => string.Compare(a.Title, b.Title, StringComparison.CurrentCultureIgnoreCase));
     }
 
     public List<Result>? Query(Query query)
@@ -259,7 +272,7 @@ public class Main : IPlugin
         {
             MatchResult match = _context.API.StringMatcher.FuzzySearchBest(query.Search, c.Title, c.SubTitle);
             if (match.IsThresholdMet)
-                results.Add(c with { Score = match.Score });
+                results.Add(c with { Score = match.Score, AddSelectedCount = true });
         }
 
         return results;

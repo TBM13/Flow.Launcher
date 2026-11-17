@@ -983,16 +983,20 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
         foreach (var metaResults in resultsForUpdates)
         {
+            var priorityScore = metaResults.Metadata.Priority * 150;
             foreach (var result in metaResults.Results)
             {
-                var priorityScore = metaResults.Metadata.Priority * 150;
-                if ((long)result.Score + _userSelectedRecord.GetSelectedCount(result, _lastQuery) + priorityScore > Result.MaxScore)
+                var selectedCount = result.AddSelectedCount
+                    ? _userSelectedRecord.GetSelectedCount(result, _lastQuery)
+                    : 0;
+
+                if ((long)result.Score + selectedCount + priorityScore > Result.MaxScore)
                 {
                     result.Score = Result.MaxScore;
                 }
                 else
                 {
-                    result.Score += _userSelectedRecord.GetSelectedCount(result, _lastQuery) + priorityScore;
+                    result.Score += selectedCount + priorityScore;
                 }
             }
         }

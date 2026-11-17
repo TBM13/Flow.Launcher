@@ -32,14 +32,14 @@ public static class ResultManager
         return (true, path);
     }
 
-    public static Result CreateResult(SearchResult result, bool isRecursive)
+    public static Result CreateResult(SearchResult result, bool isRecursive, bool addSelectedCount = true)
     {
         return result.Type switch
         {
             ResultType.Folder or ResultType.Volume =>
-                CreateFolderResult(Path.GetFileName(result.FullPath), isRecursive ? result.FullPath : string.Empty, result.FullPath, result.Score),
+                CreateFolderResult(Path.GetFileName(result.FullPath), isRecursive ? result.FullPath : string.Empty, result.FullPath, result.Score, addSelectedCount),
             ResultType.File =>
-                CreateFileResult(result.FullPath, isRecursive, result.Score),
+                CreateFileResult(result.FullPath, isRecursive, result.Score, addSelectedCount),
             _ => throw new ArgumentOutOfRangeException(null)
         };
     }
@@ -70,7 +70,7 @@ public static class ResultManager
         });
     }
 
-    internal static Result CreateFolderResult(string title, string subtitle, string path, int score = 0)
+    internal static Result CreateFolderResult(string title, string subtitle, string path, int score = 0, bool addSelectedCount = true)
     {
         return new Result
         {
@@ -110,6 +110,7 @@ public static class ResultManager
                 }
             },
             Score = score,
+            AddSelectedCount = addSelectedCount,
             ToolTip = $"Ctrl + Enter to open the directory\n\n{path}",
             ContextData = new SearchResult { Type = ResultType.Folder, FullPath = path }
         };
@@ -131,6 +132,7 @@ public static class ResultManager
             AutocompleteText = GetAutoCompleteText(path, ResultType.Volume),
             IconOrGlyph = path,
             Score = score,
+            AddSelectedCount = false,
             Action = c =>
             {
                 if (c.PressedKeys.AltPressed)
@@ -190,6 +192,7 @@ public static class ResultManager
             AutocompleteText = GetAutoCompleteText(path, ResultType.Folder),
             IconOrGlyph = folderPath,
             Score = 500,
+            AddSelectedCount = false,
             CopyText = folderPath,
             Action = c =>
             {
@@ -214,7 +217,7 @@ public static class ResultManager
         };
     }
 
-    internal static Result CreateFileResult(string filePath, bool isRecursiveSearch, int score = 0)
+    internal static Result CreateFileResult(string filePath, bool isRecursiveSearch, int score = 0, bool addSelectedCount = true)
     {
         var isShellLink = filePath.EndsWith(".lnk", StringComparison.InvariantCultureIgnoreCase);
         var title = Path.GetFileName(filePath) ?? string.Empty;
@@ -230,6 +233,7 @@ public static class ResultManager
             IconOrGlyph = filePath,
             AutocompleteText = GetAutoCompleteText(filePath, ResultType.File),
             Score = score,
+            AddSelectedCount = addSelectedCount,
             CopyText = filePath,
             PreviewPanel = new Lazy<UserControl>(() => new PreviewPanel(Main.Settings, filePath, ResultType.File)),
             Action = c =>

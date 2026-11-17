@@ -7,7 +7,7 @@ namespace Flow.Launcher.Plugin.Explorer.Search;
 
 public static class EnvironmentVariables
 {
-    private static Dictionary<string, string> EnvStringPaths
+    private static SortedDictionary<string, string> EnvStringPaths
     {
         get
         {
@@ -34,9 +34,9 @@ public static class EnvironmentVariables
                                     dir.Split('%').Length == 3);
     }
 
-    private static Dictionary<string, string> LoadEnvironmentStringPaths()
+    private static SortedDictionary<string, string> LoadEnvironmentStringPaths()
     {
-        Dictionary<string, string> dic = new(StringComparer.InvariantCultureIgnoreCase);
+        SortedDictionary<string, string> dic = new(StringComparer.InvariantCultureIgnoreCase);
         string homedrive = Environment.GetEnvironmentVariable("HOMEDRIVE") ?? "C:\\";
 
         if (!homedrive.EndsWith('\\'))
@@ -83,16 +83,14 @@ public static class EnvironmentVariables
             }
         }
 
-        if (querySearch == "%")
-            search = ""; // Get all paths
-        else
-            search = search[1..];
+        bool isSearch = querySearch != "%";
+        search = isSearch ? search[1..] : "";
 
         foreach (var p in EnvStringPaths)
         {
             if (p.Key.StartsWith(search, StringComparison.InvariantCultureIgnoreCase))
             {
-                results.Add(ResultManager.CreateFolderResult($"%{p.Key}%", p.Value, p.Value));
+                results.Add(ResultManager.CreateFolderResult($"%{p.Key}%", p.Value, p.Value, addSelectedCount: isSearch));
             }
         }
 

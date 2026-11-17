@@ -46,6 +46,7 @@ public class Main : IPlugin
                     continue;
 
                 // If not a home query, filter results with search term
+                bool addSelectedCount = false;
                 int score = 0;
                 if (!query.IsHomeQuery && !string.IsNullOrWhiteSpace(query.Search))
                 {
@@ -54,6 +55,7 @@ public class Main : IPlugin
                         continue;
 
                     score = match.Score;
+                    addSelectedCount = true;
                 }
 
                 string autoCompleteText = $"{keyword} ";
@@ -62,6 +64,7 @@ public class Main : IPlugin
                     Title = keyword,
                     SubTitle = plugin.Name,
                     Score = score,
+                    AddSelectedCount = addSelectedCount,
                     IconOrGlyph = plugin.IcoPath,
                     AutocompleteText = (false, autoCompleteText),
                     Action = _ =>

@@ -79,9 +79,10 @@ public class SearchManager(Settings settings, PluginInitContext context)
         if (token.IsCancellationRequested)
             return [];
 
+        bool isSearch = !path.EndsWith('\\');
         await foreach (var directory in directoryResult.WithCancellation(token).ConfigureAwait(false))
         {
-            results.Add(ResultManager.CreateResult(directory, isRecursive));
+            results.Add(ResultManager.CreateResult(directory, isRecursive, isSearch));
         }
 
         return [.. results];

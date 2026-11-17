@@ -73,6 +73,16 @@ public record Result
     public int Score { get; set; }
 
     /// <summary>
+    /// Whether Flow Launcher should add the user selected count to <see cref="Score"/>.
+    /// </summary>
+    /// <remarks>
+    /// Makes the result more likely to appear at the top of the list depending on how many
+    /// times it was previously selected by the user on the current query.
+    /// </remarks>
+    /// <value>default: true</value>
+    public bool AddSelectedCount { get; set; } = true;
+
+    /// <summary>
     /// Additional data associated with this result
     /// </summary>
     /// <example>

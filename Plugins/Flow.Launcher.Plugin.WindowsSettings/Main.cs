@@ -113,7 +113,7 @@ public sealed class Main : IPlugin
         {
             MatchResult match = _matcher.FuzzySearchBest(search, entry.SearchNames);
             if (match.IsThresholdMet)
-                results.Add(entry.Result with { Score = match.Score });
+                results.Add(entry.Result with { Score = match.Score, AddSelectedCount = true });
         }
 
         return results;
