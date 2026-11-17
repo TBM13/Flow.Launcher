@@ -83,15 +83,8 @@ public static class ResultManager
             Action = c =>
             {
                 IPressedKeys keys = c.PressedKeys;
-                if (keys.AltPressed)
-                {
-                    ShowNativeContextMenu(
-                        path, ResultType.Folder, c.ResultPosition,
-                        showExtendedmenu: c.PressedKeys.ShiftPressed);
-                    return false;
-                }
                 // Open containing folder
-                else if (keys.IsModifierPressed(ModifierKeys.Control))
+                if (keys.IsModifierPressed(ModifierKeys.Control))
                 {
                     OpenFolderAndSelectFile(path);
                     return true;
@@ -135,14 +128,6 @@ public static class ResultManager
             AddSelectedCount = false,
             Action = c =>
             {
-                if (c.PressedKeys.AltPressed)
-                {
-                    ShowNativeContextMenu(
-                        path, ResultType.Volume, c.ResultPosition,
-                        showExtendedmenu: c.PressedKeys.ShiftPressed);
-                    return false;
-                }
-
                 OpenFolder(path);
                 return true;
             },
@@ -196,15 +181,8 @@ public static class ResultManager
             CopyText = folderPath,
             Action = c =>
             {
-                if (c.PressedKeys.AltPressed)
-                {
-                    ShowNativeContextMenu(
-                        folderPath, ResultType.Folder, c.ResultPosition,
-                        showExtendedmenu: c.PressedKeys.ShiftPressed);
-                    return false;
-                }
                 // Open containing folder
-                else if (c.PressedKeys.IsModifierPressed(ModifierKeys.Control))
+                if (c.PressedKeys.IsModifierPressed(ModifierKeys.Control))
                 {
                     OpenFolderAndSelectFile(folderPath);
                     return true;
@@ -239,13 +217,6 @@ public static class ResultManager
             Action = c =>
             {
                 IPressedKeys keys = c.PressedKeys;
-                if (keys.AltPressed)
-                {
-                    ShowNativeContextMenu(
-                        filePath, ResultType.File, c.ResultPosition,
-                        showExtendedmenu: c.PressedKeys.ShiftPressed);
-                    return false;
-                }
                 if (keys.OnlyModifiersPressed(ModifierKeys.Shift))
                 {
                     OpenFile(filePath, Main.Settings.UseLocationAsWorkingDir ? directory : string.Empty, true);
