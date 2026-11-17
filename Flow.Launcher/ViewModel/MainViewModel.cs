@@ -41,6 +41,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private Task _resultsViewUpdateTask;
 
     private readonly ResultsViewModel _results, _contextMenu;
+    private List<Result>? _contextMenuItems;
 
     private bool _taskbarShownByFlow = false;
 
@@ -193,10 +194,14 @@ public partial class MainViewModel : ObservableObject, IDisposable
     {
         if (!ContextMenuSelected)
         {
-            // When switch to ContextMenu from QueryResults, but no item being chosen, should do nothing
-            // i.e. Shift+Enter/Ctrl+O right after Alt + Space should do nothing
-            if (SelectedResults.SelectedItem != null)
-                SelectedResults = _contextMenu;
+            // When switch to ContextMenu from QueryResults, but no item being chosen or it has no context menu, should do nothing
+            // i.e. Shift+Enter/Ctrl+O right after Alt + Space, or Right arrow on a result without context menu, should do nothing
+            var results = GetContextMenusForSelectedResult();
+            if (results.Count == 0)
+                return;
+
+            _contextMenuItems = results;
+            SelectedResults = _contextMenu;
         }
         else
             SelectedResults = _results;
@@ -452,6 +457,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
                 // running the query again when returning from the context menu.
                 if (isReturningFromContextMenu)
                 {
+                    _contextMenuItems = null;
                     _queryText = _queryTextBeforeLeaveResults;
                     // When executing OnPropertyChanged, QueryTextBox_TextChanged1 and Query will be called
                     // So we need to ignore it so that we will not call Query again
@@ -639,44 +645,42 @@ public partial class MainViewModel : ObservableObject, IDisposable
             QueryContextMenu();
     }
 
+    private List<Result> GetContextMenusForSelectedResult()
+    {
+        var selected = _results.SelectedItem;
+        if (selected?.PluginID is null) // Null when selection is empty or item is from history in home page.
+            return [];
+
+        return _pluginManager.GetContextMenusForPlugin(selected.PluginID, selected.Result) ?? [];
+    }
+
     private void QueryContextMenu()
     {
         var query = QueryText.ToLower().Trim();
         _contextMenu.Clear();
 
-        var selected = _results.SelectedItem;
+        var results = _contextMenuItems ?? GetContextMenusForSelectedResult();
+        if (results.Count == 0)
+            return;
 
-        if (selected != null) // SelectedItem returns null if selection is empty.
+        if (!string.IsNullOrEmpty(query))
         {
-            List<Result> results;
-            if (selected.PluginID is null) // SelectedItem from history in home page.
-            {
-                results = [];
-            }
-            else
-            {
-                results = _pluginManager.GetContextMenusForPlugin(selected.PluginID, selected.Result) ?? [];
-            }
+            var filtered = results.Select(x => x with { }).Where
+            (
+                r =>
+                {
+                    var match = IPublicAPI.Instance.StringMatcher.FuzzySearchBest(query, r.Title, r.SubTitle);
+                    if (!match.IsThresholdMet)
+                        return false;
 
-            if (!string.IsNullOrEmpty(query))
-            {
-                var filtered = results.Select(x => x with { }).Where
-                (
-                    r =>
-                    {
-                        var match = IPublicAPI.Instance.StringMatcher.FuzzySearchBest(query, r.Title, r.SubTitle);
-                        if (!match.IsThresholdMet)
-                            return false;
-
-                        r.Score = match.Score;
-                        return true;
-                    }).ToList();
-                _contextMenu.AddResults(filtered);
-            }
-            else
-            {
-                _contextMenu.AddResults(results);
-            }
+                    r.Score = match.Score;
+                    return true;
+                }).ToList();
+            _contextMenu.AddResults(filtered);
+        }
+        else
+        {
+            _contextMenu.AddResults(results);
         }
     }
 
