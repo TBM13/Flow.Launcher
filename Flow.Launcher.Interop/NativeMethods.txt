@@ -135,3 +135,6 @@ CLSID_MyComputer
 WIN32_ERROR
 GetNamedPipeClientProcessId
 AllowSetForegroundWindow
+WM_UNINITMENUPOPUP
+MSGF_MENU
+EndMenu

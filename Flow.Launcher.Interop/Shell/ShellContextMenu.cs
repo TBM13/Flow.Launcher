@@ -1,9 +1,12 @@
 ﻿using System.Drawing;
 using System.IO;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Windows.Input;
 using System.Windows.Interop;
 using Windows.Win32;
 using Windows.Win32.Foundation;
+using Windows.Win32.UI.Input.KeyboardAndMouse;
 using Windows.Win32.UI.Shell;
 using Windows.Win32.UI.Shell.Common;
 using Windows.Win32.UI.WindowsAndMessaging;
@@ -15,6 +18,7 @@ public static class ShellContextMenu
     private const uint CMD_FIRST = 1;
     private const uint CMD_LAST = 30000;
     private static int _contextMenuInvocationActive;
+    private static readonly HashSet<nint> _openSubmenus = [];
 
     /// <summary>
     /// Indicates whether a native shell context menu is currently being displayed.
@@ -118,14 +122,23 @@ public static class ShellContextMenu
             IContextMenu2? contextMenu2 = contextMenu as IContextMenu2;
             IContextMenu3? contextMenu3 = contextMenu as IContextMenu3;
             HwndSource? ownerSource = HwndSource.FromHwnd((nint)ownerWindow);
+            HMENU rootMenu = menu;
             nint menuMessageHook(nint _, int message, nint wParam, nint lParam, ref bool handled) =>
-                HandleMenuMessage(contextMenu2, contextMenu3, (uint)message, wParam, lParam, ref handled);
+                HandleMenuMessage(rootMenu, contextMenu2, contextMenu3, (uint)message, wParam, lParam, ref handled);
 
+            _openSubmenus.Clear();
+            UnhookWindowsHookExSafeHandle? msgFilterHook = null;
             ownerSource?.AddHook(menuMessageHook);
             uint selectedCmd;
             IsContextMenuOpen = true;
             try
             {
+                msgFilterHook = PInvoke.SetWindowsHookEx(
+                    WINDOWS_HOOK_ID.WH_MSGFILTER,
+                    &MenuMessageFilterHook,
+                    (SafeHandle?)null,
+                    PInvoke.GetCurrentThreadId());
+
                 selectedCmd = (uint)PInvoke.TrackPopupMenuEx(
                     menu,
                     (uint)TRACK_POPUP_MENU_FLAGS.TPM_RETURNCMD,
@@ -137,6 +150,8 @@ public static class ShellContextMenu
             finally
             {
                 IsContextMenuOpen = false;
+                msgFilterHook?.Dispose();
+                _openSubmenus.Clear();
                 ownerSource?.RemoveHook(menuMessageHook);
             }
 
@@ -160,7 +175,26 @@ public static class ShellContextMenu
         }
     }
 
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
+    private static unsafe LRESULT MenuMessageFilterHook(int nCode, WPARAM wParam, LPARAM lParam)
+    {
+        if (nCode == (int)PInvoke.MSGF_MENU && _openSubmenus.Count == 0)
+        {
+            Windows.Win32.UI.WindowsAndMessaging.MSG* msg = (Windows.Win32.UI.WindowsAndMessaging.MSG*)lParam.Value;
+            if (msg is not null
+                && msg->message == PInvoke.WM_KEYDOWN
+                && msg->wParam.Value == (nuint)VIRTUAL_KEY.VK_LEFT)
+            {
+                PInvoke.EndMenu();
+                return new LRESULT(1);
+            }
+        }
+
+        return PInvoke.CallNextHookEx(default, nCode, wParam, lParam);
+    }
+
     private static unsafe nint HandleMenuMessage(
+        HMENU rootMenu,
         IContextMenu2? contextMenu2,
         IContextMenu3? contextMenu3,
         uint message,
@@ -168,6 +202,15 @@ public static class ShellContextMenu
         nint lParam,
         ref bool handled)
     {
+        if (message == PInvoke.WM_UNINITMENUPOPUP)
+        {
+            _openSubmenus.Remove(wParam);
+            return 0;
+        }
+
+        if (message == PInvoke.WM_INITMENUPOPUP && wParam != (nint)rootMenu.Value)
+            _openSubmenus.Add(wParam);
+
         if (message is not (PInvoke.WM_DRAWITEM or PInvoke.WM_MEASUREITEM or PInvoke.WM_INITMENUPOPUP or PInvoke.WM_MENUCHAR))
             return 0;
 
