@@ -5,7 +5,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:root="clr-namespace:Flow.Launcher"
-    xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     xmlns:vm="clr-namespace:Flow.Launcher.ViewModel"
     MaxHeight="{Binding MaxHeight}"
     Margin="0 10 0 10"
@@ -35,12 +34,12 @@
     <!--  IsSynchronizedWithCurrentItem: http://stackoverflow.com/a/7833798/2833083  -->
     <ListBox.Template>
         <ControlTemplate TargetType="ListBox">
-            <ui:ScrollViewerEx
+            <ScrollViewer
                 x:Name="ListBoxScrollViewer"
                 Focusable="False"
                 HorizontalScrollBarVisibility="Disabled">
                 <VirtualizingStackPanel IsItemsHost="True" />
-            </ui:ScrollViewerEx>
+            </ScrollViewer>
         </ControlTemplate>
     </ListBox.Template>
 

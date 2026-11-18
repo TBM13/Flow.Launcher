@@ -7,7 +7,6 @@
     xmlns:hotkeys="clr-namespace:Flow.Launcher.Core.Hotkeys;assembly=Flow.Launcher.Core"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:pluginsdk="http://schemas.flowlauncher.com/pluginsdk"
-    xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     xmlns:vm="clr-namespace:Flow.Launcher.ViewModel"
     Name="FlowMainWindow"
     Title="Flow Launcher"
@@ -35,9 +34,7 @@
     mc:Ignorable="d">
     <!--  WindowChrome  -->
     <WindowChrome.WindowChrome>
-        <!--  TODO: Using GlassFrameThickness="0" to fix flicker on the UI, but this also disables the Window's shadow  -->
-        <!--  Fix this once we move to Avalonia and ideally make the shadow bigger instead of using the OS default one  -->
-        <WindowChrome CaptionHeight="9" GlassFrameThickness="0" />
+        <WindowChrome CaptionHeight="9" GlassFrameThickness="-1" />
     </WindowChrome.WindowChrome>
     <Window.InputBindings>
         <KeyBinding Key="Escape" Command="{Binding EscCommand}" />
@@ -104,7 +101,7 @@
     </Window.InputBindings>
 
     <Border
-        Background="{DynamicResource Color01B}"
+        Background="Transparent"
         BorderBrush="{DynamicResource SystemThemeBorder}"
         BorderThickness="1"
         CornerRadius="5"
@@ -130,7 +127,6 @@
                 Padding="0 0 50 0"
                 VerticalAlignment="Center"
                 VerticalContentAlignment="Center"
-                ui:TextBoxHelper.IsDeleteButtonVisible="False"
                 AllowDrop="True"
                 Background="Transparent"
                 BorderThickness="0"
@@ -138,38 +134,50 @@
                 FontSize="16"
                 Foreground="{DynamicResource Color05B}"
                 PreviewDragOver="QueryTextBox_OnPreviewDragOver"
-                SelectionBrush="{DynamicResource SystemAccentColorLight1Brush}"
+                SelectionBrush="{DynamicResource AccentFillColorSelectedTextBackgroundBrush}"
                 TextChanged="QueryTextBox_TextChanged1"
                 WindowChrome.IsHitTestVisibleInChrome="True">
+                <TextBox.Template>
+                    <ControlTemplate TargetType="TextBox">
+                        <ScrollViewer
+                            x:Name="PART_ContentHost"
+                            Margin="0"
+                            Padding="{TemplateBinding Padding}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            Focusable="False"
+                            HorizontalScrollBarVisibility="Hidden"
+                            VerticalScrollBarVisibility="Hidden" />
+                    </ControlTemplate>
+                </TextBox.Template>
                 <TextBox.CommandBindings>
                     <CommandBinding Command="ApplicationCommands.Copy" Executed="QueryTextBox_OnCopy" />
                 </TextBox.CommandBindings>
                 <TextBox.ContextMenu>
-                    <ContextMenu MinWidth="160">
+                    <ContextMenu MinWidth="160" FontSize="14">
                         <MenuItem Command="ApplicationCommands.Cut" Header="Cut">
                             <MenuItem.Icon>
-                                <ui:FontIcon Glyph="&#xe8c6;" />
+                                <pluginsdk:FontIcon Glyph="&#xe8c6;" />
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem Command="ApplicationCommands.Copy" Header="Copy">
                             <MenuItem.Icon>
-                                <ui:FontIcon Glyph="&#xe8c8;" />
+                                <pluginsdk:FontIcon Glyph="&#xe8c8;" />
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem Command="ApplicationCommands.Paste" Header="Paste">
                             <MenuItem.Icon>
-                                <ui:FontIcon Glyph="&#xe77f;" />
+                                <pluginsdk:FontIcon Glyph="&#xe77f;" />
                             </MenuItem.Icon>
                         </MenuItem>
                         <Separator Padding="0 4 0 4" Background="{DynamicResource ContextSeparator}" />
                         <MenuItem Click="OnContextMenusForSettingsClick" Header="Settings">
                             <MenuItem.Icon>
-                                <ui:FontIcon Glyph="&#xe713;" />
+                                <pluginsdk:FontIcon Glyph="&#xe713;" />
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem Command="{Binding EscCommand}" Header="Close">
                             <MenuItem.Icon>
-                                <ui:FontIcon Glyph="&#xe711;" />
+                                <pluginsdk:FontIcon Glyph="&#xe711;" />
                             </MenuItem.Icon>
                         </MenuItem>
                     </ContextMenu>

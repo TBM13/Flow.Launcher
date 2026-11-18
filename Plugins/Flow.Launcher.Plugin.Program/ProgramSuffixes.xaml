@@ -98,7 +98,7 @@
                     <TextBox
                         x:Name="tbSuffixes"
                         Margin="10 4 0 10"
-                        Style="{StaticResource DefaultTextBoxStyle}"
+                        Style="{DynamicResource DefaultTextBoxStyle}"
                         Visibility="{Binding IsChecked, ElementName=CustomFiles, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 </StackPanel>
 
@@ -137,7 +137,7 @@
                         <TextBox
                             x:Name="tbProtocols"
                             Margin="10 4 0 0"
-                            Style="{StaticResource DefaultTextBoxStyle}"
+                            Style="{DynamicResource DefaultTextBoxStyle}"
                             Visibility="{Binding IsChecked, ElementName=CustomProtocol, Converter={StaticResource BooleanToVisibilityConverter}}" />
                     </StackPanel>
                 </Border>

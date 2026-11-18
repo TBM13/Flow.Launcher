@@ -5,8 +5,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Flow.Launcher.Settings.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:pluginsdk="http://schemas.flowlauncher.com/pluginsdk"
     xmlns:settings="clr-namespace:Flow.Launcher.Core.Settings;assembly=Flow.Launcher.Core"
-    xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     d:DataContext="{d:DesignInstance local:SettingsGeneralViewModel}"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -17,29 +17,29 @@
             FontSize="30"
             Text="General" />
 
-        <ui:SettingsCard Description="Automatically launch Flow Launcher when Windows starts." Header="Start Flow Launcher on system startup">
-            <ui:SettingsCard.HeaderIcon>
-                <ui:FontIcon Glyph="&#xe7e8;" />
-            </ui:SettingsCard.HeaderIcon>
+        <pluginsdk:SettingsCard Description="Automatically launch Flow Launcher when Windows starts." Header="Start Flow Launcher on system startup">
+            <pluginsdk:SettingsCard.HeaderIcon>
+                <pluginsdk:FontIcon Glyph="&#xe7e8;" />
+            </pluginsdk:SettingsCard.HeaderIcon>
 
-            <ui:ToggleSwitch IsOn="{Binding Settings.StartOnSystemStartup}" />
-        </ui:SettingsCard>
+            <pluginsdk:ToggleSwitch IsOn="{Binding Settings.StartOnSystemStartup}" />
+        </pluginsdk:SettingsCard>
 
-        <ui:SettingsCard Margin="0 12 0 0" Header="Hide Flow Launcher when focus is lost">
-            <ui:ToggleSwitch IsOn="{Binding Settings.HideOnLostFocus}" />
-        </ui:SettingsCard>
+        <pluginsdk:SettingsCard Margin="0 12 0 0" Header="Hide Flow Launcher when focus is lost">
+            <pluginsdk:ToggleSwitch IsOn="{Binding Settings.HideOnLostFocus}" />
+        </pluginsdk:SettingsCard>
 
-        <ui:SettingsCard
+        <pluginsdk:SettingsCard
             Margin="0 4 0 0"
             Description="Temporarily show the taskbar when Flow Launcher is opened, useful for auto-hidden taskbars."
             Header="Show taskbar when Flow Launcher is opened">
-            <ui:ToggleSwitch IsOn="{Binding Settings.ShowTaskbarWhenOpened}" />
-        </ui:SettingsCard>
+            <pluginsdk:ToggleSwitch IsOn="{Binding Settings.ShowTaskbarWhenOpened}" />
+        </pluginsdk:SettingsCard>
 
-        <ui:SettingsCard Margin="0 4 0 0" Header="Search Window Location">
-            <ui:SettingsCard.HeaderIcon>
-                <ui:FontIcon Glyph="&#xe7f4;" />
-            </ui:SettingsCard.HeaderIcon>
+        <pluginsdk:SettingsCard Margin="0 4 0 0" Header="Search Window Location">
+            <pluginsdk:SettingsCard.HeaderIcon>
+                <pluginsdk:FontIcon Glyph="&#xe7f4;" />
+            </pluginsdk:SettingsCard.HeaderIcon>
             <StackPanel Orientation="Horizontal">
                 <ComboBox
                     MinWidth="220"
@@ -53,15 +53,15 @@
                     SelectedValue="{Binding Settings.DisplayNumber}"
                     Visibility="{Binding Settings.Display, Converter={StaticResource VisibleWhenEquals}, ConverterParameter={x:Static settings:DisplayType.Custom}}" />
             </StackPanel>
-        </ui:SettingsCard>
+        </pluginsdk:SettingsCard>
 
-        <ui:SettingsCard
+        <pluginsdk:SettingsCard
             Margin="0 4 0 0"
             Header="Search Window Position on Monitor"
             Visibility="{Binding Settings.Display, Converter={StaticResource CollapsedWhenEquals}, ConverterParameter={x:Static settings:DisplayType.RememberLastDisplay}}">
-            <ui:SettingsCard.HeaderIcon>
-                <ui:FontIcon Glyph="&#xe7f4;" />
-            </ui:SettingsCard.HeaderIcon>
+            <pluginsdk:SettingsCard.HeaderIcon>
+                <pluginsdk:FontIcon Glyph="&#xe7f4;" />
+            </pluginsdk:SettingsCard.HeaderIcon>
 
             <StackPanel Orientation="Horizontal">
                 <ComboBox
@@ -83,31 +83,31 @@
                         TextWrapping="NoWrap" />
                 </StackPanel>
             </StackPanel>
-        </ui:SettingsCard>
+        </pluginsdk:SettingsCard>
 
-        <ui:SettingsCard
+        <pluginsdk:SettingsCard
             Margin="0 14 0 0"
             Description="Disable Flow Launcher activation when a full screen application is active (Recommended for games)."
             Header="Ignore hotkeys in fullscreen mode">
-            <ui:SettingsCard.HeaderIcon>
-                <ui:FontIcon Glyph="&#xe7fc;" />
-            </ui:SettingsCard.HeaderIcon>
+            <pluginsdk:SettingsCard.HeaderIcon>
+                <pluginsdk:FontIcon Glyph="&#xe7fc;" />
+            </pluginsdk:SettingsCard.HeaderIcon>
 
-            <ui:ToggleSwitch IsOn="{Binding Settings.IgnoreHotkeysOnFullscreen}" />
-        </ui:SettingsCard>
+            <pluginsdk:ToggleSwitch IsOn="{Binding Settings.IgnoreHotkeysOnFullscreen}" />
+        </pluginsdk:SettingsCard>
 
-        <ui:SettingsCard
+        <pluginsdk:SettingsCard
             Margin="0 14 0 0"
             Description="Always open preview panel when Flow activates. Press {0} to toggle preview."
             Header="Always Preview">
-            <ui:SettingsCard.HeaderIcon>
-                <ui:FontIcon Glyph="&#xe8a1;" />
-            </ui:SettingsCard.HeaderIcon>
+            <pluginsdk:SettingsCard.HeaderIcon>
+                <pluginsdk:FontIcon Glyph="&#xe8a1;" />
+            </pluginsdk:SettingsCard.HeaderIcon>
 
-            <ui:ToggleSwitch IsOn="{Binding Settings.AlwaysPreview}" ToolTip="{Binding AlwaysPreviewToolTip}" />
-        </ui:SettingsCard>
+            <pluginsdk:ToggleSwitch IsOn="{Binding Settings.AlwaysPreview}" ToolTip="{Binding AlwaysPreviewToolTip}" />
+        </pluginsdk:SettingsCard>
 
-        <ui:SettingsCard
+        <pluginsdk:SettingsCard
             Margin="0 14 0 0"
             Description="Changes minimum match score required for results."
             Header="Query Search Precision">
@@ -117,9 +117,9 @@
                 ItemsSource="{Binding SearchPrecisionItems}"
                 SelectedValue="{Binding Settings.QuerySearchPrecision}"
                 SelectedValuePath="Value" />
-        </ui:SettingsCard>
+        </pluginsdk:SettingsCard>
 
-        <ui:SettingsCard
+        <pluginsdk:SettingsCard
             Margin="0 4 0 0"
             Description="Show/Hide previous results when Flow Launcher is reactivated."
             Header="Last Query Style">
@@ -128,17 +128,17 @@
                 ItemsSource="{Binding LastQueryModeItems}"
                 SelectedValue="{Binding Settings.LastQueryMode}"
                 SelectedValuePath="Value" />
-        </ui:SettingsCard>
+        </pluginsdk:SettingsCard>
 
-        <ui:SettingsCard
+        <pluginsdk:SettingsCard
             Margin="0 14 0 0"
             Description="Show home page results when query text is empty."
             Header="Home Page">
-            <ui:SettingsCard.HeaderIcon>
-                <ui:FontIcon Glyph="&#xE80F;" />
-            </ui:SettingsCard.HeaderIcon>
+            <pluginsdk:SettingsCard.HeaderIcon>
+                <pluginsdk:FontIcon Glyph="&#xE80F;" />
+            </pluginsdk:SettingsCard.HeaderIcon>
 
-            <ui:ToggleSwitch IsOn="{Binding Settings.ShowHomePage}" />
-        </ui:SettingsCard>
+            <pluginsdk:ToggleSwitch IsOn="{Binding Settings.ShowHomePage}" />
+        </pluginsdk:SettingsCard>
     </StackPanel>
 </UserControl>

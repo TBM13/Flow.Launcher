@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Flow.Launcher.Settings.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
+    xmlns:pluginsdk="http://schemas.flowlauncher.com/pluginsdk"
     d:DataContext="{d:DesignInstance Type=local:SettingsAboutViewModel}"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -16,24 +16,26 @@
             FontSize="30"
             Text="About" />
 
-        <ui:SettingsCard Description="Version" Header="{Binding Version}">
-            <ui:SettingsCard.HeaderIcon>
-                <ui:FontIcon Glyph="&#xe946;" />
-            </ui:SettingsCard.HeaderIcon>
-        </ui:SettingsCard>
+        <pluginsdk:SettingsCard Description="Version" Header="{Binding Version}">
+            <pluginsdk:SettingsCard.HeaderIcon>
+                <pluginsdk:FontIcon Glyph="&#xe946;" />
+            </pluginsdk:SettingsCard.HeaderIcon>
+        </pluginsdk:SettingsCard>
 
-        <ui:SettingsCard Margin="0 4 0 0" Header="Icons">
-            <ui:SettingsCard.HeaderIcon>
-                <ui:FontIcon Glyph="&#xE8FE;" />
-            </ui:SettingsCard.HeaderIcon>
+        <pluginsdk:SettingsCard Margin="0 4 0 0" Header="Icons">
+            <pluginsdk:SettingsCard.HeaderIcon>
+                <pluginsdk:FontIcon Glyph="&#xE8FE;" />
+            </pluginsdk:SettingsCard.HeaderIcon>
 
-            <ui:HyperlinkButton Content="icons8.com" NavigateUri="https://icons8.com/" />
-        </ui:SettingsCard>
+            <TextBlock VerticalAlignment="Center">
+                <Hyperlink NavigateUri="https://icons8.com/" RequestNavigate="Hyperlink_OnRequestNavigate">icons8.com</Hyperlink>
+            </TextBlock>
+        </pluginsdk:SettingsCard>
 
-        <ui:SettingsCard Margin="0 14 0 0" Header="DevTools">
-            <ui:SettingsCard.HeaderIcon>
-                <ui:FontIcon Glyph="&#xf12b;" />
-            </ui:SettingsCard.HeaderIcon>
+        <pluginsdk:SettingsCard Margin="0 14 0 0" Header="DevTools">
+            <pluginsdk:SettingsCard.HeaderIcon>
+                <pluginsdk:FontIcon Glyph="&#xf12b;" />
+            </pluginsdk:SettingsCard.HeaderIcon>
 
             <StackPanel Orientation="Horizontal">
                 <Button
@@ -41,25 +43,27 @@
                     Margin="0 0 12 0"
                     Command="{Binding AskClearCacheFolderConfirmationCommand}"
                     Content="{Binding CacheFolderSize}" />
-                <Button Height="{Binding ElementName=ClearCacheButton, Path=ActualHeight}">
-                    <ui:FontIcon Glyph="&#xec7a;" />
-                    <ui:FlyoutService.Flyout>
-                        <ui:MenuFlyout>
+                <Button
+                    Height="{Binding ElementName=ClearCacheButton, Path=ActualHeight}"
+                    Click="OpenFoldersButton_OnClick">
+                    <pluginsdk:FontIcon Glyph="&#xec7a;" />
+                    <Button.ContextMenu>
+                        <ContextMenu Placement="Bottom">
                             <MenuItem Command="{Binding OpenSettingsFolderCommand}" Header="Setting Folder">
                                 <MenuItem.Icon>
-                                    <ui:FontIcon Glyph="&#xe8b7;" />
+                                    <pluginsdk:FontIcon Glyph="&#xe8b7;" />
                                 </MenuItem.Icon>
                             </MenuItem>
 
                             <MenuItem Command="{Binding OpenCacheFolderCommand}" Header="Cache Folder">
                                 <MenuItem.Icon>
-                                    <ui:FontIcon Glyph="&#xe8b7;" />
+                                    <pluginsdk:FontIcon Glyph="&#xe8b7;" />
                                 </MenuItem.Icon>
                             </MenuItem>
-                        </ui:MenuFlyout>
-                    </ui:FlyoutService.Flyout>
+                        </ContextMenu>
+                    </Button.ContextMenu>
                 </Button>
             </StackPanel>
-        </ui:SettingsCard>
+        </pluginsdk:SettingsCard>
     </StackPanel>
 </UserControl>

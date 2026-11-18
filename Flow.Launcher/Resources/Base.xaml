@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:pluginsdk="http://schemas.flowlauncher.com/pluginsdk">
 
     <Style x:Key="SeparatorStyle" TargetType="Rectangle">
         <Setter Property="Fill" Value="{DynamicResource SeparatorForeground}" />
@@ -23,5 +24,374 @@
         <Setter Property="LineHeight" Value="18" />
         <Setter Property="TextAlignment" Value="Left" />
         <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style TargetType="{x:Type pluginsdk:ToggleSwitch}">
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="HorizontalAlignment" Value="Right" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type pluginsdk:ToggleSwitch}">
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        Background="Transparent"
+                        Orientation="Horizontal">
+                        <TextBlock
+                            x:Name="StateText"
+                            Margin="0 0 12 0"
+                            VerticalAlignment="Center"
+                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                            Text="Off" />
+                        <Border
+                            x:Name="Track"
+                            Width="40"
+                            Height="20"
+                            Background="{DynamicResource ToggleSwitchFillOff}"
+                            BorderBrush="{DynamicResource ToggleSwitchStrokeOff}"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            SnapsToDevicePixels="True">
+                            <Ellipse
+                                x:Name="Knob"
+                                Width="12"
+                                Height="12"
+                                Margin="3 0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource ToggleSwitchKnobFillOff}" />
+                        </Border>
+                    </StackPanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="StateText" Property="Text" Value="On" />
+                            <Setter TargetName="Track" Property="Background" Value="{DynamicResource ToggleSwitchFillOn}" />
+                            <Setter TargetName="Track" Property="BorderBrush" Value="{DynamicResource ToggleSwitchStrokeOn}" />
+                            <Setter TargetName="Knob" Property="HorizontalAlignment" Value="Right" />
+                            <Setter TargetName="Knob" Property="Fill" Value="{DynamicResource ToggleSwitchKnobFillOn}" />
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked" Value="False" />
+                                <Condition Property="IsMouseOver" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="Track" Property="Background" Value="{DynamicResource ToggleSwitchFillOffPointerOver}" />
+                            <Setter TargetName="Track" Property="BorderBrush" Value="{DynamicResource ToggleSwitchStrokeOffPointerOver}" />
+                            <Setter TargetName="Knob" Property="Fill" Value="{DynamicResource ToggleSwitchKnobFillOffPointerOver}" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked" Value="True" />
+                                <Condition Property="IsMouseOver" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="Track" Property="Background" Value="{DynamicResource ToggleSwitchFillOnPointerOver}" />
+                            <Setter TargetName="Track" Property="BorderBrush" Value="{DynamicResource ToggleSwitchStrokeOnPointerOver}" />
+                            <Setter TargetName="Knob" Property="Fill" Value="{DynamicResource ToggleSwitchKnobFillOnPointerOver}" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked" Value="False" />
+                                <Condition Property="IsEnabled" Value="False" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="StateText" Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+                            <Setter TargetName="Track" Property="Background" Value="{DynamicResource ToggleSwitchFillOffDisabled}" />
+                            <Setter TargetName="Track" Property="BorderBrush" Value="{DynamicResource ToggleSwitchStrokeOffDisabled}" />
+                            <Setter TargetName="Knob" Property="Fill" Value="{DynamicResource ToggleSwitchKnobFillOffDisabled}" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked" Value="True" />
+                                <Condition Property="IsEnabled" Value="False" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="StateText" Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+                            <Setter TargetName="Track" Property="Background" Value="{DynamicResource ToggleSwitchFillOnDisabled}" />
+                            <Setter TargetName="Track" Property="BorderBrush" Value="{DynamicResource ToggleSwitchStrokeOnDisabled}" />
+                            <Setter TargetName="Knob" Property="Fill" Value="{DynamicResource ToggleSwitchKnobFillOnDisabled}" />
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type pluginsdk:NumberBox}">
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type pluginsdk:NumberBox}">
+                    <Border
+                        MinHeight="{TemplateBinding MinHeight}"
+                        Background="{DynamicResource ControlFillColorDefaultBrush}"
+                        BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        SnapsToDevicePixels="True">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox
+                                x:Name="PART_TextBox"
+                                Grid.Column="0"
+                                MinWidth="0"
+                                MinHeight="0"
+                                Padding="8 4 4 4"
+                                VerticalContentAlignment="Center"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+                                <TextBox.Template>
+                                    <ControlTemplate TargetType="{x:Type TextBox}">
+                                        <ScrollViewer
+                                            x:Name="PART_ContentHost"
+                                            Margin="0"
+                                            Padding="{TemplateBinding Padding}"
+                                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                            Focusable="False"
+                                            HorizontalScrollBarVisibility="Hidden"
+                                            VerticalScrollBarVisibility="Hidden" />
+                                    </ControlTemplate>
+                                </TextBox.Template>
+                            </TextBox>
+                            <RepeatButton
+                                x:Name="PART_UpButton"
+                                Grid.Column="1"
+                                MinWidth="24"
+                                Padding="6 0"
+                                VerticalAlignment="Stretch"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Content="&#xE70E;"
+                                Focusable="False"
+                                FontFamily="Segoe Fluent Icons,Segoe MDL2 Assets"
+                                FontSize="10"
+                                Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                            <RepeatButton
+                                x:Name="PART_DownButton"
+                                Grid.Column="2"
+                                MinWidth="24"
+                                Padding="6 0"
+                                VerticalAlignment="Stretch"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Content="&#xE70D;"
+                                Focusable="False"
+                                FontFamily="Segoe Fluent Icons,Segoe MDL2 Assets"
+                                FontSize="10"
+                                Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type pluginsdk:SettingsCard}">
+        <Setter Property="Padding" Value="16 14" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="MinHeight" Value="66" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type pluginsdk:SettingsCard}">
+                    <Border
+                        x:Name="RootBorder"
+                        MinHeight="{TemplateBinding MinHeight}"
+                        Padding="{TemplateBinding Padding}"
+                        Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        SnapsToDevicePixels="True">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <ContentPresenter
+                                x:Name="HeaderIconPresenter"
+                                Grid.Column="0"
+                                Width="20"
+                                Height="20"
+                                Margin="2 0 16 0"
+                                VerticalAlignment="Center"
+                                Content="{TemplateBinding HeaderIcon}" />
+                            <StackPanel
+                                x:Name="HeaderPanel"
+                                Grid.Column="1"
+                                Margin="0 0 16 0"
+                                VerticalAlignment="Center">
+                                <TextBlock
+                                    x:Name="HeaderText"
+                                    FontSize="14"
+                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                    Text="{TemplateBinding Header}"
+                                    TextWrapping="Wrap" />
+                                <TextBlock
+                                    x:Name="DescriptionText"
+                                    Margin="0 2 0 0"
+                                    FontSize="12"
+                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                    Text="{TemplateBinding Description}"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                            <ContentPresenter
+                                x:Name="PART_ContentPresenter"
+                                Grid.Column="2"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Content="{TemplateBinding Content}" />
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="HasHeaderIcon" Value="False">
+                            <Setter TargetName="HeaderIconPresenter" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="HasHeader" Value="False">
+                            <Setter TargetName="HeaderText" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="HasDescription" Value="False">
+                            <Setter TargetName="DescriptionText" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="ContentAlignment" Value="Vertical">
+                            <Setter TargetName="HeaderIconPresenter" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="HeaderPanel" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="PART_ContentPresenter" Property="Grid.Column" Value="0" />
+                            <Setter TargetName="PART_ContentPresenter" Property="Grid.ColumnSpan" Value="3" />
+                            <Setter TargetName="PART_ContentPresenter" Property="HorizontalAlignment" Value="Stretch" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="RootBorder" Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type pluginsdk:SettingsExpander}">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type pluginsdk:SettingsExpander}">
+                    <Border
+                        Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        SnapsToDevicePixels="True">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <ToggleButton
+                                Grid.Row="0"
+                                MinHeight="66"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                                        <Border
+                                            x:Name="HeaderBackground"
+                                            Padding="16 14"
+                                            Background="Transparent"
+                                            CornerRadius="5">
+                                            <pluginsdk:FontIcon
+                                                x:Name="ChevronIcon"
+                                                Margin="4 0 2 0"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Center"
+                                                FontSize="12"
+                                                Glyph="&#xE70D;" />
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="HeaderBackground" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                            </Trigger>
+                                            <Trigger Property="IsChecked" Value="True">
+                                                <Setter TargetName="HeaderBackground" Property="CornerRadius" Value="5 5 0 0" />
+                                                <Setter TargetName="ChevronIcon" Property="Glyph" Value="&#xE70E;" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+
+                            <Grid Grid.Row="0" Margin="16 14 44 14">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <ContentPresenter
+                                    x:Name="HeaderIconPresenter"
+                                    Grid.Column="0"
+                                    Width="20"
+                                    Height="20"
+                                    Margin="2 0 16 0"
+                                    VerticalAlignment="Center"
+                                    Content="{TemplateBinding HeaderIcon}"
+                                    IsHitTestVisible="False" />
+                                <StackPanel
+                                    Grid.Column="1"
+                                    Margin="0 0 16 0"
+                                    VerticalAlignment="Center"
+                                    IsHitTestVisible="False">
+                                    <TextBlock
+                                        x:Name="HeaderText"
+                                        FontSize="14"
+                                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                        Text="{TemplateBinding Header}"
+                                        TextWrapping="Wrap" />
+                                    <TextBlock
+                                        x:Name="DescriptionText"
+                                        Margin="0 2 0 0"
+                                        FontSize="12"
+                                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                        Text="{TemplateBinding Description}"
+                                        TextWrapping="Wrap" />
+                                </StackPanel>
+                                <ContentPresenter
+                                    Grid.Column="2"
+                                    Margin="0 0 12 0"
+                                    VerticalAlignment="Center"
+                                    Content="{TemplateBinding Content}" />
+                            </Grid>
+
+                            <Border
+                                x:Name="ItemsBorder"
+                                Grid.Row="1"
+                                Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}"
+                                CornerRadius="0 0 5 5"
+                                Visibility="Collapsed">
+                                <ItemsPresenter />
+                            </Border>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="HasHeaderIcon" Value="False">
+                            <Setter TargetName="HeaderIconPresenter" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="HasHeader" Value="False">
+                            <Setter TargetName="HeaderText" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="HasDescription" Value="False">
+                            <Setter TargetName="DescriptionText" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="IsExpanded" Value="True">
+                            <Setter TargetName="ItemsBorder" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 </ResourceDictionary>

@@ -56,10 +56,10 @@ public partial class HotkeyControl
 
     public void GetNewHotkey(object sender, RoutedEventArgs e)
     {
-        _ = OpenHotkeyDialogAsync();
+        OpenHotkeyDialog();
     }
 
-    private async Task OpenHotkeyDialogAsync()
+    private void OpenHotkeyDialog()
     {
         if (HotkeyInfo is null)
             return;
@@ -69,7 +69,7 @@ public partial class HotkeyControl
             Owner = Window.GetWindow(this)
         };
 
-        await dialog.ShowAsync();
+        dialog.ShowDialog();
         UpdateUI();
     }
 

@@ -7,7 +7,7 @@
     xmlns:hotkeys="clr-namespace:Flow.Launcher.Core.Hotkeys;assembly=Flow.Launcher.Core"
     xmlns:local="clr-namespace:Flow.Launcher.Settings.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
+    xmlns:pluginsdk="http://schemas.flowlauncher.com/pluginsdk"
     d:DataContext="{d:DesignInstance local:SettingsHotkeyViewModel}"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -18,163 +18,163 @@
             FontSize="30"
             Text="Hotkeys" />
 
-        <ui:SettingsExpander Description="Enter shortcut to show/hide Flow Launcher." Header="Open Flow Launcher">
-            <ui:SettingsExpander.HeaderIcon>
-                <ui:FontIcon Glyph="&#xeda7;" />
-            </ui:SettingsExpander.HeaderIcon>
+        <pluginsdk:SettingsExpander Description="Enter shortcut to show/hide Flow Launcher." Header="Open Flow Launcher">
+            <pluginsdk:SettingsExpander.HeaderIcon>
+                <pluginsdk:FontIcon Glyph="&#xeda7;" />
+            </pluginsdk:SettingsExpander.HeaderIcon>
 
             <controls:HotkeyControl HotkeyInfo="{x:Static hotkeys:DefaultHotkeys.ToggleFlowLauncher}" />
 
-            <ui:SettingsExpander.Items>
-                <ui:SettingsCard Description="Show Flow Launcher with a magic query depending on the computer's context (e.g. the explorer's path if a folder is opened and focused)." Header="Magic Query">
-                    <ui:SettingsCard.HeaderIcon>
-                        <ui:FontIcon Glyph="&#xeda7;" />
-                    </ui:SettingsCard.HeaderIcon>
+            <pluginsdk:SettingsExpander.Items>
+                <pluginsdk:SettingsCard Description="Show Flow Launcher with a magic query depending on the computer's context (e.g. the explorer's path if a folder is opened and focused)." Header="Magic Query">
+                    <pluginsdk:SettingsCard.HeaderIcon>
+                        <pluginsdk:FontIcon Glyph="&#xeda7;" />
+                    </pluginsdk:SettingsCard.HeaderIcon>
 
                     <controls:HotkeyControl HotkeyInfo="{x:Static hotkeys:DefaultHotkeys.MagicQuery}" />
-                </ui:SettingsCard>
-            </ui:SettingsExpander.Items>
-        </ui:SettingsExpander>
+                </pluginsdk:SettingsCard>
+            </pluginsdk:SettingsExpander.Items>
+        </pluginsdk:SettingsExpander>
 
-        <ui:SettingsCard
+        <pluginsdk:SettingsCard
             Margin="0 4 0 0"
             Description="Enter shortcut to show/hide preview in search window."
             Header="Toggle Preview">
-            <ui:SettingsCard.HeaderIcon>
-                <ui:FontIcon Glyph="&#xe8a1;" />
-            </ui:SettingsCard.HeaderIcon>
+            <pluginsdk:SettingsCard.HeaderIcon>
+                <pluginsdk:FontIcon Glyph="&#xe8a1;" />
+            </pluginsdk:SettingsCard.HeaderIcon>
 
             <controls:HotkeyControl HotkeyInfo="{x:Static hotkeys:DefaultHotkeys.TogglePreview}" />
-        </ui:SettingsCard>
+        </pluginsdk:SettingsCard>
 
-        <ui:SettingsExpander
+        <pluginsdk:SettingsExpander
             Margin="0 14 0 0"
             Description="List of currently registered hotkeys"
             Header="Hotkey Presets">
-            <ui:SettingsExpander.HeaderIcon>
-                <ui:FontIcon Glyph="&#xf0e2;" />
-            </ui:SettingsExpander.HeaderIcon>
+            <pluginsdk:SettingsExpander.HeaderIcon>
+                <pluginsdk:FontIcon Glyph="&#xf0e2;" />
+            </pluginsdk:SettingsExpander.HeaderIcon>
 
-            <ui:SettingsExpander.Items>
-                <ui:SettingsCard Header="Open Containing Folder">
-                    <ui:SettingsCard.HeaderIcon>
-                        <ui:FontIcon Glyph="&#xe8b7;" />
-                    </ui:SettingsCard.HeaderIcon>
+            <pluginsdk:SettingsExpander.Items>
+                <pluginsdk:SettingsCard Header="Open Containing Folder">
+                    <pluginsdk:SettingsCard.HeaderIcon>
+                        <pluginsdk:FontIcon Glyph="&#xe8b7;" />
+                    </pluginsdk:SettingsCard.HeaderIcon>
 
                     <controls:HotkeyControl Keys="Ctrl+Enter" />
-                </ui:SettingsCard>
-                <ui:SettingsCard Header="Run As Admin">
-                    <ui:SettingsCard.HeaderIcon>
-                        <ui:FontIcon Glyph="&#xe7ef;" />
-                    </ui:SettingsCard.HeaderIcon>
+                </pluginsdk:SettingsCard>
+                <pluginsdk:SettingsCard Header="Run As Admin">
+                    <pluginsdk:SettingsCard.HeaderIcon>
+                        <pluginsdk:FontIcon Glyph="&#xe7ef;" />
+                    </pluginsdk:SettingsCard.HeaderIcon>
 
                     <controls:HotkeyControl Keys="Ctrl+Shift+Enter" />
-                </ui:SettingsCard>
-                <ui:SettingsCard Header="Copy File Path">
-                    <ui:SettingsCard.HeaderIcon>
-                        <ui:FontIcon Glyph="&#xe8c8;" />
-                    </ui:SettingsCard.HeaderIcon>
+                </pluginsdk:SettingsCard>
+                <pluginsdk:SettingsCard Header="Copy File Path">
+                    <pluginsdk:SettingsCard.HeaderIcon>
+                        <pluginsdk:FontIcon Glyph="&#xe8c8;" />
+                    </pluginsdk:SettingsCard.HeaderIcon>
 
                     <controls:HotkeyControl Keys="Ctrl+Shift+C" />
-                </ui:SettingsCard>
-                <ui:SettingsCard Header="Open Context Menu">
-                    <ui:SettingsCard.HeaderIcon>
-                        <ui:FontIcon Glyph="&#xede3;" />
-                    </ui:SettingsCard.HeaderIcon>
+                </pluginsdk:SettingsCard>
+                <pluginsdk:SettingsCard Header="Open Context Menu">
+                    <pluginsdk:SettingsCard.HeaderIcon>
+                        <pluginsdk:FontIcon Glyph="&#xede3;" />
+                    </pluginsdk:SettingsCard.HeaderIcon>
 
                     <controls:HotkeyControl Keys="Shift+Enter" />
-                </ui:SettingsCard>
-                <ui:SettingsCard Header="Open Native Context Menu">
-                    <ui:SettingsCard.HeaderIcon>
-                        <ui:FontIcon Glyph="&#xede3;" />
-                    </ui:SettingsCard.HeaderIcon>
+                </pluginsdk:SettingsCard>
+                <pluginsdk:SettingsCard Header="Open Native Context Menu">
+                    <pluginsdk:SettingsCard.HeaderIcon>
+                        <pluginsdk:FontIcon Glyph="&#xede3;" />
+                    </pluginsdk:SettingsCard.HeaderIcon>
 
                     <controls:HotkeyControl Keys="Alt+Enter" />
-                </ui:SettingsCard>
-                <ui:SettingsCard Header="Toggle Game Mode">
-                    <ui:SettingsCard.HeaderIcon>
-                        <ui:FontIcon Glyph="&#xe7fc;" />
-                    </ui:SettingsCard.HeaderIcon>
+                </pluginsdk:SettingsCard>
+                <pluginsdk:SettingsCard Header="Toggle Game Mode">
+                    <pluginsdk:SettingsCard.HeaderIcon>
+                        <pluginsdk:FontIcon Glyph="&#xe7fc;" />
+                    </pluginsdk:SettingsCard.HeaderIcon>
 
                     <controls:HotkeyControl Keys="Ctrl+F12" />
-                </ui:SettingsCard>
-                <ui:SettingsCard Header="Refresh Search Results">
-                    <ui:SettingsCard.HeaderIcon>
-                        <ui:FontIcon Glyph="&#xe72c;" />
-                    </ui:SettingsCard.HeaderIcon>
+                </pluginsdk:SettingsCard>
+                <pluginsdk:SettingsCard Header="Refresh Search Results">
+                    <pluginsdk:SettingsCard.HeaderIcon>
+                        <pluginsdk:FontIcon Glyph="&#xe72c;" />
+                    </pluginsdk:SettingsCard.HeaderIcon>
 
                     <controls:HotkeyControl Keys="Ctrl+R" />
-                </ui:SettingsCard>
-                <ui:SettingsCard Description="Use when require plugins to reload and update their existing data." Header="Reload Plugins Data">
-                    <ui:SettingsCard.HeaderIcon>
-                        <ui:FontIcon Glyph="&#xe72c;" />
-                    </ui:SettingsCard.HeaderIcon>
+                </pluginsdk:SettingsCard>
+                <pluginsdk:SettingsCard Description="Use when require plugins to reload and update their existing data." Header="Reload Plugins Data">
+                    <pluginsdk:SettingsCard.HeaderIcon>
+                        <pluginsdk:FontIcon Glyph="&#xe72c;" />
+                    </pluginsdk:SettingsCard.HeaderIcon>
 
                     <controls:HotkeyControl Keys="F5" />
-                </ui:SettingsCard>
-                <ui:SettingsCard Header="Previous Page">
-                    <ui:SettingsCard.HeaderIcon>
-                        <ui:FontIcon Glyph="&#xf0ad;" />
-                    </ui:SettingsCard.HeaderIcon>
+                </pluginsdk:SettingsCard>
+                <pluginsdk:SettingsCard Header="Previous Page">
+                    <pluginsdk:SettingsCard.HeaderIcon>
+                        <pluginsdk:FontIcon Glyph="&#xf0ad;" />
+                    </pluginsdk:SettingsCard.HeaderIcon>
 
                     <controls:HotkeyControl HotkeyInfo="{x:Static hotkeys:DefaultHotkeys.SelectPreviousPage}" />
-                </ui:SettingsCard>
-                <ui:SettingsCard Header="Next Page">
-                    <ui:SettingsCard.HeaderIcon>
-                        <ui:FontIcon Glyph="&#xf0ae;" />
-                    </ui:SettingsCard.HeaderIcon>
+                </pluginsdk:SettingsCard>
+                <pluginsdk:SettingsCard Header="Next Page">
+                    <pluginsdk:SettingsCard.HeaderIcon>
+                        <pluginsdk:FontIcon Glyph="&#xf0ae;" />
+                    </pluginsdk:SettingsCard.HeaderIcon>
 
                     <controls:HotkeyControl HotkeyInfo="{x:Static hotkeys:DefaultHotkeys.SelectNextPage}" />
-                </ui:SettingsCard>
+                </pluginsdk:SettingsCard>
 
-                <ui:SettingsCard Header="Quick Adjust Window Width">
-                    <ui:SettingsCard.HeaderIcon>
-                        <ui:FontIcon Glyph="&#xe7ea;" />
-                    </ui:SettingsCard.HeaderIcon>
+                <pluginsdk:SettingsCard Header="Quick Adjust Window Width">
+                    <pluginsdk:SettingsCard.HeaderIcon>
+                        <pluginsdk:FontIcon Glyph="&#xe7ea;" />
+                    </pluginsdk:SettingsCard.HeaderIcon>
 
                     <StackPanel Orientation="Horizontal">
                         <controls:HotkeyControl Keys="Ctrl+[" />
                         <controls:HotkeyControl Margin="4 0 0 0" Keys="Ctrl+]" />
                     </StackPanel>
-                </ui:SettingsCard>
-                <ui:SettingsCard Header="Quick Adjust Window Height">
-                    <ui:SettingsCard.HeaderIcon>
-                        <ui:FontIcon Glyph="&#xe7eb;" />
-                    </ui:SettingsCard.HeaderIcon>
+                </pluginsdk:SettingsCard>
+                <pluginsdk:SettingsCard Header="Quick Adjust Window Height">
+                    <pluginsdk:SettingsCard.HeaderIcon>
+                        <pluginsdk:FontIcon Glyph="&#xe7eb;" />
+                    </pluginsdk:SettingsCard.HeaderIcon>
 
                     <StackPanel Orientation="Horizontal">
                         <controls:HotkeyControl Keys="Ctrl+Plus" />
                         <controls:HotkeyControl Margin="4 0 0 0" Keys="Ctrl+Minus" />
                     </StackPanel>
-                </ui:SettingsCard>
-            </ui:SettingsExpander.Items>
-        </ui:SettingsExpander>
+                </pluginsdk:SettingsCard>
+            </pluginsdk:SettingsExpander.Items>
+        </pluginsdk:SettingsExpander>
 
-        <ui:SettingsCard
+        <pluginsdk:SettingsCard
             Margin="0 14 0 0"
             Description="Runs autocomplete for the selected items."
             Header="Auto Complete">
-            <ui:SettingsCard.HeaderIcon>
-                <ui:FontIcon Glyph="&#xe893;" />
-            </ui:SettingsCard.HeaderIcon>
+            <pluginsdk:SettingsCard.HeaderIcon>
+                <pluginsdk:FontIcon Glyph="&#xe893;" />
+            </pluginsdk:SettingsCard.HeaderIcon>
 
             <controls:HotkeyControl HotkeyInfo="{x:Static hotkeys:DefaultHotkeys.Autocomplete}" />
-        </ui:SettingsCard>
+        </pluginsdk:SettingsCard>
 
-        <ui:SettingsCard Margin="0 4 0 0" Header="Select Previous Item">
-            <ui:SettingsCard.HeaderIcon>
-                <ui:FontIcon Glyph="&#xe74a;" />
-            </ui:SettingsCard.HeaderIcon>
+        <pluginsdk:SettingsCard Margin="0 4 0 0" Header="Select Previous Item">
+            <pluginsdk:SettingsCard.HeaderIcon>
+                <pluginsdk:FontIcon Glyph="&#xe74a;" />
+            </pluginsdk:SettingsCard.HeaderIcon>
 
             <controls:HotkeyControl HotkeyInfo="{x:Static hotkeys:DefaultHotkeys.SelectPreviousResult}" />
-        </ui:SettingsCard>
+        </pluginsdk:SettingsCard>
 
-        <ui:SettingsCard Margin="0 4 0 0" Header="Select Next Item">
-            <ui:SettingsCard.HeaderIcon>
-                <ui:FontIcon Glyph="&#xe74b;" />
-            </ui:SettingsCard.HeaderIcon>
+        <pluginsdk:SettingsCard Margin="0 4 0 0" Header="Select Next Item">
+            <pluginsdk:SettingsCard.HeaderIcon>
+                <pluginsdk:FontIcon Glyph="&#xe74b;" />
+            </pluginsdk:SettingsCard.HeaderIcon>
 
             <controls:HotkeyControl HotkeyInfo="{x:Static hotkeys:DefaultHotkeys.SelectNextResult}" />
-        </ui:SettingsCard>
+        </pluginsdk:SettingsCard>
     </StackPanel>
 </UserControl>

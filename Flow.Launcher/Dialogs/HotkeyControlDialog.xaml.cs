@@ -3,11 +3,10 @@ using System.Windows;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using Flow.Launcher.Core.Hotkeys;
 using Flow.Launcher.PluginSDK.Hotkeys;
-using iNKORE.UI.WPF.Modern.Controls;
 
 namespace Flow.Launcher.Dialogs;
 
-public partial class HotkeyControlDialog : ContentDialog
+public partial class HotkeyControlDialog : Window
 {
     // TODO: Check if there is any better alternative
     private readonly HotkeyManager _hotkeyManager = Ioc.Default.GetRequiredService<HotkeyManager>();
@@ -62,14 +61,20 @@ public partial class HotkeyControlDialog : ContentDialog
     private void Cancel(object sender, RoutedEventArgs routedEventArgs)
     {
         _hotkeyManager.IgnoreGlobalHotkeys = false;
-        Hide();
+        Close();
     }
 
     private void Save(object sender, RoutedEventArgs routedEventArgs)
     {
         _hotkeyManager.UpdateHotkey(Hotkey.Id, _newHotkey);
         _hotkeyManager.IgnoreGlobalHotkeys = false;
-        Hide();
+        Close();
+    }
+
+    protected override void OnClosed(EventArgs e)
+    {
+        _hotkeyManager.IgnoreGlobalHotkeys = false;
+        base.OnClosed(e);
     }
 
     private void UpdateUI()

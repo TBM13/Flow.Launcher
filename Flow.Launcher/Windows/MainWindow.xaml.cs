@@ -11,7 +11,6 @@ using Flow.Launcher.Interop.Hardware;
 using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Logging;
 using Flow.Launcher.ViewModel;
-using iNKORE.UI.WPF.Modern;
 using DataObject = System.Windows.DataObject;
 using Key = System.Windows.Input.Key;
 
@@ -61,12 +60,6 @@ public partial class MainWindow : Window
 
     private void OnLoaded(object sender, RoutedEventArgs _)
     {
-        // Handle settings
-        if (_settings.ColorScheme == ColorScheme.Light)
-            ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
-        else if (_settings.ColorScheme == ColorScheme.Dark)
-            ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
-
         _settings.PropertyChanged += (o, e) =>
         {
             switch (e.PropertyName)

@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
+    xmlns:pluginsdk="http://schemas.flowlauncher.com/pluginsdk"
     xmlns:viewModels="clr-namespace:Flow.Launcher.Plugin.Explorer.ViewModels"
     d:DataContext="{d:DesignInstance viewModels:SettingsViewModel}"
     d:DesignHeight="450"
@@ -12,20 +12,20 @@
     mc:Ignorable="d">
 
     <StackPanel>
-        <ui:SettingsCard Header="Use search result's location as the working directory of the executable">
+        <pluginsdk:SettingsCard Header="Use search result's location as the working directory of the executable">
             <CheckBox IsChecked="{Binding Settings.UseLocationAsWorkingDir, Mode=TwoWay}" />
-        </ui:SettingsCard>
+        </pluginsdk:SettingsCard>
 
-        <ui:SettingsCard Header="Display File Info">
+        <pluginsdk:SettingsCard Header="Display File Info">
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                 <CheckBox Content="Size" IsChecked="{Binding Settings.ShowFileSizeInPreviewPanel, Mode=TwoWay}" />
                 <CheckBox Content="Date Created" IsChecked="{Binding Settings.ShowCreatedDateInPreviewPanel, Mode=TwoWay}" />
                 <CheckBox Content="Date Modified" IsChecked="{Binding Settings.ShowModifiedDateInPreviewPanel, Mode=TwoWay}" />
                 <CheckBox Content="File Age" IsChecked="{Binding Settings.ShowFileAgeInPreviewPanel, Mode=TwoWay}" />
             </StackPanel>
-        </ui:SettingsCard>
+        </pluginsdk:SettingsCard>
 
-        <ui:SettingsCard
+        <pluginsdk:SettingsCard
             Header="Date and time format"
             IsEnabled="{Binding ShowPreviewPanelDateTimeChoices}"
             Visibility="{Binding PreviewPanelDateTimeChoicesVisibility}">
@@ -35,6 +35,6 @@
                 <ComboBox ItemsSource="{Binding TimeFormatList}" SelectedItem="{Binding Settings.PreviewPanelTimeFormat}" />
                 <TextBlock VerticalAlignment="Center" Text="{Binding PreviewPanelTimeFormatDemo}" />
             </StackPanel>
-        </ui:SettingsCard>
+        </pluginsdk:SettingsCard>
     </StackPanel>
 </UserControl>

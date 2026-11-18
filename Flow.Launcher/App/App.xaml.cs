@@ -17,7 +17,6 @@ using Flow.Launcher.Settings;
 using Flow.Launcher.Settings.Pages;
 using Flow.Launcher.ViewModel;
 using Flow.Launcher.Windows;
-using iNKORE.UI.WPF.Modern.Common;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -40,6 +39,7 @@ public partial class App : Application
 
     private static Process? _adminHelperProcess;
     private IHost? _host;
+    private ResourceDictionary? _customThemeDictionary;
     private readonly ISettingsAPI _settings;
     private readonly PluginSDK.Logging.Logger<App>? _logger;
     private readonly bool _initialized;
@@ -270,9 +270,6 @@ public partial class App : Application
         _settings = settings;
         _logger = Ioc.Default.GetRequiredService<PluginSDK.Logging.Logger<App>>();
 
-        // Do not use bitmap cache since it can cause WPF second window freezing issue
-        ShadowAssist.UseBitmapCache = false;
-
         // Initialize the API and pretty much everything
         // TODO: Check if this is needed
         Ioc.Default.GetRequiredService<IPublicAPI>();
@@ -281,6 +278,63 @@ public partial class App : Application
         SetupErrorHandling();
 
         _initialized = true;
+    }
+
+    public void ApplyTheme(ColorScheme scheme)
+    {
+        ApplicationHelper.SetAppMode(scheme switch
+        {
+            ColorScheme.System => AppMode.AllowDark,
+            ColorScheme.Light => AppMode.ForceLight,
+            ColorScheme.Dark => AppMode.ForceDark,
+            _ => throw new InvalidOperationException($"Unknown color scheme: {scheme}")
+        });
+
+#pragma warning disable WPF0001 // Application.ThemeMode is marked experimental in WPF
+        ThemeMode = scheme switch
+        {
+            ColorScheme.System => ThemeMode.System,
+            ColorScheme.Light => ThemeMode.Light,
+            ColorScheme.Dark => ThemeMode.Dark,
+            _ => throw new InvalidOperationException($"Unknown color scheme: {scheme}")
+        };
+#pragma warning restore WPF0001
+
+        UpdateCustomThemeDictionary(scheme);
+    }
+
+    private void UpdateCustomThemeDictionary(ColorScheme scheme)
+    {
+        bool isDark = scheme switch
+        {
+            ColorScheme.Dark => true,
+            ColorScheme.Light => false,
+            ColorScheme.System => IsSystemDarkTheme(),
+            _ => true
+        };
+
+        Uri source = new(isDark ? "pack://application:,,,/Resources/Dark.xaml" : "pack://application:,,,/Resources/Light.xaml");
+        ResourceDictionary newDictionary = new() { Source = source };
+
+        if (_customThemeDictionary is not null)
+            Resources.MergedDictionaries.Remove(_customThemeDictionary);
+
+        _customThemeDictionary = newDictionary;
+        Resources.MergedDictionaries.Add(_customThemeDictionary);
+    }
+
+    private static bool IsSystemDarkTheme()
+    {
+        using RegistryKey? key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
+        return key?.GetValue("AppsUseLightTheme") is not int value || value == 0;
+    }
+
+    private void OnUserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
+    {
+        if (e.Category == UserPreferenceCategory.General && _settings.ColorScheme == ColorScheme.System)
+        {
+            Dispatcher.InvokeAsync(() => UpdateCustomThemeDictionary(ColorScheme.System));
+        }
     }
 
     // TODO: Double-check whether async here is a good idea
@@ -298,14 +352,9 @@ public partial class App : Application
         // So set to OnExplicitShutdown to prevent the application from shutting down before main window is created
         Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
-        // Enable Win32 dark mode if the system is in dark mode before creating all windows
-        ApplicationHelper.SetAppMode(_settings.ColorScheme switch
-        {
-            ColorScheme.System => AppMode.AllowDark,
-            ColorScheme.Light => AppMode.ForceLight,
-            ColorScheme.Dark => AppMode.ForceDark,
-            _ => throw new InvalidOperationException($"Unknown color scheme: {_settings.ColorScheme}")
-        });
+        // Apply theme
+        ApplyTheme(_settings.ColorScheme);
+        SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
 
         _logger!.LogInfo($"Begin Flow Launcher startup ----------------------------------------------------");
         _logger.LogInfo($"Runtime info:{RuntimeInfo}");
@@ -435,6 +484,7 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        SystemEvents.UserPreferenceChanged -= OnUserPreferenceChanged;
         _logger?.LogInfo($"Exiting -------------------------------------------------------");
         CleanUpAndFlushAsync().ConfigureAwait(false).GetAwaiter().GetResult();
         base.OnExit(e);

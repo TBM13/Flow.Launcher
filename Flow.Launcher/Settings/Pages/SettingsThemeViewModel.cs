@@ -1,7 +1,5 @@
 ﻿using Flow.Launcher.Core.Settings;
-using Flow.Launcher.Interop;
 using Flow.Launcher.PluginSDK.UI;
-using iNKORE.UI.WPF.Modern;
 
 namespace Flow.Launcher.Settings.Pages;
 
@@ -18,19 +16,6 @@ public partial class SettingsThemeViewModel(ISettingsAPI settings) : BaseSetting
 
     public void ChangeScheme(ColorScheme scheme)
     {
-        ThemeManager.Current.ApplicationTheme = scheme switch
-        {
-            ColorScheme.Light => ApplicationTheme.Light,
-            ColorScheme.Dark => ApplicationTheme.Dark,
-            ColorScheme.System => null,
-            _ => throw new InvalidOperationException($"Unexpected color scheme: {scheme}")
-        };
-        ApplicationHelper.SetAppMode(scheme switch
-        {
-            ColorScheme.System => AppMode.AllowDark,
-            ColorScheme.Light => AppMode.ForceLight,
-            ColorScheme.Dark => AppMode.ForceDark,
-            _ => throw new InvalidOperationException($"Unexpected color scheme: {scheme}")
-        });
+        ((App.App)System.Windows.Application.Current).ApplyTheme(scheme);
     }
 }

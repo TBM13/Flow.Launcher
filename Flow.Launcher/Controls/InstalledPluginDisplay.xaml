@@ -4,64 +4,63 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
+    xmlns:pages="clr-namespace:Flow.Launcher.Settings.Pages"
+    xmlns:pluginsdk="http://schemas.flowlauncher.com/pluginsdk"
     xmlns:vm="clr-namespace:Flow.Launcher.ViewModel"
     d:DataContext="{d:DesignInstance vm:PluginViewModel}"
     d:DesignHeight="300"
     d:DesignWidth="300"
     mc:Ignorable="d">
-    <ui:SettingsExpander
+    <pluginsdk:SettingsExpander
         x:Name="PluginExpander"
         Description="{Binding PluginMetadata.Description}"
         Header="{Binding PluginMetadata.Name}"
         ToolTip="{Binding PluginMetadata.Version}">
 
-        <ui:SettingsExpander.HeaderIcon>
+        <pluginsdk:SettingsExpander.HeaderIcon>
             <Image Source="{Binding Image, Mode=OneWay}" />
-        </ui:SettingsExpander.HeaderIcon>
+        </pluginsdk:SettingsExpander.HeaderIcon>
 
-        <ui:SettingsExpander.Content>
+        <pluginsdk:SettingsExpander.Content>
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                 <StackPanel
                     VerticalAlignment="Center"
                     Orientation="Horizontal"
-                    Visibility="{Binding DataContext.IsPriorityMode, RelativeSource={RelativeSource AncestorType=ui:ItemsRepeater}, Converter={StaticResource BoolToVisibilityConverter}}">
+                    Visibility="{Binding DataContext.IsPriorityMode, RelativeSource={RelativeSource AncestorType=pages:SettingsPlugins}, Converter={StaticResource BoolToVisibilityConverter}}">
                     <TextBlock
                         Margin="0 0 8 0"
                         VerticalAlignment="Center"
                         FontSize="13"
                         Text="Priority" />
-                    <ui:NumberBox
+                    <pluginsdk:NumberBox
                         MinWidth="120"
                         Margin="0 0 8 0"
                         Maximum="999"
                         Minimum="-999"
-                        SpinButtonPlacementMode="Inline"
                         ToolTip="Change Plugin Results Priority"
-                        ValueChanged="NumberBox_OnValueChanged"
                         Value="{Binding Priority, Mode=TwoWay}" />
                 </StackPanel>
 
-                <ui:ToggleSwitch
+                <pluginsdk:ToggleSwitch
                     Margin="0 0 8 0"
                     IsOn="{Binding PluginHomeState}"
-                    Visibility="{Binding DataContext.IsHomeOnOffMode, RelativeSource={RelativeSource AncestorType=ui:ItemsRepeater}, Converter={StaticResource BoolToVisibilityConverter}}" />
+                    Visibility="{Binding DataContext.IsHomeOnOffMode, RelativeSource={RelativeSource AncestorType=pages:SettingsPlugins}, Converter={StaticResource BoolToVisibilityConverter}}" />
 
-                <ui:ToggleSwitch
+                <pluginsdk:ToggleSwitch
                     Margin="0 0 8 0"
                     IsOn="{Binding PluginState}"
-                    Visibility="{Binding DataContext.IsOnOffMode, RelativeSource={RelativeSource AncestorType=ui:ItemsRepeater}, Converter={StaticResource BoolToVisibilityConverter}}" />
+                    Visibility="{Binding DataContext.IsOnOffMode, RelativeSource={RelativeSource AncestorType=pages:SettingsPlugins}, Converter={StaticResource BoolToVisibilityConverter}}" />
             </StackPanel>
-        </ui:SettingsExpander.Content>
+        </pluginsdk:SettingsExpander.Content>
 
-        <ui:SettingsExpander.Items>
-            <ui:SettingsCard Padding="0" ContentAlignment="Vertical">
+        <pluginsdk:SettingsExpander.Items>
+            <pluginsdk:SettingsCard Padding="0" ContentAlignment="Vertical">
                 <StackPanel>
                     <!--  Action keyword setting  -->
                     <DockPanel
                         Margin="70 13.5 18 13.5"
                         Visibility="{Binding HasActionKeywords, Converter={StaticResource BoolToVisibilityConverter}}">
-                        <ui:FontIcon
+                        <pluginsdk:FontIcon
                             Margin="0 0 9 0"
                             VerticalAlignment="Center"
                             DockPanel.Dock="Left"
@@ -100,30 +99,30 @@
                                 Margin="10 0 0 0"
                                 VerticalAlignment="center"
                                 FontSize="11"
-                                Foreground="{DynamicResource SystemControlForegroundChromeGrayBrush}"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                 Text="by" />
                             <TextBlock
                                 Margin="5 0 0 0"
                                 VerticalAlignment="center"
                                 FontSize="11"
-                                Foreground="{DynamicResource SystemControlForegroundChromeGrayBrush}"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                 Text="{Binding PluginMetadata.Author}" />
                             <TextBlock
                                 Margin="10 0 0 0"
                                 VerticalAlignment="Center"
                                 FontSize="11"
-                                Foreground="{DynamicResource SystemControlForegroundChromeGrayBrush}"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                 Text="|" />
                             <TextBlock
                                 Margin="10 0 5 0"
                                 VerticalAlignment="Center"
                                 FontSize="11"
-                                Foreground="{DynamicResource SystemControlForegroundChromeGrayBrush}"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                 Text="{Binding Version}" />
                         </StackPanel>
                     </Border>
                 </StackPanel>
-            </ui:SettingsCard>
-        </ui:SettingsExpander.Items>
-    </ui:SettingsExpander>
+            </pluginsdk:SettingsCard>
+        </pluginsdk:SettingsExpander.Items>
+    </pluginsdk:SettingsExpander>
 </UserControl>

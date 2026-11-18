@@ -5,7 +5,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Flow.Launcher.Plugin.Calculator.Preview"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     Margin="0 3 3 0"
     d:DesignHeight="380"
     d:DesignWidth="300"
@@ -160,7 +159,7 @@
     </UserControl.Resources>
 
     <Grid>
-        <ui:ScrollViewerEx
+        <ScrollViewer
             Focusable="False"
             HorizontalScrollBarVisibility="Disabled"
             VerticalScrollBarVisibility="Auto">
@@ -238,14 +237,16 @@
                     </StackPanel>
                 </StackPanel>
             </Grid>
-        </ui:ScrollViewerEx>
+        </ScrollViewer>
 
         <Button
+            x:Name="HelpButton"
             Width="26"
             Height="26"
             Margin="0 4 4 0"
             HorizontalAlignment="Right"
             VerticalAlignment="Top"
+            Click="Help_Click"
             Style="{StaticResource BitButtonStyle}"
             ToolTip="Help">
             <TextBlock
@@ -253,21 +254,33 @@
                 FontSize="14"
                 Foreground="{DynamicResource Color05B}"
                 Text="&#xE897;" />
-            <ui:FlyoutService.Flyout>
-                <ui:Flyout Placement="BottomEdgeAlignedRight">
-                    <StackPanel MaxWidth="320" Grid.IsSharedSizeScope="True">
-                        <TextBlock
-                            Margin="0 0 0 8"
-                            FontSize="14"
-                            FontWeight="SemiBold"
-                            Text="Help" />
-                        <ItemsControl
-                            x:Name="HelpSectionsItemsControl"
-                            Focusable="False"
-                            ItemTemplate="{StaticResource HelpSectionTemplate}" />
-                    </StackPanel>
-                </ui:Flyout>
-            </ui:FlyoutService.Flyout>
         </Button>
+
+        <Popup
+            x:Name="HelpPopup"
+            AllowsTransparency="True"
+            Placement="Bottom"
+            PlacementTarget="{Binding ElementName=HelpButton}"
+            StaysOpen="False">
+            <Border
+                Padding="12"
+                Background="{DynamicResource PopuBGColor}"
+                BorderBrush="{DynamicResource SystemThemeBorder}"
+                BorderThickness="1"
+                CornerRadius="6"
+                TextElement.Foreground="{DynamicResource Color05B}">
+                <StackPanel MaxWidth="320" Grid.IsSharedSizeScope="True">
+                    <TextBlock
+                        Margin="0 0 0 8"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        Text="Help" />
+                    <ItemsControl
+                        x:Name="HelpSectionsItemsControl"
+                        Focusable="False"
+                        ItemTemplate="{StaticResource HelpSectionTemplate}" />
+                </StackPanel>
+            </Border>
+        </Popup>
     </Grid>
 </UserControl>

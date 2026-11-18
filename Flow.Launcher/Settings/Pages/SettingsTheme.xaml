@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Flow.Launcher.Settings.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
+    xmlns:pluginsdk="http://schemas.flowlauncher.com/pluginsdk"
     d:DataContext="{d:DesignInstance local:SettingsThemeViewModel}"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -16,24 +16,24 @@
             FontSize="30"
             Text="Appearance" />
 
-        <ui:SettingsCard Description="You can also quickly adjust this by using CTRL+Plus and CTRL+Minus." Header="Maximum results shown">
+        <pluginsdk:SettingsCard Description="You can also quickly adjust this by using CTRL+Plus and CTRL+Minus." Header="Maximum results shown">
             <ComboBox
                 Width="100"
                 ItemsSource="{Binding MaxResultsRange}"
                 SelectedItem="{Binding Settings.MaxResultsToShow}" />
-        </ui:SettingsCard>
+        </pluginsdk:SettingsCard>
 
-        <ui:SettingsCard Margin="0 14 0 0" Header="Color Scheme">
-            <ui:SettingsCard.HeaderIcon>
-                <ui:FontIcon Glyph="&#xe793;" />
-            </ui:SettingsCard.HeaderIcon>
+        <pluginsdk:SettingsCard Margin="0 14 0 0" Header="Color Scheme">
+            <pluginsdk:SettingsCard.HeaderIcon>
+                <pluginsdk:FontIcon Glyph="&#xe793;" />
+            </pluginsdk:SettingsCard.HeaderIcon>
 
             <ComboBox
                 MinWidth="180"
                 ItemsSource="{Binding ColorSchemeItems}"
-                SelectedValuePath="Value"
                 SelectedValue="{Binding Settings.ColorScheme}"
+                SelectedValuePath="Value"
                 SelectionChanged="Theme_SelectionChanged" />
-        </ui:SettingsCard>
+        </pluginsdk:SettingsCard>
     </StackPanel>
 </UserControl>

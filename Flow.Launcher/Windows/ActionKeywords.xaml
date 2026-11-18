@@ -2,10 +2,8 @@
     x:Class="Flow.Launcher.Windows.ActionKeywords"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     Title="Action keyword Setting"
     Width="450"
-    ui:WindowHelper.UseModernWindowStyle="True"
     Background="{DynamicResource PopuBGColor}"
     Foreground="{DynamicResource PopupTextColor}"
     Icon="/Images/app.png"
@@ -102,7 +100,7 @@
                     Height="38"
                     Margin="10 0 10 0"
                     Click="btnDone_OnClick"
-                    Style="{StaticResource AccentButtonStyle}">
+                    Style="{DynamicResource AccentButtonStyle}">
                     <TextBlock x:Name="lblAdd" Text="Done" />
                 </Button>
             </StackPanel>

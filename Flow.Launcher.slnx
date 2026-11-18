@@ -33,18 +33,4 @@
   <Project Path="Flow.Launcher/Flow.Launcher.csproj">
     <BuildDependency Project="Flow.Launcher.AdminHelper/Flow.Launcher.AdminHelper.csproj" />
   </Project>
-
-  <!-- UI.WPF.Modern -->
-  <Folder Name="/UI.WPF.Modern/">
-    <Project Path="UI.WPF.Modern/source/iNKORE.UI.WPF.Modern.Controls/iNKORE.UI.WPF.Modern.Controls.csproj" />
-    <Project Path="UI.WPF.Modern/source/Inkore.UI.WPF.Modern/iNKORE.UI.WPF.Modern.csproj" />
-  </Folder>
-
-  <Folder Name="/UI.WPF.Modern/Assets/" />
-  <Folder Name="/UI.WPF.Modern/Assets/Fonts/">
-    <File Path="UI.WPF.Modern/assets/fonts/SegoeIcons.ttf" />
-  </Folder>
-  <Folder Name="/UI.WPF.Modern/Assets/Misc/">
-    <File Path="UI.WPF.Modern/assets/misc/iNKORE.Pulic.snk" />
-  </Folder>
 </Solution>

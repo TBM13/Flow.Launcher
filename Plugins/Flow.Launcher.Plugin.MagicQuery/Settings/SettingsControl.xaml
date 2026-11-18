@@ -5,19 +5,19 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Flow.Launcher.Plugin.MagicQuery.Settings"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
+    xmlns:pluginsdk="http://schemas.flowlauncher.com/pluginsdk"
     d:DataContext="{d:DesignInstance Type=local:SettingsViewModel}"
     d:DesignHeight="350"
     d:DesignWidth="650"
     mc:Ignorable="d">
 
     <StackPanel>
-        <ui:SettingsCard Description="Evaluated top to bottom against the active window." Header="Rules">
+        <pluginsdk:SettingsCard Description="Evaluated top to bottom against the active window." Header="Rules">
             <Button
                 Command="{Binding AddRuleCommand}"
                 Content="Add Rule"
                 Style="{DynamicResource AccentButtonStyle}" />
-        </ui:SettingsCard>
+        </pluginsdk:SettingsCard>
 
         <TextBlock
             Margin="16 14 16 10"
@@ -74,7 +74,7 @@
                                         Command="{Binding DataContext.MoveRuleUpCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                         CommandParameter="{Binding}"
                                         ToolTip="Move up">
-                                        <ui:FontIcon FontSize="12" Glyph="&#xe70e;" />
+                                        <pluginsdk:FontIcon FontSize="12" Glyph="&#xe70e;" />
                                     </Button>
                                     <Button
                                         Margin="0 0 4 0"
@@ -82,14 +82,14 @@
                                         Command="{Binding DataContext.MoveRuleDownCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                         CommandParameter="{Binding}"
                                         ToolTip="Move down">
-                                        <ui:FontIcon FontSize="12" Glyph="&#xe70d;" />
+                                        <pluginsdk:FontIcon FontSize="12" Glyph="&#xe70d;" />
                                     </Button>
                                     <Button
                                         Padding="7"
                                         Command="{Binding DataContext.RemoveRuleCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                         CommandParameter="{Binding}"
                                         ToolTip="Delete rule">
-                                        <ui:FontIcon FontSize="12" Glyph="&#xe74d;" />
+                                        <pluginsdk:FontIcon FontSize="12" Glyph="&#xe74d;" />
                                     </Button>
                                 </StackPanel>
                             </DockPanel>
@@ -119,7 +119,7 @@
                                     Grid.Column="1"
                                     Margin="0 0 8 8"
                                     VerticalAlignment="Center"
-                                    ui:ControlHelper.PlaceholderText="Leave empty to ignore"
+                                    pluginsdk:TextBoxHelper.PlaceholderText="Leave empty to ignore"
                                     Text="{Binding WindowTitlePattern, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 <ComboBox
                                     Grid.Row="0"
@@ -159,7 +159,7 @@
                                         DockPanel.Dock="Right" />
                                     <TextBox
                                         VerticalAlignment="Center"
-                                        ui:ControlHelper.PlaceholderText="Leave empty to ignore>"
+                                        pluginsdk:TextBoxHelper.PlaceholderText="Leave empty to ignore>"
                                         Text="{Binding ProcessPathPattern, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 </DockPanel>
                                 <ComboBox
@@ -192,7 +192,7 @@
                                     Grid.Column="1"
                                     Grid.ColumnSpan="3"
                                     VerticalAlignment="Center"
-                                    ui:ControlHelper.PlaceholderText="Query to return (supports $1, $2, ${name} when using Regex)"
+                                    pluginsdk:TextBoxHelper.PlaceholderText="Query to return (supports $1, $2, ${name} when using Regex)"
                                     Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             </Grid>
                         </StackPanel>

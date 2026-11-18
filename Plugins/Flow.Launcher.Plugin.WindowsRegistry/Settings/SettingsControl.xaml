@@ -5,14 +5,14 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Flow.Launcher.Plugin.WindowsRegistry.Settings"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
+    xmlns:pluginsdk="http://schemas.flowlauncher.com/pluginsdk"
     d:DataContext="{d:DesignInstance Type=local:SettingsViewModel}"
     d:DesignHeight="300"
     d:DesignWidth="500"
     mc:Ignorable="d">
 
     <StackPanel>
-        <ui:SettingsCard
+        <pluginsdk:SettingsCard
             Description="Path to Sysinternals regjump.exe used to open registry keys and values."
             Header="RegJump executable path">
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
@@ -26,6 +26,6 @@
                     Click="BrowseButton_Click"
                     Content="Browse..." />
             </StackPanel>
-        </ui:SettingsCard>
+        </pluginsdk:SettingsCard>
     </StackPanel>
 </UserControl>

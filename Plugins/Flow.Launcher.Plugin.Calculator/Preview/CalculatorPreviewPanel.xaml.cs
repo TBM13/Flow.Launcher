@@ -104,4 +104,9 @@ public partial class CalculatorPreviewPanel : UserControl
 
         _changeValue(_integerValue ^ (Int128.One << bitIndex));
     }
+
+    private void Help_Click(object sender, RoutedEventArgs e)
+    {
+        HelpPopup.IsOpen = !HelpPopup.IsOpen;
+    }
 }

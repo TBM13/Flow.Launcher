@@ -1,5 +1,4 @@
 ﻿using Flow.Launcher.ViewModel;
-using iNKORE.UI.WPF.Modern.Controls;
 
 namespace Flow.Launcher.Controls;
 
@@ -23,14 +22,5 @@ public partial class InstalledPluginDisplay
             if (_vm is not null && PluginSettingsControl.Content is null && PluginExpander.IsExpanded)
                 PluginSettingsControl.Content = _vm.TryCreateSettingPanel();
         };
-    }
-
-    // This is used for PriorityControl to force its value to be 0 when the user clears the value
-    private void NumberBox_OnValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
-    {
-        if (double.IsNaN(args.NewValue))
-        {
-            sender.Value = 0;
-        }
     }
 }

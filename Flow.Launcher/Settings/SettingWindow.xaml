@@ -6,14 +6,12 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:pages="clr-namespace:Flow.Launcher.Settings.Pages"
     xmlns:setting="clr-namespace:Flow.Launcher.Settings"
-    xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     Title="Settings"
     Width="{Binding Settings.SettingWindowWidth, Mode=TwoWay}"
     Height="{Binding Settings.SettingWindowHeight, Mode=TwoWay}"
     MinWidth="940"
     MinHeight="600"
     d:DataContext="{d:DesignInstance setting:SettingViewModel}"
-    ui:WindowHelper.UseModernWindowStyle="True"
     Icon="pack://application:,,,/Images/app.ico"
     ResizeMode="CanResize"
     SnapsToDevicePixels="True"
@@ -39,16 +37,13 @@
         </DataTemplate>
     </Window.Resources>
 
-    <ui:NavigationView
-        IsBackButtonVisible="Collapsed"
-        IsBackEnabled="False"
-        IsPaneToggleButtonVisible="False"
-        MenuItemsSource="{Binding Pages}"
-        OpenPaneLength="240"
-        PaneDisplayMode="Left"
-        SelectedItem="{Binding CurrentPage, Mode=TwoWay}"
-        SelectionChanged="NavigationView_SelectionChanged">
-        <ui:NavigationView.PaneCustomContent>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="240" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0">
             <StackPanel Margin="0 35 0 25" HorizontalAlignment="Center">
                 <Image
                     Width="50"
@@ -61,22 +56,43 @@
                     Text="Flow Launcher"
                     TextAlignment="Center" />
             </StackPanel>
-        </ui:NavigationView.PaneCustomContent>
 
-        <ui:NavigationView.MenuItemTemplate>
-            <DataTemplate DataType="{x:Type pages:BaseSettingsPageViewModel}">
-                <ui:NavigationViewItem Content="{Binding Title}">
-                    <ui:NavigationViewItem.Icon>
-                        <ui:BitmapIcon ShowAsMonochrome="False" UriSource="{Binding IconPath}" />
-                    </ui:NavigationViewItem.Icon>
-                </ui:NavigationViewItem>
-            </DataTemplate>
-        </ui:NavigationView.MenuItemTemplate>
+            <ListBox
+                Margin="8 0"
+                Background="Transparent"
+                BorderThickness="0"
+                ItemsSource="{Binding Pages}"
+                SelectedItem="{Binding CurrentPage, Mode=TwoWay}"
+                SelectionChanged="NavigationView_SelectionChanged">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type pages:BaseSettingsPageViewModel}">
+                        <StackPanel Margin="4 6" Orientation="Horizontal">
+                            <Image
+                                Width="18"
+                                Height="18"
+                                Margin="0 0 12 0"
+                                RenderOptions.BitmapScalingMode="HighQuality"
+                                Source="{Binding IconPath}" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                FontSize="14"
+                                Text="{Binding Title}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </StackPanel>
 
-        <ui:ScrollViewerEx
+        <ScrollViewer
             x:Name="PageScrollViewer"
-            Padding="6 0 24 0"
+            Grid.Column="1"
             CanContentScroll="False"
-            Content="{Binding CurrentPage}" />
-    </ui:NavigationView>
+            HorizontalScrollBarVisibility="Disabled"
+            VerticalScrollBarVisibility="Auto">
+            <ContentControl
+                Margin="6 0 24 24"
+                Content="{Binding CurrentPage}"
+                Focusable="False" />
+        </ScrollViewer>
+    </Grid>
 </Window>

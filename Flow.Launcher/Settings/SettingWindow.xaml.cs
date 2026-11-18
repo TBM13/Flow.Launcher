@@ -24,7 +24,7 @@ public partial class SettingWindow : Window
             _vm.Settings.SettingWindowMaximized = WindowState == WindowState.Maximized;
     }
 
-    private void NavigationView_SelectionChanged(iNKORE.UI.WPF.Modern.Controls.NavigationView sender, iNKORE.UI.WPF.Modern.Controls.NavigationViewSelectionChangedEventArgs args)
+    private void NavigationView_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs args)
     {
         if (IsLoaded)
             PageScrollViewer.ScrollToTop();

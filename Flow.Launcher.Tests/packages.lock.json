@@ -23,11 +23,6 @@
         "resolved": "8.4.2",
         "contentHash": "WadCzGEc2U+3e20avRLng4qNtt4zoOGWrdUISqJWrHe3/FSnrYjuM5Sb4yQb09LhkBXrrI4Zt3dLKgRMbItsrg=="
       },
-      "iNKORE.UI.WPF": {
-        "type": "Transitive",
-        "resolved": "1.2.8",
-        "contentHash": "7b+z25JFdhGAfyJqlVIF0vLbmgsRvqDZMvhGPTz20gzQigDPMqVUOoCCKB5824GtYsjFCYNilmaowb+4yWATkQ=="
-      },
       "MemoryPack": {
         "type": "Transitive",
         "resolved": "1.21.4",
@@ -396,9 +391,7 @@
           "Flow.Launcher.Core": "[1.0.0, )",
           "Flow.Launcher.PluginSDK": "[1.0.0, )",
           "Microsoft.Extensions.DependencyInjection": "[11.0.0, )",
-          "Microsoft.Extensions.Hosting": "[11.0.0, )",
-          "iNKORE.UI.WPF.Modern": "[1.0.0, )",
-          "iNKORE.UI.WPF.Modern.Controls": "[1.0.0, )"
+          "Microsoft.Extensions.Hosting": "[11.0.0, )"
         }
       },
       "flow.launcher.core": {
@@ -429,27 +422,21 @@
       "flow.launcher.plugin.calculator": {
         "type": "Project",
         "dependencies": {
-          "Flow.Launcher.PluginSDK": "[1.0.0, )",
-          "iNKORE.UI.WPF.Modern": "[1.0.0, )",
-          "iNKORE.UI.WPF.Modern.Controls": "[1.0.0, )"
+          "Flow.Launcher.PluginSDK": "[1.0.0, )"
         }
       },
       "flow.launcher.plugin.explorer": {
         "type": "Project",
         "dependencies": {
           "Flow.Launcher.Interop": "[1.0.0, )",
-          "Flow.Launcher.PluginSDK": "[1.0.0, )",
-          "iNKORE.UI.WPF.Modern": "[1.0.0, )",
-          "iNKORE.UI.WPF.Modern.Controls": "[1.0.0, )"
+          "Flow.Launcher.PluginSDK": "[1.0.0, )"
         }
       },
       "flow.launcher.plugin.magicquery": {
         "type": "Project",
         "dependencies": {
           "Flow.Launcher.Interop": "[1.0.0, )",
-          "Flow.Launcher.PluginSDK": "[1.0.0, )",
-          "iNKORE.UI.WPF.Modern": "[1.0.0, )",
-          "iNKORE.UI.WPF.Modern.Controls": "[1.0.0, )"
+          "Flow.Launcher.PluginSDK": "[1.0.0, )"
         }
       },
       "flow.launcher.plugin.pluginindicator": {
@@ -484,9 +471,7 @@
         "type": "Project",
         "dependencies": {
           "Flow.Launcher.Interop": "[1.0.0, )",
-          "Flow.Launcher.PluginSDK": "[1.0.0, )",
-          "iNKORE.UI.WPF.Modern": "[1.0.0, )",
-          "iNKORE.UI.WPF.Modern.Controls": "[1.0.0, )"
+          "Flow.Launcher.PluginSDK": "[1.0.0, )"
         }
       },
       "flow.launcher.plugin.windowsservices": {
@@ -517,19 +502,6 @@
           "CommunityToolkit.Mvvm": "[8.4.2, )",
           "MemoryPack": "[1.21.4, )",
           "ZLogger": "[2.5.10, )"
-        }
-      },
-      "inkore.ui.wpf.modern": {
-        "type": "Project",
-        "dependencies": {
-          "iNKORE.UI.WPF": "[1.2.8, )"
-        }
-      },
-      "inkore.ui.wpf.modern.controls": {
-        "type": "Project",
-        "dependencies": {
-          "iNKORE.UI.WPF": "[1.2.8, )",
-          "iNKORE.UI.WPF.Modern": "[1.0.0, )"
         }
       }
     }
