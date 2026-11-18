@@ -27,6 +27,7 @@ public static class TextBoxHelper
         textBox.Loaded -= OnTextBoxLoaded;
         textBox.Unloaded -= OnTextBoxUnloaded;
         textBox.TextChanged -= OnTextBoxTextChanged;
+        textBox.IsVisibleChanged -= OnTextBoxIsVisibleChanged;
 
         string newText = (string?)e.NewValue ?? string.Empty;
         if (!string.IsNullOrEmpty(newText))
@@ -34,6 +35,7 @@ public static class TextBoxHelper
             textBox.Loaded += OnTextBoxLoaded;
             textBox.Unloaded += OnTextBoxUnloaded;
             textBox.TextChanged += OnTextBoxTextChanged;
+            textBox.IsVisibleChanged += OnTextBoxIsVisibleChanged;
 
             if (textBox.IsLoaded)
             {
@@ -70,6 +72,14 @@ public static class TextBoxHelper
         }
     }
 
+    private static void OnTextBoxIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+    {
+        if (sender is TextBox textBox)
+        {
+            UpdatePlaceholder(textBox);
+        }
+    }
+
     private static void UpdatePlaceholder(TextBox textBox)
     {
         AdornerLayer? layer = AdornerLayer.GetAdornerLayer(textBox);
@@ -79,11 +89,16 @@ public static class TextBoxHelper
         }
 
         string text = GetPlaceholderText(textBox);
-        bool shouldShow = !string.IsNullOrEmpty(text) && string.IsNullOrEmpty(textBox.Text);
+        bool shouldShow = textBox.IsVisible && !string.IsNullOrEmpty(text) && string.IsNullOrEmpty(textBox.Text);
 
         PlaceholderAdorner? adorner = layer.GetAdorners(textBox)?.OfType<PlaceholderAdorner>().FirstOrDefault();
         if (adorner is null)
         {
+            if (!shouldShow)
+            {
+                return;
+            }
+
             adorner = new PlaceholderAdorner(textBox, text);
             layer.Add(adorner);
         }
@@ -139,7 +154,7 @@ public static class TextBoxHelper
         public void UpdateText(string text) => _textBlock.Text = text;
 
         public void SetVisible(bool isVisible) =>
-            _textBlock.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
+            Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
 
         protected override int VisualChildrenCount => 1;
 
