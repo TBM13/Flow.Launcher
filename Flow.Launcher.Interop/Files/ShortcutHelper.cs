@@ -45,7 +45,7 @@ public static class ShortcutHelper
         link.GetPath(buffer, (int)PInvoke.MAX_PATH, null, 0).ThrowOnFailure();
 
         string targetPath = new string(buffer);
-        if (targetPath.Length >= PInvoke.MAX_PATH - 1)
+        if (targetPath.Length >= PInvoke.MAX_PATH)
             throw new PathTooLongException("Target path is too long");
 
         return targetPath;
