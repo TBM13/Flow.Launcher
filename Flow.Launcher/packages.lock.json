@@ -230,6 +230,11 @@
         "resolved": "1.3.1",
         "contentHash": "VIo1LtpoFvp5LlCDkTiQsKrjX+GMA7N37OEJoqHMhCOdIeNoi8uFocnwi8h3TklSySB3U4Y1+gThB00fJTnfGA=="
       },
+      "XamlAnimatedGif": {
+        "type": "Transitive",
+        "resolved": "2.3.2",
+        "contentHash": "Wy8XkF7XVWZHz6I93S+051UYhsx3B3GgQ1wnQzMs1xlxyvFye4UuSKW/7KPfPh2Fg3B4RjurL3bAyi2D9pbhLA=="
+      },
       "ZLogger": {
         "type": "Transitive",
         "resolved": "2.5.10",
@@ -274,7 +279,8 @@
         "type": "Project",
         "dependencies": {
           "Flow.Launcher.Interop": "[1.0.0, )",
-          "Flow.Launcher.PluginSDK": "[1.0.0, )"
+          "Flow.Launcher.PluginSDK": "[1.0.0, )",
+          "XamlAnimatedGif": "[2.3.2, )"
         }
       },
       "flow.launcher.plugin.magicquery": {

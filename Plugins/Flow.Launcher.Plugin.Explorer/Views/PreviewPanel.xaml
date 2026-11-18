@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:gif="https://github.com/XamlAnimatedGif/XamlAnimatedGif"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="300"
     d:DesignWidth="300"
@@ -18,12 +19,22 @@
                 <RowDefinition MinHeight="96" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Image
+            <Grid
                 Grid.Row="0"
-                MaxWidth="96"
-                MaxHeight="96"
-                Margin="5 12 8 0"
-                Source="{Binding PreviewImage, IsAsync=True, Mode=OneWay}" />
+                MaxHeight="230"
+                Margin="5 12 8 0">
+                <Image
+                    x:Name="StaticPreviewImage"
+                    Source="{Binding PreviewImage, IsAsync=True, Mode=OneWay}"
+                    Stretch="Uniform"
+                    StretchDirection="DownOnly" />
+                <Image
+                    x:Name="GifPreviewImage"
+                    gif:AnimationBehavior.Error="GifPreviewImage_OnAnimationError"
+                    gif:AnimationBehavior.RepeatBehavior="Forever"
+                    StretchDirection="DownOnly"
+                    Visibility="Collapsed" />
+            </Grid>
             <Grid Grid.Row="1">
                 <TextBlock
                     Margin="5 6 5 16"

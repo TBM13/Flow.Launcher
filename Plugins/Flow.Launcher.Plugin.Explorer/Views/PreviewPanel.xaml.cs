@@ -7,6 +7,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Flow.Launcher.Plugin.Explorer.Search;
+using XamlAnimatedGif;
 
 namespace Flow.Launcher.Plugin.Explorer.Views;
 
@@ -29,6 +30,9 @@ public partial class PreviewPanel : UserControl
     private ImageSource _previewImage = new BitmapImage();
 
     private readonly Settings _settings;
+    private readonly Uri? _gifUri;
+    private bool _hasAnimationError;
+    private bool _staticImageLoaded;
 
     public Visibility FileSizeVisibility => _settings.ShowFileSizeInPreviewPanel
         ? Visibility.Visible
@@ -52,8 +56,13 @@ public partial class PreviewPanel : UserControl
         _settings = settings;
         FilePath = filePath;
         FileName = Path.GetFileName(filePath);
+        _gifUri = TryResolveGifUri(filePath, type);
 
         InitializeComponent();
+
+        GifPreviewImage.Loaded += OnGifPreviewImageLoaded;
+        GifPreviewImage.Unloaded += OnGifPreviewImageUnloaded;
+        GifPreviewImage.IsVisibleChanged += OnGifPreviewImageIsVisibleChanged;
 
         if (_settings.ShowFileSizeInPreviewPanel)
         {
@@ -85,7 +94,98 @@ public partial class PreviewPanel : UserControl
                 GetFolderLastModifiedAt(filePath, _settings.PreviewPanelDateFormat, _settings.PreviewPanelTimeFormat, _settings.ShowFileAgeInPreviewPanel);
         }
 
-        _ = LoadImageAsync();
+        if (_gifUri is not null)
+        {
+            StaticPreviewImage.Visibility = Visibility.Collapsed;
+            GifPreviewImage.Visibility = Visibility.Visible;
+        }
+        else
+        {
+            _staticImageLoaded = true;
+            _ = LoadImageAsync();
+        }
+    }
+
+    private void OnGifPreviewImageLoaded(object sender, RoutedEventArgs e)
+    {
+        UpdateGifPreview();
+    }
+
+    private void OnGifPreviewImageUnloaded(object sender, RoutedEventArgs e)
+    {
+        ClearGifSource();
+    }
+
+    private void OnGifPreviewImageIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+    {
+        if ((bool)e.NewValue)
+            UpdateGifPreview();
+        else
+            ClearGifSource();
+    }
+
+    private void GifPreviewImage_OnAnimationError(DependencyObject sender, AnimationErrorEventArgs e)
+    {
+        if (AnimationBehavior.GetSourceUri(GifPreviewImage) is null)
+            return;
+
+        _hasAnimationError = true;
+        ClearGifSource();
+        GifPreviewImage.Visibility = Visibility.Collapsed;
+        StaticPreviewImage.Visibility = Visibility.Visible;
+
+        if (!_staticImageLoaded)
+        {
+            _staticImageLoaded = true;
+            _ = LoadImageAsync();
+        }
+    }
+
+    private void UpdateGifPreview()
+    {
+        if (_hasAnimationError || _gifUri is null)
+        {
+            ClearGifSource();
+            return;
+        }
+
+        if (GifPreviewImage.IsLoaded && GifPreviewImage.IsVisible)
+            SetGifSource(_gifUri);
+        else
+            ClearGifSource();
+    }
+
+    private void SetGifSource(Uri gifUri)
+    {
+        if (!Equals(AnimationBehavior.GetSourceUri(GifPreviewImage), gifUri))
+            AnimationBehavior.SetSourceUri(GifPreviewImage, gifUri);
+    }
+
+    private void ClearGifSource()
+    {
+        if (AnimationBehavior.GetSourceUri(GifPreviewImage) is not null)
+            AnimationBehavior.SetSourceUri(GifPreviewImage, null);
+    }
+
+    private static Uri? TryResolveGifUri(string filePath, ResultType type)
+    {
+        if (type != ResultType.File || string.IsNullOrWhiteSpace(filePath))
+            return null;
+
+        try
+        {
+            if (!Path.GetExtension(filePath).Equals(".gif", StringComparison.OrdinalIgnoreCase))
+                return null;
+
+            if (!File.Exists(filePath))
+                return null;
+
+            return new Uri(filePath, UriKind.Absolute);
+        }
+        catch (Exception)
+        {
+            return null;
+        }
     }
 
     private async Task LoadImageAsync()

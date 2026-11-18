@@ -2,6 +2,12 @@
   "version": 1,
   "dependencies": {
     "net11.0-windows10.0.19041": {
+      "XamlAnimatedGif": {
+        "type": "Direct",
+        "requested": "[2.3.2, )",
+        "resolved": "2.3.2",
+        "contentHash": "Wy8XkF7XVWZHz6I93S+051UYhsx3B3GgQ1wnQzMs1xlxyvFye4UuSKW/7KPfPh2Fg3B4RjurL3bAyi2D9pbhLA=="
+      },
       "CommunityToolkit.Mvvm": {
         "type": "Transitive",
         "resolved": "8.4.2",
