@@ -109,18 +109,32 @@
                             BorderBrush="{TemplateBinding BorderBrush}"
                             CornerRadius="5"
                             SnapsToDevicePixels="True">
-                            <ContentPresenter
-                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                Content="{TemplateBinding Content}"
-                                ContentStringFormat="{TemplateBinding ContentStringFormat}"
-                                ContentTemplate="{TemplateBinding ContentTemplate}"
-                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                            <Grid>
+                                <ContentPresenter
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                    Content="{TemplateBinding Content}"
+                                    ContentStringFormat="{TemplateBinding ContentStringFormat}"
+                                    ContentTemplate="{TemplateBinding ContentTemplate}"
+                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                <Rectangle
+                                    x:Name="ActiveRectangle"
+                                    Width="3"
+                                    Height="24"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource AccentFillColorDefaultBrush}"
+                                    IsHitTestVisible="False"
+                                    RadiusX="2"
+                                    RadiusY="2"
+                                    Visibility="Collapsed" />
+                            </Grid>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ItemSelectedBackgroundColor}" />
                                 <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource ItemSelectedBackgroundColor}" />
+                                <Setter TargetName="ActiveRectangle" Property="Visibility" Value="Visible" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
