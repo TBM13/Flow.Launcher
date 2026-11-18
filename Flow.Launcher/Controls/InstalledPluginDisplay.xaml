@@ -14,8 +14,7 @@
     <pluginsdk:SettingsExpander
         x:Name="PluginExpander"
         Description="{Binding PluginMetadata.Description}"
-        Header="{Binding PluginMetadata.Name}"
-        ToolTip="{Binding PluginMetadata.Version}">
+        Header="{Binding PluginMetadata.Name}">
 
         <pluginsdk:SettingsExpander.HeaderIcon>
             <Image Source="{Binding Image, Mode=OneWay}" />
@@ -57,9 +56,7 @@
             <pluginsdk:SettingsCard Padding="0" ContentAlignment="Vertical">
                 <StackPanel>
                     <!--  Action keyword setting  -->
-                    <DockPanel
-                        Margin="70 13.5 18 13.5"
-                        Visibility="{Binding HasActionKeywords, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <DockPanel Margin="70 13.5 18 13.5" Visibility="{Binding HasActionKeywords, Converter={StaticResource BoolToVisibilityConverter}}">
                         <pluginsdk:FontIcon
                             Margin="0 0 9 0"
                             VerticalAlignment="Center"

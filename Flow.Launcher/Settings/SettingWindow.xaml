@@ -59,14 +59,17 @@
 
             <ListBox
                 Margin="8 0"
+                Padding="0"
                 Background="Transparent"
                 BorderThickness="0"
+                ItemContainerStyle="{StaticResource NavigationListBoxItemStyle}"
                 ItemsSource="{Binding Pages}"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                 SelectedItem="{Binding CurrentPage, Mode=TwoWay}"
                 SelectionChanged="NavigationView_SelectionChanged">
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type pages:BaseSettingsPageViewModel}">
-                        <StackPanel Margin="4 6" Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal">
                             <Image
                                 Width="18"
                                 Height="18"
