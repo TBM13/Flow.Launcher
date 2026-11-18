@@ -185,10 +185,20 @@ public static class AllSettings
                                 Name = "Storage Sense",
                                 Command = ["ms-settings:storagepolicies"],
                             },
-                            new() {
+                            new SettingsPage() {
                                 Type = SettingType.SettingsApp,
                                 Name = "Disk & volumes",
                                 Command = ["ms-settings:disksandvolumes"],
+
+                                Settings = [
+                                    new() {
+                                        Type = SettingType.System32Exe,
+                                        Name = "Disk Management",
+                                        Command = ["diskmgmt.msc"],
+
+                                        AlternativeNames = ["diskmgmt.msc"]
+                                    }
+                                ]
                             }
                         ]
                     },
@@ -256,7 +266,7 @@ public static class AllSettings
                     new() {
                         Type = SettingType.SettingsApp,
                         Name = "Projecting to this PC",
-                        Command = ["ms-settings:projecting"],
+                        Command = ["ms-settings:project"],
                         Glyph = "\uebc6"
                     },
 
@@ -483,6 +493,14 @@ public static class AllSettings
                         Command = ["ms-settings:usb"],
                         Glyph = "\ue88e"
                     },
+
+                    new() {
+                        Type = SettingType.System32Exe,
+                        Name = "Device Manager",
+                        Command = ["devmgmt.msc"],
+
+                        AlternativeNames = ["devmgmt.msc"]
+                    },
                 ]
             },
 
@@ -676,6 +694,12 @@ public static class AllSettings
                     },
                     new() {
                         Type = SettingType.SettingsApp,
+                        Name = "Apps for websites",
+                        Command = ["ms-settings:appsforwebsites"],
+                        Glyph = "\uf6ab"
+                    },
+                    new() {
+                        Type = SettingType.SettingsApp,
                         Name = "Video playback",
                         Command = ["ms-settings:videoplayback"],
                         Glyph = "\ue714"
@@ -690,11 +714,61 @@ public static class AllSettings
             },
 
             // Accounts
-            new Setting() {
+            new SettingsPage() {
                 Type = SettingType.SettingsApp,
                 Name = "Accounts",
                 Command = ["ms-settings:accounts"],
-                Glyph = "\ue13d"
+                Glyph = "\ue13d",
+
+                Settings = [
+                    new() {
+                        Type = SettingType.SettingsApp,
+                        Name = "Your info",
+                        Command = ["ms-settings:yourinfo"],
+                        Glyph = "\ue77b"
+                    },
+                    new() {
+                        Type = SettingType.SettingsApp,
+                        Name = "Your accounts",
+                        Command = ["ms-settings:emailandaccounts"],
+                        Glyph = "\ue779",
+
+                        AlternativeNames = ["Email & accounts"]
+                    },
+                    new() {
+                        Type = SettingType.SettingsApp,
+                        Name = "Sign-in options",
+                        Command = ["ms-settings:signinoptions"],
+                        Glyph = "\ue8d7"
+                    },
+                    new() {
+                        Type = SettingType.SettingsApp,
+                        Name = "Other users",
+                        Command = ["ms-settings:otherusers"],
+                        Glyph = "\ue8fa"
+                    },
+                    new() {
+                        Type = SettingType.SettingsApp,
+                        Name = "Access work or school",
+                        Command = ["ms-settings:workplace"],
+                        Glyph = "\ue821"
+                    },
+                    new() {
+                        Type = SettingType.SettingsApp,
+                        Name = "Passkeys",
+                        Command = ["ms-settings:savedpasskeys"],
+                        Glyph = "\uee7e"
+                    },
+                ]
+            },
+
+            // Ease of Access
+            new Setting() {
+                Type = SettingType.SettingsApp,
+                Name = "Ease of access",
+                Command = ["ms-settings:easeofaccess"],
+
+                AlternativeNames = ["Accessibility"]
             },
 
             // Windows Update
@@ -713,15 +787,30 @@ public static class AllSettings
                     },
                     new() {
                         Type = SettingType.SettingsApp,
-                        Name = "Optional updates",
-                        Command = ["ms-settings:windowsupdate-optionalupdates"],
-                        Glyph = "\uecc8"
+                        Name = "Uninstall updates",
+                        Command = ["ms-settings:windowsupdate-uninstallupdates"],
+                        Glyph = "\ue107"
                     },
-                    new() {
+                    new SettingsPage() {
                         Type = SettingType.SettingsApp,
                         Name = "Windows Update advanced options",
                         Command = ["ms-settings:windowsupdate-options"],
                         Glyph = "\ue9f5",
+
+                        Settings = [
+                            new() {
+                                Type = SettingType.SettingsApp,
+                                Name = "Optional updates",
+                                Command = ["ms-settings:windowsupdate-optionalupdates"],
+                                Glyph = "\uecc8"
+                            },
+                            new() {
+                                Type = SettingType.SettingsApp,
+                                Name = "Delivery Optimization",
+                                Command = ["ms-settings:delivery-optimization"],
+                                Glyph = "\uF785"
+                            }
+                        ]
                     },
                 ]
             }
