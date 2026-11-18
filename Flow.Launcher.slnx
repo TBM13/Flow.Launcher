@@ -5,6 +5,7 @@
   <Folder Name="/Plugins/">
     <Project Path="Plugins/Flow.Launcher.Plugin.Calculator/Flow.Launcher.Plugin.Calculator.csproj" />
     <Project Path="Plugins/Flow.Launcher.Plugin.Explorer/Flow.Launcher.Plugin.Explorer.csproj" />
+    <Project Path="Plugins/Flow.Launcher.Plugin.MagicQuery/Flow.Launcher.Plugin.MagicQuery.csproj" />
     <Project Path="Plugins/Flow.Launcher.Plugin.PluginIndicator/Flow.Launcher.Plugin.PluginIndicator.csproj" />
     <Project Path="Plugins/Flow.Launcher.Plugin.ProcessKiller/Flow.Launcher.Plugin.ProcessKiller.csproj" />
     <Project Path="Plugins/Flow.Launcher.Plugin.Program/Flow.Launcher.Plugin.Program.csproj" />

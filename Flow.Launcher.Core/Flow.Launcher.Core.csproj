@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.Calculator\Flow.Launcher.Plugin.Calculator.csproj" />
     <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.Explorer\Flow.Launcher.Plugin.Explorer.csproj" />
+    <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.MagicQuery\Flow.Launcher.Plugin.MagicQuery.csproj" />
     <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.PluginIndicator\Flow.Launcher.Plugin.PluginIndicator.csproj" />
     <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.ProcessKiller\Flow.Launcher.Plugin.ProcessKiller.csproj" />
     <ProjectReference Include="..\Plugins\Flow.Launcher.Plugin.Program\Flow.Launcher.Plugin.Program.csproj" />

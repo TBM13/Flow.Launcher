@@ -142,6 +142,15 @@
           "iNKORE.UI.WPF.Modern.Controls": "[1.0.0, )"
         }
       },
+      "flow.launcher.plugin.magicquery": {
+        "type": "Project",
+        "dependencies": {
+          "Flow.Launcher.Interop": "[1.0.0, )",
+          "Flow.Launcher.PluginSDK": "[1.0.0, )",
+          "iNKORE.UI.WPF.Modern": "[1.0.0, )",
+          "iNKORE.UI.WPF.Modern.Controls": "[1.0.0, )"
+        }
+      },
       "flow.launcher.plugin.pluginindicator": {
         "type": "Project",
         "dependencies": {

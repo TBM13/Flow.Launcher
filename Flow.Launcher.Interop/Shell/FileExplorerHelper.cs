@@ -38,7 +38,7 @@ public static class FileExplorerHelper
         PInvoke.GetWindowThreadProcessId(foregroundWindow, out uint foregroundPid);
         if (foregroundPid == (uint)Environment.ProcessId)
         {
-            targetWindow = GetNextVisibleWindow(foregroundWindow);
+            targetWindow = new(WindowHelper.GetNextVisibleWindow(foregroundWindow));
             if (targetWindow.IsNull || targetWindow == shellDesktopWindow)
                 return DesktopLocationPath;
         }
@@ -129,23 +129,6 @@ public static class FileExplorerHelper
         }
 
         return null;
-    }
-
-    /// <summary>
-    /// Returns the next visible, non-minimized window in Z-order after the given window.
-    /// </summary>
-    private static HWND GetNextVisibleWindow(HWND hwnd)
-    {
-        HWND next = PInvoke.GetWindow(hwnd, GET_WINDOW_CMD.GW_HWNDNEXT);
-        while (!next.IsNull)
-        {
-            if (PInvoke.IsWindowVisible(next) && !PInvoke.IsIconic(next))
-                return next;
-
-            next = PInvoke.GetWindow(next, GET_WINDOW_CMD.GW_HWNDNEXT);
-        }
-
-        return HWND.Null;
     }
 
     /// <summary>

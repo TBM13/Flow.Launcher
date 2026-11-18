@@ -407,6 +407,7 @@
           "BitFaster.Caching": "[2.6.1, )",
           "Flow.Launcher.Plugin.Calculator": "[1.0.0, )",
           "Flow.Launcher.Plugin.Explorer": "[1.0.0, )",
+          "Flow.Launcher.Plugin.MagicQuery": "[1.0.0, )",
           "Flow.Launcher.Plugin.PluginIndicator": "[1.0.0, )",
           "Flow.Launcher.Plugin.ProcessKiller": "[1.0.0, )",
           "Flow.Launcher.Plugin.Program": "[1.0.0, )",
@@ -434,6 +435,15 @@
         }
       },
       "flow.launcher.plugin.explorer": {
+        "type": "Project",
+        "dependencies": {
+          "Flow.Launcher.Interop": "[1.0.0, )",
+          "Flow.Launcher.PluginSDK": "[1.0.0, )",
+          "iNKORE.UI.WPF.Modern": "[1.0.0, )",
+          "iNKORE.UI.WPF.Modern.Controls": "[1.0.0, )"
+        }
+      },
+      "flow.launcher.plugin.magicquery": {
         "type": "Project",
         "dependencies": {
           "Flow.Launcher.Interop": "[1.0.0, )",

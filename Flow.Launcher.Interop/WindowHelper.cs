@@ -52,6 +52,23 @@ public static class WindowHelper
     }
 
     /// <summary>
+    /// Returns the next visible, non-minimized window in Z-order after the given window.
+    /// </summary>
+    public static nint GetNextVisibleWindow(nint hwnd)
+    {
+        HWND next = PInvoke.GetWindow(new(hwnd), GET_WINDOW_CMD.GW_HWNDNEXT);
+        while (!next.IsNull)
+        {
+            if (PInvoke.IsWindowVisible(next) && !PInvoke.IsIconic(next))
+                return next;
+
+            next = PInvoke.GetWindow(next, GET_WINDOW_CMD.GW_HWNDNEXT);
+        }
+
+        return 0;
+    }
+
+    /// <summary>
     /// Returns a list with all window handles.
     /// </summary>
     /// <exception cref="Win32Exception"></exception>

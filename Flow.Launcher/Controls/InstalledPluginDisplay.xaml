@@ -58,7 +58,9 @@
             <ui:SettingsCard Padding="0" ContentAlignment="Vertical">
                 <StackPanel>
                     <!--  Action keyword setting  -->
-                    <DockPanel Margin="70 13.5 18 13.5">
+                    <DockPanel
+                        Margin="70 13.5 18 13.5"
+                        Visibility="{Binding HasActionKeywords, Converter={StaticResource BoolToVisibilityConverter}}">
                         <ui:FontIcon
                             Margin="0 0 9 0"
                             VerticalAlignment="Center"

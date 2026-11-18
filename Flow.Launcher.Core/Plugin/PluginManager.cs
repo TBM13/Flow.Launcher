@@ -14,6 +14,7 @@ public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger) : IAs
     private readonly PluginMetadata[] Plugins =
     [
         Launcher.Plugin.Calculator.PluginMetadataDefinition.Metadata,
+        Launcher.Plugin.MagicQuery.PluginMetadataDefinition.Metadata,
         Launcher.Plugin.Explorer.PluginMetadataDefinition.Metadata,
         Launcher.Plugin.PluginIndicator.PluginMetadataDefinition.Metadata,
         Launcher.Plugin.ProcessKiller.PluginMetadataDefinition.Metadata,
@@ -213,13 +214,22 @@ public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger) : IAs
 
     public string? GenerateMagicQuery()
     {
-        foreach (var metadata in _allLoadedPlugins.Values)
+        foreach (var metadata in Plugins
+            .Where(p => !p.Disabled && !IsPluginInitializing(p))
+            .OrderByDescending(p => p.Priority))
         {
             if (metadata.Plugin is IMagicQueryProvider provider)
             {
-                string? query = provider.GenerateMagicQuery();
-                if (query is not null)
-                    return query;
+                try
+                {
+                    string? query = provider.GenerateMagicQuery();
+                    if (query is not null)
+                        return query;
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, $"Failed to generate magic query for plugin <{metadata.Name}>");
+                }
             }
         }
 
