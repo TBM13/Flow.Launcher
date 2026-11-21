@@ -334,7 +334,11 @@ public partial class App : Application
     {
         if (e.Category == UserPreferenceCategory.General && _settings.ColorScheme == ColorScheme.System)
         {
-            Dispatcher.InvokeAsync(() => UpdateCustomThemeDictionary(ColorScheme.System));
+            Dispatcher.InvokeAsync(() =>
+            {
+                ApplicationHelper.SetAppMode(AppMode.AllowDark);
+                UpdateCustomThemeDictionary(ColorScheme.System);
+            });
         }
     }
 

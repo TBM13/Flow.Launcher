@@ -17,9 +17,15 @@ public enum AppMode
 /// </summary>
 public static partial class ApplicationHelper
 {
+    [LibraryImport("uxtheme.dll", EntryPoint = "#135")]
+    [return: MarshalAs(UnmanagedType.I1)]
+    private static partial bool AllowDarkModeForApp([MarshalAs(UnmanagedType.I1)] bool allow);
 
-    [LibraryImport("uxtheme.dll", EntryPoint = "#135", SetLastError = true)]
+    [LibraryImport("uxtheme.dll", EntryPoint = "#135")]
     private static partial int SetPreferredAppMode(int appMode);
+
+    [LibraryImport("uxtheme.dll", EntryPoint = "#136")]
+    private static partial void FlushMenuThemes();
 
     /// <summary>
     /// Calls a hidden Windows API to enable/disable dark mode on things like context menus.
@@ -28,11 +34,23 @@ public static partial class ApplicationHelper
     // Inspired by https://github.com/ysc3839/win32-darkmode
     public static void SetAppMode(AppMode mode)
     {
-        // Undocumented API from Windows 10 1809
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
-            Environment.OSVersion.Version.Build >= 17763)
+        if (!Enum.IsDefined(mode))
+            throw new ArgumentOutOfRangeException(nameof(mode), mode, "Unknown app mode.");
+
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            return;
+
+        // Undocumented API from Windows 10 1809; SetPreferredAppMode replaced AllowDarkModeForApp in 1903 (18362).
+        int build = Environment.OSVersion.Version.Build;
+        if (build >= 18362)
         {
             _ = SetPreferredAppMode((int)mode);
+            FlushMenuThemes();
+        }
+        else if (build >= 17763)
+        {
+            _ = AllowDarkModeForApp(mode != AppMode.ForceLight);
+            FlushMenuThemes();
         }
     }
 }
