@@ -7,8 +7,7 @@
         Padding="5 0"
         Click="GetNewHotkey"
         FontSize="13"
-        FontWeight="Bold"
-        Foreground="{DynamicResource TextFillColorInverseBrush}">
+        FontWeight="Bold">
         <ItemsControl x:Name="KeysList">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -25,10 +24,14 @@
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Setter Property="Background" Value="{DynamicResource AccentButtonBackground}" />
+                                <Setter Property="BorderBrush" Value="Transparent" />
+                                <Setter Property="TextElement.Foreground" Value="{DynamicResource TextFillColorInverseBrush}" />
                                 <Style.Triggers>
                                     <!--  Disabled style  -->
                                     <Trigger Property="IsEnabled" Value="False">
-                                        <Setter Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}" />
+                                        <Setter Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                        <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+                                        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
