@@ -18,6 +18,9 @@ IShellItem
 IShellItemImageFactory
 DwmGetWindowAttribute
 DwmSetWindowAttribute
+DwmExtendFrameIntoClientArea
+MARGINS
+DWM_WINDOW_CORNER_PREFERENCE
 IsZoomed
 WINDOW_LONG_PTR_INDEX
 GetDesktopWindow

@@ -8,6 +8,7 @@ using Flow.Launcher.Interop.Hardware;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Dwm;
+using Windows.Win32.UI.Controls;
 using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Flow.Launcher.Interop;
@@ -15,7 +16,7 @@ namespace Flow.Launcher.Interop;
 /// <summary>
 /// Helper class for interacting with open windows.
 /// </summary>
-public static class WindowHelper
+public static partial class WindowHelper
 {
     public const int WM_ENTERSIZEMOVE = (int)PInvoke.WM_ENTERSIZEMOVE;
     public const int WM_EXITSIZEMOVE = (int)PInvoke.WM_EXITSIZEMOVE;
@@ -237,6 +238,101 @@ public static class WindowHelper
            && (appBounds.bottom - appBounds.top) >= monitorInfo.Bounds.Height;
 
         return isFullscreen;
+    }
+
+    private const uint LightPopupBorderColor = 0x00E2E2E2;
+    private const uint DarkPopupBorderColor = 0x00333333;
+    private const int WcaAccentPolicy = 19;
+    private const int AccentEnableAcrylicBlurBehind = 4;
+    private const int AccentFlagDrawAllBorders = 2;
+    private const uint DarkAcrylicTint = 0x99242424;
+    private const uint LightAcrylicTint = 0xB3F9F9F9;
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct AccentPolicy
+    {
+        public int AccentState;
+        public int AccentFlags;
+        public uint GradientColor;
+        public int AnimationId;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct WindowCompositionAttributeData
+    {
+        public int Attribute;
+        public nint Data;
+        public int SizeOfData;
+    }
+
+    [LibraryImport("user32.dll")]
+    private static partial int SetWindowCompositionAttribute(nint hwnd, ref WindowCompositionAttributeData data);
+
+    /// <summary>
+    /// Whether the current OS supports Windows 11 rounded corners and Acrylic popup backdrops.
+    /// </summary>
+    public static bool SupportsAcrylicPopup { get; } = OperatingSystem.IsWindowsVersionAtLeast(10, 0, 22000);
+
+    /// <summary>
+    /// Applies Windows 11 rounded corners and Acrylic blur backdrop to a popup window handle.
+    /// </summary>
+    public static void EnablePopupAcrylic(nint hwnd, bool isDark)
+    {
+        if (!SupportsAcrylicPopup || hwnd == 0)
+            return;
+
+        HWND hWnd = new(hwnd);
+        BOOL dark = isDark;
+        DWM_WINDOW_CORNER_PREFERENCE corner = DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND;
+        uint borderColor = isDark ? DarkPopupBorderColor : LightPopupBorderColor;
+        MARGINS margins = new()
+        {
+            cxLeftWidth = -1,
+            cxRightWidth = -1,
+            cyTopHeight = -1,
+            cyBottomHeight = -1
+        };
+
+        unsafe
+        {
+            _ = PInvoke.DwmExtendFrameIntoClientArea(hWnd, in margins);
+
+            _ = PInvoke.DwmSetWindowAttribute(
+                hWnd,
+                DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE,
+                &dark,
+                (uint)sizeof(BOOL));
+
+            _ = PInvoke.DwmSetWindowAttribute(
+                hWnd,
+                DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE,
+                &corner,
+                (uint)sizeof(DWM_WINDOW_CORNER_PREFERENCE));
+
+            _ = PInvoke.DwmSetWindowAttribute(
+                hWnd,
+                DWMWINDOWATTRIBUTE.DWMWA_BORDER_COLOR,
+                &borderColor,
+                sizeof(uint));
+        }
+
+        AccentPolicy accent = new()
+        {
+            AccentState = AccentEnableAcrylicBlurBehind,
+            AccentFlags = AccentFlagDrawAllBorders,
+            GradientColor = isDark ? DarkAcrylicTint : LightAcrylicTint
+        };
+
+        unsafe
+        {
+            WindowCompositionAttributeData data = new()
+            {
+                Attribute = WcaAccentPolicy,
+                Data = (nint)(&accent),
+                SizeOfData = sizeof(AccentPolicy)
+            };
+            _ = SetWindowCompositionAttribute(hwnd, ref data);
+        }
     }
 
     /// <summary>

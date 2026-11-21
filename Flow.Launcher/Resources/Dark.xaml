@@ -23,4 +23,8 @@
     <SolidColorBrush x:Key="InfoBarBD" Color="#19000000" />
     <SolidColorBrush x:Key="InfoBarWarningIcon" Color="#fce100" />
     <SolidColorBrush x:Key="InfoBarWarningBG" Color="#433519" />
+
+    <!--  ComboBox dropdown  -->
+    <SolidColorBrush x:Key="ComboBoxPopupBackgroundBrush" Color="#DC2C2C2C" />
+    <SolidColorBrush x:Key="ComboBoxPopupBorderBrush" Color="#18000000" />
 </ResourceDictionary>

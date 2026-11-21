@@ -12,7 +12,11 @@
     mc:Ignorable="d">
 
     <StackPanel>
-        <pluginsdk:SettingsCard Description="Evaluated top to bottom against the active window." Header="Rules">
+        <pluginsdk:SettingsCard
+            BorderThickness="0 0 0 1"
+            CornerRadius="0"
+            Description="Evaluated top to bottom against the active window."
+            Header="Rules">
             <Button
                 Command="{Binding AddRuleCommand}"
                 Content="Add Rule"

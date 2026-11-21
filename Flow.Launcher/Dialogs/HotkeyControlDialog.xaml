@@ -5,9 +5,7 @@
     xmlns:pluginsdk="http://schemas.flowlauncher.com/pluginsdk"
     Title="{Binding WindowTitle}"
     Width="500"
-    Background="{DynamicResource PopuBGColor}"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
-    Foreground="{DynamicResource PopupTextColor}"
     ResizeMode="NoResize"
     ShowInTaskbar="False"
     SizeToContent="Height"
@@ -116,8 +114,8 @@
         <!--  Action buttons at the bottom of the dialog  -->
         <Border
             Grid.Row="2"
-            Background="{DynamicResource PopupButtonAreaBGColor}"
-            BorderBrush="{DynamicResource PopupButtonAreaBorderColor}"
+            Background="{DynamicResource LayerOnMicaBaseAltFillColorSecondaryBrush}"
+            BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
             BorderThickness="0 1 0 0">
             <StackPanel
                 Margin="10 9 10 10"

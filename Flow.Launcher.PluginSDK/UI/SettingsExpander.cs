@@ -14,6 +14,11 @@ public class SettingsExpander : ItemsControl
             new FrameworkPropertyMetadata(typeof(SettingsExpander)));
     }
 
+    public SettingsExpander()
+    {
+        Loaded += (_, _) => UpdateIsNested();
+    }
+
     public static readonly RoutedEvent ExpandedEvent = EventManager.RegisterRoutedEvent(
         nameof(Expanded),
         RoutingStrategy.Bubble,
@@ -173,6 +178,27 @@ public class SettingsExpander : ItemsControl
         }
     }
 
+    private static readonly DependencyPropertyKey IsNestedPropertyKey = DependencyProperty.RegisterReadOnly(
+        nameof(IsNested),
+        typeof(bool),
+        typeof(SettingsExpander),
+        new PropertyMetadata(false));
+
+    public static readonly DependencyProperty IsNestedProperty = IsNestedPropertyKey.DependencyProperty;
+
+    public bool IsNested => (bool)GetValue(IsNestedProperty);
+
+    protected override void OnVisualParentChanged(DependencyObject oldParent)
+    {
+        base.OnVisualParentChanged(oldParent);
+        UpdateIsNested();
+    }
+
+    private void UpdateIsNested()
+    {
+        SetValue(IsNestedPropertyKey, SettingsCard.HasSettingsContainerAncestor(this));
+    }
+
     protected override bool IsItemItsOwnContainerOverride(object item)
     {
         return item is FrameworkElement;
@@ -184,7 +210,8 @@ public class SettingsExpander : ItemsControl
         if (element is SettingsCard card)
         {
             card.CornerRadius = new CornerRadius(0);
-            card.BorderThickness = new Thickness(0, 1, 0, 0);
+            int index = ItemContainerGenerator.IndexFromContainer(element);
+            card.BorderThickness = index == 0 ? new Thickness(0) : new Thickness(0, 1, 0, 0);
         }
     }
 }

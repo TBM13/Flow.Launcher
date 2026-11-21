@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace Flow.Launcher.PluginSDK.UI;
 
@@ -16,6 +17,11 @@ public class SettingsCard : ContentControl
         DefaultStyleKeyProperty.OverrideMetadata(
             typeof(SettingsCard),
             new FrameworkPropertyMetadata(typeof(SettingsCard)));
+    }
+
+    public SettingsCard()
+    {
+        Loaded += (_, _) => UpdateIsNested();
     }
 
     public static readonly DependencyProperty HeaderProperty = DependencyProperty.Register(
@@ -130,5 +136,40 @@ public class SettingsCard : ContentControl
     {
         get => (SettingsCardContentAlignment)GetValue(ContentAlignmentProperty);
         set => SetValue(ContentAlignmentProperty, value);
+    }
+
+    private static readonly DependencyPropertyKey IsNestedPropertyKey = DependencyProperty.RegisterReadOnly(
+        nameof(IsNested),
+        typeof(bool),
+        typeof(SettingsCard),
+        new PropertyMetadata(false));
+
+    public static readonly DependencyProperty IsNestedProperty = IsNestedPropertyKey.DependencyProperty;
+
+    public bool IsNested => (bool)GetValue(IsNestedProperty);
+
+    protected override void OnVisualParentChanged(DependencyObject oldParent)
+    {
+        base.OnVisualParentChanged(oldParent);
+        UpdateIsNested();
+    }
+
+    private void UpdateIsNested()
+    {
+        SetValue(IsNestedPropertyKey, HasSettingsContainerAncestor(this));
+    }
+
+    internal static bool HasSettingsContainerAncestor(DependencyObject element)
+    {
+        DependencyObject? current = VisualTreeHelper.GetParent(element) ?? LogicalTreeHelper.GetParent(element);
+        while (current is not null)
+        {
+            if (current is SettingsExpander or SettingsCard)
+                return true;
+
+            current = VisualTreeHelper.GetParent(current) ?? LogicalTreeHelper.GetParent(current);
+        }
+
+        return false;
     }
 }
