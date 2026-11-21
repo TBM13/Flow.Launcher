@@ -52,11 +52,6 @@
         "resolved": "6.0.0",
         "contentHash": "UcSjPsst+DfAdJGVDsu346FX0ci0ah+lw3WRtn18NUwEqRt70HaOQ7lI72vy3+1LxtqI3T5GWwV39rQSrCzAeg=="
       },
-      "Microsoft.Extensions.Caching.Memory": {
-        "type": "Transitive",
-        "resolved": "11.0.0",
-        "contentHash": "w0nn5qRLxZC2T3sSmXj5PhrBFpGFCSFxg7E/zBi4lne0wZcZPY8of3qQDowqGobMZ3PW5qJnM1Q8fmGjL2B6Iw=="
-      },
       "Microsoft.Extensions.Configuration": {
         "type": "Transitive",
         "resolved": "11.0.0",
@@ -396,8 +391,7 @@
           "Flow.Launcher.Core": "[1.0.0, )",
           "Flow.Launcher.PluginSDK": "[1.0.0, )",
           "Microsoft.Extensions.DependencyInjection": "[11.0.0, )",
-          "Microsoft.Extensions.Hosting": "[11.0.0, )",
-          "XamlAnimatedGif": "[2.3.2, )"
+          "Microsoft.Extensions.Hosting": "[11.0.0, )"
         }
       },
       "flow.launcher.core": {
@@ -411,6 +405,7 @@
           "Flow.Launcher.Plugin.ProcessKiller": "[1.0.0, )",
           "Flow.Launcher.Plugin.Program": "[1.0.0, )",
           "Flow.Launcher.Plugin.Sys": "[1.0.0, )",
+          "Flow.Launcher.Plugin.WindowsDevices": "[1.0.0, )",
           "Flow.Launcher.Plugin.WindowsRegistry": "[1.0.0, )",
           "Flow.Launcher.Plugin.WindowsServices": "[1.0.0, )",
           "Flow.Launcher.Plugin.WindowsSettings": "[1.0.0, )",
@@ -463,11 +458,17 @@
         "type": "Project",
         "dependencies": {
           "Flow.Launcher.Interop": "[1.0.0, )",
-          "Flow.Launcher.PluginSDK": "[1.0.0, )",
-          "Microsoft.Extensions.Caching.Memory": "[11.0.0, )"
+          "Flow.Launcher.PluginSDK": "[1.0.0, )"
         }
       },
       "flow.launcher.plugin.sys": {
+        "type": "Project",
+        "dependencies": {
+          "Flow.Launcher.Interop": "[1.0.0, )",
+          "Flow.Launcher.PluginSDK": "[1.0.0, )"
+        }
+      },
+      "flow.launcher.plugin.windowsdevices": {
         "type": "Project",
         "dependencies": {
           "Flow.Launcher.Interop": "[1.0.0, )",

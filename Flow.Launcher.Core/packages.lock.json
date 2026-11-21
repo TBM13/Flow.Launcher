@@ -50,11 +50,6 @@
         "resolved": "1.21.4",
         "contentHash": "g14EsSS85yn0lHTi0J9ivqlZMf09A2iI51fmI+0KkzIzyCbWOBWPi5mdaY7YWmXprk12aYh9u/qfWHQUYthlwg=="
       },
-      "Microsoft.Extensions.Caching.Memory": {
-        "type": "Transitive",
-        "resolved": "11.0.0",
-        "contentHash": "w0nn5qRLxZC2T3sSmXj5PhrBFpGFCSFxg7E/zBi4lne0wZcZPY8of3qQDowqGobMZ3PW5qJnM1Q8fmGjL2B6Iw=="
-      },
       "Microsoft.Extensions.DependencyInjection": {
         "type": "Transitive",
         "resolved": "8.0.0",
@@ -163,11 +158,17 @@
         "type": "Project",
         "dependencies": {
           "Flow.Launcher.Interop": "[1.0.0, )",
-          "Flow.Launcher.PluginSDK": "[1.0.0, )",
-          "Microsoft.Extensions.Caching.Memory": "[11.0.0, )"
+          "Flow.Launcher.PluginSDK": "[1.0.0, )"
         }
       },
       "flow.launcher.plugin.sys": {
+        "type": "Project",
+        "dependencies": {
+          "Flow.Launcher.Interop": "[1.0.0, )",
+          "Flow.Launcher.PluginSDK": "[1.0.0, )"
+        }
+      },
+      "flow.launcher.plugin.windowsdevices": {
         "type": "Project",
         "dependencies": {
           "Flow.Launcher.Interop": "[1.0.0, )",

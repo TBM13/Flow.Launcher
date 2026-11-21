@@ -10,6 +10,7 @@
     <Project Path="Plugins/Flow.Launcher.Plugin.ProcessKiller/Flow.Launcher.Plugin.ProcessKiller.csproj" />
     <Project Path="Plugins/Flow.Launcher.Plugin.Program/Flow.Launcher.Plugin.Program.csproj" />
     <Project Path="Plugins/Flow.Launcher.Plugin.Sys/Flow.Launcher.Plugin.Sys.csproj" />
+    <Project Path="Plugins/Flow.Launcher.Plugin.WindowsDevices/Flow.Launcher.Plugin.WindowsDevices.csproj" />
     <Project Path="Plugins/Flow.Launcher.Plugin.WindowsRegistry/Flow.Launcher.Plugin.WindowsRegistry.csproj" />
     <Project Path="Plugins/Flow.Launcher.Plugin.WindowsServices/Flow.Launcher.Plugin.WindowsServices.csproj" />
     <Project Path="Plugins/Flow.Launcher.Plugin.WindowsSettings/Flow.Launcher.Plugin.WindowsSettings.csproj" />
