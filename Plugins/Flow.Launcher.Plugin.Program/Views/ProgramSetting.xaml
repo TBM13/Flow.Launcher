@@ -141,7 +141,8 @@
             PreviewMouseRightButtonUp="ProgramSourceView_PreviewMouseRightButtonUp"
             SelectionChanged="programSourceView_SelectionChanged"
             SelectionMode="Extended"
-            SizeChanged="ListView_SizeChanged">
+            SizeChanged="ListView_SizeChanged"
+            VirtualizingPanel.ScrollUnit="Pixel">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Width="150" Header="{x:Static root:Localize.Settings_ProgramName}">

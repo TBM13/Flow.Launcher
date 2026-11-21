@@ -1043,7 +1043,7 @@
                             <TranslateTransform />
                         </Border.RenderTransform>
                         <ScrollViewer
-                            CanContentScroll="True"
+                            CanContentScroll="False"
                             HorizontalScrollBarVisibility="Disabled"
                             VerticalScrollBarVisibility="Auto">
                             <StackPanel

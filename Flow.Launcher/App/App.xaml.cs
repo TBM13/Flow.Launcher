@@ -11,6 +11,7 @@ using Flow.Launcher.Core.Image;
 using Flow.Launcher.Core.Plugin;
 using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Core.Text;
+using Flow.Launcher.Helper;
 using Flow.Launcher.Interop;
 using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.Settings;
@@ -346,6 +347,8 @@ public partial class App : Application
             return;
 
         base.OnStartup(e);
+
+        SmoothScrollHelper.Initialize();
 
         // Because new message box api uses MessageBoxEx window,
         // if it is created and closed before main window is created, it will cause the application to exit.
