@@ -244,6 +244,7 @@ public static partial class WindowHelper
     private const uint LightPopupBorderColor = 0x00E2E2E2;
     private const uint DarkPopupBorderColor = 0x00333333;
     private const int WcaAccentPolicy = 19;
+    private const int AccentDisabled = 0;
     private const int AccentEnableAcrylicBlurBehind = 4;
     private const int AccentFlagDrawAllBorders = 2;
     private const uint DarkAcrylicTint = 0x99242424;
@@ -279,13 +280,6 @@ public static partial class WindowHelper
     /// </summary>
     public static void EnablePopupAcrylic(nint hwnd, bool isDark)
     {
-        if (!SupportsAcrylicPopup || hwnd == 0)
-            return;
-
-        HWND hWnd = new(hwnd);
-        BOOL dark = isDark;
-        DWM_WINDOW_CORNER_PREFERENCE corner = DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND;
-        uint borderColor = isDark ? DarkPopupBorderColor : LightPopupBorderColor;
         MARGINS margins = new()
         {
             cxLeftWidth = -1,
@@ -293,6 +287,50 @@ public static partial class WindowHelper
             cyTopHeight = -1,
             cyBottomHeight = -1
         };
+
+        AccentPolicy accent = new()
+        {
+            AccentState = AccentEnableAcrylicBlurBehind,
+            AccentFlags = AccentFlagDrawAllBorders,
+            GradientColor = isDark ? DarkAcrylicTint : LightAcrylicTint
+        };
+
+        ApplyPopupBackdrop(
+            hwnd,
+            margins,
+            isDark,
+            DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUND,
+            isDark ? DarkPopupBorderColor : LightPopupBorderColor,
+            accent);
+    }
+
+    /// <summary>
+    /// Removes Windows 11 rounded corners and Acrylic blur backdrop from a popup window handle.
+    /// </summary>
+    public static void DisablePopupAcrylic(nint hwnd)
+    {
+        ApplyPopupBackdrop(
+            hwnd,
+            default,
+            false,
+            DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_DEFAULT,
+            PInvoke.DWMWA_COLOR_DEFAULT,
+            new AccentPolicy { AccentState = AccentDisabled });
+    }
+
+    private static void ApplyPopupBackdrop(
+        nint hwnd,
+        MARGINS margins,
+        bool isDark,
+        DWM_WINDOW_CORNER_PREFERENCE corner,
+        uint borderColor,
+        AccentPolicy accent)
+    {
+        if (!SupportsAcrylicPopup || hwnd == 0)
+            return;
+
+        HWND hWnd = new(hwnd);
+        BOOL dark = isDark;
 
         unsafe
         {
@@ -315,17 +353,7 @@ public static partial class WindowHelper
                 DWMWINDOWATTRIBUTE.DWMWA_BORDER_COLOR,
                 &borderColor,
                 sizeof(uint));
-        }
 
-        AccentPolicy accent = new()
-        {
-            AccentState = AccentEnableAcrylicBlurBehind,
-            AccentFlags = AccentFlagDrawAllBorders,
-            GradientColor = isDark ? DarkAcrylicTint : LightAcrylicTint
-        };
-
-        unsafe
-        {
             WindowCompositionAttributeData data = new()
             {
                 Attribute = WcaAccentPolicy,

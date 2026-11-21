@@ -26,6 +26,12 @@ public static class ShellContextMenu
     public static bool IsContextMenuOpen { get; private set; }
 
     /// <summary>
+    /// Whether to render the native context menu with the Windows 11 acrylic backdrop.
+    /// Has no effect on older Windows versions.
+    /// </summary>
+    public static bool UseSystemBackdrop { get; set; } = true;
+
+    /// <summary>
     /// Shows the Windows Explorer shell context menu for the given files.
     /// </summary>
     /// <remarks>
@@ -131,6 +137,7 @@ public static class ShellContextMenu
             ownerSource?.AddHook(menuMessageHook);
             uint selectedCmd;
             IsContextMenuOpen = true;
+            bool useBackdrop = UseSystemBackdrop && MenuBackdrop.IsSupported;
             try
             {
                 msgFilterHook = PInvoke.SetWindowsHookEx(
@@ -139,9 +146,13 @@ public static class ShellContextMenu
                     (SafeHandle?)null,
                     PInvoke.GetCurrentThreadId());
 
+                if (useBackdrop)
+                    MenuBackdrop.Begin();
+
                 selectedCmd = (uint)PInvoke.TrackPopupMenuEx(
                     menu,
-                    (uint)TRACK_POPUP_MENU_FLAGS.TPM_RETURNCMD,
+                    (uint)(TRACK_POPUP_MENU_FLAGS.TPM_RETURNCMD |
+                           (useBackdrop ? TRACK_POPUP_MENU_FLAGS.TPM_NOANIMATION : 0)),
                     screenPoint.X,
                     screenPoint.Y,
                     ownerWindow,
@@ -151,6 +162,8 @@ public static class ShellContextMenu
             {
                 IsContextMenuOpen = false;
                 msgFilterHook?.Dispose();
+                if (useBackdrop)
+                    MenuBackdrop.End();
                 _openSubmenus.Clear();
                 ownerSource?.RemoveHook(menuMessageHook);
             }
@@ -202,6 +215,12 @@ public static class ShellContextMenu
         nint lParam,
         ref bool handled)
     {
+        if (message is PInvoke.WM_MENUSELECT or PInvoke.WM_ENTERIDLE)
+        {
+            MenuBackdrop.RefreshAll();
+            return 0;
+        }
+
         if (message == PInvoke.WM_UNINITMENUPOPUP)
         {
             _openSubmenus.Remove(wParam);
