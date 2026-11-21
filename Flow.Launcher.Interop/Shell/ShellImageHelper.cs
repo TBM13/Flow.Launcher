@@ -6,6 +6,7 @@ using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.Shell;
+using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace Flow.Launcher.Interop.Shell;
 
@@ -142,5 +143,36 @@ public static class ShellImageHelper
             int overlayIndex = (shfi.iIcon >> 24) & 0x000000FF;
             return (baseIndex, overlayIndex);
         });
+    }
+
+    /// <summary>
+    /// Extracts an icon from the specified file by index or negative resource ID.
+    /// </summary>
+    /// <param name="filePath">The path to the executable, DLL, or icon file.</param>
+    /// <param name="iconIndex">Zero-based icon index or negative resource ID.</param>
+    /// <param name="width">Width in physical device pixels.</param>
+    /// <param name="height">Height in physical device pixels.</param>
+    /// <returns>The extracted icon, or null if extraction failed.</returns>
+    public static BitmapSource? ExtractIcon(string filePath, int iconIndex, int width, int height)
+    {
+        Span<HICON> icons = stackalloc HICON[1];
+        uint res = PInvoke.PrivateExtractIcons(filePath, iconIndex, width, height, icons, default);
+
+        HICON hIcon = icons[0];
+        if (res == 0 || res == uint.MaxValue || hIcon.IsNull)
+            return null;
+
+        try
+        {
+            BitmapSource bitmap = Imaging.CreateBitmapSourceFromHIcon(
+                hIcon, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+
+            bitmap.Freeze();
+            return bitmap;
+        }
+        finally
+        {
+            PInvoke.DestroyIcon(hIcon);
+        }
     }
 }

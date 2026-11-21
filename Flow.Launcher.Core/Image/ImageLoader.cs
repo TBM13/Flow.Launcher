@@ -43,8 +43,29 @@ public class ImageLoader : IImageLoader
     private static string NormalizePath(string path)
     {
         path = Environment.ExpandEnvironmentVariables(path);
+        if (TrySplitIconPath(path, out string filePath, out int iconIndex))
+        {
+            filePath = Path.GetFullPath(filePath, Constant.ProgramDirectory);
+            return $"{filePath},{iconIndex}";
+        }
+
         path = Path.GetFullPath(path, Constant.ProgramDirectory);
         return path;
+    }
+
+    private static bool TrySplitIconPath(string path, out string filePath, out int iconIndex)
+    {
+        int commaIndex = path.LastIndexOf(',');
+        if (commaIndex > 0 && int.TryParse(path.AsSpan(commaIndex + 1), out iconIndex))
+        {
+            filePath = path[..commaIndex].Trim();
+            if (Path.HasExtension(filePath))
+                return true;
+        }
+
+        filePath = string.Empty;
+        iconIndex = 0;
+        return false;
     }
 
     /// <inheritdoc/>
@@ -87,6 +108,24 @@ public class ImageLoader : IImageLoader
     {
         ImageSource image;
         int iconSize = loadFullImage ? FullIconSize : SmallIconSize;
+
+        if (TrySplitIconPath(normalizedPath, out string iconFilePath, out int customIconIndex))
+        {
+            try
+            {
+                BitmapSource? extracted = await Task.Run(
+                    () => ShellImageHelper.ExtractIcon(iconFilePath, customIconIndex, iconSize, iconSize)).ConfigureAwait(false);
+                if (extracted is not null)
+                    return extracted;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Failed to extract icon '{normalizedPath}'");
+            }
+
+            return GenericProgramIcon;
+        }
+
         ReadOnlySpan<char> extension = Path.GetExtension(normalizedPath);
 
         // For image files, load the thumbnail or image directly

@@ -1,9 +1,6 @@
 ﻿using System.IO;
-using System.Windows;
-using System.Windows.Interop;
 using System.Windows.Media.Imaging;
-using Windows.Win32;
-using Windows.Win32.UI.WindowsAndMessaging;
+using Flow.Launcher.Interop.Shell;
 
 namespace Flow.Launcher.Interop.Files;
 
@@ -94,25 +91,6 @@ public static class InternetShortcutHelper
         if (info.IconFile is null)
             return null;
 
-        Span<HICON> icons = stackalloc HICON[1];
-        uint res = PInvoke.PrivateExtractIcons(info.IconFile, info.IconIndex, width, height, icons, default);
-
-        // Check if extraction failed or path was not valid
-        HICON hIcon = icons[0];
-        if (res == 0 || res == uint.MaxValue || hIcon.IsNull)
-            return null;
-
-        try
-        {
-            BitmapSource bitmap = Imaging.CreateBitmapSourceFromHIcon(
-                hIcon, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-
-            bitmap.Freeze();
-            return bitmap;
-        }
-        finally
-        {
-            PInvoke.DestroyIcon(hIcon);
-        }
+        return ShellImageHelper.ExtractIcon(info.IconFile, info.IconIndex, width, height);
     }
 }
