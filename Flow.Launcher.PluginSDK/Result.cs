@@ -51,6 +51,11 @@ public record Result
     public string? IconOrGlyph { get; set; }
 
     /// <summary>
+    /// The path to an overlay image rendered on the bottom-left of the result's icon.
+    /// </summary>
+    public string? OverlayImagePath { get; set; }
+
+    /// <summary>
     /// The action that will be executed when the result is selected.
     /// </summary>
     /// <remarks>

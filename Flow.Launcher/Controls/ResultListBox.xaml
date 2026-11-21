@@ -47,16 +47,30 @@
         <DataTemplate>
             <DockPanel>
                 <!--  Icon / glyph  -->
-                <Image
+                <Grid
                     Width="60"
                     Height="32"
                     Margin="5 0 0 0"
                     VerticalAlignment="Center"
                     IsHitTestVisible="False"
-                    Source="{Binding Image}"
-                    Stretch="Uniform"
-                    StretchDirection="DownOnly"
-                    Visibility="{Binding ShowIcon}" />
+                    Visibility="{Binding ShowIcon}">
+                    <Grid
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                        <Image
+                            Source="{Binding Image}"
+                            Stretch="Uniform"
+                            StretchDirection="DownOnly" />
+                        <Image
+                            Width="16"
+                            Height="16"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Bottom"
+                            Source="{Binding OverlayImage}"
+                            Stretch="Uniform"
+                            Visibility="{Binding ShowOverlayImage}" />
+                    </Grid>
+                </Grid>
                 <TextBlock
                     Width="60"
                     Height="25"

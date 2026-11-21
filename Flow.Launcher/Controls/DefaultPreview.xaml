@@ -24,14 +24,24 @@
                 Foreground="{DynamicResource Color05B}"
                 Text="{Binding Result.IconOrGlyph}"
                 Visibility="{Binding ShowGlyph}" />
-            <Image
+            <Grid
                 MaxWidth="96"
                 MaxHeight="320"
                 Margin="0 16 0 0"
                 HorizontalAlignment="Center"
-                Source="{Binding PreviewImage}"
-                StretchDirection="DownOnly"
-                Visibility="{Binding ShowPreviewImage}" />
+                Visibility="{Binding ShowPreviewImage}">
+                <Image
+                    Source="{Binding PreviewImage}"
+                    StretchDirection="DownOnly" />
+                <Image
+                    Width="28"
+                    Height="28"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Bottom"
+                    Source="{Binding OverlayImage}"
+                    Stretch="Uniform"
+                    Visibility="{Binding ShowOverlayImage}" />
+            </Grid>
             <TextBlock
                 Margin="0 6 0 16"
                 Style="{StaticResource PreviewItemTitleStyle}"

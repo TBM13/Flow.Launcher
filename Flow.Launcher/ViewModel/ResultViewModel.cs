@@ -20,6 +20,8 @@ public partial class ResultViewModel : ObservableObject
 
     public Visibility ShowIcon => !string.IsNullOrEmpty(Result.IconOrGlyph) && ShowGlyph != Visibility.Visible
         ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility ShowOverlayImage => !string.IsNullOrEmpty(Result.OverlayImagePath)
+        ? Visibility.Visible : Visibility.Collapsed;
     public Visibility ShowPreviewImage => !string.IsNullOrEmpty(Result.Preview.PreviewImagePath)
         ? Visibility.Visible : ShowIcon;
     public Visibility ShowGlyph => GlyphUtils.IsGlyph(Result.IconOrGlyph) ? Visibility.Visible : Visibility.Collapsed;
@@ -31,6 +33,8 @@ public partial class ResultViewModel : ObservableObject
 
     [ObservableProperty]
     public partial ImageSource Image { get; private set; }
+    [ObservableProperty]
+    public partial ImageSource? OverlayImage { get; private set; }
     [ObservableProperty]
     public partial ImageSource PreviewImage { get; private set; }
 
@@ -59,6 +63,9 @@ public partial class ResultViewModel : ObservableObject
     {
         if (ShowIcon == Visibility.Visible)
             Image = await _imageLoader.LoadAsync(Result.IconOrGlyph!, false);
+
+        if (ShowOverlayImage == Visibility.Visible)
+            OverlayImage = await _imageLoader.LoadAsync(Result.OverlayImagePath!, false);
     }
 
     public async Task LoadPreviewImageAsync()
