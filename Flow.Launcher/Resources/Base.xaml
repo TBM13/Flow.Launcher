@@ -582,7 +582,6 @@
     <Style TargetType="{x:Type ComboBox}">
         <Setter Property="helper:WpfHelper.DisableMouseWheelSelection" Value="True" />
         <Setter Property="FocusVisualStyle" Value="{DynamicResource DefaultControlFocusVisualStyle}" />
-        <Setter Property="ContextMenu" Value="{DynamicResource DefaultControlContextMenu}" />
         <Setter Property="Foreground" Value="{DynamicResource ComboBoxForeground}" />
         <Setter Property="Background" Value="{DynamicResource ComboBoxBackground}" />
         <Setter Property="BorderBrush" Value="{DynamicResource ComboBoxBorderBrush}" />
