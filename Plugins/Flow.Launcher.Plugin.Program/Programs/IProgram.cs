@@ -1,16 +1,13 @@
-﻿using System.Collections.Generic;
-using Flow.Launcher.PluginSDK;
-using Flow.Launcher.PluginSDK.API;
+﻿using Flow.Launcher.PluginSDK;
+using Flow.Launcher.PluginSDK.Plugins;
 
-namespace Flow.Launcher.Plugin.Program.Programs
+namespace Flow.Launcher.Plugin.Program.Programs;
+
+public interface IProgram
 {
-    public interface IProgram
-    {
-        List<Result> ContextMenus(IPublicAPI api);
-        Result Result(string query, IPublicAPI api);
-        string UniqueIdentifier { get; set; }
-        string Name { get; }
-        string Location { get; }
-        bool Enabled { get; }
-    }
+    string Name { get; }
+    string UniqueIdentifier { get; }
+    string Location { get; }
+    Result? CreateResult(ReadOnlySpan<char> query, Settings.Settings settings, PluginInitContext context);
+    List<Result> CreateContextMenus(PluginInitContext context);
 }

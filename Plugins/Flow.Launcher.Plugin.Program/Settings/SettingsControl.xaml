@@ -1,0 +1,331 @@
+<UserControl
+    x:Class="Flow.Launcher.Plugin.Program.Settings.SettingsControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Flow.Launcher.Plugin.Program.Settings"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:pluginsdk="http://schemas.flowlauncher.com/pluginsdk"
+    d:DataContext="{d:DesignInstance Type=local:SettingsViewModel}"
+    d:DesignHeight="600"
+    d:DesignWidth="650"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <pluginsdk:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </UserControl.Resources>
+
+    <StackPanel>
+        <!--  Program Index Status & Reindex  -->
+        <pluginsdk:SettingsCard
+            BorderThickness="0 1 0 0"
+            CornerRadius="0"
+            Description="{Binding IndexStatusText}"
+            Header="Program Index">
+            <StackPanel Orientation="Horizontal">
+                <ProgressBar
+                    Width="90"
+                    Height="4"
+                    Margin="0 0 12 0"
+                    VerticalAlignment="Center"
+                    IsIndeterminate="True"
+                    Visibility="{Binding IsIndexing, Converter={StaticResource BoolToVisibilityConverter}}" />
+                <Button
+                    Command="{Binding ReindexCommand}"
+                    Content="Reindex"
+                    IsEnabled="{Binding CanReindex}" />
+            </StackPanel>
+        </pluginsdk:SettingsCard>
+
+        <!--  Index Sources  -->
+        <pluginsdk:SettingsExpander
+            BorderThickness="0 1 0 0"
+            CornerRadius="0"
+            Description="Select where Flow Launcher looks for installed applications."
+            Header="Index Sources">
+            <pluginsdk:SettingsExpander.Items>
+                <pluginsdk:SettingsCard
+                    Description="Index programs from Windows Start Menu folders."
+                    Header="Start Menu">
+                    <pluginsdk:ToggleSwitch IsOn="{Binding EnableStartMenuSource}" />
+                </pluginsdk:SettingsCard>
+
+                <pluginsdk:SettingsCard
+                    Description="Index Microsoft Store and packaged applications."
+                    Header="Windows Apps (UWP / MSIX)"
+                    Visibility="{Binding ShowUwpOption, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <pluginsdk:ToggleSwitch IsOn="{Binding EnableUWP}" />
+                </pluginsdk:SettingsCard>
+
+                <pluginsdk:SettingsCard
+                    Description="Index executables registered in Windows App Paths."
+                    Header="Registry (App Paths)">
+                    <pluginsdk:ToggleSwitch IsOn="{Binding EnableRegistrySource}" />
+                </pluginsdk:SettingsCard>
+
+                <pluginsdk:SettingsCard
+                    Description="Index executables located in directories listed on PATH."
+                    Header="PATH Environment Variable">
+                    <pluginsdk:ToggleSwitch IsOn="{Binding EnablePathSource}" />
+                </pluginsdk:SettingsCard>
+            </pluginsdk:SettingsExpander.Items>
+        </pluginsdk:SettingsExpander>
+
+        <!--  Display & Filtering Options  -->
+        <pluginsdk:SettingsCard
+            BorderThickness="0 1 0 0"
+            CornerRadius="0"
+            Description="Exclude common uninstaller executables and shortcuts from search results."
+            Header="Hide uninstallers">
+            <pluginsdk:ToggleSwitch IsOn="{Binding HideUninstallers}" />
+        </pluginsdk:SettingsCard>
+
+        <pluginsdk:SettingsCard
+            BorderThickness="0 1 0 0"
+            CornerRadius="0"
+            Description="Hide the executable or package path subtitle beneath program results."
+            Header="Hide application path">
+            <pluginsdk:ToggleSwitch IsOn="{Binding HideAppsPath}" />
+        </pluginsdk:SettingsCard>
+
+        <pluginsdk:SettingsCard
+            BorderThickness="0 1 0 0"
+            CornerRadius="0"
+            Description="Include file descriptions when matching queries and display them in titles."
+            Header="Search in program description">
+            <pluginsdk:ToggleSwitch IsOn="{Binding EnableDescription}" />
+        </pluginsdk:SettingsCard>
+
+        <!--  Additional File Extensions  -->
+        <pluginsdk:SettingsCard
+            BorderThickness="0 1 0 0"
+            CornerRadius="0"
+            Description="Standard types (.exe, .lnk, .appref-ms, and app/game .url shortcuts) are always indexed. Separate extra extensions with ';'."
+            Header="Additional File Extensions">
+            <TextBox
+                MinWidth="200"
+                VerticalAlignment="Center"
+                pluginsdk:TextBoxHelper.PlaceholderText="e.g. bat;cmd;ps1"
+                KeyDown="CustomSuffixesTextBox_KeyDown"
+                LostFocus="CustomSuffixesTextBox_LostFocus"
+                Text="{Binding CustomSuffixesText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        </pluginsdk:SettingsCard>
+
+        <!--  Custom Directories  -->
+        <pluginsdk:SettingsExpander
+            x:Name="CustomDirectoriesExpander"
+            AllowDrop="True"
+            BorderThickness="0 1 0 0"
+            CornerRadius="0"
+            Description="Additional folders to scan recursively for programs (supports drag and drop)."
+            DragOver="CustomDirectories_DragOver"
+            Drop="CustomDirectories_Drop"
+            Header="Custom Directories">
+            <pluginsdk:SettingsExpander.Content>
+                <Button
+                    Command="{Binding AddDirectoryCommand}"
+                    Content="Add Directory"
+                    Style="{DynamicResource AccentButtonStyle}" />
+            </pluginsdk:SettingsExpander.Content>
+
+            <pluginsdk:SettingsExpander.Items>
+                <pluginsdk:SettingsCard Padding="16 12" ContentAlignment="Vertical">
+                    <StackPanel>
+                        <TextBlock
+                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                            Text="No custom directories configured."
+                            TextWrapping="Wrap">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Settings.ProgramSources.Count}" Value="0">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+
+                        <ItemsControl Margin="0 0 0 -6" ItemsSource="{Binding Settings.ProgramSources}">
+                            <ItemsControl.Style>
+                                <Style TargetType="ItemsControl">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Settings.ProgramSources.Count}" Value="0">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ItemsControl.Style>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type local:ProgramSource}">
+                                    <Border
+                                        Margin="0 0 0 6"
+                                        Padding="12 8"
+                                        Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}"
+                                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="6">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <CheckBox
+                                                Grid.Column="0"
+                                                MinWidth="0"
+                                                Margin="0 0 12 0"
+                                                VerticalAlignment="Center"
+                                                Command="{Binding DataContext.ToggleDirectoryCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                IsChecked="{Binding Enabled, Mode=TwoWay}" />
+
+                                            <StackPanel
+                                                Grid.Column="1"
+                                                Margin="0 0 12 0"
+                                                VerticalAlignment="Center">
+                                                <TextBlock
+                                                    FontSize="13"
+                                                    FontWeight="SemiBold"
+                                                    Text="{Binding Name}"
+                                                    TextTrimming="CharacterEllipsis" />
+                                                <TextBlock
+                                                    FontSize="12"
+                                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                    Text="{Binding Location}"
+                                                    TextTrimming="CharacterEllipsis" />
+                                            </StackPanel>
+
+                                            <StackPanel
+                                                Grid.Column="2"
+                                                VerticalAlignment="Center"
+                                                Orientation="Horizontal">
+                                                <Button
+                                                    Margin="0 0 4 0"
+                                                    Padding="7"
+                                                    Command="{Binding DataContext.OpenDirectoryCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    ToolTip="Open folder">
+                                                    <pluginsdk:FontIcon FontSize="12" Glyph="&#xe8b7;" />
+                                                </Button>
+                                                <Button
+                                                    Padding="7"
+                                                    Command="{Binding DataContext.RemoveDirectoryCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    ToolTip="Remove directory">
+                                                    <pluginsdk:FontIcon FontSize="12" Glyph="&#xe74d;" />
+                                                </Button>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </pluginsdk:SettingsCard>
+            </pluginsdk:SettingsExpander.Items>
+        </pluginsdk:SettingsExpander>
+
+        <!--  Hidden Programs  -->
+        <pluginsdk:SettingsExpander
+            BorderThickness="0 1 0 0"
+            CornerRadius="0"
+            Description="Programs hidden from search results via the context menu."
+            Header="Hidden Programs">
+            <pluginsdk:SettingsExpander.Content>
+                <Button
+                    Command="{Binding UnhideAllProgramsCommand}"
+                    Content="Unhide All"
+                    IsEnabled="{Binding CanUnhideAll}" />
+            </pluginsdk:SettingsExpander.Content>
+
+            <pluginsdk:SettingsExpander.Items>
+                <pluginsdk:SettingsCard Padding="16 12" ContentAlignment="Vertical">
+                    <StackPanel>
+                        <TextBlock
+                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                            Text="No hidden programs."
+                            TextWrapping="Wrap">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Settings.DisabledProgramSources.Count}" Value="0">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+
+                        <ItemsControl Margin="0 0 0 -6" ItemsSource="{Binding Settings.DisabledProgramSources}">
+                            <ItemsControl.Style>
+                                <Style TargetType="ItemsControl">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Settings.DisabledProgramSources.Count}" Value="0">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ItemsControl.Style>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type local:ProgramSource}">
+                                    <Border
+                                        Margin="0 0 0 6"
+                                        Padding="12 8"
+                                        Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}"
+                                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="6">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <StackPanel
+                                                Grid.Column="0"
+                                                Margin="0 0 12 0"
+                                                VerticalAlignment="Center">
+                                                <TextBlock
+                                                    FontSize="13"
+                                                    FontWeight="SemiBold"
+                                                    Text="{Binding Name}"
+                                                    TextTrimming="CharacterEllipsis" />
+                                                <TextBlock
+                                                    FontSize="12"
+                                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                    TextTrimming="CharacterEllipsis">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Text" Value="{Binding Location}" />
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Location}" Value="">
+                                                                    <Setter Property="Text" Value="{Binding UniqueIdentifier}" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </StackPanel>
+
+                                            <Button
+                                                Grid.Column="1"
+                                                Padding="10 6"
+                                                VerticalAlignment="Center"
+                                                Command="{Binding DataContext.UnhideProgramCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}"
+                                                Content="Unhide" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </pluginsdk:SettingsCard>
+            </pluginsdk:SettingsExpander.Items>
+        </pluginsdk:SettingsExpander>
+    </StackPanel>
+</UserControl>

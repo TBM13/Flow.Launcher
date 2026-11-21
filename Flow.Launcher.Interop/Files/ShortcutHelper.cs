@@ -11,6 +11,11 @@ using Windows.Win32.UI.Shell.PropertiesSystem;
 namespace Flow.Launcher.Interop.Files;
 
 /// <summary>
+/// Metadata extracted from a Shell Link (.lnk) file.
+/// </summary>
+public readonly record struct ShortcutInfo(string TargetPath, string Description, string Arguments);
+
+/// <summary>
 /// Helper class for interacting with Shell Link (.lnk) files.
 /// </summary>
 public static class ShortcutHelper
@@ -84,5 +89,53 @@ public static class ShortcutHelper
         }
 
         return (description, args);
+    }
+
+    /// <summary>
+    /// Loads a Shell Link (.lnk) file once and retrieves its target path, description, and arguments.
+    /// </summary>
+    /// <exception cref="PathTooLongException"></exception>
+    /// <exception cref="COMException"></exception>
+    public static unsafe ShortcutInfo RetrieveShortcutInfo(string path)
+    {
+        IShellLinkW link = LoadShellLink(path);
+
+        // Don't throw on Resolve failure so shortcuts to virtual shell items can still provide metadata.
+        _ = link.Resolve(HWND.Null, (uint)(SLR_FLAGS.SLR_NO_UI | SLR_FLAGS.SLR_NOTRACK | SLR_FLAGS.SLR_NOSEARCH));
+
+        char* pathBuffer = stackalloc char[(int)PInvoke.MAX_PATH];
+        string targetPath = string.Empty;
+        if (link.GetPath(pathBuffer, (int)PInvoke.MAX_PATH, null, 0).Succeeded)
+        {
+            targetPath = new string(pathBuffer);
+            if (targetPath.Length >= PInvoke.MAX_PATH)
+                throw new PathTooLongException("Target path is too long");
+        }
+
+        char* descriptionBuffer = stackalloc char[(int)PInvoke.INFOTIPSIZE];
+        string description = link.GetDescription(descriptionBuffer, (int)PInvoke.INFOTIPSIZE).Succeeded
+            ? new string(descriptionBuffer)
+            : string.Empty;
+
+        string args = string.Empty;
+        PROPERTYKEY pKey = PInvoke.PKEY_Link_Arguments;
+        PROPVARIANT propVar = default;
+        try
+        {
+            if (((IPropertyStore)link).GetValue(in pKey, out propVar).Succeeded)
+            {
+                args = propVar.Anonymous.Anonymous.vt switch
+                {
+                    VARENUM.VT_LPWSTR => propVar.Anonymous.Anonymous.Anonymous.pwszVal.ToString(),
+                    _ => string.Empty
+                };
+            }
+        }
+        finally
+        {
+            PInvoke.PropVariantClear(ref propVar);
+        }
+
+        return new ShortcutInfo(targetPath, description, args);
     }
 }
