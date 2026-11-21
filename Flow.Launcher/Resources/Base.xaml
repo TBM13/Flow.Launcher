@@ -1010,6 +1010,11 @@
         </Style.Triggers>
     </Style>
 
+    <Style TargetType="{x:Type Popup}">
+        <Setter Property="PopupAnimation" Value="None" />
+        <Setter Property="helper:PopupHelper.UseSystemBackdrop" Value="True" />
+    </Style>
+
     <Style TargetType="{x:Type ContextMenu}">
         <Setter Property="Foreground" Value="{DynamicResource ContextMenuForeground}" />
         <Setter Property="Background" Value="{DynamicResource ContextMenuBackground}" />

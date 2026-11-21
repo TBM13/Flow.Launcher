@@ -258,8 +258,7 @@
 
         <Popup
             x:Name="HelpPopup"
-            AllowsTransparency="True"
-            Placement="Bottom"
+            Placement="Left"
             PlacementTarget="{Binding ElementName=HelpButton}"
             StaysOpen="False">
             <Border

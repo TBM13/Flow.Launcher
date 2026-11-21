@@ -34,6 +34,7 @@ public static class PopupHelper
 
         if (d is Popup popup)
         {
+            popup.Initialized -= OnPopupInitialized;
             popup.Loaded -= OnPopupLoaded;
             popup.Unloaded -= OnPopupUnloaded;
             popup.Opened -= OnPopupOpened;
@@ -42,13 +43,12 @@ public static class PopupHelper
 
             if ((bool)e.NewValue)
             {
-                popup.AllowsTransparency = false;
+                popup.Initialized += OnPopupInitialized;
                 popup.Loaded += OnPopupLoaded;
                 popup.Unloaded += OnPopupUnloaded;
                 popup.Opened += OnPopupOpened;
 
-                if (popup.IsLoaded && popup.Child is not null)
-                    PresentationSource.AddSourceChangedHandler(popup.Child, OnChildSourceChanged);
+                ConfigurePopup(popup);
             }
         }
         else if (d is ContextMenu menu)
@@ -92,10 +92,37 @@ public static class PopupHelper
             popup.AllowsTransparency = false;
     }
 
+    private static void OnPopupInitialized(object? sender, EventArgs e)
+    {
+        if (sender is Popup popup)
+        {
+            popup.Initialized -= OnPopupInitialized;
+            ConfigurePopup(popup);
+        }
+    }
+
     private static void OnPopupLoaded(object sender, RoutedEventArgs e)
     {
-        if (sender is Popup popup && popup.Child is not null)
+        if (sender is Popup popup)
+            ConfigurePopup(popup);
+    }
+
+    private static void ConfigurePopup(Popup popup)
+    {
+        if (!popup.IsOpen && popup.AllowsTransparency)
+            popup.AllowsTransparency = false;
+
+        if (popup.Child is not null)
         {
+            if (popup.Child is Border border)
+            {
+                border.Background = Brushes.Transparent;
+                border.BorderThickness = new Thickness(0);
+                border.CornerRadius = new CornerRadius(0);
+                border.Margin = new Thickness(0);
+                border.Effect = null;
+            }
+
             PresentationSource.RemoveSourceChangedHandler(popup.Child, OnChildSourceChanged);
             PresentationSource.AddSourceChangedHandler(popup.Child, OnChildSourceChanged);
         }
