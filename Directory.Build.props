@@ -13,6 +13,9 @@
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
     
+    <!-- Allow async IAsyncEnumerable<Result> iterators to yield synchronously without CS1998 -->
+    <NoWarn>$(NoWarn);CS1998</NoWarn>
+    
     <!-- Nuget packages lock file -->
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>

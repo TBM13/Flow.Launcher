@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows.Controls;
 using Flow.Launcher.Interop.Hardware;
@@ -50,7 +51,7 @@ public sealed class Main : IPlugin, IContextMenu, ISettingProvider
         return new SettingsControl(_viewModel);
     }
 
-    public void Init(PluginInitContext context)
+    public ValueTask InitAsync(PluginInitContext context)
     {
         _context = context;
         _matcher = context.API.StringMatcher;
@@ -58,162 +59,188 @@ public sealed class Main : IPlugin, IContextMenu, ISettingProvider
         _viewModel = new SettingsViewModel(_settings);
 
         _notificationRegistration = DeviceHelper.RegisterDeviceNotification(InvalidateCache);
+        return ValueTask.CompletedTask;
     }
 
-    public List<Result>? Query(Query query)
+    public async IAsyncEnumerable<Result> QueryAsync(
+        Query query,
+        [EnumeratorCancellation] CancellationToken token)
     {
         if (query.IsHomeQuery)
-            return null;
+            yield break;
 
         bool isGlobalQuery = query.ActionKeyword.Length == 0;
         if (isGlobalQuery && string.IsNullOrWhiteSpace(query.Search))
-            return null;
+            yield break;
 
         DeviceViewSnapshot snapshot = GetSnapshot(_settings.ShowHiddenDevices);
 
         // On empty queries with action keyword, show all root categories
         if (!isGlobalQuery && string.IsNullOrWhiteSpace(query.Search))
         {
-            return [.. snapshot.Categories.Select(
-                c => CreateCategoryResult(c, query.ActionKeyword, score: 0, addSelectedCount: false))];
-        }
-
-        ReadOnlySpan<char> search = query.Search.Replace('\\', '/');
-        CategoryEntry? selectedCategory = null;
-
-        // If the query has a valid category path prefix, limit the search to that category's devices
-        if (!isGlobalQuery)
-        {
-            int lastSeparatorIndex = search.LastIndexOf('/');
-            if (lastSeparatorIndex != -1)
+            foreach (CategoryEntry category in snapshot.Categories)
             {
-                string path = search[..(lastSeparatorIndex + 1)].ToString();
-                if (snapshot.CategoriesByPath.TryGetValue(path, out selectedCategory))
-                {
-                    search = search[(lastSeparatorIndex + 1)..];
-                }
+                token.ThrowIfCancellationRequested();
+                yield return CreateCategoryResult(category, query.ActionKeyword, score: 0, addSelectedCount: false);
             }
+            yield break;
         }
+
+        string search = ResolveCategory(
+            query.Search.Replace('\\', '/'),
+            snapshot,
+            isGlobalQuery,
+            out CategoryEntry? selectedCategory);
 
         if (selectedCategory is not null)
         {
-            if (search.IsWhiteSpace())
-                return [.. selectedCategory.Devices.Select(d => d.Result)];
-
-            List<Result> categoryResults = [];
-            foreach (DeviceEntry entry in selectedCategory.Devices)
+            if (string.IsNullOrWhiteSpace(search))
             {
-                MatchResult match = _matcher.FuzzySearch(search, entry.Device.Name);
-                if (match.IsThresholdMet)
-                    categoryResults.Add(entry.Result with { Score = match.Score, AddSelectedCount = true });
+                foreach (DeviceEntry entry in selectedCategory.Devices)
+                {
+                    token.ThrowIfCancellationRequested();
+                    yield return entry.Result;
+                }
+                yield break;
             }
 
-            return categoryResults;
+            foreach (DeviceEntry entry in selectedCategory.Devices)
+            {
+                token.ThrowIfCancellationRequested();
+                MatchResult match = _matcher.FuzzySearch(search, entry.Device.Name);
+                if (match.IsThresholdMet)
+                    yield return entry.Result with { Score = match.Score, AddSelectedCount = true };
+            }
+
+            yield break;
         }
 
-        if (search.IsWhiteSpace())
+        if (string.IsNullOrWhiteSpace(search))
         {
-            return isGlobalQuery
-                ? null
-                : [.. snapshot.Categories.Select(
-                    c => CreateCategoryResult(c, query.ActionKeyword, score: 0, addSelectedCount: false))];
+            if (!isGlobalQuery)
+            {
+                foreach (CategoryEntry category in snapshot.Categories)
+                {
+                    token.ThrowIfCancellationRequested();
+                    yield return CreateCategoryResult(category, query.ActionKeyword, score: 0, addSelectedCount: false);
+                }
+            }
+            yield break;
         }
-
-        List<Result> results = [];
 
         // Include matching categories only when queried with an action keyword
         if (!isGlobalQuery)
         {
             foreach (CategoryEntry category in snapshot.Categories)
             {
+                token.ThrowIfCancellationRequested();
                 MatchResult match = _matcher.FuzzySearch(search, category.ClassInfo.Name);
                 if (match.IsThresholdMet)
                 {
-                    results.Add(CreateCategoryResult(
+                    yield return CreateCategoryResult(
                         category,
                         query.ActionKeyword,
                         score: match.Score,
-                        addSelectedCount: true));
+                        addSelectedCount: true);
                 }
             }
         }
 
         foreach (DeviceEntry entry in snapshot.AllDevices)
         {
+            token.ThrowIfCancellationRequested();
             MatchResult match = _matcher.FuzzySearch(search, entry.Device.Name);
             if (match.IsThresholdMet)
-                results.Add(entry.Result with { Score = match.Score, AddSelectedCount = true });
+                yield return entry.Result with { Score = match.Score, AddSelectedCount = true };
         }
-
-        return results;
     }
 
-    public List<Result> LoadContextMenus(Result result, ActionContext ctx)
+    private static string ResolveCategory(
+        string search,
+        DeviceViewSnapshot snapshot,
+        bool isGlobalQuery,
+        out CategoryEntry? selectedCategory)
     {
-        List<Result> menu = [];
+        selectedCategory = null;
+        if (isGlobalQuery)
+            return search;
 
-        if (result.ContextData is DeviceInfo device)
+        int lastSeparatorIndex = search.LastIndexOf('/');
+        if (lastSeparatorIndex != -1)
+        {
+            string path = search[..(lastSeparatorIndex + 1)];
+            if (snapshot.CategoriesByPath.TryGetValue(path, out selectedCategory))
+                return search[(lastSeparatorIndex + 1)..];
+        }
+
+        return search;
+    }
+
+    public async IAsyncEnumerable<Result> LoadContextMenusAsync(
+        Result selectedResult,
+        ActionContext context,
+        [EnumeratorCancellation] CancellationToken token = default)
+    {
+        if (selectedResult.ContextData is DeviceInfo device)
         {
             if (device.IsDisabled)
             {
-                menu.Add(new Result
+                yield return new Result
                 {
                     Title = "Enable device",
                     SubTitle = "Enable this device",
                     IconOrGlyph = "\xEB49",
                     Action = _ => RunPnpUtilDeviceAction("enable", ["/enable-device", device.InstanceId])
-                });
+                };
             }
             else if (device.CanDisable)
             {
-                menu.Add(new Result
+                yield return new Result
                 {
                     Title = "Disable device",
                     SubTitle = "Disable this device",
                     IconOrGlyph = "\xEB4A",
                     Action = _ => RunPnpUtilDeviceAction("disable", ["/disable-device", device.InstanceId])
-                });
+                };
             }
 
             if (device.IsPresent && !device.IsDisabled)
             {
-                menu.Add(new Result
+                yield return new Result
                 {
                     Title = "Restart device",
                     SubTitle = "Restart this device",
                     IconOrGlyph = "\xE777",
                     Action = _ => RunPnpUtilDeviceAction("restart", ["/restart-device", device.InstanceId])
-                });
+                };
             }
 
-            menu.Add(new Result
+            yield return new Result
             {
                 Title = "Uninstall device",
                 SubTitle = "Uninstall this device from the system",
                 IconOrGlyph = "\xE74D",
                 Action = _ => RunPnpUtilDeviceAction("uninstall", ["/remove-device", device.InstanceId])
-            });
+            };
 
-            menu.Add(new Result
+            yield return new Result
             {
                 Title = "Scan for hardware changes",
                 SubTitle = "Scan for Plug and Play hardware changes",
                 IconOrGlyph = "\xE72C",
                 Action = _ => RunPnpUtilDeviceAction("scan for hardware changes", ["/scan-devices"])
-            });
+            };
         }
-        else if (result.ContextData is DeviceClassInfo)
+        else if (selectedResult.ContextData is DeviceClassInfo)
         {
-            menu.Add(new Result
+            yield return new Result
             {
                 Title = "Scan for hardware changes",
                 SubTitle = "Scan for Plug and Play hardware changes",
                 IconOrGlyph = "\xE72C",
                 Action = _ => RunPnpUtilDeviceAction("scan for hardware changes", ["/scan-devices"])
-            });
+            };
         }
-
-        return menu;
     }
 
     private void InvalidateCache()

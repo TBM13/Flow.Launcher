@@ -27,18 +27,17 @@ public partial class SettingsPluginsViewModel(
     ILoggerFactory loggerFactory, ISettingsAPI settings, IImageLoader imageLoader,
     PluginManager pluginManager) : BaseSettingsPageViewModel
 {
-    private readonly ILoggerFactory _loggerFactory = loggerFactory;
-    private readonly ISettingsAPI _settings = settings;
-    private readonly IImageLoader _imageLoader = imageLoader;
-    private readonly PluginManager _pluginManager = pluginManager;
-
     public override string Title => "Plugins";
     public override string IconPath => "pack://application:,,,/Images/plugins.png";
 
-    public IEnumerable<PluginViewModel> Plugins => _pluginManager.GetAllLoadedPlugins()
+    public IReadOnlyList<PluginViewModel> Plugins { get; } = [.. pluginManager.GetAllLoadedPlugins()
         .OrderBy(p => p.Name)
         .Select(plugin => new PluginViewModel(
-            new(_loggerFactory), _imageLoader, plugin, _settings.PluginSettings.GetPluginSettings(plugin.ID)));
+            new(loggerFactory),
+            imageLoader,
+            plugin,
+            settings.PluginSettings.GetPluginSettings(plugin.ID)
+                ?? throw new InvalidOperationException($"Settings not found for plugin '{plugin.ID}'")))];
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsOnOffMode))]

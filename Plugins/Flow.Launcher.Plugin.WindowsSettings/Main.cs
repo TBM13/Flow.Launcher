@@ -1,4 +1,5 @@
-﻿using Flow.Launcher.Plugin.WindowsSettings.Settings;
+﻿using System.Runtime.CompilerServices;
+using Flow.Launcher.Plugin.WindowsSettings.Settings;
 using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Plugins;
@@ -38,13 +39,14 @@ public sealed class Main : IPlugin
     /// </summary>
     private List<Result> _rootSettings = [];
 
-    public void Init(PluginInitContext ctx)
+    public ValueTask InitAsync(PluginInitContext ctx)
     {
         _context = ctx;
         _matcher = ctx.API.StringMatcher;
 
         AddPage(string.Empty, AllSettings.Settings);
         _rootSettings = [.. _allSettings[AllSettings.Settings.LocalPath].Select(e => e.Result)];
+        return ValueTask.CompletedTask;
     }
 
     private void AddPage(string path, SettingsPage page)
@@ -79,11 +81,20 @@ public sealed class Main : IPlugin
         pathSettings.Add(entry);
     }
 
-    public List<Result>? Query(Query query)
+    public async IAsyncEnumerable<Result> QueryAsync(
+        Query query,
+        [EnumeratorCancellation] CancellationToken token)
     {
         // On empty queries, show all the root setting pages
         if (query.IsHomeQuery || (query.ActionKeyword.Length > 0 && string.IsNullOrWhiteSpace(query.Search)))
-            return _rootSettings;
+        {
+            foreach (Result root in _rootSettings)
+            {
+                token.ThrowIfCancellationRequested();
+                yield return root;
+            }
+            yield break;
+        }
 
         IEnumerable<SettingEntry>? settingsToSearch = null;
 
@@ -105,21 +116,26 @@ public sealed class Main : IPlugin
 
         // If the query does not have a search term, return all the settings for this path
         if (search.IsWhiteSpace())
-            return [.. settingsToSearch.Select(e => e.Result)];
-
-        // Query has a search term: only return settings that match
-        List<Result> results = [];
-        foreach (SettingEntry entry in settingsToSearch)
         {
-            MatchResult match = _matcher.FuzzySearchBest(search, entry.SearchNames);
-            if (match.IsThresholdMet)
-                results.Add(entry.Result with { Score = match.Score, AddSelectedCount = true });
+            foreach (SettingEntry entry in settingsToSearch)
+            {
+                token.ThrowIfCancellationRequested();
+                yield return entry.Result;
+            }
+            yield break;
         }
 
-        return results;
-    }
+        // Query has a search term: only return settings that match
+        string searchString = search.ToString();
+        foreach (SettingEntry entry in settingsToSearch)
+        {
+            token.ThrowIfCancellationRequested();
 
-    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+            MatchResult match = _matcher.FuzzySearchBest(searchString, entry.SearchNames);
+            if (match.IsThresholdMet)
+                yield return entry.Result with { Score = match.Score, AddSelectedCount = true };
+        }
+    }
 
     /// <param name="SearchNames">The searchable names of a setting: its display name and all its alternative names.</param>
     private sealed record SettingEntry(Result Result, string[] SearchNames);

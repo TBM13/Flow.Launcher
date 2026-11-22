@@ -1,32 +1,27 @@
 ﻿using System.ComponentModel;
 using System.Windows;
-using System.Windows.Data;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Core.Settings;
 using Flow.Launcher.Helper;
-using Flow.Launcher.PluginSDK;
-using Flow.Launcher.PluginSDK.API;
 
 namespace Flow.Launcher.ViewModel;
 
 public partial class ResultsViewModel : ObservableObject, IDisposable
 {
     private readonly ISettingsAPI _settings;
-    private readonly IImageLoader _imageLoader;
-    private readonly object _collectionLock = new();
 
-    public BulkObservableCollection<ResultViewModel> Results { get; }
+    public BulkObservableCollection<ResultViewModel> Results { get; } = [];
 
-    public ResultsViewModel(ISettingsAPI settings, IImageLoader imageLoader)
+    /// <summary>
+    /// True while <see cref="Results"/> is being replaced or cleared so transient selection resets do not flicker the preview pane.
+    /// </summary>
+    public bool IsUpdating { get; private set; }
+
+    public ResultsViewModel(ISettingsAPI settings)
     {
         _settings = settings;
-        _imageLoader = imageLoader;
-
-        Results = [];
-        BindingOperations.EnableCollectionSynchronization(Results, _collectionLock);
-
         _settings.PropertyChanged += OnSettingChanged;
     }
 
@@ -47,8 +42,7 @@ public partial class ResultsViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     public partial ResultViewModel? SelectedItem { get; set; }
-    [ObservableProperty]
-    public partial Thickness Margin { get; set; }
+
     [ObservableProperty]
     public partial Visibility Visibility { get; set; } = Visibility.Collapsed;
 
@@ -79,78 +73,61 @@ public partial class ResultsViewModel : ObservableObject, IDisposable
 
     public void Clear()
     {
-        lock (_collectionLock)
-            Results.Clear();
-    }
-
-    /// <summary>
-    /// To avoid deadlock, this method should not called from main thread
-    /// </summary>
-    public void AddResults(List<Result> newRawResults)
-    {
-        var newResults = NewResults(newRawResults);
-        UpdateResults(newResults);
-    }
-
-    /// <summary>
-    /// To avoid deadlock, this method should not called from main thread
-    /// </summary>
-    public void AddResults(ICollection<ResultsForUpdate> resultsForUpdates, CancellationToken token, bool reselect = true)
-    {
-        // Since NewResults may need to clear existing results, do not check token cancellation after this point
-        var newResults = NewResults(resultsForUpdates);
-
-        UpdateResults(newResults, reselect, token);
-    }
-
-    private void UpdateResults(IEnumerable<ResultViewModel> newResults, bool reselect = true, CancellationToken token = default)
-    {
-        lock (_collectionLock)
-        {
-            // update UI in one run, so it can avoid UI flickering
-            Results.ReplaceAll(newResults);
-            if (reselect && Results.Any())
-                SelectedItem = Results[0];
-        }
-
-        if (token.IsCancellationRequested)
+        if (Results.Count == 0 && SelectedItem is null && Visibility == Visibility.Collapsed)
             return;
 
-        switch (Visibility)
+        IsUpdating = true;
+        try
         {
-            case Visibility.Collapsed when Results.Count > 0:
-                SelectedIndex = 0;
-                Visibility = Visibility.Visible;
-                break;
-            case Visibility.Visible when Results.Count == 0:
-                Visibility = Visibility.Collapsed;
-                break;
+            Results.Clear();
         }
+        finally
+        {
+            IsUpdating = false;
+        }
+
+        SelectedIndex = -1;
+        SelectedItem = null;
+        Visibility = Visibility.Collapsed;
     }
 
-    private IEnumerable<ResultViewModel> NewResults(List<Result> newRawResults)
+    public void UpdateResults(IReadOnlyList<ResultViewModel> newResults, bool reselect = true)
     {
-        if (newRawResults.Count == 0)
-            return Results;
+        if (newResults.Count == 0)
+        {
+            Clear();
+            return;
+        }
 
-        var newResults = newRawResults.Select(r => new ResultViewModel(_imageLoader, r));
-        return Results.Concat(newResults).OrderByDescending(r => r.Result.Score);
-    }
+        ResultViewModel? previousSelection = !reselect ? SelectedItem : null;
 
-    private IEnumerable<ResultViewModel> NewResults(ICollection<ResultsForUpdate> resultsForUpdates)
-    {
-        if (resultsForUpdates.Count == 0)
-            return Results;
+        IsUpdating = true;
+        try
+        {
+            Results.ReplaceAll(newResults);
+        }
+        finally
+        {
+            IsUpdating = false;
+        }
 
-        var newResults = resultsForUpdates.SelectMany(
-            u => u.Results, (u, r) => new ResultViewModel(_imageLoader, r, u.ID));
+        int indexToSelect = 0;
+        if (previousSelection is not null)
+        {
+            int existingIndex = Results.IndexOf(previousSelection);
+            if (existingIndex >= 0)
+                indexToSelect = existingIndex;
+        }
 
-        if (resultsForUpdates.Any(x => x.ShouldClearExistingResults))
-            return newResults.OrderByDescending(rv => rv.Result.Score);
+        ResultViewModel targetSelection = Results[indexToSelect];
+        bool sameReference = ReferenceEquals(SelectedItem, targetSelection);
 
-        return Results.Where(r => resultsForUpdates.All(u => u.ID != r.PluginID))
-                .Concat(newResults)
-                .OrderByDescending(rv => rv.Result.Score);
+        SelectedIndex = indexToSelect;
+        SelectedItem = targetSelection;
+        if (sameReference)
+            OnPropertyChanged(nameof(SelectedItem));
+
+        Visibility = Visibility.Visible;
     }
 
     public void Dispose()

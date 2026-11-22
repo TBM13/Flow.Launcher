@@ -20,6 +20,8 @@ public class PluginsSettings
     {
         foreach (var metadata in metadatas)
         {
+            List<string> defaultKeywords = [.. metadata.ActionKeywords];
+
             if (Plugins.TryGetValue(metadata.ID, out var settings))
             {
                 // If settings exist, update settings & metadata value
@@ -28,11 +30,18 @@ public class PluginsSettings
                 {
                     settings.Version = metadata.Version;
                 }
-                settings.DefaultActionKeywords = metadata.ActionKeywords; // metadata provides default values
+                settings.DefaultActionKeywords = defaultKeywords; // metadata provides default values
 
                 // update metadata values with settings
                 if (settings.ActionKeywords?.Count > 0)
-                    metadata.ActionKeywords = settings.ActionKeywords;
+                {
+                    metadata.ActionKeywords = [.. settings.ActionKeywords];
+                }
+                else
+                {
+                    settings.ActionKeywords = [.. defaultKeywords];
+                    metadata.ActionKeywords = [.. defaultKeywords];
+                }
 
                 metadata.Disabled = settings.Disabled;
                 metadata.Priority = settings.Priority;
@@ -46,12 +55,13 @@ public class PluginsSettings
                     ID = metadata.ID,
                     Name = metadata.Name,
                     Version = metadata.Version,
-                    DefaultActionKeywords = metadata.ActionKeywords, // metadata provides default values
-                    ActionKeywords = metadata.ActionKeywords, // use default value
+                    DefaultActionKeywords = defaultKeywords, // metadata provides default values
+                    ActionKeywords = [.. defaultKeywords], // use default value
                     Disabled = metadata.Disabled,
                     HomeDisabled = metadata.HomeDisabled,
                     Priority = metadata.Priority
                 };
+                metadata.ActionKeywords = [.. defaultKeywords];
             }
         }
     }
@@ -81,7 +91,7 @@ public class Plugin
     public required string Version { get; set; }
 
     [JsonIgnore]
-    public List<string> DefaultActionKeywords { get; set; }
+    public List<string> DefaultActionKeywords { get; set; } = [];
 
     // a reference of the action keywords from plugin manager
     public required List<string> ActionKeywords { get; set; }

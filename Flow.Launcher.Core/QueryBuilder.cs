@@ -1,4 +1,5 @@
-﻿using Flow.Launcher.Core.Text;
+﻿using System.Collections.Frozen;
+using Flow.Launcher.Core.Text;
 using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.Plugins;
 
@@ -6,7 +7,7 @@ namespace Flow.Launcher.Core;
 
 public static class QueryBuilder
 {
-    public static Query Build(string originalQuery, bool isRequery, Dictionary<string, PluginMetadata> nonGlobalPlugins)
+    public static Query Build(string originalQuery, bool isRequery, FrozenDictionary<string, PluginMetadata> nonGlobalPlugins)
     {
         ReadOnlySpan<char> trimmedQuery = originalQuery.AsSpan().Trim();
 

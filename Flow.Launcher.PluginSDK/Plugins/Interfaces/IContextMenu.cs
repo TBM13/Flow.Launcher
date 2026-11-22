@@ -8,5 +8,8 @@ public interface IContextMenu
     /// <summary>
     /// Gets the context menu items for the given result.
     /// </summary>
-    List<Result>? LoadContextMenus(Result selectedResult, ActionContext context);
+    IAsyncEnumerable<Result> LoadContextMenusAsync(
+        Result selectedResult,
+        ActionContext context,
+        CancellationToken token = default);
 }

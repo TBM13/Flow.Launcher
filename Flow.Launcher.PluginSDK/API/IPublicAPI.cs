@@ -138,7 +138,7 @@ public interface IPublicAPI
     /// Will also return any plugins not fully initialized yet
     /// </remarks>
     /// <returns></returns>
-    List<PluginMetadata> GetAllPlugins();
+    IReadOnlyList<PluginMetadata> GetAllPlugins();
 
     /// <summary>
     /// Get all initialized plugins
@@ -147,7 +147,7 @@ public interface IPublicAPI
     /// Whether to include plugins that failed to initialize
     /// </param>
     /// <returns></returns>
-    List<PluginMetadata> GetAllInitializedPlugins(bool includeFailed);
+    IReadOnlyList<PluginMetadata> GetAllInitializedPlugins(bool includeFailed);
 
     /// <summary>
     /// Add ActionKeyword and update action keyword metadata for specific plugin.

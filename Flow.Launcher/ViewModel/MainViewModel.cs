@@ -1,8 +1,8 @@
 ﻿using System.IO;
-using System.Threading.Channels;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Flow.Launcher.Controls;
@@ -30,16 +30,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
     private readonly IImageLoader _imageLoader;
 
     private Query? _lastQuery;
-    private bool _previousIsHomeQuery;
     private string? _ignoredQueryText; // Used to ignore query text change when switching between context menu and query results
 
     private readonly JsonStorage<UserSelectedRecord> _userSelectedRecordStorage;
     private readonly UserSelectedRecord _userSelectedRecord;
 
     private CancellationTokenSource? _updateSource; // Used to cancel old query flows
-
-    private ChannelWriter<ResultsForUpdate> _resultsUpdateChannelWriter;
-    private Task _resultsViewUpdateTask;
 
     private readonly ResultsViewModel _results, _contextMenu;
     private List<Result>? _contextMenuItems;
@@ -74,12 +70,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
             loggerFactory, Path.Combine(DataLocation.SettingsDirectory, "UserSelectedRecord.json"));
         _userSelectedRecord = _userSelectedRecordStorage.TryLoad();
 
-        _contextMenu = new ResultsViewModel(_settings, imageLoader)
+        _contextMenu = new ResultsViewModel(_settings)
         {
             LeftClickResultCommand = OpenResultCommand,
             RightClickResultCommand = LoadContextMenuCommand,
         };
-        _results = new ResultsViewModel(_settings, imageLoader)
+        _results = new ResultsViewModel(_settings)
         {
             LeftClickResultCommand = OpenResultCommand,
             RightClickResultCommand = LoadContextMenuCommand,
@@ -91,7 +87,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
         {
             switch (args.PropertyName)
             {
-                case nameof(_results.SelectedItem):
+                case nameof(_results.SelectedItem) when !_results.IsUpdating:
                     PreviewSelectedItem = _results.SelectedItem;
                     if (InternalPreviewVisible)
                         PreviewSelectedItem?.LoadPreviewImageAsync();
@@ -107,73 +103,17 @@ public partial class MainViewModel : ObservableObject, IDisposable
         {
             OnPropertyChanged(nameof(MiddleSeparatorVisibility));
         };
-
-        RegisterViewUpdate();
-    }
-
-    private void RegisterViewUpdate()
-    {
-        var resultUpdateChannel = Channel.CreateUnbounded<ResultsForUpdate>();
-        _resultsUpdateChannelWriter = resultUpdateChannel.Writer;
-        _resultsViewUpdateTask =
-            Task.Run(UpdateActionAsync).ContinueWith(continueAction, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.Default);
-
-        async Task UpdateActionAsync()
-        {
-            var queue = new Dictionary<string, ResultsForUpdate>();
-            var channelReader = resultUpdateChannel.Reader;
-
-            // it is not supposed to be false because it won't be complete
-            while (await channelReader.WaitToReadAsync())
-            {
-                await Task.Delay(20);
-                while (channelReader.TryRead(out var item))
-                {
-                    if (!item.Token.IsCancellationRequested)
-                    {
-                        // Indicate if to clear existing results so to show only ones from plugins with action keywords
-                        var query = item.Query;
-                        var shouldClearExistingResults = ShouldClearExistingResultsForQuery(query);
-                        _lastQuery = item.Query;
-                        _previousIsHomeQuery = query.IsHomeQuery;
-
-                        // If the queue already has the item, we need to pass the shouldClearExistingResults flag
-                        if (queue.TryGetValue(item.ID, out var existingItem))
-                        {
-                            item.ShouldClearExistingResults = shouldClearExistingResults || existingItem.ShouldClearExistingResults;
-                        }
-                        else
-                        {
-                            item.ShouldClearExistingResults = shouldClearExistingResults;
-                        }
-
-                        queue[item.ID] = item;
-                    }
-                }
-
-                UpdateResultView(queue.Values);
-                queue.Clear();
-            }
-
-            if (!_disposed)
-                _logger.LogError($"Unexpected ResultViewUpdate ends");
-        }
-
-        void continueAction(Task t)
-        {
-#if DEBUG
-            throw t.Exception;
-#else
-            _logger.LogError(t.Exception, $"Error happen in task dealing with viewupdate for results");
-            _resultsViewUpdateTask =
-                Task.Run(UpdateActionAsync).ContinueWith(continueAction, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.Default);
-#endif
-        }
     }
 
     [RelayCommand]
     public void ReQuery()
     {
+        if (Application.Current?.Dispatcher is { } dispatcher && !dispatcher.CheckAccess())
+        {
+            dispatcher.InvokeAsync(ReQuery);
+            return;
+        }
+
         if (!ContextMenuSelected)
         {
             // When we are re-querying, we should not delay the query
@@ -183,6 +123,12 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     public void ReQuery(bool reselect)
     {
+        if (Application.Current?.Dispatcher is { } dispatcher && !dispatcher.CheckAccess())
+        {
+            dispatcher.InvokeAsync(() => ReQuery(reselect));
+            return;
+        }
+
         if (ContextMenuSelected)
             SelectedResults = _results;
 
@@ -206,8 +152,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
             if (ContextMenuSelected || _results.SelectedItem != selected)
                 return;
 
-            var results = _pluginManager.GetContextMenusForPlugin(selected.PluginID, selected.Result, context);
-            if (results is null || results.Count == 0)
+            var results = await _pluginManager.GetContextMenusForPluginAsync(selected.PluginID, selected.Result, context);
+            if (ContextMenuSelected || _results.SelectedItem != selected || results.Count == 0)
                 return;
 
             _contextMenuItems = results;
@@ -271,8 +217,8 @@ public partial class MainViewModel : ObservableObject, IDisposable
             return;
 
         var result = selectedItem.Result;
-        var context = await CreateActionContextAsync(selectedItem).ConfigureAwait(false);
-        var hideWindow = await result.ExecuteAsync(context).ConfigureAwait(false);
+        var context = await CreateActionContextAsync(selectedItem);
+        var hideWindow = await result.ExecuteAsync(context);
 
         if (hideWindow)
             Hide();
@@ -293,19 +239,6 @@ public partial class MainViewModel : ObservableObject, IDisposable
             PressedKeys = await _hotkeyManager.GetPressedKeysAsync(),
             ResultPosition = position
         };
-    }
-
-    private static List<Result> DeepCloneResults(IReadOnlyList<Result> results, CancellationToken token = default)
-    {
-        var resultsCopy = new List<Result>();
-        foreach (var result in results.ToList())
-        {
-            if (token.IsCancellationRequested)
-                break;
-
-            resultsCopy.Add(result with { });
-        }
-        return resultsCopy;
     }
 
     #region BasicCommands
@@ -461,9 +394,16 @@ public partial class MainViewModel : ObservableObject, IDisposable
         get;
         private set
         {
+            if (ReferenceEquals(field, value))
+                return;
+
+            bool isInitialAssignment = field is null;
             var isReturningFromContextMenu = ContextMenuSelected;
             field = value;
             OnPropertyChanged();
+
+            if (isInitialAssignment)
+                return;
 
             if (!ContextMenuSelected)
             {
@@ -663,234 +603,243 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
     private void QueryContextMenu()
     {
-        var query = QueryText.ToLower().Trim();
-        _contextMenu.Clear();
-
         if (_contextMenuItems is null || _contextMenuItems.Count == 0)
-            return;
-
-        if (!string.IsNullOrEmpty(query))
         {
-            var filtered = _contextMenuItems.Select(x => x with { }).Where
-            (
-                r =>
-                {
-                    var match = IPublicAPI.Instance.StringMatcher.FuzzySearchBest(query, r.Title, r.SubTitle);
-                    if (!match.IsThresholdMet)
-                        return false;
+            _contextMenu.Clear();
+            return;
+        }
 
-                    r.Score = match.Score;
-                    return true;
-                }).ToList();
-            _contextMenu.AddResults(filtered);
+        ReadOnlySpan<char> query = QueryText.AsSpan().Trim();
+        List<ResultViewModel> viewModels;
+
+        if (!query.IsEmpty)
+        {
+            viewModels = [];
+            foreach (Result result in _contextMenuItems)
+            {
+                MatchResult match = IPublicAPI.Instance.StringMatcher.FuzzySearchBest(query, result.Title, result.SubTitle);
+                if (match.IsThresholdMet)
+                    viewModels.Add(new ResultViewModel(_imageLoader, result, score: match.Score));
+            }
+
+            viewModels = [.. viewModels.OrderByDescending(r => r.Score)];
         }
         else
         {
-            _contextMenu.AddResults(_contextMenuItems);
+            viewModels = [.. _contextMenuItems.Select(r => new ResultViewModel(_imageLoader, r))];
         }
+
+        _contextMenu.UpdateResults(viewModels);
     }
 
     private async Task QueryResultsAsync(bool isReQuery = false, bool reSelect = true)
     {
-        var previousUpdateSource = _updateSource;
-        var currentUpdateSource = new CancellationTokenSource();
-        _updateSource = currentUpdateSource;
-        var currentCancellationToken = currentUpdateSource.Token;
+        const int initialBatchWindowMs = 20;
+        const int streamingFlushIntervalMs = 25;
 
-        if (previousUpdateSource is not null)
+        CancellationTokenSource currentSource = new();
+        CancellationTokenSource? previousSource = Interlocked.Exchange(ref _updateSource, currentSource);
+        if (previousSource is not null)
+            await previousSource.CancelAsync();
+
+        CancellationToken token = currentSource.Token;
+        Dispatcher? uiDispatcher = Application.Current?.Dispatcher;
+        Task? allPluginsTask = null;
+
+        try
         {
-            await previousUpdateSource.CancelAsync();
-            previousUpdateSource.Dispose();
-        }
+            if (token.IsCancellationRequested)
+                return;
 
-        if (currentCancellationToken.IsCancellationRequested)
-            return;
+            Query? previousQuery = _lastQuery;
+            Query query = _pluginManager.BuildQuery(QueryText, isReQuery);
+            _lastQuery = query;
 
-        Query query = QueryBuilder.Build(QueryText, isReQuery, _pluginManager.GetNonGlobalPlugins());
-        _logger.LogDebug($"Start query with text: <{QueryText}> & ActionKeyword <{query.ActionKeyword}> and query <{query.OriginalQuery}>");
+            _logger.LogDebug($"Start query with text: <{QueryText}> & ActionKeyword <{query.ActionKeyword}> and query <{query.OriginalQuery}>");
 
-        // Switch to ThreadPool thread
-        await Task.Run(async () =>
-        {
-            if (currentCancellationToken.IsCancellationRequested) return;
-
-            IReadOnlyList<PluginMetadata> plugins = Array.Empty<PluginMetadata>();
+            IReadOnlyList<PluginMetadata> plugins;
             if (query.IsHomeQuery)
             {
-                if (_settings.ShowHomePage)
-                {
-                    plugins = _pluginManager.GetAllInitializedPlugins(includeFailed: false);
-                }
-
-                PluginIconPath = null;
-                PluginIconSource = null;
+                plugins = _settings.ShowHomePage
+                    ? _pluginManager.GetAllInitializedPlugins(includeFailed: false)
+                    : [];
             }
             else
             {
                 plugins = _pluginManager.ValidPluginsForQuery(query);
-
-                if (plugins.Count == 1)
-                {
-                    PluginIconPath = plugins.Single().IcoPath;
-                    PluginIconSource = await _imageLoader.LoadAsync(PluginIconPath);
-                }
-                else
-                {
-                    PluginIconPath = null;
-                    PluginIconSource = null;
-                }
             }
 
-            _logger.LogDebug($"Valid <{plugins.Count}> plugins: {string.Join(" ", plugins.Select(x => $"<{x.Name}>"))}");
+            _ = UpdatePluginIconAsync(query, plugins, token);
 
-            // Do not wait for performance improvement
-            /*if (string.IsNullOrEmpty(query.ActionKeyword))
+            List<PluginMetadata> activePlugins = [.. plugins.Where(p => query.IsHomeQuery ? !p.HomeDisabled : !p.Disabled)];
+            _logger.LogDebug($"Valid <{activePlugins.Count}> plugins: {string.Join(" ", activePlugins.Select(x => $"<{x.Name}>"))}");
+
+            if (activePlugins.Count == 0)
             {
-                // Wait 15 millisecond for query change in global query
-                // if query changes, return so that it won't be calculated
-                await Task.Delay(15, currentCancellationToken);
-                if (currentCancellationToken.IsCancellationRequested) return;
-            }*/
+                _results.Clear();
+                return;
+            }
 
-            // plugins are ICollection, meaning LINQ will get the Count and preallocate Array
+            bool queryModeChanged = previousQuery is not null
+                && (previousQuery.IsHomeQuery != query.IsHomeQuery
+                    || !string.Equals(previousQuery.ActionKeyword, query.ActionKeyword, StringComparison.Ordinal));
 
-            Task[] tasks;
-            if (query.IsHomeQuery)
+            Lock collectedLock = new();
+            List<ResultViewModel> collectedResults = [];
+            int hasPendingResults = 0;
+            bool hasFlushedOnce = false;
+
+            allPluginsTask = Task.WhenAll(activePlugins.Select(plugin => Task.Run(async () =>
             {
-                if (ShouldClearExistingResultsForNonQuery(plugins))
+                int priorityScore = plugin.Priority * 150;
+                await foreach (Result result in _pluginManager.QueryForPluginAsync(plugin, query, token).ConfigureAwait(false))
                 {
-                    // there are no update tasks and so we can directly return
-                    ClearResults();
+                    if (token.IsCancellationRequested)
+                        return;
+
+                    int finalScore = CalculateFinalScore(result, priorityScore, query);
+                    ResultViewModel vm = new(_imageLoader, result, plugin.ID, finalScore);
+
+                    lock (collectedLock)
+                    {
+                        collectedResults.Add(vm);
+                    }
+
+                    Volatile.Write(ref hasPendingResults, 1);
+                }
+            }, token)));
+
+            await Task.Run(async () =>
+            {
+                Task completed = await Task.WhenAny(allPluginsTask, Task.Delay(initialBatchWindowMs, token)).ConfigureAwait(false);
+                if (token.IsCancellationRequested)
                     return;
+
+                if (completed != allPluginsTask)
+                {
+                    if (Volatile.Read(ref hasPendingResults) != 0)
+                    {
+                        await FlushSnapshotAsync().ConfigureAwait(false);
+                    }
+                    else if (queryModeChanged)
+                    {
+                        await RunOnUiAsync(() =>
+                        {
+                            if (!token.IsCancellationRequested)
+                                _results.Clear();
+                        }).ConfigureAwait(false);
+                    }
+
+                    while (!allPluginsTask.IsCompleted && !token.IsCancellationRequested)
+                    {
+                        await Task.WhenAny(allPluginsTask, Task.Delay(streamingFlushIntervalMs, token)).ConfigureAwait(false);
+                        if (token.IsCancellationRequested)
+                            return;
+
+                        if (!allPluginsTask.IsCompleted && Volatile.Read(ref hasPendingResults) != 0)
+                            await FlushSnapshotAsync().ConfigureAwait(false);
+                    }
                 }
 
-                tasks = [.. plugins.Select(plugin => plugin.HomeDisabled switch
+                await allPluginsTask.ConfigureAwait(false);
+                if (!token.IsCancellationRequested)
+                    await FlushSnapshotAsync().ConfigureAwait(false);
+            });
+
+            async Task FlushSnapshotAsync()
             {
-                false => QueryTaskAsync(plugin, currentCancellationToken),
-                true => Task.CompletedTask
-            })];
+                if (Interlocked.Exchange(ref hasPendingResults, 0) == 0 && hasFlushedOnce)
+                    return;
+
+                ResultViewModel[] sorted;
+                lock (collectedLock)
+                {
+                    if (collectedResults.Count == 0 && hasFlushedOnce)
+                        return;
+
+                    sorted = [.. collectedResults.OrderByDescending(static r => r.Score)];
+                }
+
+                if (token.IsCancellationRequested)
+                    return;
+
+                bool isFirstFlush = !hasFlushedOnce;
+                hasFlushedOnce = true;
+
+                await RunOnUiAsync(() =>
+                {
+                    if (token.IsCancellationRequested)
+                        return;
+
+                    bool effectiveReselect = reSelect && (isFirstFlush || _results.SelectedIndex <= 0);
+                    _results.UpdateResults(sorted, effectiveReselect);
+                }).ConfigureAwait(false);
+            }
+
+            Task RunOnUiAsync(Action action)
+            {
+                if (uiDispatcher is not null && !uiDispatcher.CheckAccess())
+                    return uiDispatcher.InvokeAsync(action).Task;
+
+                action();
+                return Task.CompletedTask;
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Query was superseded by a newer query
+        }
+        finally
+        {
+            Interlocked.CompareExchange(ref _updateSource, null, currentSource);
+            if (allPluginsTask is not null && !allPluginsTask.IsCompleted)
+            {
+                _ = allPluginsTask.ContinueWith(
+                    static (_, state) => ((CancellationTokenSource)state!).Dispose(),
+                    currentSource,
+                    CancellationToken.None,
+                    TaskContinuationOptions.ExecuteSynchronously,
+                    TaskScheduler.Default);
             }
             else
             {
-                tasks = [.. plugins.Select(plugin => plugin.Disabled switch
-            {
-                false => QueryTaskAsync(plugin, currentCancellationToken),
-                true => Task.CompletedTask
-            })];
+                currentSource.Dispose();
             }
+        }
+    }
 
-            try
-            {
-                // Check the code, WhenAll will translate all type of IEnumerable or Collection to Array, so make an array at first
-                await Task.WhenAll(tasks);
-            }
-            catch (OperationCanceledException)
-            {
-                // nothing to do here
-            }
-        }, currentCancellationToken);
-
-        // Local function
-        void ClearResults()
+    private async Task UpdatePluginIconAsync(Query query, IReadOnlyList<PluginMetadata> plugins, CancellationToken token)
+    {
+        if (query.IsHomeQuery || plugins.Count != 1)
         {
-            _logger.LogDebug($"Clear query results");
-
-            // Hide and clear results again because running query may show and add some results
-            _results.Visibility = Visibility.Collapsed;
-            _results.Clear();
-
-            // Reset plugin icon
             PluginIconPath = null;
             PluginIconSource = null;
+            return;
         }
 
-        // Local function
-        async Task QueryTaskAsync(PluginMetadata plugin, CancellationToken token)
+        string iconPath = plugins[0].IcoPath;
+        PluginIconPath = iconPath;
+
+        try
         {
-            _logger.LogDebug($"Wait for querying plugin <{plugin.Name}>");
-
-            // Since it is wrapped within a ThreadPool Thread, the synchronous context is null
-            // Task.Yield will force it to run in ThreadPool
-            await Task.Yield();
-
-            var results = await _pluginManager.QueryForPluginAsync(plugin, query, token);
-
-            if (token.IsCancellationRequested) return;
-
-            IReadOnlyList<Result> resultsCopy;
-            if (results == null)
-            {
-                resultsCopy = [];
-            }
-            else
-            {
-                // make a copy of results to avoid possible issue that FL changes some properties of the records, like score, etc.
-                resultsCopy = DeepCloneResults(results, token);
-            }
-
-            if (token.IsCancellationRequested) return;
-
-            _logger.LogDebug($"Update results for plugin <{plugin.Name}>");
-
-            if (!_resultsUpdateChannelWriter.TryWrite(new ResultsForUpdate(resultsCopy, plugin, query,
-                token, reSelect)))
-            {
-                _logger.LogError($"Unable to add item to Result Update Queue");
-            }
+            ImageSource icon = await _imageLoader.LoadAsync(iconPath);
+            if (!token.IsCancellationRequested)
+                PluginIconSource = icon;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Failed to load plugin icon '{iconPath}'");
         }
     }
 
-    /// <summary>
-    /// Determines whether the existing search results should be cleared based on the current query and the previous query type.
-    /// This is used to indicate to QueryTaskAsync whether to clear results. If QueryTaskAsync is not called then use ShouldClearExistingResultsForNonQuery instead.
-    /// This method needed because of the design that treats plugins with action keywords and global action keywords separately. Results are gathered
-    /// either from plugins with matching action keywords or global action keyword, but not both. So when the current results are from plugins
-    /// with a matching action keyword and a new result set comes from a new query with the global action keyword, the existing results need to be cleared,
-    /// and vice versa. The same applies to home page query results.
-    /// 
-    /// There is no need to clear results from global action keyword if a new set of results comes along that is also from global action keywords.
-    /// This is because the removal of obsolete results is handled in ResultsViewModel.NewResults(ICollection<ResultsForUpdate>).
-    /// </summary>
-    /// <param name="query">The current query.</param>
-    /// <param name="currentIsHomeQuery">A flag indicating if the current query is a home query.</param>
-    /// <returns>True if the existing results should be cleared, false otherwise.</returns>
-    private bool ShouldClearExistingResultsForQuery(Query query)
+    private int CalculateFinalScore(Result result, int priorityScore, Query query)
     {
-        // If previous or current results are from home query, we need to clear them
-        if (_previousIsHomeQuery || query.IsHomeQuery)
-        {
-            _logger.LogDebug($"Existing results should be cleared for query");
-            return true;
-        }
+        int selectedCount = result.AddSelectedCount
+            ? _userSelectedRecord.GetSelectedCount(result, query)
+            : 0;
 
-        // If the last and current query are not home query type, we need to check the action keyword
-        if (_lastQuery?.ActionKeyword != query.ActionKeyword)
-        {
-            _logger.LogDebug($"Existing results should be cleared for query");
-            return true;
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// Determines whether existing results should be cleared for non-query calls.
-    /// A non-query call is where QueryTaskAsync is not called.
-    /// QueryTaskAsync handles result updating (clearing if required) so directly calling
-    /// Results.Clear() is not required. However when both are not called, we need to directly clear results and this
-    /// method determines on the condition when clear results should happen.
-    /// </summary>
-    /// <param name="plugins">The collection of plugins to check.</param>
-    /// <returns>True if existing results should be cleared, false otherwise.</returns>
-    private bool ShouldClearExistingResultsForNonQuery(IReadOnlyList<PluginMetadata> plugins)
-    {
-        if (plugins.Count == 0 || plugins.All(x => x.HomeDisabled == true))
-        {
-            _logger.LogDebug($"Existing results should be cleared for non-query");
-            return true;
-        }
-
-        return false;
+        long total = (long)result.Score + selectedCount + priorityScore;
+        return (int)Math.Clamp(total, int.MinValue, Result.MaxScore);
     }
 
     public bool ContextMenuSelected => SelectedResults == _contextMenu;
@@ -935,7 +884,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
 
                 if (!string.IsNullOrEmpty(newQuery))
                     newQuery += " ";
-                await ChangeQueryTextAsync(newQuery);
+                await ChangeQueryTextAsync(newQuery ?? string.Empty);
 
                 if (_settings.LastQueryMode == LastQueryMode.ActionKeywordSelected)
                     LastQuerySelected = false;
@@ -961,60 +910,7 @@ public partial class MainViewModel : ObservableObject, IDisposable
     /// </summary>
     public bool TrySave()
     {
-        return _userSelectedRecordStorage.TrySave();
-    }
-
-    /// <summary>
-    /// To avoid deadlock, this method should not be called from main thread
-    /// </summary>
-    public void UpdateResultView(ICollection<ResultsForUpdate> resultsForUpdates)
-    {
-        if (resultsForUpdates.Count == 0)
-            return;
-
-        CancellationToken token;
-
-        try
-        {
-            // Don't know why sometimes even resultsForUpdates is empty, the method won't return;
-            token = resultsForUpdates.Select(r => r.Token).Distinct().SingleOrDefault();
-        }
-#if DEBUG
-        catch
-        {
-            throw new ArgumentException("Unacceptable token");
-        }
-#else
-        catch
-        {
-            token = default;
-        }
-#endif
-
-        foreach (var metaResults in resultsForUpdates)
-        {
-            var priorityScore = metaResults.Metadata.Priority * 150;
-            foreach (var result in metaResults.Results)
-            {
-                var selectedCount = result.AddSelectedCount
-                    ? _userSelectedRecord.GetSelectedCount(result, _lastQuery)
-                    : 0;
-
-                if ((long)result.Score + selectedCount + priorityScore > Result.MaxScore)
-                {
-                    result.Score = Result.MaxScore;
-                }
-                else
-                {
-                    result.Score += selectedCount + priorityScore;
-                }
-            }
-        }
-
-        // it should be the same for all results
-        var reSelect = resultsForUpdates.First().ReSelectFirstResult;
-
-        _results.AddResults(resultsForUpdates, token, reSelect);
+        return _userSelectedRecord.SaveTo(_userSelectedRecordStorage);
     }
 
     #endregion
@@ -1026,11 +922,16 @@ public partial class MainViewModel : ObservableObject, IDisposable
         {
             _disposed = true;
 
-            _updateSource?.Dispose();
-            _resultsUpdateChannelWriter?.Complete();
-            if (_resultsViewUpdateTask?.IsCompleted == true)
+            CancellationTokenSource? activeSource = Interlocked.Exchange(ref _updateSource, null);
+            if (activeSource is not null)
             {
-                _resultsViewUpdateTask.Dispose();
+                try
+                {
+                    activeSource.Cancel();
+                }
+                catch (ObjectDisposedException)
+                {
+                }
             }
         }
     }

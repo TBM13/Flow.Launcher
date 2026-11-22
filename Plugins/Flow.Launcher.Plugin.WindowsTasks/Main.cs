@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.Plugins;
@@ -34,101 +35,127 @@ public class Main : IPlugin, IContextMenu
 
     private PluginInitContext _context = null!;
 
-    public void Init(PluginInitContext context)
+    public ValueTask InitAsync(PluginInitContext context)
     {
         _context = context;
+        return ValueTask.CompletedTask;
     }
 
-    public List<Result>? Query(Query query)
+    public async IAsyncEnumerable<Result> QueryAsync(
+        Query query,
+        [EnumeratorCancellation] CancellationToken token)
     {
         if (query.IsHomeQuery)
-            return null;
+            yield break;
 
-        query = query with { Search = query.Search.Replace('/', '\\') };
+        string search = query.Search.Replace('/', '\\');
 
         // TODO: Support global searches
         // TODO: Support recursive and wildcard searching
         // TODO: Figure out how to edit tasks since it requires admin privileges
 
         // On empty queries we should show all the folders and tasks in the root folder
-        if (string.IsNullOrWhiteSpace(query.Search))
+        if (string.IsNullOrWhiteSpace(search))
         {
-            TaskFolder folder = TaskService.Instance.RootFolder;
+            TaskFolder root = TaskService.Instance.RootFolder;
 
-            IEnumerable<Result> folders = folder.EnumerateFolders().Select(f => CreateResult(f, addSelectedCount: false));
-            IEnumerable<Result> tasks = folder.EnumerateTasks().Select(t => CreateResult(t, addSelectedCount: false));
+            foreach (TaskFolder subFolder in root.EnumerateFolders())
+            {
+                token.ThrowIfCancellationRequested();
+                yield return CreateResult(subFolder, addSelectedCount: false);
+            }
 
-            return [.. folders, .. tasks];
+            foreach (Task task in root.EnumerateTasks())
+            {
+                token.ThrowIfCancellationRequested();
+                yield return CreateResult(task, addSelectedCount: false);
+            }
+
+            yield break;
         }
 
         // If the query is the path of a folder, lets show all its subfolders and tasks
-        if (query.Search.EndsWith('\\'))
+        if (search.EndsWith('\\'))
         {
-            TaskFolder? folder = TaskService.Instance.GetFolder(query.Search[..^1]);
+            TaskFolder? folder = TaskService.Instance.GetFolder(search[..^1]);
             if (folder is null)
-                return [];
+                yield break;
 
-            IEnumerable<Result> folders = folder.EnumerateFolders().Select(f => CreateResult(f, addSelectedCount: false));
-            IEnumerable<Result> tasks = folder.EnumerateTasks().Select(t => CreateResult(t, addSelectedCount: false));
+            foreach (TaskFolder subFolder in folder.EnumerateFolders())
+            {
+                token.ThrowIfCancellationRequested();
+                yield return CreateResult(subFolder, addSelectedCount: false);
+            }
 
-            return [.. folders, .. tasks];
+            foreach (Task task in folder.EnumerateTasks())
+            {
+                token.ThrowIfCancellationRequested();
+                yield return CreateResult(task, addSelectedCount: false);
+            }
+
+            yield break;
         }
 
         // Lets treat this query as a simple StartsWith search inside a folder or root folder
-        TaskFolder? searchFolder = null;
-        string mustStartWith = query.Search;
+        TaskFolder? searchFolder;
+        string mustStartWith = search;
 
-        int separatorIndex = query.Search.LastIndexOf('\\');
+        int separatorIndex = search.LastIndexOf('\\');
         if (separatorIndex == -1)
+        {
             searchFolder = TaskService.Instance.RootFolder;
+        }
         else
         {
-            string folderPath = query.Search[..separatorIndex];
+            string folderPath = search[..separatorIndex];
             searchFolder = TaskService.Instance.GetFolder(folderPath);
             if (searchFolder is null)
-                return [];
+                yield break;
 
-            mustStartWith = query.Search[(separatorIndex + 1)..];
+            mustStartWith = search[(separatorIndex + 1)..];
         }
 
-        IEnumerable<Result> matchedFolders = searchFolder
-            .EnumerateFolders()
-            .Where(f => f.Name.StartsWith(mustStartWith, StringComparison.CurrentCultureIgnoreCase))
-            .Select(f => CreateResult(f, addSelectedCount: true));
-        IEnumerable<Result> matchedTasks = searchFolder
-            .EnumerateTasks()
-            .Where(t => t.Name.StartsWith(mustStartWith, StringComparison.CurrentCultureIgnoreCase))
-            .Select(t => CreateResult(t, addSelectedCount: true));
+        foreach (TaskFolder subFolder in searchFolder.EnumerateFolders())
+        {
+            token.ThrowIfCancellationRequested();
+            if (subFolder.Name.StartsWith(mustStartWith, StringComparison.CurrentCultureIgnoreCase))
+                yield return CreateResult(subFolder, addSelectedCount: true);
+        }
 
-        return [.. matchedFolders, .. matchedTasks];
+        foreach (Task task in searchFolder.EnumerateTasks())
+        {
+            token.ThrowIfCancellationRequested();
+            if (task.Name.StartsWith(mustStartWith, StringComparison.CurrentCultureIgnoreCase))
+                yield return CreateResult(task, addSelectedCount: true);
+        }
     }
 
-    public List<Result> LoadContextMenus(Result result, ActionContext ctx)
+    public async IAsyncEnumerable<Result> LoadContextMenusAsync(
+        Result selectedResult,
+        ActionContext context,
+        [EnumeratorCancellation] CancellationToken token = default)
     {
-        List<Result> res = [];
-        if (result.ContextData is Task task)
+        if (selectedResult.ContextData is Task task)
         {
             if (task.Enabled)
             {
-                res.Add(new()
+                yield return new Result
                 {
                     Title = "Disable",
                     IconOrGlyph = "\xEB4A",
-                    Action = c => SetTaskEnabled(task.Path, enabled: false)
-                });
+                    Action = _ => SetTaskEnabled(task.Path, enabled: false)
+                };
             }
             else
             {
-                res.Add(new()
+                yield return new Result
                 {
                     Title = "Enable",
                     IconOrGlyph = "\xEB49",
-                    Action = c => SetTaskEnabled(task.Path, enabled: true)
-                });
+                    Action = _ => SetTaskEnabled(task.Path, enabled: true)
+                };
             }
         }
-
-        return res;
     }
 
     private static Result CreateResult(TaskFolder folder, bool addSelectedCount)
@@ -247,6 +274,4 @@ public class Main : IPlugin, IContextMenu
 
         return sb.ToString();
     }
-
-    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 }

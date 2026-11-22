@@ -10,6 +10,8 @@ namespace Flow.Launcher.ViewModel;
 public partial class ResultViewModel : ObservableObject
 {
     private readonly IImageLoader _imageLoader;
+    private int _imageLoadStarted;
+    private int _previewImageLoadStarted;
 
     /// <summary>
     /// Gets the center point of this result's UI element in screen coordinates.
@@ -43,24 +45,31 @@ public partial class ResultViewModel : ObservableObject
     public Result Result { get; }
 
     /// <summary>
+    /// Final calculated score for sorting and ranking this result.
+    /// </summary>
+    public int Score { get; }
+
+    /// <summary>
     /// The ID of the plugin that generated this result, or null if the result is not associated with a plugin.
     /// </summary>
     public string? PluginID { get; }
 
-    public ResultViewModel(IImageLoader imageLoader, Result result, string? pluginId = null)
+    public ResultViewModel(IImageLoader imageLoader, Result result, string? pluginId = null, int? score = null)
     {
         _imageLoader = imageLoader;
         Result = result;
         PluginID = pluginId;
+        Score = score ?? result.Score;
 
         Image = _imageLoader.LoadingIcon;
         PreviewImage = _imageLoader.LoadingIcon;
-
-        _ = LoadImageAsync();
     }
 
     public async Task LoadImageAsync()
     {
+        if (Interlocked.Exchange(ref _imageLoadStarted, 1) != 0)
+            return;
+
         if (ShowIcon == Visibility.Visible)
             Image = await _imageLoader.LoadAsync(Result.IconOrGlyph!, false);
 
@@ -70,6 +79,9 @@ public partial class ResultViewModel : ObservableObject
 
     public async Task LoadPreviewImageAsync()
     {
+        if (Interlocked.Exchange(ref _previewImageLoadStarted, 1) != 0)
+            return;
+
         string? imagePath = Result.Preview.PreviewImagePath ?? Result.IconOrGlyph;
         if (ShowPreviewImage == Visibility.Visible)
             PreviewImage = await _imageLoader.LoadAsync(imagePath!, true);

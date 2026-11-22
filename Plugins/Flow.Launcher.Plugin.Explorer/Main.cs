@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Runtime.CompilerServices;
 using System.Windows.Controls;
 using Flow.Launcher.Interop.Shell;
 using Flow.Launcher.Plugin.Explorer.Search;
@@ -26,7 +27,7 @@ public static class PluginMetadataDefinition
     };
 }
 
-public class Main : ISettingProvider, IAsyncPlugin, IContextMenu, IMagicQueryProvider
+public class Main : ISettingProvider, IPlugin, IContextMenu, IMagicQueryProvider
 {
     internal static PluginInitContext Context { get; private set; } = null!;
 
@@ -40,7 +41,7 @@ public class Main : ISettingProvider, IAsyncPlugin, IContextMenu, IMagicQueryPro
         return new ExplorerSettings(_viewModel);
     }
 
-    public Task InitAsync(PluginInitContext context)
+    public ValueTask InitAsync(PluginInitContext context)
     {
         Context = context;
         Settings = context.API.LoadSettingJsonStorage<Settings>();
@@ -48,10 +49,13 @@ public class Main : ISettingProvider, IAsyncPlugin, IContextMenu, IMagicQueryPro
         _viewModel = new SettingsViewModel(context, Settings);
         _searchManager = new SearchManager(Settings, Context);
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 
-    public List<Result>? LoadContextMenus(Result selectedResult, ActionContext context)
+    public async IAsyncEnumerable<Result> LoadContextMenusAsync(
+        Result selectedResult,
+        ActionContext context,
+        [EnumeratorCancellation] CancellationToken token = default)
     {
         // Show explorer's native context menu
         if (selectedResult.ContextData is SearchResult record)
@@ -61,15 +65,18 @@ public class Main : ISettingProvider, IAsyncPlugin, IContextMenu, IMagicQueryPro
                 showExtendedmenu: context.PressedKeys.ShiftPressed);
         }
 
-        return null;
+        yield break;
     }
 
-    public async Task<List<Result>?> QueryAsync(Query query, CancellationToken token)
+    public async IAsyncEnumerable<Result> QueryAsync(
+        Query query,
+        [EnumeratorCancellation] CancellationToken token)
     {
         if (query.IsHomeQuery)
-            return null;
+            yield break;
 
-        return await _searchManager.SearchAsync(query, token);
+        await foreach (Result result in _searchManager.SearchAsync(query, token).ConfigureAwait(false))
+            yield return result;
     }
 
     public string? GenerateMagicQuery()
@@ -83,6 +90,4 @@ public class Main : ISettingProvider, IAsyncPlugin, IContextMenu, IMagicQueryPro
 
         return path;
     }
-
-    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 }

@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Windows.Controls;
 using Flow.Launcher.Plugin.Calculator.Engine;
 using Flow.Launcher.Plugin.Calculator.Preview;
@@ -28,39 +29,47 @@ public class Main : IPlugin
 {
     private PluginInitContext? _context;
 
-    public void Init(PluginInitContext context)
+    public ValueTask InitAsync(PluginInitContext context)
     {
         _context = context;
+        return ValueTask.CompletedTask;
     }
 
-    public List<Result>? Query(Query query)
+    public async IAsyncEnumerable<Result> QueryAsync(
+        Query query,
+        [EnumeratorCancellation] CancellationToken token)
     {
         if (query.IsHomeQuery || query.Search.Length < 2)
-            return null;
+            yield break;
 
-        Value? value;
+        Value? value = null;
+        Result? errorResult = null;
         try
         {
             value = Evaluator.Evaluate(query.Search);
         }
         catch (Exception e)
         {
-            Result error = new()
+            errorResult = new Result
             {
                 Title = "Error",
                 SubTitle = e.Message,
                 IconOrGlyph = PluginMetadataDefinition.Metadata.IcoPath,
                 Score = 300,
             };
+        }
 
-            return [error];
+        if (errorResult is not null)
+        {
+            yield return errorResult;
+            yield break;
         }
 
         if (value is not { } v)
-            return null;
+            yield break;
 
         string valueString = v.ToString(CultureInfo.InvariantCulture);
-        Result res = new()
+        yield return new Result
         {
             Title = valueString,
             AutocompleteText = (true, valueString),
@@ -73,8 +82,6 @@ public class Main : IPlugin
                     newValue => _context?.API.ChangeQuery(ToQueryText(newValue)),
                     text => _context?.API.CopyToClipboard(text)))
         };
-
-        return [res];
     }
 
     private static string ToQueryText(Int128 value)
@@ -85,6 +92,4 @@ public class Main : IPlugin
         // so prefix single-digit values with a unary plus (e.g. "+8").
         return text.Length < 2 ? "+" + text : text;
     }
-
-    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 }

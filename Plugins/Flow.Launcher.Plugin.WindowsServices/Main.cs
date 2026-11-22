@@ -1,4 +1,5 @@
-﻿using System.ServiceProcess;
+﻿using System.Runtime.CompilerServices;
+using System.ServiceProcess;
 using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.Plugins;
 using Flow.Launcher.PluginSDK.Plugins.Interfaces;
@@ -25,17 +26,21 @@ public class Main : IPlugin, IContextMenu
 {
     public static PluginInitContext Context { get; private set; } = null!;
 
-    public void Init(PluginInitContext context)
+    public ValueTask InitAsync(PluginInitContext context)
     {
         Context = context;
+        return ValueTask.CompletedTask;
     }
 
-    public List<Result>? Query(Query query)
+    public async IAsyncEnumerable<Result> QueryAsync(
+        Query query,
+        [EnumeratorCancellation] CancellationToken token)
     {
         if (query.IsHomeQuery)
-            return null;
+            yield break;
 
-        return [.. ServiceHelper.Search(query.Search)];
+        foreach (Result result in ServiceHelper.Search(query.Search, token))
+            yield return result;
     }
 
     private bool EnableService(ServiceResult service, Action action)
@@ -96,21 +101,23 @@ public class Main : IPlugin, IContextMenu
         return true;
     }
 
-    public List<Result> LoadContextMenus(Result result, ActionContext ctx)
+    public async IAsyncEnumerable<Result> LoadContextMenusAsync(
+        Result selectedResult,
+        ActionContext context,
+        [EnumeratorCancellation] CancellationToken token = default)
     {
-        if (result.ContextData is not ServiceResult service)
+        if (selectedResult.ContextData is not ServiceResult service)
             throw new InvalidOperationException("Unexpected context data type");
 
-        List<Result> results = [];
         if (service.IsRunning)
         {
             if (service.StartType != ServiceStartMode.Disabled)
             {
-                results.Add(new Result()
+                yield return new Result
                 {
                     Title = "Restart",
                     IconOrGlyph = "\xe777",
-                    Action = c =>
+                    Action = _ =>
                     {
                         try
                         {
@@ -125,14 +132,14 @@ public class Main : IPlugin, IContextMenu
                         Context.API.ReQuery();
                         return true;
                     }
-                });
+                };
             }
 
-            results.Add(new Result()
+            yield return new Result
             {
                 Title = "Stop",
                 IconOrGlyph = "\xe769",
-                Action = c =>
+                Action = _ =>
                 {
                     try
                     {
@@ -147,15 +154,15 @@ public class Main : IPlugin, IContextMenu
                     Context.API.ReQuery();
                     return true;
                 }
-            });
+            };
         }
         else if (service.StartType != ServiceStartMode.Disabled)
         {
-            results.Add(new Result()
+            yield return new Result
             {
                 Title = "Start",
                 IconOrGlyph = "\xe768",
-                Action = c =>
+                Action = _ =>
                 {
                     try
                     {
@@ -170,56 +177,52 @@ public class Main : IPlugin, IContextMenu
                     Context.API.ReQuery();
                     return true;
                 }
-            });
+            };
         }
 
         if (service.StartType == ServiceStartMode.Disabled)
         {
-            results.Add(new Result()
+            yield return new Result
             {
                 Title = "Enable (manual)",
                 SubTitle = service.IsRunning ?
                     "Set startup type to manual" :
                     "Set startup type to manual & start the service",
                 IconOrGlyph = "\xEB49",
-                Action = c => EnableService(service, Action.EnableManual)
-            });
+                Action = _ => EnableService(service, Action.EnableManual)
+            };
 
-            results.Add(new Result()
+            yield return new Result
             {
                 Title = "Enable (automatic)",
                 SubTitle = service.IsRunning ?
                     "Set startup type to automatic" :
                     "Set startup type to automatic & start the service",
                 IconOrGlyph = "\xEB49",
-                Action = c => EnableService(service, Action.EnableAutomatic)
-            });
+                Action = _ => EnableService(service, Action.EnableAutomatic)
+            };
 
-            results.Add(new Result()
+            yield return new Result
             {
                 Title = "Enable (automatic delayed)",
                 SubTitle = service.IsRunning ?
                     "Set startup type to automatic delayed" :
                     "Set startup type to automatic delayed & start the service",
                 IconOrGlyph = "\xEB49",
-                Action = c => EnableService(service, Action.EnableAutomaticDelayed)
-            });
+                Action = _ => EnableService(service, Action.EnableAutomaticDelayed)
+            };
         }
         else
         {
-            results.Add(new Result()
+            yield return new Result
             {
                 Title = "Disable",
                 SubTitle = service.IsRunning ?
                     "Set startup type to disabled & stop the service" :
                     "Set startup type to disabled",
                 IconOrGlyph = "\xEB4A",
-                Action = c => DisableService(service)
-            });
+                Action = _ => DisableService(service)
+            };
         }
-
-        return results;
     }
-
-    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 }

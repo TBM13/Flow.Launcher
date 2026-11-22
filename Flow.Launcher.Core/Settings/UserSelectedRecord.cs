@@ -1,11 +1,14 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
+using Flow.Launcher.Core.Storage;
 using Flow.Launcher.PluginSDK;
 
 namespace Flow.Launcher.Core.Settings;
 
 public class UserSelectedRecord
 {
+    private readonly Lock _lock = new();
+
     [JsonInclude]
 #pragma warning disable IDE0044 // Add readonly modifier
     private Dictionary<long, int> _recordsWithQuery = [];
@@ -13,34 +16,54 @@ public class UserSelectedRecord
 
     public void Add(Result result, Query? query)
     {
-        if (query is not null)
-            Increment(GetQueryAndResultHashCode(query, result));
+        long resultHash = GetResultHashCode(result);
+        long queryHash = query is not null ? GetQueryAndResultHashCode(query, result) : 0;
 
-        Increment(GetResultHashCode(result));
+        lock (_lock)
+        {
+            if (query is not null)
+                Increment(queryHash);
+
+            Increment(resultHash);
+        }
     }
 
     public int GetSelectedCount(Result result, Query? query)
     {
-        int queryCount = query is not null
-            ? _recordsWithQuery.GetValueOrDefault(GetQueryAndResultHashCode(query, result))
-            : 0;
+        long resultHash = GetResultHashCode(result);
+        long queryHash = query is not null ? GetQueryAndResultHashCode(query, result) : 0;
 
-        int resultCount = _recordsWithQuery.GetValueOrDefault(GetResultHashCode(result));
-        return (queryCount * 5) + resultCount;
+        lock (_lock)
+        {
+            int queryCount = query is not null
+                ? _recordsWithQuery.GetValueOrDefault(queryHash)
+                : 0;
+
+            int resultCount = _recordsWithQuery.GetValueOrDefault(resultHash);
+            return (queryCount * 5) + resultCount;
+        }
     }
+
+    public bool SaveTo(JsonStorage<UserSelectedRecord> storage)
+    {
+        lock (_lock)
+            return storage.TrySave();
+    }
+
+    private readonly record struct HashSegment(string? Value, bool Lowercase);
 
     private static long GetResultHashCode(Result result) =>
         string.IsNullOrEmpty(result.RecordKey)
-            ? Hash64(domain: 1, [result.Title.ToLowerInvariant(), result.SubTitle.ToLowerInvariant()])
-            : Hash64(domain: 1, [result.RecordKey]);
+            ? Hash64(domain: 1, [new(result.Title, true), new(result.SubTitle, true)])
+            : Hash64(domain: 1, [new(result.RecordKey, false)]);
 
-    // TODO: Avoid creating new strings here. Document that RecordKey is case-sensitive. Same for ActionKeyword
+    // RecordKey and ActionKeyword are case-sensitive; Search, Title, and SubTitle are case-insensitive.
     private static long GetQueryAndResultHashCode(Query query, Result result) =>
         string.IsNullOrEmpty(result.RecordKey)
-            ? Hash64(domain: 2, [query.ActionKeyword, query.Search.ToLowerInvariant(), result.Title.ToLowerInvariant(), result.SubTitle.ToLowerInvariant()])
-            : Hash64(domain: 2, [query.ActionKeyword, query.Search.ToLowerInvariant(), result.RecordKey]);
+            ? Hash64(domain: 2, [new(query.ActionKeyword, false), new(query.Search, true), new(result.Title, true), new(result.SubTitle, true)])
+            : Hash64(domain: 2, [new(query.ActionKeyword, false), new(query.Search, true), new(result.RecordKey, false)]);
 
-    private static long Hash64(byte domain, ReadOnlySpan<string?> strings)
+    private static long Hash64(byte domain, ReadOnlySpan<HashSegment> segments)
     {
         ulong hash = 14695981039346656037UL;
         const ulong fnvPrime = 1099511628211UL;
@@ -48,7 +71,7 @@ public class UserSelectedRecord
         hash ^= domain;
         hash *= fnvPrime;
 
-        foreach (string? str in strings)
+        foreach ((string? str, bool lowercase) in segments)
         {
             if (str is null)
             {
@@ -57,10 +80,21 @@ public class UserSelectedRecord
                 continue;
             }
 
-            foreach (char c in str)
+            if (lowercase)
             {
-                hash ^= c;
-                hash *= fnvPrime;
+                foreach (char c in str)
+                {
+                    hash ^= char.ToLowerInvariant(c);
+                    hash *= fnvPrime;
+                }
+            }
+            else
+            {
+                foreach (char c in str)
+                {
+                    hash ^= c;
+                    hash *= fnvPrime;
+                }
             }
 
             // Separator

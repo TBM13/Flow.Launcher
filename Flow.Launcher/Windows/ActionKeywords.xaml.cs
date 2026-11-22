@@ -52,24 +52,13 @@ public partial class ActionKeywords
             return;
         }
 
-        if (oldActionKeywords.Count != newActionKeywords.Count)
+        if (addedActionKeywords.Count == 0 && removedActionKeywords.Count == 0)
         {
-            ReplaceActionKeyword(_plugin.ID, removedActionKeywords, addedActionKeywords);
+            MessageBox.Show("This new Action Keyword is the same as old, please choose a different one");
             return;
         }
 
-        var sortedOldActionKeywords = oldActionKeywords.OrderBy(s => s).ToList();
-        var sortedNewActionKeywords = newActionKeywords.OrderBy(s => s).ToList();
-
-        if (sortedOldActionKeywords.SequenceEqual(sortedNewActionKeywords))
-        {
-            // User just changes the sequence of action keywords
-            MessageBox.Show("This new Action Keyword is the same as old, please choose a different one");
-        }
-        else
-        {
-            ReplaceActionKeyword(_plugin.ID, removedActionKeywords, addedActionKeywords);
-        }
+        ReplaceActionKeyword(_plugin.ID, removedActionKeywords, addedActionKeywords);
     }
 
     private void ReplaceActionKeyword(string id, IReadOnlyList<string> removedActionKeywords, IReadOnlyList<string> addedActionKeywords)

@@ -26,22 +26,19 @@ public static class PluginMetadataDefinition
     };
 }
 
-public sealed class Main : IAsyncPlugin, ISettingProvider, IMagicQueryProvider
+public sealed class Main : IPlugin, ISettingProvider, IMagicQueryProvider
 {
     private Settings.Settings _settings = null!;
     private SettingsViewModel _viewModel = null!;
 
     public Control CreateSettingPanel() => new SettingsControl(_viewModel);
 
-    public Task InitAsync(PluginInitContext context)
+    public ValueTask InitAsync(PluginInitContext context)
     {
         _settings = context.API.LoadSettingJsonStorage<Settings.Settings>();
         _viewModel = new SettingsViewModel(_settings);
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
-
-    public Task<List<Result>?> QueryAsync(Query query, CancellationToken token)
-        => Task.FromResult<List<Result>?>(null);
 
     public string? GenerateMagicQuery()
     {
@@ -98,6 +95,4 @@ public sealed class Main : IAsyncPlugin, ISettingProvider, IMagicQueryProvider
 
         return null;
     }
-
-    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 }

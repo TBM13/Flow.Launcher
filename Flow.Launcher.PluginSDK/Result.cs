@@ -110,7 +110,7 @@ public record Result
     /// <summary>
     /// Contains data used to populate the preview section of this result.
     /// </summary>
-    public PreviewInfo Preview { get; set; } = new();
+    public PreviewInfo Preview { get; set; }
 
     /// <summary>
     /// The key to identify the record. This is used when FL checks whether the result is the topmost record. Or FL calculates the hashcode of the result for user selected records.
@@ -139,12 +139,12 @@ public record Result
     /// <summary>
     /// Info of the preview section of a <see cref="Result"/>
     /// </summary>
-    public record PreviewInfo
+    public readonly record struct PreviewInfo
     {
         /// <summary>
         /// Full image used for preview panel
         /// </summary>
-        public string? PreviewImagePath { get; set; } = null;
+        public string? PreviewImagePath { get; init; }
 
         /// <summary>
         /// Result description text that is shown at the bottom of the preview panel.
@@ -152,6 +152,6 @@ public record Result
         /// <remarks>
         /// When a value is not set, the <see cref="SubTitle"/> will be used.
         /// </remarks>
-        public string? Description { get; set; } = null;
+        public string? Description { get; init; }
     }
 }

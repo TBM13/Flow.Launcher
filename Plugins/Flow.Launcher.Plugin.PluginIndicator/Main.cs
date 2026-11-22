@@ -1,4 +1,5 @@
-﻿using Flow.Launcher.PluginSDK;
+﻿using System.Runtime.CompilerServices;
+using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.API;
 using Flow.Launcher.PluginSDK.Plugins;
 using Flow.Launcher.PluginSDK.Plugins.Interfaces;
@@ -25,15 +26,16 @@ public class Main : IPlugin
 {
     private PluginInitContext _context = null!;
 
-    public void Init(PluginInitContext context)
+    public ValueTask InitAsync(PluginInitContext context)
     {
         _context = context;
+        return ValueTask.CompletedTask;
     }
 
-    public List<Result>? Query(Query query)
+    public async IAsyncEnumerable<Result> QueryAsync(
+        Query query,
+        [EnumeratorCancellation] CancellationToken token)
     {
-        List<Result> results = [];
-
         foreach (PluginMetadata plugin in _context.API.GetAllInitializedPlugins(includeFailed: false))
         {
             if (plugin.Disabled)
@@ -41,6 +43,8 @@ public class Main : IPlugin
 
             foreach (string keyword in plugin.ActionKeywords)
             {
+                token.ThrowIfCancellationRequested();
+
                 // Skip global keywords
                 if (keyword == PluginSDK.Query.GlobalPluginWildcard)
                     continue;
@@ -59,7 +63,7 @@ public class Main : IPlugin
                 }
 
                 string autoCompleteText = $"{keyword} ";
-                results.Add(new Result
+                yield return new Result
                 {
                     Title = keyword,
                     SubTitle = plugin.Name,
@@ -72,12 +76,8 @@ public class Main : IPlugin
                         _context.API.ChangeQuery(autoCompleteText);
                         return false;
                     }
-                });
+                };
             }
         }
-
-        return results;
     }
-
-    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 }

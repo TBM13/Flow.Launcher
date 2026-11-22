@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Runtime.CompilerServices;
 using Flow.Launcher.Plugin.Explorer.Search.DirectoryInfo;
 using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.Plugins;
@@ -32,29 +33,40 @@ public class SearchManager(Settings settings, PluginInitContext context)
         }
     }
 
-    internal async Task<List<Result>> SearchAsync(Query query, CancellationToken token)
+    internal async IAsyncEnumerable<Result> SearchAsync(
+        Query query,
+        [EnumeratorCancellation] CancellationToken token)
     {
         bool isPathSearch = Path.IsPathFullyQualified(query.Search)
             || EnvironmentVariables.IsEnvironmentVariableSearch(query.Search)
             || EnvironmentVariables.HasEnvironmentVar(query.Search);
 
-        if (isPathSearch)
-            return await PathSearchAsync(query, token).ConfigureAwait(false);
+        if (!isPathSearch)
+            yield break;
 
-        return [];
+        await foreach (Result result in PathSearchAsync(query, token).ConfigureAwait(false))
+            yield return result;
     }
 
-    private async Task<List<Result>> PathSearchAsync(Query query, CancellationToken token = default)
+    private async IAsyncEnumerable<Result> PathSearchAsync(
+        Query query,
+        [EnumeratorCancellation] CancellationToken token = default)
     {
-        var querySearch = query.Search;
-        var results = new HashSet<Result>(PathEqualityComparator.Default);
+        string querySearch = query.Search;
 
         if (EnvironmentVariables.IsEnvironmentVariableSearch(querySearch))
-            return EnvironmentVariables.GetEnvironmentStringPathSuggestions(querySearch, Context);
+        {
+            foreach (Result suggestion in EnvironmentVariables.GetEnvironmentStringPathSuggestions(querySearch, Context))
+            {
+                token.ThrowIfCancellationRequested();
+                yield return suggestion;
+            }
+            yield break;
+        }
 
         // Query is a location path with a full environment variable, eg. %appdata%\somefolder\, c:\users\%USERNAME%\downloads
-        var needToExpand = EnvironmentVariables.HasEnvironmentVar(querySearch);
-        var path = needToExpand ? Environment.ExpandEnvironmentVariables(querySearch) : querySearch;
+        bool needToExpand = EnvironmentVariables.HasEnvironmentVar(querySearch);
+        string path = needToExpand ? Environment.ExpandEnvironmentVariables(querySearch) : querySearch;
 
         // if user uses the unix directory separator, we need to convert it to windows directory separator
         path = path.Replace(Constants.UnixDirectorySeparator, Path.DirectorySeparatorChar);
@@ -62,29 +74,32 @@ public class SearchManager(Settings settings, PluginInitContext context)
         // Check that actual location exists, otherwise directory search will throw directory not found exception
         string dirPath = Path.GetDirectoryName(path) ?? path;
         if (!Directory.Exists(dirPath))
-            return [.. results];
+            yield break;
+
+        HashSet<Result> seenResults = new(PathEqualityComparator.Default);
 
         if (path.EndsWith('\\'))
         {
-            results.Add(path.EndsWith(":\\")
+            Result headerResult = path.EndsWith(":\\")
                 ? ResultManager.CreateDriveSpaceDisplayResult(path)
-                : ResultManager.CreateOpenCurrentFolderResult(path));
+                : ResultManager.CreateOpenCurrentFolderResult(path);
+
+            if (seenResults.Add(headerResult))
+                yield return headerResult;
         }
 
-        if (token.IsCancellationRequested)
-            return [];
+        token.ThrowIfCancellationRequested();
 
-        IAsyncEnumerable<SearchResult> directoryResult = DirectoryInfoSearch.TopLevelDirectorySearch(path, token, out bool isRecursive).ToAsyncEnumerable();
-
-        if (token.IsCancellationRequested)
-            return [];
-
+        IEnumerable<SearchResult> directoryResult = DirectoryInfoSearch.TopLevelDirectorySearch(path, token, out bool isRecursive);
         bool isSearch = !path.EndsWith('\\');
-        await foreach (var directory in directoryResult.WithCancellation(token).ConfigureAwait(false))
-        {
-            results.Add(ResultManager.CreateResult(directory, isRecursive, isSearch));
-        }
 
-        return [.. results];
+        foreach (SearchResult directory in directoryResult)
+        {
+            token.ThrowIfCancellationRequested();
+
+            Result result = ResultManager.CreateResult(directory, isRecursive, isSearch);
+            if (seenResults.Add(result))
+                yield return result;
+        }
     }
 }

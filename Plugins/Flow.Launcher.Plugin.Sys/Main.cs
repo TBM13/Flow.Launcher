@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using Flow.Launcher.Interop;
 using Flow.Launcher.PluginSDK;
@@ -29,10 +30,11 @@ public class Main : IPlugin
     private PluginInitContext _context = null!;
     private readonly List<Result> _commands = [];
 
-    public void Init(PluginInitContext context)
+    public ValueTask InitAsync(PluginInitContext context)
     {
         _context = context;
         PopulateCommands();
+        return ValueTask.CompletedTask;
     }
 
     private void PopulateCommands()
@@ -256,27 +258,33 @@ public class Main : IPlugin
         _commands.Sort((a, b) => string.Compare(a.Title, b.Title, StringComparison.CurrentCultureIgnoreCase));
     }
 
-    public List<Result>? Query(Query query)
+    public async IAsyncEnumerable<Result> QueryAsync(
+        Query query,
+        [EnumeratorCancellation] CancellationToken token)
     {
         // We do not participate on the home query
         if (query.IsHomeQuery)
-            return null;
+            yield break;
 
         // If there is no search term, return all commands
         if (string.IsNullOrWhiteSpace(query.Search))
-            return _commands;
-
-        // There is a search term, filter the results
-        List<Result> results = [];
-        foreach (Result c in _commands)
         {
-            MatchResult match = _context.API.StringMatcher.FuzzySearchBest(query.Search, c.Title, c.SubTitle);
-            if (match.IsThresholdMet)
-                results.Add(c with { Score = match.Score, AddSelectedCount = true });
+            foreach (Result c in _commands)
+            {
+                token.ThrowIfCancellationRequested();
+                yield return c;
+            }
+            yield break;
         }
 
-        return results;
-    }
+        // There is a search term, filter the results
+        foreach (Result c in _commands)
+        {
+            token.ThrowIfCancellationRequested();
 
-    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+            MatchResult match = _context.API.StringMatcher.FuzzySearchBest(query.Search, c.Title, c.SubTitle);
+            if (match.IsThresholdMet)
+                yield return c with { Score = match.Score, AddSelectedCount = true };
+        }
+    }
 }

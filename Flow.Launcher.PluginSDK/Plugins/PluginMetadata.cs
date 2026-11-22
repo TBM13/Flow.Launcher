@@ -11,7 +11,7 @@ public record PluginMetadata
     public required string Version { get; init; }
     public required string Description { get; init; }
     public required List<string> ActionKeywords { get; set; }
-    public required IAsyncPlugin Plugin { get; init; }
+    public required IPlugin Plugin { get; init; }
 
     /// <summary>
     /// Whether the plugin is disabled.

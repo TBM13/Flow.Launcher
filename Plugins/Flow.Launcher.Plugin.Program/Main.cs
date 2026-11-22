@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.Runtime.CompilerServices;
+using System.Windows.Controls;
 using Flow.Launcher.Plugin.Program.Programs;
 using Flow.Launcher.Plugin.Program.Settings;
 using Flow.Launcher.PluginSDK;
@@ -23,14 +24,14 @@ public static class PluginMetadataDefinition
     };
 }
 
-public sealed class Main : IAsyncPlugin, ISettingProvider, IContextMenu
+public sealed class Main : IPlugin, ISettingProvider, IContextMenu
 {
     private PluginInitContext _context = null!;
     private Settings.Settings _settings = null!;
     private ProgramIndex _index = null!;
     private SettingsViewModel _viewModel = null!;
 
-    public async Task InitAsync(PluginInitContext context)
+    public async ValueTask InitAsync(PluginInitContext context)
     {
         _context = context;
         _settings = context.API.LoadSettingJsonStorage<Settings.Settings>();
@@ -40,21 +41,29 @@ public sealed class Main : IAsyncPlugin, ISettingProvider, IContextMenu
         await _index.InitializeAsync().ConfigureAwait(false);
     }
 
-    public async Task<List<Result>?> QueryAsync(Query query, CancellationToken token)
+    public async IAsyncEnumerable<Result> QueryAsync(
+        Query query,
+        [EnumeratorCancellation] CancellationToken token)
     {
         if (query.IsHomeQuery)
-            return null;
+            yield break;
 
-        return await Task.Run(() => _index.Query(query.Search, token), token).ConfigureAwait(false);
+        foreach (Result result in _index.Query(query.Search, token))
+            yield return result;
     }
 
-    public List<Result>? LoadContextMenus(Result selectedResult, ActionContext ctx)
+    public async IAsyncEnumerable<Result> LoadContextMenusAsync(
+        Result selectedResult,
+        ActionContext context,
+        [EnumeratorCancellation] CancellationToken token = default)
     {
         if (selectedResult.ContextData is not IProgram program)
-            return null;
+            yield break;
 
-        List<Result> menus = program.CreateContextMenus(_context);
-        menus.Add(new Result
+        foreach (Result menu in program.CreateContextMenus(_context))
+            yield return menu;
+
+        yield return new Result
         {
             Title = "Hide",
             IconOrGlyph = "\xece4",
@@ -64,9 +73,7 @@ public sealed class Main : IAsyncPlugin, ISettingProvider, IContextMenu
                 _context.API.ShowMsg("Success", "This program will no longer appear in your search results.");
                 return false;
             }
-        });
-
-        return menus;
+        };
     }
 
     public Control CreateSettingPanel()

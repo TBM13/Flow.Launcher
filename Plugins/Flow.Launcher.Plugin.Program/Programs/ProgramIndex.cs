@@ -83,25 +83,22 @@ internal sealed class ProgramIndex : IAsyncDisposable
         }
     }
 
-    public List<Result> Query(string search, CancellationToken token)
+    public IEnumerable<Result> Query(string search, CancellationToken token)
     {
         IProgram[] programs = _activePrograms;
         if (programs.Length == 0)
-            return [];
+            yield break;
 
-        ReadOnlySpan<char> querySpan = search.AsSpan().Trim();
-        List<Result> results = [];
+        string trimmedQuery = search.Trim();
 
         foreach (IProgram program in programs)
         {
             token.ThrowIfCancellationRequested();
 
-            Result? result = program.CreateResult(querySpan, _settings, _context);
+            Result? result = program.CreateResult(trimmedQuery, _settings, _context);
             if (result is not null)
-                results.Add(result);
+                yield return result;
         }
-
-        return results;
     }
 
     public async Task ReindexAllAsync(CancellationToken cancellationToken = default)

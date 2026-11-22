@@ -162,19 +162,23 @@ public static class ServiceHelper
 {
     private static readonly string ClassName = typeof(ServiceHelper).FullName ?? nameof(ServiceHelper);
 
-    public static IEnumerable<Result> Search(string search)
+    public static IEnumerable<Result> Search(string search, CancellationToken token = default)
     {
         ServiceController[] services = ServiceController.GetServices();
 
         int failed = 0;
         bool isSearch = !string.IsNullOrWhiteSpace(search);
-        IEnumerable<Result?> results = services.Select(svc =>
+        List<Result>? unsortedBrowseResults = isSearch ? null : [];
+
+        foreach (ServiceController svc in services)
         {
+            token.ThrowIfCancellationRequested();
+
             ServiceResult? svcResult = ServiceResult.CreateServiceResult(svc);
             if (svcResult is null)
             {
                 failed++;
-                return null;
+                continue;
             }
 
             int score = 0;
@@ -189,12 +193,12 @@ public static class ServiceHelper
                 (MatchResult bestMatch, bool isHighPriority) = matches.OrderByDescending(r => r.match.Score).First();
 
                 if (!bestMatch.IsThresholdMet)
-                    return null;
+                    continue;
 
                 score = isHighPriority ? bestMatch.Score + 1000 : bestMatch.Score;
             }
 
-            return new Result()
+            Result result = new()
             {
                 Title = svcResult.DisplayName,
                 SubTitle = GetResultSubTitle(svcResult),
@@ -203,14 +207,31 @@ public static class ServiceHelper
                 CopyText = svcResult.ServiceName,
                 Score = score,
                 AddSelectedCount = isSearch,
-                Action = c =>
+                Action = _ =>
                 {
                     Main.Context.API.CopyToClipboard(svcResult.ServiceName);
                     return true;
                 },
                 PreviewPanel = new Lazy<UserControl>(() => new PreviewPanel(svcResult)),
             };
-        });
+
+            if (isSearch)
+                yield return result;
+            else
+                unsortedBrowseResults!.Add(result);
+        }
+
+        if (unsortedBrowseResults is not null)
+        {
+            unsortedBrowseResults.Sort(static (a, b) =>
+                StringComparer.CurrentCultureIgnoreCase.Compare(a.Title, b.Title));
+
+            foreach (Result result in unsortedBrowseResults)
+            {
+                token.ThrowIfCancellationRequested();
+                yield return result;
+            }
+        }
 
         // Warn if we failed to create a ServiceResult for one or more services
         if (failed != 0)
@@ -218,8 +239,6 @@ public static class ServiceHelper
             Main.Context.Logger.LogError($"Failed to create {failed} ServiceResult(s)");
             Main.Context.API.ShowMsgError($"Failed to get information from {failed} service(s)");
         }
-
-        return results.Where(r => r is not null).OrderBy(r => r!.Title, StringComparer.CurrentCultureIgnoreCase)!;
     }
 
     public static void ChangeStatus(ServiceResult serviceResult, Action action)

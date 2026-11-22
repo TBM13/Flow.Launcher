@@ -195,9 +195,9 @@ public class PublicAPIInstance : IPublicAPI, IDisposable
         ShowMsgError("Failed to copy");
     }
 
-    public List<PluginMetadata> GetAllPlugins() => _pluginManager.GetAllLoadedPlugins();
+    public IReadOnlyList<PluginMetadata> GetAllPlugins() => _pluginManager.GetAllLoadedPlugins();
 
-    public List<PluginMetadata> GetAllInitializedPlugins(bool includeFailed) =>
+    public IReadOnlyList<PluginMetadata> GetAllInitializedPlugins(bool includeFailed) =>
         _pluginManager.GetAllInitializedPlugins(includeFailed);
 
     public void AddActionKeyword(string pluginId, string newActionKeyword) =>

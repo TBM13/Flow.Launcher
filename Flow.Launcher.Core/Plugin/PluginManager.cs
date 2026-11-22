@@ -1,5 +1,5 @@
-﻿using System.Collections.Concurrent;
-using CommunityToolkit.Mvvm.DependencyInjection;
+﻿using System.Collections.Frozen;
+using System.Runtime.CompilerServices;
 using Flow.Launcher.Core.UserSettings;
 using Flow.Launcher.PluginSDK;
 using Flow.Launcher.PluginSDK.API;
@@ -9,9 +9,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Flow.Launcher.Core.Plugin;
 
-public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger) : IAsyncDisposable
+public class PluginManager : IAsyncDisposable
 {
-    private readonly PluginMetadata[] Plugins =
+    private static readonly PluginMetadata[] DefaultPlugins =
     [
         Launcher.Plugin.Calculator.PluginMetadataDefinition.Metadata,
         Launcher.Plugin.MagicQuery.PluginMetadataDefinition.Metadata,
@@ -27,64 +27,104 @@ public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger) : IAs
         Launcher.Plugin.Program.PluginMetadataDefinition.Metadata,
     ];
 
-    private readonly PluginSDK.Logging.Logger<PluginManager> _logger = logger;
+    private enum PluginInitState : byte
+    {
+        Uninitialized,
+        Initializing,
+        Initialized,
+        Failed
+    }
 
-    private readonly ConcurrentDictionary<string, PluginMetadata> _allLoadedPlugins = [];
-    private readonly ConcurrentDictionary<string, InitializedPlugin> _allInitializedPlugins = [];
-    private readonly ConcurrentDictionary<string, PluginMetadata> _nonGlobalPlugins = [];
+    private sealed class PluginEntry(PluginMetadata metadata)
+    {
+        public PluginMetadata Metadata { get; } = metadata;
+        public volatile PluginInitState State = PluginInitState.Uninitialized;
+    }
 
-    /// <summary>
-    /// Cached set of global plugins, rebuilt only when global action keywords are registered or removed.
-    /// </summary>
+    private readonly ILoggerFactory _loggerFactory;
+    private readonly PluginSDK.Logging.Logger<PluginManager> _logger;
+    private readonly PluginMetadata[] _plugins;
+    private readonly PluginEntry[] _entries;
+    private readonly FrozenDictionary<string, PluginEntry> _pluginsById;
+    private readonly Lock _keywordsLock = new();
+
+    private PluginsSettings? _settings;
+    private volatile FrozenDictionary<string, PluginMetadata> _nonGlobalPlugins = FrozenDictionary<string, PluginMetadata>.Empty;
     private volatile PluginMetadata[] _globalPlugins = [];
-
+    private volatile PluginMetadata[] _initializedPlugins = [];
     private bool _disposed;
 
-    private sealed record InitializedPlugin(PluginMetadata Metadata, bool InitFailed);
-
-    /// <summary>
-    /// Load plugins from the directories specified in Directories.
-    /// </summary>
-    /// <param name="settings"></param>
-    public void LoadPlugins(PluginsSettings settings)
+    public PluginManager(ILoggerFactory loggerFactory)
+        : this(loggerFactory, DefaultPlugins)
     {
-        settings.UpdatePluginSettings(Plugins);
+    }
 
-        // Load plugins
-        foreach (var plugin in Plugins)
+    internal PluginManager(ILoggerFactory loggerFactory, IEnumerable<PluginMetadata> plugins)
+    {
+        _loggerFactory = loggerFactory;
+        _logger = new(loggerFactory);
+        _plugins = [.. plugins];
+        _entries = new PluginEntry[_plugins.Length];
+
+        Dictionary<string, PluginEntry> entries = new(_plugins.Length, StringComparer.Ordinal);
+        for (int i = 0; i < _plugins.Length; i++)
         {
-            if (!_allLoadedPlugins.TryAdd(plugin.ID, plugin))
-                throw new Exception($"Plugin with ID {plugin.ID} already loaded");
+            PluginMetadata plugin = _plugins[i];
+            PluginEntry entry = new(plugin);
+            if (!entries.TryAdd(plugin.ID, entry))
+                throw new InvalidOperationException($"Plugin with ID {plugin.ID} is already loaded");
 
-            plugin.PluginSettingsDirectoryPath = Path.Combine(DataLocation.PluginSettingsDirectory, plugin.ID);
-            plugin.PluginCacheDirectoryPath = Path.Combine(DataLocation.PluginCacheDirectory, plugin.ID);
+            _entries[i] = entry;
         }
+
+        _pluginsById = entries.ToFrozenDictionary(StringComparer.Ordinal);
+        RebuildActionKeywordCaches();
     }
 
     /// <summary>
-    /// Initialize all plugins asynchronously.
+    /// Applies persisted settings and configures per-plugin directories.
     /// </summary>
-    /// <param name="register">The register to register results updated event for each plugin.</param>
-    /// <returns>return the list of failed to init plugins or null for none</returns>
+    public void LoadPlugins(PluginsSettings settings)
+    {
+        _settings = settings;
+        _initializedPlugins = [];
+        settings.UpdatePluginSettings(_plugins);
+
+        foreach (PluginEntry entry in _entries)
+        {
+            PluginMetadata plugin = entry.Metadata;
+            plugin.PluginSettingsDirectoryPath = Path.Combine(DataLocation.PluginSettingsDirectory, plugin.ID);
+            plugin.PluginCacheDirectoryPath = Path.Combine(DataLocation.PluginCacheDirectory, plugin.ID);
+            entry.State = PluginInitState.Initializing;
+        }
+
+        RebuildActionKeywordCaches();
+    }
+
+    /// <summary>
+    /// Initializes all loaded plugins asynchronously in parallel.
+    /// </summary>
     public async Task InitializePluginsAsync()
     {
-        var initTasks = _allLoadedPlugins.Select(x => Task.Run(async () =>
+        RebuildActionKeywordCaches();
+
+        IPublicAPI? api = IPublicAPI.Instance;
+        Task[] initTasks = [.. _entries.Select(entry => Task.Run(async () =>
         {
-            var metadata = x.Value;
-
-            // Register plugin action keywords so that plugins can be queried in results
-            RegisterPluginActionKeywords(metadata);
-
-            ILogger rawLogger = Ioc.Default.GetRequiredService<ILoggerFactory>().CreateLogger(metadata.Name);
+            PluginMetadata metadata = entry.Metadata;
+            entry.State = PluginInitState.Initializing;
+            ILogger rawLogger = _loggerFactory.CreateLogger(metadata.Name);
 
             try
             {
-                await metadata.Plugin.InitAsync(new PluginInitContext()
+                await metadata.Plugin.InitAsync(new PluginInitContext
                 {
                     Logger = new(rawLogger),
-                    API = IPublicAPI.Instance,
+                    API = api!,
                     CurrentPluginMetadata = metadata
-                });
+                }).ConfigureAwait(false);
+
+                entry.State = PluginInitState.Initialized;
             }
             catch (Exception e)
             {
@@ -99,73 +139,101 @@ public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger) : IAs
                 {
                     metadata.Disabled = true;
                     metadata.HomeDisabled = true;
+
+                    if (_settings?.GetPluginSettings(metadata.ID) is { } pluginSettings)
+                    {
+                        pluginSettings.Disabled = true;
+                        pluginSettings.HomeDisabled = true;
+                    }
+
                     _logger.LogDebug($"Disable plugin <{metadata.Name}> because init failed");
                 }
 
-                // Even if the plugin cannot be initialized, we still need to add it in all plugin list so that
-                // we can remove the plugin from Plugin or Store page or Plugin Manager plugin.
-                _allInitializedPlugins.TryAdd(metadata.ID, new(metadata, InitFailed: true));
-                return;
+                entry.State = PluginInitState.Failed;
             }
+        }))];
 
-            // Add plugin to lists after the plugin is initialized
-            _allInitializedPlugins.TryAdd(metadata.ID, new(metadata, InitFailed: false));
-        }));
+        await Task.WhenAll(initTasks).ConfigureAwait(false);
 
-        await Task.WhenAll(initTasks);
+        _initializedPlugins = [.. _entries
+            .Where(e => e.State == PluginInitState.Initialized)
+            .Select(e => e.Metadata)];
 
-        RefreshGlobalPlugins();
-
-        var failed = _allInitializedPlugins.Values
-            .Where(p => p.InitFailed)
-            .Select(p => p.Metadata.Name)
-            .ToList();
+        List<string> failed = [.. _entries
+            .Where(p => p.State == PluginInitState.Failed)
+            .Select(p => p.Metadata.Name)];
 
         if (failed.Count > 0)
         {
-            IPublicAPI.Instance.ShowMsg(
+            RebuildActionKeywordCaches();
+            api?.ShowMsg(
                 "Fail to Init Plugins",
                 $"Plugins: {string.Join(",", failed)} - fail to load and would be disabled, please contact plugin creator for help",
-                "",
-                false
-            );
+                string.Empty,
+                false);
         }
     }
 
-    private void RegisterPluginActionKeywords(PluginMetadata metadata)
+    private void RebuildActionKeywordCaches()
     {
-        // set distinct on each plugin's action keywords helps only firing global(*) and action keywords once where a plugin
-        // has multiple global and action keywords because we will only add them here once.
-        foreach (var actionKeyword in metadata.ActionKeywords.Distinct())
+        lock (_keywordsLock)
         {
-            if (actionKeyword != Query.GlobalPluginWildcard)
+            Dictionary<string, PluginMetadata> nonGlobal = new(StringComparer.Ordinal);
+            List<PluginMetadata> global = [];
+
+            foreach (PluginMetadata plugin in _plugins)
             {
-                _nonGlobalPlugins.TryAdd(actionKeyword, metadata);
+                bool hasGlobal = false;
+                foreach (string actionKeyword in plugin.ActionKeywords.Distinct(StringComparer.Ordinal))
+                {
+                    if (actionKeyword == Query.GlobalPluginWildcard)
+                        hasGlobal = true;
+                    else
+                        nonGlobal.TryAdd(actionKeyword, plugin);
+                }
+
+                if (hasGlobal)
+                    global.Add(plugin);
             }
+
+            _nonGlobalPlugins = nonGlobal.ToFrozenDictionary(StringComparer.Ordinal);
+            _globalPlugins = [.. global];
         }
     }
+
+    public Query BuildQuery(string rawQuery, bool isReQuery)
+        => QueryBuilder.Build(rawQuery, isReQuery, _nonGlobalPlugins);
 
     public IReadOnlyList<PluginMetadata> ValidPluginsForQuery(Query query)
     {
-        if (_nonGlobalPlugins.TryGetValue(query.ActionKeyword, out PluginMetadata? plugin))
+        if (!string.IsNullOrEmpty(query.ActionKeyword)
+            && _nonGlobalPlugins.TryGetValue(query.ActionKeyword, out PluginMetadata? plugin))
+        {
             return [plugin];
+        }
 
         return _globalPlugins;
     }
 
-    private void RefreshGlobalPlugins()
+    public async IAsyncEnumerable<Result> QueryForPluginAsync(
+        PluginMetadata metadata,
+        Query query,
+        [EnumeratorCancellation] CancellationToken token)
     {
-        _globalPlugins = [.. _allLoadedPlugins.Values
-            .Where(p => p.ActionKeywords.Contains(Query.GlobalPluginWildcard))];
-    }
-
-    public async Task<List<Result>?> QueryForPluginAsync(PluginMetadata metadata, Query query, CancellationToken token)
-    {
-        if (IsPluginInitializing(metadata))
+        if (!_pluginsById.TryGetValue(metadata.ID, out PluginEntry? entry)
+            || entry.State == PluginInitState.Failed)
         {
-            Result r = new()
+            yield break;
+        }
+
+        if (entry.State != PluginInitState.Initialized)
+        {
+            if (query.IsHomeQuery)
+                yield break;
+
+            yield return new Result
             {
-                Title = metadata.Name + ": This plugin is still initializing...",
+                Title = $"{metadata.Name}: This plugin is still initializing...",
                 IconOrGlyph = metadata.IcoPath,
                 Action = _ =>
                 {
@@ -173,52 +241,94 @@ public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger) : IAs
                     return false;
                 }
             };
-            return [r];
+            yield break;
         }
 
+        IAsyncEnumerator<Result>? enumerator = null;
+        Exception? queryException = null;
         try
         {
-            List<Result>? results = await metadata.Plugin.QueryAsync(query, token).ConfigureAwait(false);
-
-            token.ThrowIfCancellationRequested();
-
-            return results;
+            enumerator = metadata.Plugin.QueryAsync(query, token).GetAsyncEnumerator(token);
         }
         catch (OperationCanceledException)
         {
-            // null will be fine since the results will only be added into queue if the token hasn't been cancelled
-            return null;
+            yield break;
         }
         catch (Exception e)
         {
-            if (query.IsHomeQuery)
+            queryException = e;
+        }
+
+        if (queryException is not null)
+        {
+            if (HandleQueryException(metadata, query, queryException) is { } errorResult)
+                yield return errorResult;
+            yield break;
+        }
+
+        if (enumerator is null)
+            yield break;
+
+        await using (enumerator.ConfigureAwait(false))
+        {
+            while (true)
             {
-                _logger.LogError(e, $"Failed to query home for plugin: {metadata.Name}");
-                return null;
+                Result current = null!;
+                bool moved = false;
+                try
+                {
+                    moved = await enumerator.MoveNextAsync().ConfigureAwait(false);
+                    if (moved)
+                        current = enumerator.Current;
+                }
+                catch (OperationCanceledException)
+                {
+                    yield break;
+                }
+                catch (Exception e)
+                {
+                    queryException = e;
+                }
+
+                if (queryException is not null)
+                {
+                    if (HandleQueryException(metadata, query, queryException) is { } errorResult)
+                        yield return errorResult;
+                    yield break;
+                }
+
+                if (!moved || token.IsCancellationRequested)
+                    yield break;
+
+                yield return current;
             }
-
-            Result r = new()
-            {
-                Title = metadata.Name + ": Failed to respond!",
-                IconOrGlyph = Constant.ErrorIcon,
-                Action = _ => { throw new FlowPluginException(metadata, e); }
-            };
-
-            return [r];
         }
     }
 
-    private bool IsPluginInitializing(PluginMetadata metadata)
+    private Result? HandleQueryException(PluginMetadata metadata, Query query, Exception e)
     {
-        return !_allInitializedPlugins.ContainsKey(metadata.ID);
+        if (query.IsHomeQuery)
+        {
+            _logger.LogError(e, $"Failed to query home for plugin: {metadata.Name}");
+            return null;
+        }
+
+        _logger.LogError(e, $"Failed to query plugin: {metadata.Name}");
+        return new Result
+        {
+            Title = $"{metadata.Name}: Failed to respond!",
+            IconOrGlyph = Constant.ErrorIcon,
+            Action = _ => throw new FlowPluginException(metadata, e)
+        };
     }
 
     public string? GenerateMagicQuery()
     {
-        foreach (var metadata in Plugins
-            .Where(p => !p.Disabled && !IsPluginInitializing(p))
-            .OrderByDescending(p => p.Priority))
+        foreach (PluginEntry entry in _entries
+            .Where(e => e.State == PluginInitState.Initialized && !e.Metadata.Disabled)
+            .OrderByDescending(e => e.Metadata.Priority))
         {
+            PluginMetadata metadata = entry.Metadata;
             if (metadata.Plugin is IMagicQueryProvider provider)
             {
                 try
@@ -237,117 +347,127 @@ public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger) : IAs
         return null;
     }
 
-    public List<PluginMetadata> GetAllLoadedPlugins() => [.. _allLoadedPlugins.Values];
-    public List<PluginMetadata> GetAllInitializedPlugins(bool includeFailed)
+    public IReadOnlyList<PluginMetadata> GetAllLoadedPlugins() => _plugins;
+
+    public IReadOnlyList<PluginMetadata> GetAllInitializedPlugins(bool includeFailed)
     {
-        return [.. _allInitializedPlugins.Values
-            .Where(p => includeFailed || !p.InitFailed)
+        if (!includeFailed)
+            return _initializedPlugins;
+
+        return [.. _entries
+            .Where(p => p.State is PluginInitState.Initialized or PluginInitState.Failed)
             .Select(p => p.Metadata)];
     }
-    public Dictionary<string, PluginMetadata> GetNonGlobalPlugins() => _nonGlobalPlugins.ToDictionary();
 
     /// <summary>
-    /// get specified plugin, return null if not found
+    /// Gets the specified plugin, or null if not found.
     /// </summary>
     /// <remarks>
-    /// Plugin may not be initialized, so do not use its plugin model to execute any commands
+    /// Plugin may not be initialized, so do not use its plugin model to execute any commands.
     /// </remarks>
-    /// <param name="id"></param>
-    /// <returns></returns>
     public PluginMetadata? GetPluginForId(string id)
-    {
-        _allLoadedPlugins.TryGetValue(id, out var plugin);
-        return plugin;
-    }
+        => _pluginsById.TryGetValue(id, out PluginEntry? entry) ? entry.Metadata : null;
 
-    public List<Result>? GetContextMenusForPlugin(string pluginId, Result result, ActionContext context)
+    public async Task<List<Result>> GetContextMenusForPluginAsync(
+        string pluginId,
+        Result result,
+        ActionContext context,
+        CancellationToken token = default)
     {
-        if (!_allInitializedPlugins.TryGetValue(pluginId, out var entry)
-            || entry.Metadata.Plugin is not IContextMenu plugin)
+        if (!_pluginsById.TryGetValue(pluginId, out PluginEntry? entry)
+            || entry.State != PluginInitState.Initialized
+            || entry.Metadata.Plugin is not IContextMenu contextMenu)
         {
-            return null;
+            return [];
         }
-
-        var metadata = entry.Metadata;
 
         try
         {
-            List<Result>? results = plugin.LoadContextMenus(result, context);
-            if (results is null)
-                return null;
-
-            return results;
+            return await Task.Run(async () =>
+            {
+                List<Result> results = [];
+                await foreach (Result menu in contextMenu.LoadContextMenusAsync(result, context, token).ConfigureAwait(false))
+                {
+                    token.ThrowIfCancellationRequested();
+                    results.Add(menu);
+                }
+                return results;
+            }, token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            return [];
         }
         catch (Exception e)
         {
-            _logger.LogError(e, $"Can't load context menus for plugin <{metadata.Name}>");
-            return null;
+            _logger.LogError(e, $"Can't load context menus for plugin <{entry.Metadata.Name}>");
+            return [];
         }
     }
 
     public bool ActionKeywordRegistered(string actionKeyword)
     {
-        // this method is only checking for action keywords (defined as not '*') registration
-        // hence the actionKeyword != Query.GlobalPluginWildcardSign logic
+        // This method only checks non-global action keywords (not '*')
         return actionKeyword != Query.GlobalPluginWildcard
             && _nonGlobalPlugins.ContainsKey(actionKeyword);
     }
 
     /// <summary>
-    /// used to add action keyword for multiple action keyword plugin
-    /// e.g. web search
+    /// Adds an action keyword to a plugin.
     /// </summary>
     public void AddActionKeyword(string id, string newActionKeyword)
     {
-        var plugin = GetPluginForId(id);
-        if (newActionKeyword != Query.GlobalPluginWildcard)
-        {
-            _nonGlobalPlugins.AddOrUpdate(newActionKeyword, plugin, (key, oldValue) => plugin);
-        }
+        if (!_pluginsById.TryGetValue(id, out PluginEntry? entry))
+            throw new KeyNotFoundException($"Plugin with ID '{id}' was not found.");
 
-        // Update action keywords and action keyword in plugin metadata
-        plugin.ActionKeywords.Add(newActionKeyword);
-
-        if (newActionKeyword == Query.GlobalPluginWildcard)
+        lock (_keywordsLock)
         {
-            RefreshGlobalPlugins();
+            PluginMetadata plugin = entry.Metadata;
+            if (!plugin.ActionKeywords.Contains(newActionKeyword, StringComparer.Ordinal))
+                plugin.ActionKeywords.Add(newActionKeyword);
+
+            if (_settings?.GetPluginSettings(id) is { } pluginSettings
+                && !pluginSettings.ActionKeywords.Contains(newActionKeyword, StringComparer.Ordinal))
+            {
+                pluginSettings.ActionKeywords.Add(newActionKeyword);
+            }
+
+            RebuildActionKeywordCaches();
         }
     }
 
     /// <summary>
-    /// used to remove action keyword for multiple action keyword plugin
-    /// e.g. web search
+    /// Removes an action keyword from a plugin.
     /// </summary>
-    public void RemoveActionKeyword(string id, string oldActionkeyword)
+    public void RemoveActionKeyword(string id, string oldActionKeyword)
     {
-        var plugin = GetPluginForId(id);
-        if (oldActionkeyword != Query.GlobalPluginWildcard)
-        {
-            _nonGlobalPlugins.TryRemove(oldActionkeyword, out _);
-        }
+        if (!_pluginsById.TryGetValue(id, out PluginEntry? entry))
+            throw new KeyNotFoundException($"Plugin with ID '{id}' was not found.");
 
-        // Update action keywords in plugin metadata
-        plugin.ActionKeywords.Remove(oldActionkeyword);
-
-        if (oldActionkeyword == Query.GlobalPluginWildcard)
+        lock (_keywordsLock)
         {
-            RefreshGlobalPlugins();
+            PluginMetadata plugin = entry.Metadata;
+            plugin.ActionKeywords.Remove(oldActionKeyword);
+
+            _settings?.GetPluginSettings(id)?.ActionKeywords.Remove(oldActionKeyword);
+
+            RebuildActionKeywordCaches();
         }
     }
 
-    // TODO: Dispose plugins individually when they are disabled
     public async ValueTask DisposeAsync()
     {
-        if (Interlocked.Exchange(ref _disposed, true) == true)
+        if (Interlocked.Exchange(ref _disposed, true))
             return;
 
-        List<Task> disposeTasks = [.. GetAllInitializedPlugins(includeFailed: true)
-            .Select(r => r.Plugin.DisposeAsync().AsTask())];
+        Task[] disposeTasks = [.. _entries
+            .Where(e => e.State != PluginInitState.Uninitialized)
+            .Select(e => DisposePluginAsync(e.Metadata.Plugin))];
 
-        if (disposeTasks.Count == 0)
+        if (disposeTasks.Length == 0)
             return;
 
-        _logger.LogInfo($"Disposing {disposeTasks.Count} plugins");
+        _logger.LogInfo($"Disposing {disposeTasks.Length} plugins");
         Task timeoutTask = Task.Delay(TimeSpan.FromSeconds(5));
         Task allDisposedTask = Task.WhenAll(disposeTasks);
         Task completedTask = await Task.WhenAny(allDisposedTask, timeoutTask).ConfigureAwait(false);
@@ -355,7 +475,6 @@ public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger) : IAs
         if (completedTask == timeoutTask)
             _logger.LogWarn($"One or more plugins timed out during disposal");
 
-        // Extract all thrown exceptions
         List<Exception> exceptions = [.. disposeTasks
             .Where(t => t.IsFaulted && t.Exception is not null)
             .SelectMany(t => t.Exception!.InnerExceptions)];
@@ -364,8 +483,10 @@ public class PluginManager(PluginSDK.Logging.Logger<PluginManager> logger) : IAs
         {
             _logger.LogError(
                 new AggregateException(exceptions),
-                $"{exceptions.Count} plugin(s) failed to dispose"
-            );
+                $"{exceptions.Count} plugin(s) failed to dispose");
         }
     }
+
+    private static async Task DisposePluginAsync(IPlugin plugin)
+        => await plugin.DisposeAsync().ConfigureAwait(false);
 }

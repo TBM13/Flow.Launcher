@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Security;
 using System.Windows.Controls;
 using Flow.Launcher.Interop.Programs;
@@ -30,7 +31,7 @@ public static class PluginMetadataDefinition
     };
 }
 
-public sealed class Main : IAsyncPlugin, ISettingProvider
+public sealed class Main : IPlugin, ISettingProvider
 {
     private const string DefaultValueName = "(Default)";
     private const string KeyGlyph = "\uF12B";
@@ -62,50 +63,62 @@ public sealed class Main : IAsyncPlugin, ISettingProvider
         return new SettingsControl(_viewModel);
     }
 
-    public Task InitAsync(PluginInitContext context)
+    public ValueTask InitAsync(PluginInitContext context)
     {
         _context = context;
         _matcher = context.API.StringMatcher;
         _settings = context.API.LoadSettingJsonStorage<Settings.Settings>();
         _viewModel = new SettingsViewModel(_settings);
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 
-    public Task<List<Result>?> QueryAsync(Query query, CancellationToken token)
+    public async IAsyncEnumerable<Result> QueryAsync(
+        Query query,
+        [EnumeratorCancellation] CancellationToken token)
     {
         if (query.IsHomeQuery)
-            return Task.FromResult<List<Result>?>(null);
+            yield break;
 
-        return Task.Run(() => ExecuteQuery(query, token), token);
+        foreach (Result result in ExecuteQuery(query, token))
+            yield return result;
     }
 
-    private List<Result>? ExecuteQuery(Query query, CancellationToken token)
+    private IEnumerable<Result> ExecuteQuery(Query query, CancellationToken token)
     {
         string search = query.Search.Replace('/', '\\');
 
         if (string.IsNullOrWhiteSpace(search))
         {
-            return query.ActionKeyword.Length > 0
-                ? [.. RootHives.Select(h => CreateKeyResult(h.FullName, h.FullName, isRecursive: false, score: 0, addSelectedCount: false))]
-                : null;
+            if (query.ActionKeyword.Length > 0)
+            {
+                foreach (RegistryHiveInfo h in RootHives)
+                {
+                    token.ThrowIfCancellationRequested();
+                    yield return CreateKeyResult(h.FullName, h.FullName, isRecursive: false, score: 0, addSelectedCount: false);
+                }
+            }
+            yield break;
         }
 
         int firstSeparator = search.IndexOf('\\');
         if (firstSeparator == -1)
         {
             if (query.ActionKeyword.Length == 0)
-                return null;
+                yield break;
 
-            return SearchRootHives(search);
+            foreach (Result result in SearchRootHives(search, token))
+                yield return result;
+
+            yield break;
         }
 
         if (firstSeparator == 0)
-            return null;
+            yield break;
 
         RegistryHiveInfo? hive = FindHive(search.AsSpan(0, firstSeparator));
         if (hive is null)
-            return null;
+            yield break;
 
         int lastSeparator = search.LastIndexOf('\\');
         ReadOnlySpan<char> subKeyPath = lastSeparator > firstSeparator
@@ -122,29 +135,36 @@ public sealed class Main : IAsyncPlugin, ISettingProvider
         {
             openedKey = TryOpenSubKey(hive.Key, subKeyPath.ToString());
             if (openedKey is null)
-                return [];
+                yield break;
 
             targetKey = openedKey;
         }
 
         try
         {
-            ReadOnlySpan<char> searchPart = search.AsSpan(lastSeparator + 1);
-            if (searchPart.IsWhiteSpace())
-                return BrowseKey(targetKey, token);
+            string searchPart = search[(lastSeparator + 1)..];
+            if (string.IsNullOrWhiteSpace(searchPart))
+            {
+                foreach (Result result in BrowseKey(targetKey, token))
+                    yield return result;
+
+                yield break;
+            }
 
             if (searchPart.StartsWith('>'))
             {
-                ReadOnlySpan<char> recursiveSearch = searchPart[1..];
-                if (recursiveSearch.IsWhiteSpace())
-                    return [];
+                string recursiveSearch = searchPart[1..];
+                if (string.IsNullOrWhiteSpace(recursiveSearch))
+                    yield break;
 
-                List<Result> recursiveResults = [];
-                SearchRecursive(targetKey, recursiveSearch, recursiveResults, token);
-                return recursiveResults;
+                foreach (Result result in SearchRecursive(targetKey, recursiveSearch, token))
+                    yield return result;
+
+                yield break;
             }
 
-            return SearchKey(targetKey, searchPart, token);
+            foreach (Result result in SearchKey(targetKey, searchPart, token))
+                yield return result;
         }
         finally
         {
@@ -152,24 +172,23 @@ public sealed class Main : IAsyncPlugin, ISettingProvider
         }
     }
 
-    private List<Result> SearchRootHives(string search)
+    private IEnumerable<Result> SearchRootHives(string search, CancellationToken token)
     {
-        List<Result> results = [];
         foreach (RegistryHiveInfo hive in RootHives)
         {
+            token.ThrowIfCancellationRequested();
+
             MatchResult match = _matcher.FuzzySearchBest(search, hive.FullName, hive.ShortName);
             if (match.IsThresholdMet)
             {
-                results.Add(CreateKeyResult(
+                yield return CreateKeyResult(
                     hive.FullName,
                     hive.FullName,
                     isRecursive: false,
                     score: match.Score,
-                    addSelectedCount: true));
+                    addSelectedCount: true);
             }
         }
-
-        return results;
     }
 
     private static RegistryHiveInfo? FindHive(ReadOnlySpan<char> hiveName)
@@ -186,51 +205,48 @@ public sealed class Main : IAsyncPlugin, ISettingProvider
         return null;
     }
 
-    private List<Result> BrowseKey(RegistryKey key, CancellationToken token)
+    private IEnumerable<Result> BrowseKey(RegistryKey key, CancellationToken token)
     {
         string[] subKeyNames = GetSortedSubKeyNames(key);
         string[] valueNames = GetSortedValueNames(key);
-
-        List<Result> results = [with(subKeyNames.Length + valueNames.Length)];
         string parentPath = key.Name;
 
         foreach (string subKeyName in subKeyNames)
         {
             token.ThrowIfCancellationRequested();
-            results.Add(CreateKeyResult(
+            yield return CreateKeyResult(
                 subKeyName,
                 $"{parentPath}\\{subKeyName}",
                 isRecursive: false,
                 score: 0,
-                addSelectedCount: false));
+                addSelectedCount: false);
         }
 
         foreach (string valueName in valueNames)
         {
             token.ThrowIfCancellationRequested();
-            results.Add(CreateValueResult(
+            yield return CreateValueResult(
                 key,
                 valueName,
                 isRecursive: false,
                 score: 0,
-                addSelectedCount: false));
+                addSelectedCount: false);
         }
-
-        return results;
     }
 
-    private List<Result> SearchKey(RegistryKey key, ReadOnlySpan<char> searchTerm, CancellationToken token)
+    private IEnumerable<Result> SearchKey(RegistryKey key, string searchTerm, CancellationToken token)
     {
-        List<Result> results = [];
-        MatchEntriesInKey(key, searchTerm, isRecursive: false, results, token);
-        return results;
+        string[] subKeyNames = GetSortedSubKeyNames(key);
+        return MatchEntriesInKey(key, subKeyNames, searchTerm, isRecursive: false, token);
     }
 
-    private void SearchRecursive(RegistryKey key, ReadOnlySpan<char> searchTerm, List<Result> results, CancellationToken token)
+    private IEnumerable<Result> SearchRecursive(RegistryKey key, string searchTerm, CancellationToken token)
     {
         token.ThrowIfCancellationRequested();
 
-        string[] subKeyNames = MatchEntriesInKey(key, searchTerm, isRecursive: true, results, token);
+        string[] subKeyNames = GetSortedSubKeyNames(key);
+        foreach (Result result in MatchEntriesInKey(key, subKeyNames, searchTerm, isRecursive: true, token))
+            yield return result;
 
         foreach (string subKeyName in subKeyNames)
         {
@@ -238,18 +254,20 @@ public sealed class Main : IAsyncPlugin, ISettingProvider
 
             using RegistryKey? subKey = TryOpenSubKey(key, subKeyName);
             if (subKey is not null)
-                SearchRecursive(subKey, searchTerm, results, token);
+            {
+                foreach (Result childResult in SearchRecursive(subKey, searchTerm, token))
+                    yield return childResult;
+            }
         }
     }
 
-    private string[] MatchEntriesInKey(
+    private IEnumerable<Result> MatchEntriesInKey(
         RegistryKey key,
-        ReadOnlySpan<char> searchTerm,
+        string[] subKeyNames,
+        string searchTerm,
         bool isRecursive,
-        List<Result> results,
         CancellationToken token)
     {
-        string[] subKeyNames = GetSortedSubKeyNames(key);
         string[] valueNames = GetSortedValueNames(key);
         string parentPath = key.Name;
 
@@ -260,12 +278,12 @@ public sealed class Main : IAsyncPlugin, ISettingProvider
             MatchResult match = _matcher.FuzzySearch(searchTerm, subKeyName);
             if (match.IsThresholdMet)
             {
-                results.Add(CreateKeyResult(
+                yield return CreateKeyResult(
                     subKeyName,
                     $"{parentPath}\\{subKeyName}",
                     isRecursive,
                     match.Score,
-                    addSelectedCount: true));
+                    addSelectedCount: true);
             }
         }
 
@@ -277,16 +295,14 @@ public sealed class Main : IAsyncPlugin, ISettingProvider
             MatchResult match = _matcher.FuzzySearch(searchTerm, displayName);
             if (match.IsThresholdMet)
             {
-                results.Add(CreateValueResult(
+                yield return CreateValueResult(
                     key,
                     valueName,
                     isRecursive,
                     match.Score,
-                    addSelectedCount: true));
+                    addSelectedCount: true);
             }
         }
-
-        return subKeyNames;
     }
 
     private Result CreateKeyResult(
@@ -478,6 +494,4 @@ public sealed class Main : IAsyncPlugin, ISettingProvider
         string prefix = BitConverter.ToString(bytes, 0, MaxBinaryPreviewBytes).Replace('-', ' ');
         return $"{prefix} ... ({bytes.Length} bytes)";
     }
-
-    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 }

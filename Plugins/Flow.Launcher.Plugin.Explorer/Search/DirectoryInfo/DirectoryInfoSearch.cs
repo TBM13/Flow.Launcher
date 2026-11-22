@@ -44,16 +44,68 @@ public static class DirectoryInfoSearch
         EnumerationOptions enumerationOption, string search,
         string searchCriteria, CancellationToken token)
     {
-        List<SearchResult> results = [];
         string path = Path.GetDirectoryName(search) ?? search;
+        System.IO.DirectoryInfo dirInfo = new(path);
 
+        if (!enumerationOption.RecurseSubdirectories)
+        {
+            foreach (SearchResult result in EnumerateFileSystemEntries(
+                dirInfo.EnumerateDirectories(searchCriteria, enumerationOption), path, token))
+            {
+                yield return result;
+            }
+
+            foreach (SearchResult result in EnumerateFileSystemEntries(
+                dirInfo.EnumerateFiles(searchCriteria, enumerationOption), path, token))
+            {
+                yield return result;
+            }
+
+            yield break;
+        }
+
+        foreach (SearchResult result in EnumerateFileSystemEntries(
+            dirInfo.EnumerateFileSystemInfos(searchCriteria, enumerationOption), path, token))
+        {
+            yield return result;
+        }
+    }
+
+    private static IEnumerable<SearchResult> EnumerateFileSystemEntries(
+        IEnumerable<FileSystemInfo> entries, string path, CancellationToken token)
+    {
+        IEnumerator<FileSystemInfo> enumerator;
         try
         {
-            System.IO.DirectoryInfo dirInfo = new(path);
+            enumerator = entries.GetEnumerator();
+        }
+        catch (Exception e)
+        {
+            Main.Context.Logger.LogError(e, $"Failed to search in path '{path}'");
+            throw;
+        }
 
-            foreach (FileSystemInfo fileSystemInfo in dirInfo.EnumerateFileSystemInfos(searchCriteria, enumerationOption))
+        using (enumerator)
+        {
+            while (true)
             {
-                results.Add(new SearchResult
+                FileSystemInfo fileSystemInfo;
+                try
+                {
+                    if (!enumerator.MoveNext())
+                        yield break;
+
+                    fileSystemInfo = enumerator.Current;
+                }
+                catch (Exception e)
+                {
+                    Main.Context.Logger.LogError(e, $"Failed to search in path '{path}'");
+                    throw;
+                }
+
+                token.ThrowIfCancellationRequested();
+
+                yield return new SearchResult
                 {
                     FullPath = fileSystemInfo.FullName,
                     Type = fileSystemInfo switch
@@ -64,19 +116,8 @@ public static class DirectoryInfoSearch
                         _ => throw new InvalidOperationException(
                             $"Unexpected FileSystemInfo type: {fileSystemInfo.GetType()}"),
                     },
-                });
-
-                if (token.IsCancellationRequested)
-                    return results;
+                };
             }
         }
-        catch (Exception e)
-        {
-            Main.Context.Logger.LogError(e, $"Failed to search in path '{path}'");
-            throw;
-        }
-
-        // Initial ordering, this order can be updated later by UpdateResultView.MainViewModel based on history of user selection.
-        return results.OrderBy(r => r.Type).ThenBy(r => r.FullPath);
     }
 }

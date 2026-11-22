@@ -173,45 +173,44 @@ public sealed partial class Win32Program : IProgram, IEquatable<Win32Program>
         };
     }
 
-    public List<Result> CreateContextMenus(PluginInitContext context)
+    public IEnumerable<Result> CreateContextMenus(PluginInitContext context)
     {
-        List<Result> menus =
-        [
-            new Result
+        yield return new Result
+        {
+            Title = "Run as administrator",
+            IconOrGlyph = "\xe7ef",
+            Action = _ =>
             {
-                Title = "Run as administrator",
-                IconOrGlyph = "\xe7ef",
-                Action = _ =>
-                {
-                    Launch(context, "runas");
-                    return true;
-                }
-            },
-            new Result
-            {
-                Title = "Run as different user",
-                IconOrGlyph = "\xe7ee",
-                Action = _ =>
-                {
-                    Launch(context, "RunAsUser");
-                    return true;
-                }
-            },
-            new Result
-            {
-                Title = "Open containing folder",
-                IconOrGlyph = "\xe838",
-                Action = _ =>
-                {
-                    FileExplorerHelper.OpenFolderAndSelectFile(FullPath);
-                    return true;
-                }
+                Launch(context, "runas");
+                return true;
             }
-        ];
+        };
+
+        yield return new Result
+        {
+            Title = "Run as different user",
+            IconOrGlyph = "\xe7ee",
+            Action = _ =>
+            {
+                Launch(context, "RunAsUser");
+                return true;
+            }
+        };
+
+        yield return new Result
+        {
+            Title = "Open containing folder",
+            IconOrGlyph = "\xe838",
+            Action = _ =>
+            {
+                FileExplorerHelper.OpenFolderAndSelectFile(FullPath);
+                return true;
+            }
+        };
 
         if (ProgramType == Win32ProgramType.Shortcut && !string.IsNullOrEmpty(LnkResolvedPath))
         {
-            menus.Add(new Result
+            yield return new Result
             {
                 Title = "Open target folder",
                 IconOrGlyph = "\xe8de",
@@ -220,10 +219,8 @@ public sealed partial class Win32Program : IProgram, IEquatable<Win32Program>
                     FileExplorerHelper.OpenFolderAndSelectFile(LnkResolvedPath);
                     return true;
                 }
-            });
+            };
         }
-
-        return menus;
     }
 
     private void Launch(PluginInitContext context, string verb)

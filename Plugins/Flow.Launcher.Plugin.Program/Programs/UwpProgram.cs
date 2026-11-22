@@ -103,13 +103,11 @@ public sealed partial class UwpProgram : IProgram, IEquatable<UwpProgram>
         };
     }
 
-    public List<Result> CreateContextMenus(PluginInitContext context)
+    public IEnumerable<Result> CreateContextMenus(PluginInitContext context)
     {
-        List<Result> menus = [];
-
         if (!string.IsNullOrEmpty(Location))
         {
-            menus.Add(new Result
+            yield return new Result
             {
                 Title = "Open containing folder",
                 IconOrGlyph = "\xe838",
@@ -118,12 +116,12 @@ public sealed partial class UwpProgram : IProgram, IEquatable<UwpProgram>
                     FileExplorerHelper.OpenFolderAndSelectFile(Location);
                     return true;
                 }
-            });
+            };
         }
 
         if (CanRunElevated)
         {
-            menus.Add(new Result
+            yield return new Result
             {
                 Title = "Run as administrator",
                 IconOrGlyph = "\xe7ef",
@@ -132,10 +130,8 @@ public sealed partial class UwpProgram : IProgram, IEquatable<UwpProgram>
                     Launch(context, elevated: true);
                     return true;
                 }
-            });
+            };
         }
-
-        return menus;
     }
 
     private void Launch(PluginInitContext context, bool elevated)
